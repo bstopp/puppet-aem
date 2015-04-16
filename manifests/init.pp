@@ -46,6 +46,9 @@ class adobe_experience_manager (
 
 ) inherits ::adobe_experience_manager::params {
   
+  validate_bool($manage_user)
+  validate_bool($manage_group)
+  
   if ! defined('$jar') {
     fail ('Installer jar required but not defined')
   }
