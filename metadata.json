@@ -1,0 +1,22 @@
+{
+  "name": "bstopp-aem",
+  "version": "0.1.0",
+  "author": "bstopp",
+  "summary": "Install and configure Adobe Experience Manager instances.",
+  "license": "Apache-2.0",
+  "source": "git://github.com/bstopp/puppet-aem-module.git",
+  "project_page": "https://github.com/bstopp/puppet-aem-module",
+  "issues_url": "https://github.com/bstopp/puppet-aem-module/issues",
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.x"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">= 4.6.0"
+    }
+  ]
+}

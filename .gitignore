@@ -1,0 +1,13 @@
+
+pkg/
+vendor/
+spec/fixtures/
+.vagrant/
+.bundle/
+coverage/
+.idea/
+*.iml
+.project
+.buildpath
+log/
+junit/
