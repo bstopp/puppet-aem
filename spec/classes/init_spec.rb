@@ -7,6 +7,7 @@ describe 'adobe_experience_manager' do
       'ensure' => 'directory',
       'owner' => 'aem',
       'group' => 'aem', 
-    )
+      )
+    }
   end
 end
