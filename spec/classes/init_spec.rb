@@ -6,7 +6,7 @@ describe 'adobe_experience_manager' do
     it { is_expected.to contain_file('/opt/aem').with(
       'ensure' => 'directory',
       'owner' => 'aem',
-      'group' -> 'aem',
+      'group' => 'aem', 
     )
   end
 end
