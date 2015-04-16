@@ -68,5 +68,17 @@ describe 'adobe_experience_manager' do
       }.to raise_error(Puppet::Error, /is not a boolean/)
     end
   end
-
+  
+  context 'invalid aem home path' do
+    let :params do
+      {
+        :aem_home => 'not/a/fully/qualified/path'
+      }
+    end
+    it do
+      expect {
+        catalogue
+      }.to raise_error(Puppet::Error, /absolute path/)
+    end
+  end
 end

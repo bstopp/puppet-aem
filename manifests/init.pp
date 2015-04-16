@@ -48,6 +48,7 @@ class adobe_experience_manager (
   
   validate_bool($manage_user)
   validate_bool($manage_group)
+  validate_absolute_path($aem_home)
   
   if ! defined('$jar') {
     fail ('Installer jar required but not defined')
