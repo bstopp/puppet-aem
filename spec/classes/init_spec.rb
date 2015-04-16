@@ -8,8 +8,8 @@ describe 'adobe_experience_manager' do
       )
     }
     it { is_expected.to contain_user('aem').with(
-      ensure  => 'present',
-      gid     => 'aem',
+      'ensure'  => 'present',
+      'gid'     => 'aem',
       )
     }
 
