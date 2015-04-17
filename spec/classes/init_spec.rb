@@ -1,6 +1,12 @@
 require 'spec_helper'
 describe 'adobe_experience_manager' do
-
+  let :facts do
+    {
+      :osfamily => 'RedHat',
+      :operatingsystem => 'CentOS',
+      :operatingsystemrelease => '7.0',
+    } 
+  end
   context 'with defaults for all parameters' do
     it { is_expected.to contain_class('adobe_experience_manager').with(
       'aem_home' => '/opt/aem',
@@ -31,7 +37,7 @@ describe 'adobe_experience_manager' do
   context 'not managing user' do
     let :params do
       {
-        :manage_user => false
+        :manage_user => false,
       }
     end
     it { is_expected.not_to contain_user('aem') }
@@ -39,7 +45,7 @@ describe 'adobe_experience_manager' do
   context 'not managing group' do
     let :params do
       {
-        :manage_group => false
+        :manage_group => false,
       }
     end
     it { is_expected.not_to contain_group('aem') }
@@ -47,7 +53,7 @@ describe 'adobe_experience_manager' do
   context 'invalid manage user' do
     let :params do
       {
-        :manage_user => 'foo'
+        :manage_user => 'foo',
       }
     end
     it do
@@ -59,7 +65,7 @@ describe 'adobe_experience_manager' do
   context 'invalid manage group' do
     let :params do
       {
-        :manage_group => 'foo'
+        :manage_group => 'foo',
       }
     end
     it do
@@ -72,7 +78,7 @@ describe 'adobe_experience_manager' do
   context 'invalid aem home path' do
     let :params do
       {
-        :aem_home => 'not/a/fully/qualified/path'
+        :aem_home => 'not/a/fully/qualified/path',
       }
     end
     it do
