@@ -56,7 +56,7 @@ class adobe_experience_manager (
   
   
   
-  if ! defined('$jar') {
+  if ! defined("$jar") {
     fail ('Installer jar required but not defined')
   }
   
