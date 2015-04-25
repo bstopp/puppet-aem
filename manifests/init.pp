@@ -33,11 +33,11 @@
 #
 # === Copyright
 #
-# Copyright 2015 Your name here, unless otherwise noted.
+# Copyright 2015 Bryan Stopp.
 #
 class adobe_experience_manager (
   $aem_home           = $::adobe_experience_manager::params::aem_home,
-  $jar                = $::adobe_experience_manager::params::jar,
+  $jar                = undef,
   $user               = $::adobe_experience_manager::params::user,
   $group              = $::adobe_experience_manager::params::group,
   $manage_user        = true,
@@ -46,9 +46,15 @@ class adobe_experience_manager (
 
 ) inherits ::adobe_experience_manager::params {
   
+  validate_absolute_path($aem_home)
+  validate_string($jar)
+  validate_string($user)
+  validate_string($group)
   validate_bool($manage_user)
   validate_bool($manage_group)
-  validate_absolute_path($aem_home)
+  validate_array($runmodes)
+  
+  
   
   if ! defined('$jar') {
     fail ('Installer jar required but not defined')
@@ -72,5 +78,7 @@ class adobe_experience_manager (
     owner  => $user,
     group  => $group,
   }
+  
+  
     
 }

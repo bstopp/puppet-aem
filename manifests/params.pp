@@ -3,17 +3,18 @@
 # This class manages AEM parameters.
 #
 # Parameters:
-# - $aem_home is the root of the AEM installation.
+# - The $aem_home, root of the AEM installation.
 # - The $user AEM runs as.
 # - The $group AEM runs as.
 # - The $jar used to install AEM.
 # - The $runmodes of the AEM instance
-# - The 
+# - The $cab_file indicating that the initial installation of AEM has completed.
 
 class adobe_experience_manager::params {
   $aem_home   = '/opt/aem'
   $user       = 'aem'
   $group      = 'aem'
-  $jar        = '/opt/aem/cq-author-4502.jar'
-  $runmodes    = ['author']
+  $runmodes   = ['author']
+  $cab_file   = "${aem_home}/installed.cab"
+  
 }

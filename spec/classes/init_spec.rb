@@ -10,10 +10,9 @@ describe 'adobe_experience_manager' do
   context 'with defaults for all parameters' do
     it { is_expected.to contain_class('adobe_experience_manager').with(
       'aem_home' => '/opt/aem',
-      'jar'      => '/opt/aem/cq-author-4502.jar',
       'user'     => 'aem',
       'group'    => 'aem',
-      'runmodes' => ['author']
+      'runmodes' => ['author'],
       )
     }
     it { is_expected.to contain_group('aem').with(
