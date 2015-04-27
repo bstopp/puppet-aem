@@ -72,7 +72,7 @@ class adobe_experience_manager (
     notify  => Class['adobe_experience_manager::service'],
   }
     
-  class { 'adobe_experience_manager::install': 
+  class { 'adobe_experience_manager::install':
     require => Class['adobe_experience_manager::config'],
     notify  => Class['adobe_experience_manager::service'],
   }

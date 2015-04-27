@@ -3,10 +3,10 @@ require 'spec_helper'
 describe 'adobe_experience_manager' do
   let :facts do
     {
-      :osfamily => 'RedHat',
-      :operatingsystem => 'CentOS',
-      :operatingsystemrelease => '7.0',
-      :java_major_version => '1.7',
+      :osfamily                 => 'RedHat',
+      :operatingsystem          => 'CentOS',
+      :operatingsystemrelease   => '7.0',
+      :java_major_version       => '1.7',
     } 
   end
   
@@ -26,11 +26,11 @@ describe 'adobe_experience_manager' do
     end
     
     it { is_expected.to contain_class('adobe_experience_manager').with(
-      'aem_home'  => '/opt/aem',
-      'jar'       => '/opt/aem/cq-author-4502.jar',
-      'user'      => 'aem',
-      'group'     => 'aem',
-      'runmodes'  => ['author'],
+        'aem_home'  => '/opt/aem',
+        'jar'       => '/opt/aem/cq-author-4502.jar',
+        'user'      => 'aem',
+        'group'     => 'aem',
+        'runmodes'  => ['author'],
       )
     }
     it { is_expected.to contain_class('adobe_experience_manager::user') }
