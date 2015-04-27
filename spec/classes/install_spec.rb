@@ -9,16 +9,11 @@ describe 'adobe_experience_manager' do
     } 
   end
   
-  let :params do 
-    {
-      'jar'       => '/opt/aem/cq-author-4502.jar',
-    }
-  end  
-  
   context 'invalid aem home path' do
     let :params do
       {
         :aem_home => 'not/a/fully/qualified/path',
+        :jar      => '/opt/aem/cq-author-4502.jar',
       }
     end
     it do

@@ -9,13 +9,13 @@ describe 'adobe_experience_manager' do
     } 
   end
   
-  let :params do 
-    {
-      'jar'       => '/opt/aem/cq-author-4502.jar',
-    }
-  end
   
   context 'default manage user/group' do
+    let :params do 
+      {
+        'jar'       => '/opt/aem/cq-author-4502.jar',
+      }
+    end
   
     it { is_expected.to contain_group('aem').with(
       'ensure' => 'present',
@@ -38,7 +38,9 @@ describe 'adobe_experience_manager' do
   context 'not managing user' do
     let :params do
       {
-        :manage_user => false,
+        :manage_user  => false,
+        :jar          => '/opt/aem/cq-author-4502.jar',
+
       }
     end
     it { is_expected.not_to contain_user('aem') }
@@ -47,6 +49,7 @@ describe 'adobe_experience_manager' do
     let :params do
       {
         :manage_group => false,
+        :jar          => '/opt/aem/cq-author-4502.jar',
       }
     end
     it { is_expected.not_to contain_group('aem') }
@@ -67,6 +70,7 @@ describe 'adobe_experience_manager' do
     let :params do
       {
         :manage_group => 'foo',
+        :jar          => '/opt/aem/cq-author-4502.jar',
       }
     end
     it do
