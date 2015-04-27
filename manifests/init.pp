@@ -67,7 +67,14 @@ class adobe_experience_manager (
   
   class { 'adobe_experience_manager::user': }
 
-  anchor { 'adobe_experience_manager::end':
+  class { 'adobe_experience_manager::install': 
     require => Class['adobe_experience_manager::user'],
+    notify  => Class['adobe_experience_manager::service'],
+  }
+  
+  class { 'adobe_experience_manager::service': }
+  
+  anchor { 'adobe_experience_manager::end':
+    require => Class['adobe_experience_manager::service'],
   }
 }

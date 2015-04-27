@@ -11,16 +11,11 @@
 # - The $cab_file indicating that the initial installation of AEM has completed.
 
 class adobe_experience_manager::install {
-  $aem_home   = '/opt/aem'
-  $user       = 'aem'
-  $group      = 'aem'
-  $runmodes   = ['author']
-  $cabfile   = "${aem_home}/installed.cab"
-  
-}
-  
-  file { $aem_home:
+
+  file { $adobe_experience_manager::aem_home :
     ensure => directory,
     owner  => $user,
     group  => $group,
   }
+
+}
