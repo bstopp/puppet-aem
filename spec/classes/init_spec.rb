@@ -6,6 +6,7 @@ describe 'adobe_experience_manager' do
       :osfamily => 'RedHat',
       :operatingsystem => 'CentOS',
       :operatingsystemrelease => '7.0',
+      :java_major_version => '1.7',
     } 
   end
   

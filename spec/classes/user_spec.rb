@@ -6,16 +6,17 @@ describe 'adobe_experience_manager' do
       :osfamily => 'RedHat',
       :operatingsystem => 'CentOS',
       :operatingsystemrelease => '7.0',
+      :java_major_version => '1.7',
     } 
   end
-  
-  
+  let :params do 
+    {
+      'jar'       => '/opt/aem/cq-author-4502.jar',
+    }
+  end
+
   context 'default manage user/group' do
-    let :params do 
-      {
-        'jar'       => '/opt/aem/cq-author-4502.jar',
-      }
-    end
+   
   
     it { is_expected.to contain_group('aem').with(
       'ensure' => 'present',
