@@ -31,6 +31,11 @@ describe 'adobe_experience_manager' do
       'runmodes'  => ['author'],
       )
     }
+    it { is_expected.to contain_class('adobe_experience_manager::user') }
+    it { is_expected.to contain_class('adobe_experience_manager::config') }
+    it { is_expected.to contain_class('adobe_experience_manager::install') }
+    it { is_expected.to contain_class('adobe_experience_manager::service') }
+    
     it { is_expected.to contain_group('aem').with(
       'ensure' => 'present',
       )
