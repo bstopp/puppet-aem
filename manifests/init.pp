@@ -43,6 +43,7 @@ class adobe_experience_manager (
   $manage_user        = true,
   $manage_group       = true,
   $runmodes           = $::adobe_experience_manager::params::runmodes,
+  $cabfile            = $::adobe_experience_manager::params::cabfile,
 
 ) inherits ::adobe_experience_manager::params {
   
@@ -53,32 +54,20 @@ class adobe_experience_manager (
   validate_bool($manage_user)
   validate_bool($manage_group)
   validate_array($runmodes)
+  validate_absolute_path($cabfile)
   
-  
-  
+
   if !$jar {
     fail ('Installer jar required but not defined')
   }
   
-  if $manage_group {
-    group { $group:
-      ensure => present,
-    }
+  anchor { 'adobe_experience_manager::begin':
+    before => Class['adobe_experience_manager::user'],
   }
+  
+  class { 'adobe_experience_manager::user': }
 
-  if $manage_user {
-    user { $user:
-      ensure => present,
-      gid    => $group,
-    }
+  anchor { 'adobe_experience_manager::end':
+    require => Class['adobe_experience_manager::user'],
   }
-  
-  file { $aem_home:
-    ensure => directory,
-    owner  => $user,
-    group  => $group,
-  }
-  
-  
-    
 }
