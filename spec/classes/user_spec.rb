@@ -38,7 +38,6 @@ describe 'adobe_experience_manager' do
   context 'not managing user' do
     let :params do
       {
-        'jar'       => '/opt/aem/cq-author-4502.jar',
         :manage_user => false,
       }
     end
@@ -47,7 +46,6 @@ describe 'adobe_experience_manager' do
   context 'not managing group' do
     let :params do
       {
-        'jar'       => '/opt/aem/cq-author-4502.jar',
         :manage_group => false,
       }
     end
@@ -56,7 +54,6 @@ describe 'adobe_experience_manager' do
   context 'invalid manage user' do
     let :params do
       {
-        'jar'       => '/opt/aem/cq-author-4502.jar',
         :manage_user => 'foo',
       }
     end
@@ -69,7 +66,6 @@ describe 'adobe_experience_manager' do
   context 'invalid manage group' do
     let :params do
       {
-        'jar'       => '/opt/aem/cq-author-4502.jar',
         :manage_group => 'foo',
       }
     end

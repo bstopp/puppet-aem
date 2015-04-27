@@ -25,7 +25,6 @@ describe 'adobe_experience_manager' do
     end
     
     it { is_expected.to contain_class('adobe_experience_manager').with(
-      'version'   => 'undef',
       'aem_home'  => '/opt/aem',
       'jar'       => '/opt/aem/cq-author-4502.jar',
       'user'      => 'aem',

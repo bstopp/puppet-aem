@@ -1,7 +1,23 @@
+require 'spec_helper'
+
+describe 'adobe_experience_manager' do
+  let :facts do
+    {
+      :osfamily => 'RedHat',
+      :operatingsystem => 'CentOS',
+      :operatingsystemrelease => '7.0',
+    } 
+  end
+  
+  let :params do 
+    {
+      'jar'       => '/opt/aem/cq-author-4502.jar',
+    }
+  end  
+  
   context 'invalid aem home path' do
     let :params do
       {
-        'jar'       => '/opt/aem/cq-author-4502.jar',
         :aem_home => 'not/a/fully/qualified/path',
       }
     end
@@ -11,3 +27,5 @@
       }.to raise_error(Puppet::Error, /absolute path/)
     end
   end
+
+end
