@@ -13,7 +13,7 @@ class adobe_experience_manager::install {
     '6.0':    { $req_java_version = '1.7' }
     default:  { 
       warning("Unrecognized/unspecified version of AEM ($adobe_experience_manager::version) specified.")
-      warning("Unable to validate Java requirement, proceeding with unknown results");
+      warning("Unable to validate Java requirement, proceeding with unknown results")
       $req_java_version = '.*'  
     }
   }
