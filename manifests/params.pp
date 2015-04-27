@@ -15,6 +15,6 @@ class adobe_experience_manager::params {
   $user       = 'aem'
   $group      = 'aem'
   $runmodes   = ['author']
-  $cab_file   = "${aem_home}/installed.cab"
+  $cabfile   = "${aem_home}/installed.cab"
   
 }
