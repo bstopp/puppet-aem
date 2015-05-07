@@ -36,25 +36,25 @@
 # Copyright 2015 Bryan Stopp.
 #
 class adobe_experience_manager (
-  $aem_home           = $adobe_experience_manager::params::aem_home,
-  $jar                = undef,
   $user               = $adobe_experience_manager::params::user,
   $group              = $adobe_experience_manager::params::group,
   $manage_user        = true,
   $manage_group       = true,
+  $aem_home           = $adobe_experience_manager::params::aem_home,
+  $jar                = undef,
+  $version            = undef,
   $runmodes           = $adobe_experience_manager::params::runmodes,
-  $cabfile            = $adobe_experience_manager::params::cabfile,
 
 ) inherits ::adobe_experience_manager::params {
   
-  validate_absolute_path($aem_home)
-  validate_string($jar)
   validate_string($user)
   validate_string($group)
   validate_bool($manage_user)
   validate_bool($manage_group)
+  validate_absolute_path($aem_home)
+  validate_string($jar)
+  validate_string($version)
   validate_array($runmodes)
-  validate_absolute_path($cabfile)
   
 
   if !$jar {

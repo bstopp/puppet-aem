@@ -57,7 +57,7 @@ describe 'adobe_experience_manager' do
     end
     let :params do 
       {
-        ':version'                 => '6.0',
+        :version                  => '6.0',
       }
     end
     it do
