@@ -18,10 +18,25 @@ describe 'adobe_experience_manager' do
     end
   end
   
-  context 'required jar and defaults for all other parameters' do
+  context 'required jar but not version and defaults for all other parameters' do
     let :params do 
       {
-        'jar'       => '/opt/aem/cq-author-4502.jar',
+        :jar       => '/opt/aem/cq-author-4502.jar',
+      }
+    end
+    
+    it do
+      expect {
+        catalogue
+      }.to raise_error(Puppet::Error, /Version of AEM is not defined./)
+    end
+  end
+  
+  context 'required jar and version and defaults for all other parameters' do
+    let :params do 
+      {
+        :jar       => '/opt/aem/cq-author-4502.jar',
+        :versoin   => '6.0',
       }
     end
     

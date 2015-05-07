@@ -57,7 +57,8 @@ describe 'adobe_experience_manager' do
     end
     let :params do 
       {
-        :version                  => '6.0',
+        :jar       => '/opt/aem/cq-author-4502.jar',
+        :version   => '6.0',
       }
     end
     it do

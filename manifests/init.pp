@@ -57,8 +57,13 @@ class adobe_experience_manager (
   validate_array($runmodes)
   
 
+  # Until Validate can test for undef, these stay.
   if !$jar {
-    fail ('Installer jar required but not defined')
+    fail ('Installer jar required but not defined.')
+  }
+  if !$version {
+    # Stays until Adobe fixes extracting the version of the jar via cli option.
+    fail ('Version of AEM is not defined.')
   }
   
   anchor { 'adobe_experience_manager::begin':

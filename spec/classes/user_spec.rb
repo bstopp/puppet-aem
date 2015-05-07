@@ -11,13 +11,12 @@ describe 'adobe_experience_manager' do
   end
   let :params do 
     {
-      'jar'       => '/opt/aem/cq-author-4502.jar',
+      :jar      => '/opt/aem/cq-author-4502.jar',
+      :version  => '6.0',
     }
   end
 
   context 'default manage user/group' do
-   
-  
     it { is_expected.to contain_group('aem').with(
       'ensure' => 'present',
       )
@@ -41,20 +40,23 @@ describe 'adobe_experience_manager' do
       {
         :manage_user  => false,
         :jar          => '/opt/aem/cq-author-4502.jar',
-
+        :version      => '6.0',
       }
     end
     it { is_expected.not_to contain_user('aem') }
   end
+
   context 'not managing group' do
     let :params do
       {
         :manage_group => false,
         :jar          => '/opt/aem/cq-author-4502.jar',
+        :version      => '6.0',
       }
     end
     it { is_expected.not_to contain_group('aem') }
   end
+
   context 'invalid manage user' do
     let :params do
       {
@@ -67,11 +69,11 @@ describe 'adobe_experience_manager' do
       }.to raise_error(Puppet::Error, /is not a boolean/)
     end
   end
+
   context 'invalid manage group' do
     let :params do
       {
         :manage_group => 'foo',
-        :jar          => '/opt/aem/cq-author-4502.jar',
       }
     end
     it do
