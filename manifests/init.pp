@@ -36,14 +36,14 @@
 # Copyright 2015 Bryan Stopp.
 #
 class adobe_experience_manager (
-  $aem_home           = $::adobe_experience_manager::params::aem_home,
+  $aem_home           = $adobe_experience_manager::params::aem_home,
   $jar                = undef,
-  $user               = $::adobe_experience_manager::params::user,
-  $group              = $::adobe_experience_manager::params::group,
+  $user               = $adobe_experience_manager::params::user,
+  $group              = $adobe_experience_manager::params::group,
   $manage_user        = true,
   $manage_group       = true,
-  $runmodes           = $::adobe_experience_manager::params::runmodes,
-  $cabfile            = $::adobe_experience_manager::params::cabfile,
+  $runmodes           = $adobe_experience_manager::params::runmodes,
+  $cabfile            = $adobe_experience_manager::params::cabfile,
 
 ) inherits ::adobe_experience_manager::params {
   

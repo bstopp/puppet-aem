@@ -18,11 +18,5 @@ class adobe_experience_manager::install {
     }
   }
   
-  
-  file { $adobe_experience_manager::aem_home :
-    ensure => directory,
-    owner  => $adobe_experience_manager::user,
-    group  => $adobe_experience_manager::group,
-  }
-
+    validate_re("${java_major_version}", "${req_java_version}", 'The installed version of Java is not supported for the specified version of AEM')
 }
