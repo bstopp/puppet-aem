@@ -46,11 +46,25 @@ describe 'adobe_experience_manager' do
     end
   end
         
-  context 'AEM version not specified' do
-    it { is_expected.to contain_class('adobe_experience_manager').with(
-        'req_java_version'   => '.*',
-      )
-    }
+  context 'Java/AEM combo not supported' do
+    let :facts do 
+      {
+        :osfamily                 => 'RedHat',
+        :operatingsystem          => 'CentOS',
+        :operatingsystemrelease   => '7.0',
+        :java_major_version       => '1.8',
+      } 
+    end
+    let :params do 
+      {
+        ':version'                 => '6.0',
+      }
+    end
+    it do
+      expect {
+        catalogue
+      }.to raise_error(Puppet::Error, /version of Java is not supported/)
+    end
   end
   
 end
