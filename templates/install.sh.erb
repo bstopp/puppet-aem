@@ -21,7 +21,7 @@
 
   cmd = cmd + " -jar " + @jar
 
-  if !@port.nil? && !@port.empty?
+  if !@port.nil?
     cmd = cmd + " -p " + @port
   end
 
@@ -31,8 +31,8 @@
     cmd = cmd + " -ll " + @log_level
   end
 
-  if @mongo && !@mongo_url.nil? && !@mongo_url.empty?
-    cmd = cmd + "-Doak.mongo.uri=" + @mongo_url
+  if @mongo && !@mongo_uri.nil? && !@mongo_uri.empty?
+    cmd = cmd + "-Doak.mongo.uri=" + @mongo_uri
   end
 
   cmd = cmd + " > /dev/null 2>&1 & "

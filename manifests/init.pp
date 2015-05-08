@@ -49,7 +49,7 @@ class adobe_experience_manager (
   $log_level          = undef,
   $jvm_opts           = undef,
   $mongo              = false,
-
+  $mongo_uri          = undef,
 ) inherits ::adobe_experience_manager::params {
   
   validate_string($user)
@@ -60,6 +60,12 @@ class adobe_experience_manager (
   validate_string($jar)
   validate_string($version)
   validate_array($runmodes)
+  validate_bool($includesamples)
+  validate_integer($port)
+  validate_integer($log_level)
+  validate_string($jvm_opts)
+  validate_bool($mongo)
+  validate_string($mongo_uri)
   
 
   # Until Validate can test for undef, these stay.
@@ -89,6 +95,7 @@ class adobe_experience_manager (
     log_level       => $log_level,
     jvm_opts        => $jvm_opts,
     mongo           => $mongo,
+    mongo_uri       => $mongo_uri,
     require         => Class['adobe_experience_manager::config'],
     notify          => Class['adobe_experience_manager::service'],
   }

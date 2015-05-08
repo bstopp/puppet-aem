@@ -131,7 +131,7 @@ describe 'adobe_experience_manager' do
       :jar              => '/opt/aem/cq-author-4502.jar',
       :version          => '6.0',
       :mongo            => true,
-      :mongo_url        => 'mongodb://127.0.0.1:27017'
+      :mongo_uri        => 'mongodb://127.0.0.1:27017'
     }
     end
     it {
@@ -162,7 +162,7 @@ describe 'adobe_experience_manager' do
     {
       :jar              => '/opt/aem/cq-author-4502.jar',
       :version          => '6.0',
-      :java_opts        => '-Xmx2048m',
+      :jvm_opts         => '-Xmx2048m',
     }
     end
     it {
