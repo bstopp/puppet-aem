@@ -125,6 +125,22 @@ describe 'adobe_experience_manager' do
     }
   end
 
+    context 'install.sh created mongo url' do
+    let :params do
+    {
+      :jar              => '/opt/aem/cq-author-4502.jar',
+      :version          => '6.0',
+      :mongo            => true,
+      :mongo_url        => mongodb://127.0.0.1:27017
+    }
+    end
+    it {
+      is_expected.to contain_file('/opt/aem/install.sh').with_content(
+        /.*-Doak.mongo.uri=mongodb:\/\/127.0.0.1:27017.*/
+      )
+    }
+  end
+
   context 'install.sh created mongo nosample' do
     let :params do
     {
@@ -137,6 +153,51 @@ describe 'adobe_experience_manager' do
     it {
       is_expected.to contain_file('/opt/aem/install.sh').with_content(
         /.*-r\s+author,crx3,crx3mongo,nosamplecontent\s+.*/
+      )
+    }
+  end
+
+  context 'install.sh created java opts' do
+    let :params do
+    {
+      :jar              => '/opt/aem/cq-author-4502.jar',
+      :version          => '6.0',
+      :java_opts        => '-Xmx2048m',
+    }
+    end
+    it {
+      is_expected.to contain_file('/opt/aem/install.sh').with_content(
+        /.*java\s+-Xmx2048m.*/
+      )
+    }
+  end
+
+  context 'install.sh created port' do
+    let :params do
+    {
+      :jar              => '/opt/aem/cq-author-4502.jar',
+      :version          => '6.0',
+      :port             => 4503,
+    }
+    end
+    it {
+      is_expected.to contain_file('/opt/aem/install.sh').with_content(
+        /.*-p 4503.*/
+      )
+    }
+  end
+
+  context 'install.sh created port' do
+    let :params do
+    {
+      :jar              => '/opt/aem/cq-author-4502.jar',
+      :version          => '6.0',
+      :log_level        => 2,
+    }
+    end
+    it {
+      is_expected.to contain_file('/opt/aem/install.sh').with_content(
+        /.*-ll 2.*/
       )
     }
   end

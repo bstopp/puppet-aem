@@ -31,6 +31,9 @@
     cmd = cmd + " -ll " + @log_level
   end
 
+  if @mongo && !@mongo_url.nil? && !@mongo_url.empty?
+    cmd = cmd + "-Doak.mongo.uri=" + @mongo_url
+
   cmd = cmd + " > /dev/null 2>&1 & "
 -%>
 <%= cmd %>
