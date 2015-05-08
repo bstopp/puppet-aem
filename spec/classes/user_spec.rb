@@ -7,9 +7,9 @@ describe 'adobe_experience_manager' do
       :operatingsystem          => 'CentOS',
       :operatingsystemrelease   => '7.0',
       :java_major_version       => '1.7',
-    } 
+    }
   end
-  let :params do 
+  let :params do
     {
       :jar      => '/opt/aem/cq-author-4502.jar',
       :version  => '6.0',

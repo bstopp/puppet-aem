@@ -44,6 +44,7 @@ class adobe_experience_manager (
   $jar                = undef,
   $version            = undef,
   $runmodes           = $adobe_experience_manager::params::runmodes,
+  $includesamples     = true,
   $port               = undef,
   $log_level          = undef,
   $jvm_opts           = undef,
@@ -82,13 +83,14 @@ class adobe_experience_manager (
   }
     
   class { 'adobe_experience_manager::install':
-    runmodes    => $runmodes,
-    port        => $port,
-    log_level   => $log_level,
-    jvm_opts    => $jvm_opts,
-    mongo       => $mongo,
-    require     => Class['adobe_experience_manager::config'],
-    notify      => Class['adobe_experience_manager::service'],
+    runmodes        => $runmodes,
+    includesamples  => $includesamples,
+    port            => $port,
+    log_level       => $log_level,
+    jvm_opts        => $jvm_opts,
+    mongo           => $mongo,
+    require         => Class['adobe_experience_manager::config'],
+    notify          => Class['adobe_experience_manager::service'],
   }
   
   class { 'adobe_experience_manager::service': }

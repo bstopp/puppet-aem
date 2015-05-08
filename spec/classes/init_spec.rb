@@ -33,7 +33,7 @@ describe 'adobe_experience_manager' do
   end
   
   context 'required jar and version and defaults for all other parameters' do
-    let :params do 
+    let :params do
       {
         :jar       => '/opt/aem/cq-author-4502.jar',
         :version   => '6.0',
