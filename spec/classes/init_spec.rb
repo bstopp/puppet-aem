@@ -57,8 +57,7 @@ describe 'adobe_experience_manager' do
       }
     end
     
-    it { is_expected.to contain_class('adobe_experience_manager').with({ :includesamples => false})
-    end
+    it { is_expected.to contain_class('adobe_experience_manager').with({ :includesamples => false}) }
   end
 
   context 'required jar and version and defaults for all other parameters' do
