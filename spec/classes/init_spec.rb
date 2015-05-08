@@ -7,7 +7,7 @@ describe 'adobe_experience_manager' do
       :operatingsystem          => 'CentOS',
       :operatingsystemrelease   => '7.0',
       :java_major_version       => '1.7',
-    } 
+    }
   end
   
   context 'with defaults for all parameters' do
@@ -19,7 +19,7 @@ describe 'adobe_experience_manager' do
   end
   
   context 'required jar but not version and defaults for all other parameters' do
-    let :params do 
+    let :params do
       {
         :jar       => '/opt/aem/cq-author-4502.jar',
       }
@@ -33,7 +33,7 @@ describe 'adobe_experience_manager' do
   end
 
   context 'defaults for all parameters; invalid includesamples' do
-    let :params do 
+    let :params do
       {
         :jar              => '/opt/aem/cq-author-4502.jar',
         :version          => '6.0',
@@ -49,7 +49,7 @@ describe 'adobe_experience_manager' do
   end
 
   context 'defaults for all parameters; includesamples false' do
-    let :params do 
+    let :params do
       {
         :jar              => '/opt/aem/cq-author-4502.jar',
         :version          => '6.0',
@@ -61,7 +61,7 @@ describe 'adobe_experience_manager' do
   end
 
   context 'defaults for all parameters; invalid port' do
-    let :params do 
+    let :params do
       {
         :jar              => '/opt/aem/cq-author-4502.jar',
         :version          => '6.0',
@@ -72,12 +72,12 @@ describe 'adobe_experience_manager' do
     it do
       expect {
         catalogue
-      }.to raise_error(Puppet::Error, /not an integer/)
+      }.to raise_error(Puppet::Error, /an Integer/)
     end
   end
 
   context 'defaults for all parameters; port 4502' do
-    let :params do 
+    let :params do
       {
         :jar              => '/opt/aem/cq-author-4502.jar',
         :version          => '6.0',
@@ -89,7 +89,7 @@ describe 'adobe_experience_manager' do
   end
 
   context 'defaults for all parameters; invalid log_level' do
-    let :params do 
+    let :params do
       {
         :jar              => '/opt/aem/cq-author-4502.jar',
         :version          => '6.0',
@@ -100,12 +100,12 @@ describe 'adobe_experience_manager' do
     it do
       expect {
         catalogue
-      }.to raise_error(Puppet::Error, /not an integer/)
+      }.to raise_error(Puppet::Error, /an Integer/)
     end
   end
 
   context 'defaults for all parameters; log_level 3' do
-    let :params do 
+    let :params do
       {
         :jar              => '/opt/aem/cq-author-4502.jar',
         :version          => '6.0',
@@ -117,7 +117,7 @@ describe 'adobe_experience_manager' do
   end
 
   context 'defaults for all parameters; invalid jvm_opts' do
-    let :params do 
+    let :params do
       {
         :jar              => '/opt/aem/cq-author-4502.jar',
         :version          => '6.0',
@@ -133,7 +133,7 @@ describe 'adobe_experience_manager' do
   end
 
   context 'defaults for all parameters; jvm_opts specified' do
-    let :params do 
+    let :params do
       {
         :jar              => '/opt/aem/cq-author-4502.jar',
         :version          => '6.0',
@@ -145,7 +145,7 @@ describe 'adobe_experience_manager' do
   end
 
   context 'defaults for all parameters; invalid mongo' do
-    let :params do 
+    let :params do
       {
         :jar              => '/opt/aem/cq-author-4502.jar',
         :version          => '6.0',
@@ -161,7 +161,7 @@ describe 'adobe_experience_manager' do
   end
 
   context 'defaults for all parameters; mongo true' do
-    let :params do 
+    let :params do
       {
         :jar              => '/opt/aem/cq-author-4502.jar',
         :version          => '6.0',
@@ -173,7 +173,7 @@ describe 'adobe_experience_manager' do
   end
 
     context 'defaults for all parameters; invalid jvm_opts' do
-    let :params do 
+    let :params do
       {
         :jar              => '/opt/aem/cq-author-4502.jar',
         :version          => '6.0',
@@ -189,7 +189,7 @@ describe 'adobe_experience_manager' do
   end
 
   context 'defaults for all parameters; jvm_opts specified' do
-    let :params do 
+    let :params do
       {
         :jar              => '/opt/aem/cq-author-4502.jar',
         :version          => '6.0',
@@ -197,7 +197,7 @@ describe 'adobe_experience_manager' do
       }
     end
     
-    it { is_expected.to contain_class('adobe_experience_manager').with({ :mongo_uri => 'mongodb://127.0.0.1:27017a'}) }
+    it { is_expected.to contain_class('adobe_experience_manager').with({ :mongo_uri => 'mongodb://127.0.0.1:27017'}) }
   end
 
 
@@ -227,5 +227,5 @@ describe 'adobe_experience_manager' do
     it { is_expected.to contain_class('adobe_experience_manager::service') }
 
   end
-  
+
 end
