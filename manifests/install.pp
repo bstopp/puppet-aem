@@ -4,12 +4,13 @@
 #
 
 class adobe_experience_manager::install (
-  $cabfile        = "installed.cab",
-  $runmodes       = undef,
-  $port           = undef,
-  $log_level      = undef,
-  $jvm_opts       = undef,
-  $mongo          = false,
+  $cabfile          = "installed.cab",
+  $runmodes         = undef,
+  $port             = undef,
+  $log_level        = undef,
+  $jvm_opts         = undef,
+  $mongo            = false,
+  $includesamples   = false,
 ) {
 
   if !$::java_major_version {
