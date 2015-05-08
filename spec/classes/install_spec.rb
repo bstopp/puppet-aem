@@ -136,7 +136,7 @@ describe 'adobe_experience_manager' do
     end
     it {
       is_expected.to contain_file('/opt/aem/install.sh').with_content(
-        /.*-Doak.mongo.uri=mongodb:\/\/127.0.0.1:27017.*/
+        /.*-Doak.mongo.uri=mongodb:\/\/127\.0\.0\.1:27017.*/
       )
     }
   end
