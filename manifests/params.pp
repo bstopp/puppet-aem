@@ -14,5 +14,5 @@ class adobe_experience_manager::params {
   $aem_home   = '/opt/aem'
   $user       = 'aem'
   $group      = 'aem'
-  $runmodes   = ['author']  
+  $runmodes   = ['author']
 }

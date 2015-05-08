@@ -26,7 +26,8 @@ class adobe_experience_manager::service {
 #  
 #  # Require base class, default parameters are defined therein
 #  if ! defined(Class['adobe_experience_manager::params']) {
-#    fail('The adobe_experience_manager::params class is required to use adobe_experience_manager resources.')
+#    fail('The adobe_experience_manager::params class is required 
+#         to use adobe_experience_manager resources.')
 #  }
 #
 #  validate_bool($service_enable)

@@ -17,11 +17,12 @@ class adobe_experience_manager::install(
   }
     
   if ($req_java_version == '.*') {
-    warning("Unrecognized/unspecified version of AEM ($adobe_experience_manager::version) specified.")
-    warning("Unable to validate Java requirement, proceeding with unknown results")
+    warning("Unrecognized/unspecified version of AEM (${adobe_experience_manager::version}) specified.")
+    warning('Unable to validate Java requirement, proceeding with unknown results')
   }
   
-  validate_re("${java_major_version}", "${req_java_version}", 'The installed version of Java is not supported for the specified version of AEM')
+  validate_re($::java_major_version, $req_java_version, 
+    'The installed version of Java is not supported for the specified version of AEM')
   
   file { $adobe_experience_manager::aem_home :
     ensure => directory,
