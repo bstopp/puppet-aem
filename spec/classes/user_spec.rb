@@ -18,19 +18,19 @@ describe 'adobe_experience_manager' do
 
   context 'default manage user/group' do
     it { is_expected.to contain_group('aem').with(
-      'ensure' => 'present',
+        'ensure' => 'present',
       )
     }
     it { is_expected.to contain_user('aem').with(
-      'ensure'  => 'present',
-      'gid'     => 'aem',
+        'ensure'  => 'present',
+        'gid'     => 'aem',
       )
     }
 
     it { is_expected.to contain_file('/opt/aem').with(
-      'ensure' => 'directory',
-      'owner' => 'aem',
-      'group' => 'aem',
+        'ensure' => 'directory',
+        'owner' => 'aem',
+        'group' => 'aem',
       )
     }
   end

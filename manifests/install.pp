@@ -3,8 +3,8 @@
 # This class installs AEM into the configured directory.
 #
 
-class adobe_experience_manager::install(
-  $cabfile        = "${adobe_experience_manageer::aem_home}/installed.cab"
+class adobe_experience_manager::install (
+  $cabfile        = "installed.cab"
 ) {
 
   if !$::java_major_version {
@@ -30,4 +30,15 @@ class adobe_experience_manager::install(
     group  => $adobe_experience_manager::group,
   }
 
+  file { 'install.sh' :
+    path    => "${adobe_experience_manager::aem_home}/install.sh",
+    ensure  => file,
+    backup  => false,
+    owner   => $adobe_experience_manager::user,
+    group   => $adobe_experience_manager::group,
+    mode    => '0700',
+    content => template('install.sh.erb'),
+    
+  }
+  
 }

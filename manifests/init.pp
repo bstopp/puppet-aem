@@ -44,6 +44,10 @@ class adobe_experience_manager (
   $jar                = undef,
   $version            = undef,
   $runmodes           = $adobe_experience_manager::params::runmodes,
+  $port               = undef,
+  $log_level          = undef,
+  $jvm_opts           = undef,
+  $mongo              = false,
 
 ) inherits ::adobe_experience_manager::params {
   

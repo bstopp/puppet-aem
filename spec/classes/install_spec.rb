@@ -69,6 +69,18 @@ describe 'adobe_experience_manager' do
   end
   
   context 'AEM 6.0/Java 1.7 Supported' do
-    it 
+    it { 
+      is_expected.to contain_class('adobe_experience_manager::install').with(
+        :cabfile  => "installed.cab",
+      )
+    }
+  end
   
+  context 'install.sh created' do
+    it {
+      is_expected.to contain_file('/opt/aem/install.sh').with_content(
+        /java -jar \/opt\/aem\/cq-author-4502.jar -nobrowser -b \/opt\/aem -r author > \/dev\/null 2>&1 &/
+      )
+    }
+  end
 end
