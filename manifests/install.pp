@@ -4,7 +4,7 @@
 #
 
 class adobe_experience_manager::install (
-  $cabfile          = "installed.cab",
+  $cabfile          = 'installed.cab',
   $runmodes         = undef,
   $includesamples   = false,
   $port             = undef,
@@ -24,13 +24,15 @@ class adobe_experience_manager::install (
   }
     
   if ($req_java_version == '.*') {
-    warning("Unrecognized/unspecified version of AEM (${adobe_experience_manager::version}) specified.")
-    warning('Unable to validate Java requirement, proceeding with unknown results')
+    warning("Unrecognized/unspecified version of AEM ' +
+      '(${adobe_experience_manager::version}) specified.")
+    warning('Unable to validate Java requirement, ' +
+      'proceeding with unknown results')
   }
-  
-  validate_re($::java_major_version, $req_java_version, 
+
+  validate_re($::java_major_version, $req_java_version,
     'The installed version of Java is not supported for the specified version of AEM')
-  
+
   file { $adobe_experience_manager::aem_home :
     ensure => directory,
     owner  => $adobe_experience_manager::user,
@@ -38,14 +40,24 @@ class adobe_experience_manager::install (
   }
 
   file { "${adobe_experience_manager::aem_home}/install.sh" :
-    path    => "${adobe_experience_manager::aem_home}/install.sh",
     ensure  => file,
+    path    => "${adobe_experience_manager::aem_home}/install.sh",
     backup  => false,
     owner   => $adobe_experience_manager::user,
     group   => $adobe_experience_manager::group,
     mode    => '0700',
     content => template('adobe_experience_manager/install.sh.erb'),
-    
   }
-  
+
+  file { "${adobe_experience_manager::aem_home}/monitor_install.sh" :
+    ensure    => file,
+    path      => "${adobe_experience_manager::aem_home}/monitor_install.sh",
+    backup    => false,
+    owner     => $adobe_experience_manager::user,
+    group     => $adobe_experience_manager::group,
+    mode      => '0700',
+    content   => template('adobe_experience_manager/monitor_install.sh.erb'),
+  }
+
+
 }

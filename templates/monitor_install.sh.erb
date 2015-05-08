@@ -1,0 +1,12 @@
+#!/bin/sh
+
+<%-
+
+  tail_cmd = "tail -n +0 -f " + @aem_home + "/crx-quickstart/logs/error.log | { sed \"/org.apache.sling.startupfilter.disabler BundleEvent STARTED/ q\"; }"
+
+-%>
+<%= tail_cmd %>
+
+<%- cab_cmd = "touch " + @aem_home + "/" + @cabfile -%>
+
+<%= cab_cmd %>
