@@ -72,7 +72,7 @@ describe 'adobe_experience_manager' do
     it { 
       is_expected.to contain_class('adobe_experience_manager::install').with(
         :cabfile  => "installed.cab",
-        :runmoes  => ['author'],
+        :runmodes  => ['author'],
         :mongo    => false,
       )
     }

@@ -1,33 +1,34 @@
 #!/bin/sh
 
-<%- runmodeopts = "" -%>
+<%- runmodeopts = String.new -%>
 
-<%- @runmodes.each do |r| -%>
-  <%- runmodeopts = @runmodeopts + "," + r -%>
+
+<%- if !@runmodes.nil? && !@runmodes.empty? -%>
+  <%- runmodeopts = runmodes * "," -%>
 <%- end -%>
 
 <%- if @mongo -%>
-  <%- runmodeopts = @runmodeopts + ",crx3,crx3mongo" -%>
+  <%- runmodeopts = runmodeopts + ",crx3,crx3mongo" -%>
 <%- end -%>
 
 <%- cmd = "java " -%>
 
-<%- if !@jvm_opts.empty? -%>
-  <% cmd = @cmd + " " + @jvm_opts -%>
+<%- if !@jvm_opts.nil? && !@jvm_opts.empty? -%>
+  <% cmd = cmd + " " + @jvm_opts -%>
 <%- end -%>
   
 <%- cmd = cmd + " -jar " + @jar -%>
   
-<%- if !@port.empty? -%>
+<%- if !@port.nil? && !@port.empty? -%>
   <% cmd = cmd + " -p " + @port -%>
 <%- end -%> 
 
-<% cmd = cmd + " -nobrowser -b " + @aem_home + " -r " + @runmodeopts %> 
+<% cmd = cmd + " -nobrowser -b " + @aem_home %><%#+ " -r " + @runmodeopts %> 
 
-<%- if !@ll.empty? -%>
-  <% cmd = @cmd + " -ll " + @log_level %>
+<%- if !@log_level.nil? && !@log_level.empty? -%>
+  <% cmd = cmd + " -ll " + @log_level %>
 <%- end -%>
 
-<%- cmd = @cmd + " > /dev/null 2>&1 & " -%>
+<%- cmd = cmd + " > /dev/null 2>&1 & " -%>
 
-<%= @cmd %>
+<%= cmd %>
