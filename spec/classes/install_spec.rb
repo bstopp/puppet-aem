@@ -90,7 +90,7 @@ describe 'adobe_experience_manager' do
             :backup   => false,
           }
         ).with_content(
-          /.*java -jar \/opt\/aem\/cq-author-4502.jar -nobrowser -b \/opt\/aem -r author > \/dev\/null 2>&1 &.*/
+          /.*java\s+-jar\s+\/opt\/aem\/cq-author-4502.jar\s+-nobrowser\s+-b\s+\/opt\/aem\s+-r\s+author\s+>\s+\/dev\/null\s+2>&1\s+&.*/
         )
     }
   end
