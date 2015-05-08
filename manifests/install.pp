@@ -35,7 +35,7 @@ class adobe_experience_manager::install (
     group  => $adobe_experience_manager::group,
   }
 
-  file { 'install.sh' :
+  file { "${adobe_experience_manager::aem_home}/install.sh" :
     path    => "${adobe_experience_manager::aem_home}/install.sh",
     ensure  => file,
     backup  => false,

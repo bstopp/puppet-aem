@@ -80,9 +80,18 @@ describe 'adobe_experience_manager' do
   
   context 'install.sh created' do
     it {
-      is_expected.to contain_file('/opt/aem/install.sh').with_content(
-        /java -jar \/opt\/aem\/cq-author-4502.jar -nobrowser -b \/opt\/aem -r author > \/dev\/null 2>&1 &/
-      )
+      is_expected.to contain_file('/opt/aem/install.sh').with(
+          {
+            :path     => '/opt/aem/install.sh',
+            :ensure   => 'file',
+            :owner    => 'aem',
+            :group    => 'aem',
+            :mode     => '0700',
+            :backup   => false,
+          }
+        ).with_content(
+          /.*java -jar \/opt\/aem\/cq-author-4502.jar -nobrowser -b \/opt\/aem -r author > \/dev\/null 2>&1 &.*/
+        )
     }
   end
 end
