@@ -4,7 +4,12 @@
 #
 
 class adobe_experience_manager::install (
-  $cabfile        = "installed.cab"
+  $cabfile        = "installed.cab",
+  $runmodes       = undef,
+  $port           = undef,
+  $log_level      = undef,
+  $jvm_opts       = undef,
+  $mongo          = false,
 ) {
 
   if !$::java_major_version {
@@ -37,7 +42,7 @@ class adobe_experience_manager::install (
     owner   => $adobe_experience_manager::user,
     group   => $adobe_experience_manager::group,
     mode    => '0700',
-    content => template('install.sh.erb'),
+    content => template('adobe_experience_manager/install.sh.erb'),
     
   }
   

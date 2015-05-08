@@ -2,7 +2,7 @@
 
 <%- runmodeopts = "" -%>
 
-<%- @runmode.each do |r| -%>
+<%- @runmodes.each do |r| -%>
   <%- runmodeopts = @runmodeopts + "," + r -%>
 <%- end -%>
 
@@ -16,7 +16,13 @@
   <% cmd = @cmd + " " + @jvm_opts -%>
 <%- end -%>
   
-<%- cmd = cmd + " -jar " + @jar + " -nobrowser -b " + @aem_home " -r " + @runmodeopts %> 
+<%- cmd = cmd + " -jar " + @jar -%>
+  
+<%- if !@port.empty? -%>
+  <% cmd = cmd + " -p " + @port -%>
+<%- end -%> 
+
+<% cmd = cmd + " -nobrowser -b " + @aem_home + " -r " + @runmodeopts %> 
 
 <%- if !@ll.empty? -%>
   <% cmd = @cmd + " -ll " + @log_level %>
