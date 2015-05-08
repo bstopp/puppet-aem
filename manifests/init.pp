@@ -61,8 +61,15 @@ class adobe_experience_manager (
   validate_string($version)
   validate_array($runmodes)
   validate_bool($includesamples)
-  validate_integer($port)
-  validate_integer($log_level)
+  
+  if $port {
+    validate_integer($port)
+  }
+
+  if $log_level {
+    validate_integer($log_level)
+  }
+  
   validate_string($jvm_opts)
   validate_bool($mongo)
   validate_string($mongo_uri)

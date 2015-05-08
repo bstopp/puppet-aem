@@ -31,7 +31,36 @@ describe 'adobe_experience_manager' do
       }.to raise_error(Puppet::Error, /Version of AEM is not defined./)
     end
   end
-  
+
+  context 'defaults for all parameters; invalid includesamples' do
+    let :params do 
+      {
+        :jar              => '/opt/aem/cq-author-4502.jar',
+        :version          => '6.0',
+        :includesamples   => 'foo',
+      }
+    end
+    
+    it do
+      expect {
+        catalogue
+      }.to raise_error(Puppet::Error, /not a boolean/)
+    end
+  end
+
+  context 'defaults for all parameters; includesamples false' do
+    let :params do 
+      {
+        :jar              => '/opt/aem/cq-author-4502.jar',
+        :version          => '6.0',
+        :includesamples   => false,
+      }
+    end
+    
+    it { is_expected.to contain_class('adobe_experience_manager').with({ :includesamples => false})
+    end
+  end
+
   context 'required jar and version and defaults for all other parameters' do
     let :params do
       {
@@ -41,11 +70,13 @@ describe 'adobe_experience_manager' do
     end
     
     it { is_expected.to contain_class('adobe_experience_manager').with(
-        'aem_home'  => '/opt/aem',
-        'jar'       => '/opt/aem/cq-author-4502.jar',
-        'user'      => 'aem',
-        'group'     => 'aem',
-        'runmodes'  => ['author'],
+        :aem_home           => '/opt/aem',
+        :jar                => '/opt/aem/cq-author-4502.jar',
+        :user               => 'aem',
+        :group              => 'aem',
+        :runmodes           => ['author'],
+        :includesamples     => true,
+        :mongo              => false,
       )
     }
     it { is_expected.to contain_class('adobe_experience_manager::user') }
