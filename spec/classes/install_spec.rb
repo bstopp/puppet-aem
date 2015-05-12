@@ -206,11 +206,12 @@ describe 'adobe_experience_manager' do
     let :params do
     {
       :jar              => '/opt/aem/cq-author-4502.jar',
+      :version          => '6.0',
     }
     end
     it {
       is_expected.to contain_file('/opt/aem/monitor_install.sh').with_content(
-        /.*tail.*-f \/opt\/aem\/crx-quickstart\/logs\/error.log.*\/opt\/aem\/installed.cab.*/
+        /.*tail.*\s\/opt\/aem\/crx-quickstart\/logs\/error\.log.*\/opt\/aem\/installed\.cab.*/m
       )
     }
   end
