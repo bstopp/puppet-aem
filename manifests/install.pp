@@ -59,5 +59,11 @@ class adobe_experience_manager::install (
     content   => template('adobe_experience_manager/monitor_install.sh.erb'),
   }
 
-
+  exec { "${adobe_experience_manager::aem_home}/install.sh" :
+    command       => "${adobe_experience_manager::aem_home}/install.sh",
+    creates       => "${adobe_experience_manager::aem_home}/crx-quickstart",
+    cwd           => "${adobe_experience_manager::aem_home}",
+    group         => $adobe_experience_manager::group,
+    user          => $adobe_experience_manager::user,
+  }
 }
