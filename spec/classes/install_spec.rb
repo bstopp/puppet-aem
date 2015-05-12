@@ -216,7 +216,7 @@ describe 'adobe_experience_manager' do
     }
   end
 
-  conext 'run install.sh' do
+  context 'run install.sh' do
     it {
       is_expected.to contain_exec('/opt/aem/install.sh').with(
         :command        => '/opt/aem/install.sh',
