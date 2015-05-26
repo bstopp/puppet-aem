@@ -8,3 +8,4 @@ coverage/
 .idea/
 *.iml
 files/aem-quickstart-6.0.jar
+.project
