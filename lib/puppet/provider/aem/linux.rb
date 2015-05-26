@@ -1,8 +1,9 @@
-require 'puppet/provider/aem'
+#require 'puppet/provider/aem'
 
 
-Puppet::Type.type(:aem).provide :linux, :parent => Puppet::Provider::AEM do
-  desc "Parent AEM provider for Linux systems"
+Puppet::Type.type(:aem).provide(:linux) do #, :parent => Puppet::Provider::AEM do
+
+  commands :java => 'java'
 
   def install
     Puppet.debug("Install called")
