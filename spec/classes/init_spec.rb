@@ -222,8 +222,6 @@ describe 'adobe_experience_manager' do
     it { is_expected.to contain_class('adobe_experience_manager::user') }
     it { is_expected.to contain_class('adobe_experience_manager::config').that_requires('adobe_experience_manager::user') }
     it { is_expected.to contain_class('adobe_experience_manager::config').that_notifies('adobe_experience_manager::service') }
-    it { is_expected.to contain_class('adobe_experience_manager::install').that_requires('adobe_experience_manager::config') }
-    it { is_expected.to contain_class('adobe_experience_manager::install').that_notifies('adobe_experience_manager::service') }
     it { is_expected.to contain_class('adobe_experience_manager::service') }
 
   end
