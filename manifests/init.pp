@@ -94,7 +94,18 @@ class adobe_experience_manager (
     require => Class['adobe_experience_manager::user'],
     notify  => Class['adobe_experience_manager::service'],
   }
-
+    
+  class { 'adobe_experience_manager::install':
+    runmodes          => $runmodes,
+    includesamples    => $includesamples,
+    port              => $port,
+    log_level         => $log_level,
+    jvm_opts          => $jvm_opts,
+    mongo             => $mongo,
+    mongo_uri         => $mongo_uri,
+    require           => Class['adobe_experience_manager::config'],
+    notify            => Class['adobe_experience_manager::service'],
+  }
 
   class { 'adobe_experience_manager::service': }
 

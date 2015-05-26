@@ -37,14 +37,11 @@ Puppet::Type.newtype(:aem) do
   newproperty(:home) do
     desc "The home directory of the AEM installation (defaults to '/opt/aem')"
 
-    validate do |value|
-      unless Puppet::Util.absolute_path?(value)
-        fail Puppet::Error, "AEM Home must be fully qualified, not '#{value}'"
-      end
-    end
-
-    defaultto '/opt/aem'
-
+#    validate do |value|
+#      provider.validate_home(value)
+#    end
+#
+#    defaultto '/opt/aem'
   end
   
 #  newparam(:include_sample_content) do
