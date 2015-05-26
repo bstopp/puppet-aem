@@ -21,7 +21,19 @@ Puppet::Type.newtype(:aem) do
     end
     
   end
-  
+
+  newparam(:name, :namevar => true) do
+    desc "The name of the AEM Instance"
+    
+    munge do |value|
+      value.downcase
+    end
+
+    def insync?(is)
+      is.downcase == should.downcase
+    end
+  end
+
   newproperty(:home) do
     desc "The home directory of the AEM installation (defaults to '/opt/aem')"
 
