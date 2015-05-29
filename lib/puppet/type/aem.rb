@@ -1,3 +1,4 @@
+require 'pathname'
 
 Puppet::Type.newtype(:aem) do
 
@@ -11,19 +12,19 @@ Puppet::Type.newtype(:aem) do
     newvalue(:present) do
       provider.install
     end
-    
+
     newvalue(:absent) do
       provider.uninstall
     end
-    
+
     newvalue(:purged)  do
       provider.purge
     end
-    
+
   end
 
   newparam(:name, :namevar => true) do
-    desc "The name of the AEM Instance"
+    desc "The name of the AEM Instance."
     
     munge do |value|
       value.downcase
@@ -34,16 +35,27 @@ Puppet::Type.newtype(:aem) do
     end
   end
 
+  newproperty(:version) do
+    desc "The version of AEM installed."
+    validate do |value|
+      fail("Invalid version #{value}") unless value =~ /^\d+\.\d+(\.\d+)?$/
+    end
+  end
+
   newproperty(:home) do
-    desc "The home directory of the AEM installation (defaults to '/opt/aem')"
+    desc "The home directory of the AEM installation (defaults to 'C:/aem' or '/opt/aem')"
+
+    defval = Puppet::Util::Platform.windows? ? 'C/aem' : '/opt/aem'
+    
+    defaultto do
+      Puppet::Util::Platform.windows? ? 'C:/aem' : '/opt/aem'
+    end
 
     validate do |value|
-      unless Puppet::Util.absolute_path?(value)
+      unless Pathname.new(value).absolute?
         fail Puppet::Error, "AEM Home must be fully qualified, not '#{value}'"
       end
     end
-
-    defaultto '/opt/aem'
 
   end
   
@@ -59,7 +71,7 @@ Puppet::Type.newtype(:aem) do
 #    newvalues(/^\d+$/)
 #  end
   
-  # TODO Add log level property 
+  # TODO Add log level property
   # TODO Add JVM property
   # TODO Add Mono properties
   # TODO Add Debug Properties

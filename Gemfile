@@ -1,8 +1,20 @@
-source 'https://rubygems.org'
+source ENV['GEM_SOURCE'] || 'https://rubygems.org'
 
-puppetversion = ENV.key?('PUPPET_VERSION') ? "= #{ENV['PUPPET_VERSION']}" : ['>= 3.3']
-gem 'plist', '>= 3.0.0'
-gem 'puppet', puppetversion
-gem 'puppetlabs_spec_helper', '>= 0.1.0'
-gem 'puppet-lint', '>= 0.3.2'
-gem 'facter', '>= 1.7.0'
+group :development, :test do
+  gem 'rake',                     :require => false
+  gem 'rspec-puppet',             :require => false
+  gem 'puppetlabs_spec_helper',   :require => false
+  gem 'puppet-lint',              :require => false
+end
+
+if facterversion = EVN['FACTER_GEM_VERSION']
+  gem 'facter', facterversion, :require => false
+else
+  gem 'facter', :require => false
+end
+
+if puppetversoin = ENV['PUPPET_VERSION']
+  gem 'puppet', puppetversion, :require => false
+else
+  gem 'puppet', :require => false
+end

@@ -26,13 +26,6 @@ describe 'adobe_experience_manager' do
         'gid'     => 'aem',
       )
     }
-
-    it { is_expected.to contain_file('/opt/aem').with(
-        'ensure' => 'directory',
-        'owner' => 'aem',
-        'group' => 'aem',
-      )
-    }
   end
   
   context 'not managing user' do
