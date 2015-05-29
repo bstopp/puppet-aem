@@ -52,7 +52,7 @@ Puppet::Type.newtype(:aem) do
     end
 
     validate do |value|
-      unless Pathname.new(value).absolute?
+      unless Puppet::Util.absolute_path?(value)
         fail Puppet::Error, "AEM Home must be fully qualified, not '#{value}'"
       end
     end
