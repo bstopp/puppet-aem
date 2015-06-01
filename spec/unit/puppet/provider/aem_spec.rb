@@ -34,7 +34,7 @@ FIND_OUTPUT
           :ensure   => 'present',
         }
       )
-      expect(installed.last.properties.to eq(
+      expect(installed.last.properties).to eq(
         {
           :home     => '/opt/aem/publish',
           :version  => '6.0.0',
@@ -44,6 +44,6 @@ FIND_OUTPUT
 
     end
   end
-  
+
 end
 
