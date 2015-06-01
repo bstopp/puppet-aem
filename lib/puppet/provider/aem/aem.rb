@@ -17,7 +17,7 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
     installs = []
 
     begin
-      execpipe("#{command(:find)} / -name #{launchpad_name} -type f") do |process|
+      execpipe("#{command(:find)} / -name #{self::LAUNCHPAD_NAME} -type f") do |process|
         process.each_line do |line|
           hash = found_to_hash(line)
           installs << new(hash) unless hash.empty?
@@ -39,18 +39,21 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
     end
   end
 
-def self.line_to_hash(line)
-  line.strip!
-  hash = {}
-  
-  if match = self::INSTALL_REGEX.match(line)
-    self::INSTALL_FIELDS.zip(match.captures) { |f, v| hash[f] = v }
-    hash[:ensure] = :present
-  else
-    Puppet.debug("Failed to match install line #{line}")
+  private
+
+  def self.found_to_hash(line)
+    line.strip!
+    hash = {}
+
+    if match = self::INSTALL_REGEX.match(line)
+      self::INSTALL_FIELDS.zip(match.captures) { |f, v| hash[f] = v }
+      hash[:provider] = self.name
+      hash[:ensure] = :present
+    else
+      Puppet.debug("Failed to match install line #{line}")
+    end
+
+    return hash
   end
-  
-  return hash
-end
 
 end
