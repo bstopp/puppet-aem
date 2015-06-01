@@ -8,20 +8,9 @@ Puppet::Type.newtype(:aem) do
       - Manging licensing information
       - Cycling the system after installation to ensure final state."
 
-  ensurable do
-    newvalue(:present) do
-      provider.install
-    end
+  ensurable
 
-    newvalue(:absent) do
-      provider.uninstall
-    end
-
-    newvalue(:purged)  do
-      provider.purge
-    end
-
-  end
+  #TODO Consider adding features.
 
   newparam(:name, :namevar => true) do
     desc "The name of the AEM Instance."
@@ -35,18 +24,33 @@ Puppet::Type.newtype(:aem) do
     end
   end
 
+  newparam(:source) do
+    desc "The AEM installer jar to use for installation."
+
+    validate do |value|
+      unless File.exists?(value)
+        fail("AEM installer jar (#{value}) not found.")
+      end
+    end
+  end
+
   newproperty(:version) do
     desc "The version of AEM installed."
-    validate do |value|
-      fail("Invalid version #{value}") unless value =~ /^\d+\.\d+(\.\d+)?$/
+    newvalues(/^\d+\.\d+(\.\d+)?$/)
+
+    munge do |value|
+      "#{value}"
     end
+
+    def insync?(is)
+      "#{is}" == "#{should}"
+    end
+
   end
 
   newproperty(:home) do
     desc "The home directory of the AEM installation (defaults to 'C:/aem' or '/opt/aem')"
 
-    defval = Puppet::Util::Platform.windows? ? 'C/aem' : '/opt/aem'
-    
     defaultto do
       Puppet::Util::Platform.windows? ? 'C:/aem' : '/opt/aem'
     end
@@ -58,8 +62,17 @@ Puppet::Type.newtype(:aem) do
     end
 
   end
-  
-#  newparam(:include_sample_content) do
+
+  validate do
+    if self[:ensure] == :present and self[:source].nil?
+      fail('Source jar is required when ensure is present')
+    end
+    if self[:ensure] == :present and self[:version].nil?
+      fail('Version is required when ensure is present')
+    end
+  end
+
+    #  newparam(:include_sample_content) do
 #    desc "Specify whether or not to include sample content"
 #    defaultto :true
 #    newvalues(:true, :false)
