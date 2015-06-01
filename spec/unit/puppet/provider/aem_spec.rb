@@ -10,8 +10,9 @@ describe provider_class do
 
   let (:installs) do
     <<-FIND_OUTPUT
+/opt/aem/crx-quickstart/app/cq-quickstart-5.6.1-standalone.jar
 /opt/aem/author/crx-quickstart/app/cq-quickstart-6.0.0-standalone.jar
-/opt/aem/publish/crx-quickstart/app/cq-quickstart-6.0.0-standalone.jar
+/opt/aem/publish/crx-quickstart/app/cq-quickstart-6.1.0-standalone.jar
 FIND_OUTPUT
   end
 
@@ -29,16 +30,26 @@ FIND_OUTPUT
 
       expect(installed[0].properties).to eq(
         {
+          :home     => '/opt/aem',
+          :version  => '5.6.1',
+          :provider => :aem,
+          :ensure   => :present,
+        }
+      )
+      expect(installed[1].properties).to eq(
+        {
           :home     => '/opt/aem/author',
           :version  => '6.0.0',
-          :ensure   => 'present',
+          :provider => :aem,
+          :ensure   => :present,
         }
       )
       expect(installed.last.properties).to eq(
         {
           :home     => '/opt/aem/publish',
-          :version  => '6.0.0',
-          :ensure   => 'present',
+          :version  => '6.1.0',
+          :provider => :aem,
+          :ensure   => :present,
         }
       )
 
