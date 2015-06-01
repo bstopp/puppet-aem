@@ -23,7 +23,7 @@ FIND_OUTPUT
   describe 'self.instances' do
     
     it 'returns an array of installs' do
-      Puppet::Util::Execution.expects(:execpipe).with("/bin/find / -name #{install_name} -type f").yeilds(installs)
+      Puppet::Util::Execution.expects(:execpipe).with("/bin/find / -name #{install_name} -type f").yields(installs)
 
       installed = provider_class.instances
 
