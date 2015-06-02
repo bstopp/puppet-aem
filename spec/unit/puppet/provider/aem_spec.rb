@@ -30,7 +30,7 @@ FIND_OUTPUT
 
       expect(installed[0].properties).to eq(
         {
-          :name     => :'/opt/aem',
+          :name     => '/opt/aem',
           :home     => '/opt/aem',
           :version  => '5.6.1',
           :ensure   => :present,
