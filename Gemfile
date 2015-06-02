@@ -7,7 +7,7 @@ group :development, :test do
   gem 'puppet-lint',              :require => false
 end
 
-if facterversion = EVN['FACTER_GEM_VERSION']
+if facterversion = ENV['FACTER_GEM_VERSION']
   gem 'facter', facterversion, :require => false
 else
   gem 'facter', :require => false
