@@ -30,25 +30,25 @@ FIND_OUTPUT
 
       expect(installed[0].properties).to eq(
         {
+          :name     => :'/opt/aem',
           :home     => '/opt/aem',
           :version  => '5.6.1',
-          :provider => :aem,
           :ensure   => :present,
         }
       )
       expect(installed[1].properties).to eq(
         {
+          :name     => :'/opt/aem/author',
           :home     => '/opt/aem/author',
           :version  => '6.0.0',
-          :provider => :aem,
           :ensure   => :present,
         }
       )
       expect(installed.last.properties).to eq(
         {
+          :name     => '/opt/aem/publish',
           :home     => '/opt/aem/publish',
           :version  => '6.1.0',
-          :provider => :aem,
           :ensure   => :present,
         }
       )
