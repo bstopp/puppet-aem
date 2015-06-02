@@ -26,12 +26,6 @@ Puppet::Type.newtype(:aem) do
 
   newparam(:source) do
     desc "The AEM installer jar to use for installation."
-
-    validate do |value|
-      unless File.exists?(value)
-        fail("AEM installer jar (#{value}) not found.")
-      end
-    end
   end
 
   newproperty(:version) do
@@ -61,6 +55,16 @@ Puppet::Type.newtype(:aem) do
       end
     end
 
+  end
+
+  autorequire(:file) do
+    autos = []
+
+    if source = self[:source] and absolute_path?(source)
+      autos << source
+    end
+
+    autos
   end
 
   validate do
