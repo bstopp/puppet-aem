@@ -1,18 +1,21 @@
 #!/usr/bin/evn ruby
 
+#require 'puppet'
 require 'spec_helper'
+#require 'puppet_spec/compiler'
+#require 'puppet/parser/functions'
 
 provider_class = Puppet::Type.type(:aem).provider(:aem)
 
-describe provider_class do
+describe Puppet::Type.type(:aem).provider(:aem) do
 
-  let (:install_name) { 'cq-quickstart-*-standalone.jar' }
+  let (:install_name) { 'cq-quickstart-*-standalone*.jar' }
 
   let (:installs) do
     <<-FIND_OUTPUT
 /opt/aem/crx-quickstart/app/cq-quickstart-5.6.1-standalone.jar
 /opt/aem/author/crx-quickstart/app/cq-quickstart-6.0.0-standalone.jar
-/opt/aem/publish/crx-quickstart/app/cq-quickstart-6.1.0-standalone.jar
+/opt/aem/publish/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar
 FIND_OUTPUT
   end
 
@@ -22,7 +25,11 @@ FIND_OUTPUT
   end
 
   describe 'self.instances' do
-    
+
+    it 'should have an instances method' do
+      expect(described_class).to respond_to :instances
+    end
+
     it 'returns an array of installs' do
       Puppet::Util::Execution.expects(:execpipe).with("/bin/find / -name #{install_name} -type f").yields(installs)
 
@@ -54,7 +61,34 @@ FIND_OUTPUT
       )
 
     end
+
   end
 
+  describe 'self.prefetch' do
+
+    before :each do
+      #Puppet::Parser::Functions.function(:create_resources)
+    end
+
+    it 'should have a prefetch  method' do
+      expect(described_class).to respond_to :prefetch
+    end
+    
+    it 'should populate resources with provider' do
+      Puppet::Util::Execution.expects(:execpipe).with("/bin/find / -name #{install_name} -type f").yields(installs)
+
+      #let(:command) do
+      #  <<-END_CATALOG
+#create_resoruces(aem, {'author'=> {:home=> '/opt/aem/author',:version  => '6.0.0',:ensure=> :present}}
+#END_CATALOG
+      #end
+
+      aem = { 'author' => {:home=> '/opt/aem/author',:version  => '6.0.0',:ensure=> :present}}
+      #catalog = compile_to_catalogcreate_resources(:aem, :command)
+      res = Puppet::Parser::Function.create_resources(aem, aem)
+      expect(catalog.resource(:ame, 'author')[:ensure]).to eq(:present)
+    end
+  end
+  
 end
 

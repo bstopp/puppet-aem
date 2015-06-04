@@ -3,14 +3,9 @@ class Puppet::Provider::AEM < Puppet::Provider
   def self.prefetch(resources)
     resources.keys.each do |name|
       if provider = instances.find{ |prov| prov.home == resources[name].home }
-        provider.name = name
         resources[name].provider = provider
       end
     end
-  end
-
-  def flush
-    @property_hash.clear
   end
 
   def properties
@@ -21,6 +16,11 @@ class Puppet::Provider::AEM < Puppet::Provider
   end
 
   def exists?
-    @property_hash[:ensure] == :present
+
+    instances.each do |inst|
+      return true if inst[:home] == @property_hash[:home]
+    end
+
+    return false;
   end
 end

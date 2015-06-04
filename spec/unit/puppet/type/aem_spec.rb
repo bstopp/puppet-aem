@@ -46,7 +46,7 @@ describe Puppet::Type.type(:aem) do
 
     it 'should require source if ensure present' do
       expect {
-        Puppet::Type.type(:aem).new({:name => 'author',  :ensure => :present })
+        Puppet::Type.type(:aem).new({ :name => 'author', :ensure => :present })
       }.to raise_error(Puppet::Error, /Source jar is required/)
     end
 
@@ -66,12 +66,12 @@ describe Puppet::Type.type(:aem) do
 
   context 'version' do
 
-    it 'should require version if ensure is present' do
-      expect {
-        File.stubs(:exists?).with(:file).returns(:true)
-        Puppet::Type.type(:aem).new({:name => 'author', :ensure => :present, :source => :source})
-      }.to raise_error(Puppet::Error, /Version is required/)
-    end
+    #it 'should require version if ensure is present' do
+    #  expect {
+    #    File.stubs(:exists?).with(:file).returns(:true)
+    #    Puppet::Type.type(:aem).new({:name => 'author', :ensure => :present, :source => :source})
+    #  }.to raise_error(Puppet::Error, /Version is required/)
+    #end
 
     it 'should accept a version', :need_aem => true do
       expect(@aem[:version]).to eq('6.1')
@@ -82,7 +82,7 @@ describe Puppet::Type.type(:aem) do
       expect(@aem[:version]).to eq('5.6.1')
     end
 
-    it 'should error if no minor value', :need_aem => true do
+    it 'should require minor version', :need_aem => true do
       expect{ @aem[:version] = '6' }.to raise_error(Puppet::Error)
     end
 
@@ -91,14 +91,14 @@ describe Puppet::Type.type(:aem) do
       expect(@aem[:version]).to eq('6.1')
     end
 
-    it 'should error if more than bug version', :need_aem => true do
+    it 'should allow no more than more than bug version', :need_aem => true do
       expect{ @aem[:version] = '5.6.1.0' }.to raise_error(Puppet::Error)
     end
   end #End version context
 
   context 'home parameter' do
 
-    it 'should have default value', :need_aem => true do
+    it 'should have default linux value', :need_aem => true do
       expect(@aem[:home]).to eq('/opt/aem')
     end
 
@@ -112,7 +112,7 @@ describe Puppet::Type.type(:aem) do
     end
 
 
-    it 'should have default value', :need_aem => true, :windows => true do
+    it 'should have default windows value', :need_aem => true, :windows => true do
       expect(@aem[:home]).to eq('C:/aem')
     end
 

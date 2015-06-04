@@ -9,8 +9,8 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
   commands :java => 'java'
 
   
-  self::LAUNCHPAD_NAME  = 'cq-quickstart-*-standalone.jar'
-  self::INSTALL_REGEX   = %r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.jar$}
+  self::LAUNCHPAD_NAME  = 'cq-quickstart-*-standalone*.jar'
+  self::INSTALL_REGEX   = %r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar$}
   self::INSTALL_FIELDS  = [:home, :version]
 
   def self.instances
@@ -20,7 +20,6 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
       execpipe("#{command(:find)} / -name #{self::LAUNCHPAD_NAME} -type f") do |process|
         process.each_line do |line|
           hash = found_to_hash(line)
-          hash[:ensure] = :present
           installs << new(hash) unless hash.empty?
         end
       end
@@ -31,6 +30,7 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
     installs
   end
 
+
   private
 
   def self.found_to_hash(line)
@@ -40,6 +40,7 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
     if match = self::INSTALL_REGEX.match(line)
       self::INSTALL_FIELDS.zip(match.captures) { |f, v| hash[f] = v }
       hash[:name] = hash[:home]
+      hash[:ensure] = :present
     else
       Puppet.debug("Failed to match install line #{line}")
     end

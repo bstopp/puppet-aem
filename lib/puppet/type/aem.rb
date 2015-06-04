@@ -36,6 +36,7 @@ Puppet::Type.newtype(:aem) do
       "#{value}"
     end
 
+    # Figure out how to not set this unless read from installation of instance
     def insync?(is)
       "#{is}" == "#{should}"
     end
@@ -71,9 +72,9 @@ Puppet::Type.newtype(:aem) do
     if self[:ensure] == :present and self[:source].nil?
       fail('Source jar is required when ensure is present')
     end
-    if self[:ensure] == :present and self[:version].nil?
-      fail('Version is required when ensure is present')
-    end
+    #if self[:ensure] == :present and self[:version].nil?
+    #  fail('Version is required when ensure is present')
+    #end
   end
 
     #  newparam(:include_sample_content) do
