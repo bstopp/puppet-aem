@@ -1,14 +1,13 @@
 #!/usr/bin/evn ruby
 
-#require 'puppet'
 require 'spec_helper'
-#require 'puppet_spec/compiler'
-#require 'puppet/parser/functions'
 
 provider_class = Puppet::Type.type(:aem).provider(:aem)
 
-describe Puppet::Type.type(:aem).provider(:aem) do
+describe provider_class do
 
+
+  let(:source) { '/opt/aem/cq-author-4502.jar' }
   let (:install_name) { 'cq-quickstart-*-standalone*.jar' }
 
   let (:installs) do
@@ -19,10 +18,52 @@ describe Puppet::Type.type(:aem).provider(:aem) do
 FIND_OUTPUT
   end
 
+  let(:aem_res) do
+    Puppet::Type.type(:aem).new({
+      :name     => 'aem',
+      :ensure   => :present,
+      :source   => source,
+      :version  => '6.1',
+    })
+  end
+
+  let(:auth_res) do
+    Puppet::Type.type(:aem).new({
+      :name     => 'author',
+      :ensure   => :present,
+      :source   => source,
+      :version  => '6.1',
+      :home     => '/opt/aem/author',
+    })
+  end
+
+  let(:pub_res) do
+    Puppet::Type.type(:aem).new({
+      :name     => 'publish',
+      :ensure   => :present,
+      :source   => source,
+      :version  => '6.1',
+      :home     => '/opt/aem/publish',
+    })
+  end
+  
+  let(:prov_resources) do
+    providers = {}
+    [aem_res, auth_res, pub_res].each do |res|
+      provider = provider_class.new
+      provider.resource = res
+      providers[res[:name]] = provider
+    end
+
+    providers
+  end
+
+  
   before :each do
     Puppet::Util.stubs(:which).with('find').returns('/bin/find')
     provider_class.stubs(:which).with('find').returns('/bin/find')
   end
+
 
   describe 'self.instances' do
 
@@ -65,30 +106,57 @@ FIND_OUTPUT
   end
 
   describe 'self.prefetch' do
+    # Why can't you test prefetch via unit tests?
 
-    before :each do
-      #Puppet::Parser::Functions.function(:create_resources)
-    end
-
-    it 'should have a prefetch  method' do
-      expect(described_class).to respond_to :prefetch
-    end
-    
-    it 'should populate resources with provider' do
-      Puppet::Util::Execution.expects(:execpipe).with("/bin/find / -name #{install_name} -type f").yields(installs)
-
-      #let(:command) do
-      #  <<-END_CATALOG
-#create_resoruces(aem, {'author'=> {:home=> '/opt/aem/author',:version  => '6.0.0',:ensure=> :present}}
-#END_CATALOG
-      #end
-
-      aem = { 'author' => {:home=> '/opt/aem/author',:version  => '6.0.0',:ensure=> :present}}
-      #catalog = compile_to_catalogcreate_resources(:aem, :command)
-      res = Puppet::Parser::Function.create_resources(aem, aem)
-      expect(catalog.resource(:ame, 'author')[:ensure]).to eq(:present)
-    end
+#    it 'should have a prefetch  method' do
+#      expect(described_class).to respond_to :prefetch
+#    end
+#
+#    it 'should populate resources with provider' do
+#
+#      Puppet::Util::Execution.expects(:execpipe).at_least(:once).with("/bin/find / -name #{install_name} -type f").yields(installs)
+#      File.stubs(:exists?).with(:source).returns(:true)
+#      installs = provider_class.instances
+#
+#      expect(installs[0].name).to eq('/opt/aem')
+#      expect(installs[1].name).to eq('/opt/aem/author')
+#      expect(installs[2].name).to eq('/opt/aem/publish')
+#
+#      provider_class.prefetch(prov_resources)
+#
+#      # Just need to make sure resource names don't change.
+#      expect(prov_resources['aem'].name).to eq(aem_res[:name])
+#      expect(prov_resources['aem'].home).to eq(aem_res[:home])
+#      expect(prov_resources['author'].name).to eq(auth_res[:name])
+#      expect(prov_resources['publish'].name).to eq(pub_res[:name])
+#
+#    end
   end
-  
+
+  describe 'destroy' do
+
+    it 'deletes the home directory' do
+      Puppet::Util::Execution.expects(:execpipe).with("/bin/find / -name #{install_name} -type f").yields(installs)
+      File.stubs(:exists?).with(source).returns(true)
+
+      aem = Puppet::Type.type(:aem).new({
+        :name     => 'aem',
+        :ensure   => :present,
+        :source   => source,
+        :version  => '6.1',
+      })
+
+      FileUtils.stubs(:remove_entry_secure).with(aem[:home])
+
+
+      provider = provider_class.new
+      provider.resource = aem
+
+      provider.destroy
+
+    end
+
+  end
+
 end
 

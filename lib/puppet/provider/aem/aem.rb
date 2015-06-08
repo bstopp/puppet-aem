@@ -8,7 +8,7 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
   commands :find => 'find'
   commands :java => 'java'
 
-  
+
   self::LAUNCHPAD_NAME  = 'cq-quickstart-*-standalone*.jar'
   self::INSTALL_REGEX   = %r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar$}
   self::INSTALL_FIELDS  = [:home, :version]
@@ -28,6 +28,16 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
     end
 
     installs
+  end
+
+  def create
+    
+  end
+
+  def destroy
+    puts properties
+    puts @property_hash[:home]
+    FileUtils.remove_entry_secure(@property_hash[:home])
   end
 
 
