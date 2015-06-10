@@ -12,7 +12,19 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
   self::LAUNCHPAD_NAME  = 'cq-quickstart-*-standalone*.jar'
   self::INSTALL_REGEX   = %r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar$}
   self::INSTALL_FIELDS  = [:home, :version]
+    
+  
+  def initialize(resource = nil)
 
+    super(resource)
+    @exec_options = { 
+      :failonfail => true, 
+      :combine => true, 
+      :custom_environment => {}, 
+    }
+
+  end
+    
   def self.instances
     installs = []
     
@@ -44,8 +56,12 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
   end
 
   def create
-    opts = ['-jar', @resource[:source], '-b', @resource[:home], '-unpack']
-    java(opts)
+    
+    @exec_options[:uid] = @resource[:user] unless @resource[:user].nil? || @resource[:user].empty?
+    @exec_options[:gid] = @resource[:group] unless @resource[:group].nil? || @resource[:group].empty?
+      
+    cmd = ["#{command(:java)}",'-jar', @resource[:source], '-b', @resource[:home], '-unpack']
+    Puppet::Provider.execute(cmd, @exec_options)
   end
 
   def destroy

@@ -65,6 +65,22 @@ Puppet::Type.newtype(:aem) do
 
   end
 
+  newproperty(:user) do
+    
+  end
+  
+  newproperty(:group) do
+  
+  end
+  
+  autorequire(:user) do
+    
+  end
+  
+  autorequire(:group) do
+    
+  end
+  
   autorequire(:file) do
     autos = []
 
@@ -87,6 +103,7 @@ Puppet::Type.newtype(:aem) do
     #end
   end
 
+  
 #  newparam(:include_sample_content) do
 #    desc "Specify whether or not to include sample content"
 #    defaultto :true

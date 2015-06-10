@@ -142,4 +142,23 @@ describe Puppet::Type.type(:aem) do
 
   end # End home
 
+  describe 'autorequire' do
+#    it 'autorequires the user to run as' do
+#      fail("Implement test cases.")
+#    end
+#
+#    it 'autorequires the group to run as' do
+#      fail("Implement test cases.")
+#    end
+#
+#    it 'autorequires the source file' do
+#      fail("Implement test cases.")
+#    end
+#
+#    it 'autorequires the home directory' do
+#      fail("Implement test cases.")
+#    end
+
+  end
+  
 end

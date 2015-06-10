@@ -80,6 +80,7 @@ describe provider_class do
     Puppet::Util.stubs(:which).with('find').returns('/bin/find')
     provider_class.stubs(:which).with('find').returns('/bin/find')
     Puppet::Util.stubs(:which).with('java').returns('/usr/bin/java')
+    provider_class.stubs(:which).with('java').returns('/usr/bin/java')
   end
 
 
@@ -137,22 +138,55 @@ describe provider_class do
     let(:aem_res) do
       expect(File).to receive(:exists?).with(source).and_return(true)
       expect(Dir).to receive(:exists?).with('/opt/aem').and_return(true)
-      Puppet::Type.type(:aem).new(
+      Puppet::Type.type(:aem).new({
         :name     => 'myaem',
         :ensure   => :present,
         :home     => '/opt/aem',
-        :source   => source
-      )
+        :source   => source,
+      })
     end
 
     it 'unpacks the jar to home directory' do
-    
           
       expect(Puppet::Util::Execution).to receive(:execute).with(
-        ['/usr/bin/java',['-jar', source, '-b', aem_res[:home], '-unpack']], execute_options
+        ['/usr/bin/java','-jar', source, '-b', aem_res[:home], '-unpack'], execute_options
         ).and_return(0)
       
       provider.create
+    end
+    
+
+    context 'specified user' do
+      let(:aem_res) do
+        expect(File).to receive(:exists?).with(source).and_return(true)
+        expect(Dir).to receive(:exists?).with('/opt/aem').and_return(true)
+        Puppet::Type.type(:aem).new({
+          :name     => 'myaem',
+          :ensure   => :present,
+          :home     => '/opt/aem',
+          :source   => source,
+          :user     => 'aem',
+          :group    => 'aem',
+        })
+      end
+      
+      let(:execute_options) do
+        {
+          :failonfail             => true, 
+          :combine                => true, 
+          :custom_environment     => {},
+          :uid                    => 'aem',
+          :gid                    => 'aem',
+        }
+      end
+
+      it 'will unpack as a specified user' do
+        expect(Puppet::Util::Execution).to receive(:execute).with(
+          ['/usr/bin/java','-jar', source, '-b', aem_res[:home], '-unpack'], execute_options
+          ).and_return(0)
+        
+        provider.create
+      end
     end
   end
   
@@ -161,12 +195,12 @@ describe provider_class do
     let(:aem_res) do
       expect(File).to receive(:exists?).with(source).and_return(true)
       expect(Dir).to receive(:exists?).with('/opt/aem').and_return(true)
-      Puppet::Type.type(:aem).new(
+      Puppet::Type.type(:aem).new({
         :name     => 'myaem',
         :ensure   => :present,
         :home     => '/opt/aem',
-        :source   => source
-      )
+        :source   => source,
+      })
     end
     
     it 'deletes the home directory' do
