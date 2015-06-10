@@ -19,7 +19,6 @@ class Puppet::Provider::AEM < Puppet::Provider
   end
 
   def exists?
-    puts "exists? called"
     @property_hash[:ensure] == :present
     #instances.each do |inst|
     #  return true if inst[:home] == @property_hash[:home]

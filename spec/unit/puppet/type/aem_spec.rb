@@ -16,7 +16,9 @@ describe Puppet::Type.type(:aem) do
   end
 
   before :example do
-    File.stubs(:exists?).with(source).returns(true)
+    expect(File).to receive(:exists?).with(source).and_return(true)
+    expect(Dir).to receive(:exists?).and_return(true)
+
     Puppet::Util.stubs(:absolute_path?).returns(true)
     @aem = Puppet::Type.type(:aem).new(
       {
@@ -25,7 +27,6 @@ describe Puppet::Type.type(:aem) do
         :source => source,
         :version => '6.1'
     })
-#    puts "#{@aem[:home]}"
   end
 
   it 'should require a name' do
@@ -50,14 +51,15 @@ describe Puppet::Type.type(:aem) do
   describe 'source' do
 
     it 'should require source if ensure present' do
+      expect(Dir).to receive(:exists?).and_return(true)
       expect {
         Puppet::Type.type(:aem).new({ :name => 'author', :ensure => :present })
       }.to raise_error(Puppet::Error, /Source jar is required/)
     end
 
     it 'should require source to exist' do
+      expect(File).to receive(:exists?).with('/no/jar').and_return(false)
       expect {
-        File.stubs(:exists?).with('/no/jar').returns(false)
         Puppet::Type.type(:aem).new({
           :name     => 'author',
           :ensure   => :present,
@@ -109,6 +111,7 @@ describe Puppet::Type.type(:aem) do
       end
 
       it 'should accept linux absolute paths' do
+        expect(Dir).to receive(:exists?).and_return(true)
         @aem[:home] = '/opt/aem/author'
         expect(@aem[:home]).to eq('/opt/aem/author')
       end
@@ -126,6 +129,7 @@ describe Puppet::Type.type(:aem) do
       end
 
       it 'should accept windows absolute paths' do
+        expect(Dir).to receive(:exists?).and_return(true)
         @aem[:home] = 'C:/opt/aem/author'
         expect(@aem[:home]).to eq('C:/opt/aem/author')
       end

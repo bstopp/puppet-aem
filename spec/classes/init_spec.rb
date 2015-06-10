@@ -216,7 +216,7 @@ describe 'adobe_experience_manager' do
         :group              => 'aem',
         :runmodes           => ['author'],
         :includesamples     => true,
-        :mongo              => false,
+        :mongo              => false
       )
     }
     it { is_expected.to contain_class('adobe_experience_manager::user') }

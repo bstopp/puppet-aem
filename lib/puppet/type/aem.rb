@@ -5,7 +5,7 @@ Puppet::Type.newtype(:aem) do
   @doc = "Install AEM on a system. This includes:
 
       - Configuring preinstall properties for appropriate launch state.
-      - Manging licensing information
+      - Managing licensing information
       - Cycling the system after installation to ensure final state."
 
   ensurable
@@ -28,9 +28,7 @@ Puppet::Type.newtype(:aem) do
     desc "The AEM installer jar to use for installation."
 
     validate do |value|
-      unless File.exists?(value)
-        fail("AEM installer jar (#{value}) not found.")
-      end
+      fail("AEM installer jar (#{value}) not found.") unless File.exists?(value)
     end
 
   end
@@ -61,6 +59,8 @@ Puppet::Type.newtype(:aem) do
       unless Puppet::Util.absolute_path?(value)
         fail Puppet::Error, "AEM Home must be fully qualified, not '#{value}'"
       end
+      fail("AEM home directory (#{value}) not found.") unless Dir.exists?(value)
+
     end
 
   end
@@ -70,6 +70,9 @@ Puppet::Type.newtype(:aem) do
 
     if source = self[:source] and absolute_path?(source)
       autos << source
+    end
+    if home = self[:home] and absolute_path?(home)
+      autos << home
     end
 
     autos
@@ -84,7 +87,7 @@ Puppet::Type.newtype(:aem) do
     #end
   end
 
-    #  newparam(:include_sample_content) do
+#  newparam(:include_sample_content) do
 #    desc "Specify whether or not to include sample content"
 #    defaultto :true
 #    newvalues(:true, :false)

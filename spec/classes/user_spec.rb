@@ -18,12 +18,12 @@ describe 'adobe_experience_manager' do
 
   context 'default manage user/group' do
     it { is_expected.to contain_group('aem').with(
-        'ensure' => 'present',
+        'ensure' => 'present'
       )
     }
     it { is_expected.to contain_user('aem').with(
         'ensure'  => 'present',
-        'gid'     => 'aem',
+        'gid'     => 'aem'
       )
     }
   end

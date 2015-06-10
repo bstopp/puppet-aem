@@ -15,9 +15,10 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
 
   def self.instances
     installs = []
-
+    
     begin
-      execpipe("#{command(:find)} / -name #{self::LAUNCHPAD_NAME} -type f") do |process|
+      cmd = ["#{command(:find)}", '/', "-name \"#{self::LAUNCHPAD_NAME}\"", '-type f'] 
+      execpipe(cmd) do |process|
         process.each_line do |line|
           hash = found_to_hash(line)
           installs << new(hash) unless hash.empty?
@@ -29,15 +30,28 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
 
     installs
   end
+  
+  # Find the resource instance; populate hash of values based on
+  # result of find.
+  def query
+    
+    cmd = [@resource[:home], "-name \"#{self.class::LAUNCHPAD_NAME}\"", '-type f']
+    
+    found = find(cmd)
+    
+    @property_hash.update(self.class.found_to_hash(found))
+    @property_hash.dup
+  end
 
   def create
-    
+    opts = ['-jar', @resource[:source], '-b', @resource[:home], '-unpack']
+    java(opts)
   end
 
   def destroy
-    puts properties
-    puts @property_hash[:home]
-    FileUtils.remove_entry_secure(@property_hash[:home])
+    query if get(:home) == :absent
+
+    FileUtils.remove_entry_secure("#{get(:home)}/crx-quickstart") unless get(:home) == :absent
   end
 
 
