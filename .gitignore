@@ -1,5 +1,4 @@
 pkg/
-Gemfile.lock
 vendor/
 spec/fixtures/
 .vagrant/
@@ -10,3 +9,4 @@ coverage/
 files/aem-quickstart-6.0.jar
 .project
 .buildpath
+log/
