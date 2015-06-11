@@ -15,33 +15,24 @@
 
 ## Overview
 
-A one-maybe-two sentence summary of what the module does/what problem it solves.
-This is your 30 second elevator pitch for your module. Consider including
-OS/Puppet version it works with.
+This module installs the Adobe Experience Manager (AEM) version of your choice into your vm, saving you from doing it manually.
 
 ## Module Description
 
-If applicable, this section should have a brief description of the technology
-the module integrates with and what that integration enables. This section
-should answer the questions: "What does this module *do*?" and "Why would I use
-it?"
-
-If your module has a range of functionality (installation, configuration,
-management, etc.) this is the time to mention it.
+This module installs AEM from the jar file you provide into the VM it sets up.  
+It can support options for different users, directories, and versions.  It also supports deletion
+but not upgrading as all versions of AEM aren't backwards compatable.  
 
 ## Setup
 
 ### What adobe_experience_manager affects
 
-* A list of files, packages, services, or operations that the module will alter,
-  impact, or execute on the system it's installed on.
-* This is a great place to stick any warnings.
-* Can be in list or paragraph form.
+This will create or modify a directory of your choice in order to install AEM.
 
-### Setup Requirements **OPTIONAL**
 
-If your module requires anything extra before setting up (pluginsync enabled,
-etc.), mention it here.
+### Setup Requirements 
+
+An AEM jar file is required for setup.
 
 ### Beginning with adobe_experience_manager
 
@@ -69,11 +60,6 @@ This is where you list OS compatibility, version compatibility, etc.
 
 ## Development
 
-Since your module is awesome, other users will want to play with it. Let them
-know what the ground rules for contributing are.
+This module is still early on, as long as additions follow the overall flow and do not include an aem jar, they will be appriciated.
 
-## Release Notes/Contributors/Etc **Optional**
 
-If you aren't using changelog, put your release notes here (though you should
-consider using changelog). You may also add any additional sections you feel are
-necessary or important to include here. Please use the `## ` header.
