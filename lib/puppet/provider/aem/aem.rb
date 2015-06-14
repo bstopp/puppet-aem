@@ -12,8 +12,8 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
   self::LAUNCHPAD_NAME  = 'cq-quickstart-*-standalone*.jar'
   self::INSTALL_REGEX   = %r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar$}
   self::INSTALL_FIELDS  = [:home, :version]
-    
-  
+
+
   def initialize(resource = nil)
 
     super(resource)
@@ -24,10 +24,10 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
     }
 
   end
-    
+
   def self.instances
     installs = []
-    
+
     begin
       cmd = ["#{command(:find)}", '/', "-name \"#{self::LAUNCHPAD_NAME}\"", '-type f'] 
       execpipe(cmd) do |process|
@@ -42,25 +42,27 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
 
     installs
   end
-  
+
   # Find the resource instance; populate hash of values based on
   # result of find.
   def query
-    
+
     cmd = [@resource[:home], "-name \"#{self.class::LAUNCHPAD_NAME}\"", '-type f']
-    
+
     found = find(cmd)
-    
+
     @property_hash.update(self.class.found_to_hash(found))
     @property_hash.dup
   end
 
   def create
-    
+
     @exec_options[:uid] = @resource[:user] unless @resource[:user].nil? || @resource[:user].empty?
     @exec_options[:gid] = @resource[:group] unless @resource[:group].nil? || @resource[:group].empty?
-      
+
+
     cmd = ["#{command(:java)}",'-jar', @resource[:source], '-b', @resource[:home], '-unpack']
+
     Puppet::Provider.execute(cmd, @exec_options)
   end
 
