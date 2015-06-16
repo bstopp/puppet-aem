@@ -6,7 +6,6 @@ class Puppet::Provider::AEM < Puppet::Provider
 
     resources.keys.each do |name|
       if provider = found.find{ |prov| prov.get(:home) == resources[name][:home] }
-        puts resources[name][:provider]
         resources[name][:provider] = provider
       end
     end

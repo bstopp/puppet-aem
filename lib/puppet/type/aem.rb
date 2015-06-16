@@ -66,7 +66,7 @@ Puppet::Type.newtype(:aem) do
   end
 
   newproperty(:user) do
-    
+
   end
 
   newproperty(:group) do

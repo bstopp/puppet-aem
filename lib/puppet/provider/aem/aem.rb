@@ -1,3 +1,5 @@
+
+require 'etc'
 require 'fileutils'
 require 'puppet/provider/aem'
 
@@ -8,19 +10,17 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
   commands :find => 'find'
   commands :java => 'java'
 
-
   self::LAUNCHPAD_NAME  = 'cq-quickstart-*-standalone*.jar'
   self::INSTALL_REGEX   = %r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar$}
   self::INSTALL_FIELDS  = [:home, :version]
 
-
   def initialize(resource = nil)
 
     super(resource)
-    @exec_options = { 
-      :failonfail => true, 
-      :combine => true, 
-      :custom_environment => {}, 
+    @exec_options = {
+      :failonfail => true,
+      :combine => true,
+      :custom_environment => {},
     }
 
   end
@@ -29,7 +29,7 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
     installs = []
 
     begin
-      cmd = ["#{command(:find)}", '/', "-name \"#{self::LAUNCHPAD_NAME}\"", '-type f'] 
+      cmd = ["#{command(:find)}", '/', "-name \"#{self::LAUNCHPAD_NAME}\"", '-type f']
       execpipe(cmd) do |process|
         process.each_line do |line|
           hash = found_to_hash(line)
@@ -57,13 +57,20 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
 
   def create
 
-    @exec_options[:uid] = @resource[:user] unless @resource[:user].nil? || @resource[:user].empty?
-    @exec_options[:gid] = @resource[:group] unless @resource[:group].nil? || @resource[:group].empty?
+    unless @resource[:user].nil? || @resource[:user].empty?
+      user = Etc.getpwnam(@resource[:user])
+      @exec_options[:uid] = user.uid
+    end
 
+    unless @resource[:group].nil? || @resource[:group].empty?
+      grp = Etc.getgrnam(@resource[:group])
+      @exec_options[:gid] = grp.gid
+    end
 
     cmd = ["#{command(:java)}",'-jar', @resource[:source], '-b', @resource[:home], '-unpack']
 
     Puppet::Provider.execute(cmd, @exec_options)
+
   end
 
   def destroy
@@ -71,7 +78,6 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
 
     FileUtils.remove_entry_secure("#{get(:home)}/crx-quickstart") unless get(:home) == :absent
   end
-
 
   private
 
@@ -83,6 +89,15 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
       self::INSTALL_FIELDS.zip(match.captures) { |f, v| hash[f] = v }
       hash[:name] = hash[:home]
       hash[:ensure] = :present
+
+      stat = File.stat(line)
+      #puts "Line = #{line}"
+      #puts "UserID = #{stat.uid}"
+      #puts "GroupID = #{stat.gid}"
+      
+      hash[:user] = Etc.getpwuid(stat.uid).name
+      hash[:group] = Etc.getgrgid(stat.gid).name
+
     else
       Puppet.debug("Failed to match install line #{line}")
     end
