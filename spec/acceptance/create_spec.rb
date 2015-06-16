@@ -86,7 +86,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
     end
 
     it 'should be owned by specified user/group' do
-      shell('stat -c "%U:%G" "/opt/aem/crx-quickstart/app/cq-quickstart*.jar"') do |result|
+      shell('stat -c "%U:%G" /opt/aem/crx-quickstart/app/cq-quickstart*.jar') do |result|
         expect(result.stdout).to match('aem:aem')
       end
     end
