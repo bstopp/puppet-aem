@@ -175,8 +175,8 @@ describe provider_class do
           :failonfail             => true, 
           :combine                => true, 
           :custom_environment     => {},
-          :uid                    => 'aem',
-          :gid                    => 'aem',
+          :user                   => 'aem',
+          :group                  => 'aem',
         }
       end
 

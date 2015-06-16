@@ -66,21 +66,21 @@ Puppet::Type.newtype(:aem) do
   end
 
   newproperty(:user) do
-    
+
   end
-  
+
   newproperty(:group) do
-  
+
   end
-  
+
   autorequire(:user) do
-    
+
   end
-  
+
   autorequire(:group) do
-    
+
   end
-  
+
   autorequire(:file) do
     autos = []
 

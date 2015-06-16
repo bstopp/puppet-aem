@@ -33,6 +33,8 @@ GEM
       rbvmomi (~> 1.8)
       rsync (~> 1.0.9)
       unf (~> 0.1)
+    beaker-puppet_install_helper (0.1.4)
+      beaker (~> 2.0)
     beaker-rspec (5.1.0)
       beaker (~> 2.0)
       rspec
@@ -263,6 +265,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  beaker-puppet_install_helper
   beaker-rspec
   facter
   metadata-json-lint
