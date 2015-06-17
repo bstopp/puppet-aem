@@ -91,10 +91,7 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
       hash[:ensure] = :present
 
       stat = File.stat(line)
-      #puts "Line = #{line}"
-      #puts "UserID = #{stat.uid}"
-      #puts "GroupID = #{stat.gid}"
-      
+
       hash[:user] = Etc.getpwuid(stat.uid).name
       hash[:group] = Etc.getgrgid(stat.gid).name
 
