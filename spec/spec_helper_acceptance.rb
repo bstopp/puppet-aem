@@ -4,11 +4,6 @@ require 'beaker/puppet_install_helper'
 
 run_puppet_install_helper
 
-# Hold-over until BKR-329 is fixed.
-if ENV["RS_PROVISION="] == "no" or ENV["BEAKER_provision"] == "no"
-  configure_foss_defaults_on(hosts)
-end
-
 UNSUPPORTED_PLATFORMS = ['Suse','windows','AIX','Solaris']
 
 RSpec.configure do |c|
