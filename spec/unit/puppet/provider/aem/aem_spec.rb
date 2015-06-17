@@ -94,14 +94,14 @@ describe provider_class do
     end
 
     it 'returns an array of installs' do
-      Puppet::Util::Execution.expects(:execpipe).with(['/bin/find', '/', "-name \"#{install_name}\"", '-type f']).yields(installs)
+      expect(Puppet::Util::Execution).to receive(:execpipe).with(['/bin/find', '/', "-name \"#{install_name}\"", '-type f']).and_yield(installs)
 
       filestats = Stat.new("1001", "1001") 
       id = Id.new('aem')
 
-      File.expects(:stat).returns(filestats).times(3)
-      Etc.expects(:getpwuid).with("1001").returns(id).times(3)
-      Etc.expects(:getgrgid).with("1001").returns(id).times(3)
+      expect(File).to receive(:stat).and_return(filestats).exactly(3).times
+      expect(Etc).to receive(:getpwuid).with("1001").and_return(id).exactly(3).times
+      expect(Etc).to receive(:getgrgid).with("1001").and_return(id).exactly(3).times
 
       installed = provider_class.instances
 
@@ -237,9 +237,9 @@ describe provider_class do
       filestats = Stat.new("1001", "1001") 
       id = Id.new('aem')
 
-      File.expects(:stat).returns(filestats)
-      Etc.expects(:getpwuid).with("1001").returns(id)
-      Etc.expects(:getgrgid).with("1001").returns(id)
+      expect(File).to receive(:stat).and_return(filestats)
+      expect(Etc).to receive(:getpwuid).with("1001").and_return(id)
+      expect(Etc).to receive(:getgrgid).with("1001").and_return(id)
 
       provider.destroy
 
