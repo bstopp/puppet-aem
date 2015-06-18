@@ -37,27 +37,29 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
 
   context 'puppet resource' do
 
+    let(:resource_line) do
+      /(\S+)\s*=>\s*'?(\S+?)'?,/
+    end
+
     it 'lists the instances' do
 
-      #puppet('resource aem') do |result|
       shell('puppet resource aem') do |result|
-        group = /group[ ]*=>[ ]*'\S+'/.match(result.stdout).to_s
-        user = /user[ ]*=>[ ]*'\S+'/.match(result.stdout).to_s
-        version = /version[ ]*=>[ ]*'\S+'/.match(result.stdout).to_s
-        home = /home[ ]*=>[ ]*'\S+'/.match(result.stdout).to_s
 
-        group = /'\S+'/.match(group).to_s.gsub! '\'', ''
-        user = /'\S+'/.match(user).to_s.gsub! '\'', ''
-        version = /'\S+'/.match(version).to_s.gsub! '\'', ''
-        home = /'\S+'/.match(home).to_s.gsub! '\'', ''
+        data = {}
 
-        expect(group).to match('root')
-        expect(user).to match('root')
-        expect(version).to match('6.1.0')
-        expect(home).to match('/opt/aem')
+        result.stdout.each_line do |line|
+          if match = resource_line.match(line)
+
+            data[match[1]] = match[2]
+          end
+        end
+
+        expect(data['group']).to match('root')
+        expect(data['user']).to match('root')
+        expect(data['version']).to match('6.1.0')
+        expect(data['home']).to match('/opt/aem')
+
       end
-
-      
 
     end
 
