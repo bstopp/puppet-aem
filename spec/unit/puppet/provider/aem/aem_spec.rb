@@ -213,6 +213,90 @@ describe provider_class do
       end
     end
   end
+
+  describe '#call_start_script' do
+    
+    let(:aem_res) do
+      expect(File).to receive(:exists?).with(source).and_return(true)
+      expect(Dir).to receive(:exists?).with('/opt/aem').and_return(true)
+      Puppet::Type.type(:aem).new({
+        :name     => 'myaem',
+        :ensure   => :present,
+        :home     => '/opt/aem',
+        :source   => source,
+      })
+    end
+
+    it 'runs the start script' do
+          
+      expect(Puppet::Util::Execution).to receive(:execute).with(
+        "/opt/aem/crx-quickstart/static/bin/start").and_return(0)
+      
+      provider.call_start_script
+    end
+    
+  end
+
+  describe '#monitor_site' do
+    
+    let(:aem_res) do
+      expect(File).to receive(:exists?).with(source).and_return(true)
+      expect(Dir).to receive(:exists?).with('/opt/aem').and_return(true)
+      Puppet::Type.type(:aem).new({
+        :name     => 'myaem',
+        :ensure   => :present,
+        :home     => '/opt/aem',
+        :source   => source,
+      })
+    end
+    
+
+    it 'monitors the site' do
+      class FakeResponseFail
+        def code
+          500
+        end
+      end
+
+      class FakeResponsePass
+        def code
+          200
+        end
+      end
+
+      response = FakeResponseFail.new
+
+      response2 = FakeResponsePass.new
+
+      expect(Net::HTTP).to receive(:get_response).with(URI.parse("http://localhost:4502")).and_return(response,response2)
+      
+      provider.monitor_site
+    end
+    
+  end
+
+  describe '#call_stop_script' do
+    
+    let(:aem_res) do
+      expect(File).to receive(:exists?).with(source).and_return(true)
+      expect(Dir).to receive(:exists?).with('/opt/aem').and_return(true)
+      Puppet::Type.type(:aem).new({
+        :name     => 'myaem',
+        :ensure   => :present,
+        :home     => '/opt/aem',
+        :source   => source,
+      })
+    end
+
+    it 'runs the stop script' do
+          
+      expect(Puppet::Util::Execution).to receive(:execute).with(
+        "/opt/aem/crx-quickstart/static/bin/stop").and_return(0)
+      
+      provider.call_stop_script
+    end
+    
+  end
   
   describe '#destroy' do
 
