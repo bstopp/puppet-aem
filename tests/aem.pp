@@ -1,3 +1,0 @@
-aem { 'author' :
-  ensure => 'present',
-}

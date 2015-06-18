@@ -5,8 +5,8 @@ class Puppet::Provider::AEM < Puppet::Provider
     found = instances
 
     resources.keys.each do |name|
-      if provider = found.find{ |prov| prov.home == resources[name].home }
-        resources[name].provider = provider
+      if provider = found.find{ |prov| prov.get(:home) == resources[name][:home] }
+        resources[name][:provider] = provider
       end
     end
   end

@@ -18,6 +18,9 @@ describe provider_class do
     FIND_OUTPUT
   end
 
+  Stat = Struct.new(:uid, :gid)
+  Id = Struct.new(:name)
+
   let(:aem_res) do
     Puppet::Type.type(:aem).new({
       :name     => 'aem',
@@ -91,7 +94,14 @@ describe provider_class do
     end
 
     it 'returns an array of installs' do
-      Puppet::Util::Execution.expects(:execpipe).with(['/bin/find', '/', "-name \"#{install_name}\"", '-type f']).yields(installs)
+      expect(Puppet::Util::Execution).to receive(:execpipe).with(['/bin/find', '/', "-name \"#{install_name}\"", '-type f']).and_yield(installs)
+
+      filestats = Stat.new("1001", "1001") 
+      id = Id.new('aem')
+
+      expect(File).to receive(:stat).and_return(filestats).exactly(3).times
+      expect(Etc).to receive(:getpwuid).with("1001").and_return(id).exactly(3).times
+      expect(Etc).to receive(:getgrgid).with("1001").and_return(id).exactly(3).times
 
       installed = provider_class.instances
 
@@ -101,6 +111,8 @@ describe provider_class do
           :home     => '/opt/aem',
           :version  => '5.6.1',
           :ensure   => :present,
+          :user     => 'aem',
+          :group    => 'aem',
         }
       )
       expect(installed[1].properties).to eq(
@@ -109,6 +121,8 @@ describe provider_class do
           :home     => '/opt/aem/author',
           :version  => '6.0.0',
           :ensure   => :present,
+          :user     => 'aem',
+          :group    => 'aem',
         }
       )
       expect(installed.last.properties).to eq(
@@ -117,6 +131,8 @@ describe provider_class do
           :home     => '/opt/aem/publish',
           :version  => '6.1.0',
           :ensure   => :present,
+          :user     => 'aem',
+          :group    => 'aem',
         }
       )
 
@@ -175,12 +191,20 @@ describe provider_class do
           :failonfail             => true, 
           :combine                => true, 
           :custom_environment     => {},
-          :uid                    => 'aem',
-          :gid                    => 'aem',
+          :uid                    => '1001',
+          :gid                    => '1001',
         }
       end
 
       it 'will unpack as a specified user' do
+        Opts = Struct.new(:uid, :gid)
+
+        struct = Opts.new('1001', '1001')
+
+        
+        expect(Etc).to receive(:getpwnam).with('aem').and_return(struct)
+        expect(Etc).to receive(:getgrnam).with('aem').and_return(struct)
+
         expect(Puppet::Util::Execution).to receive(:execute).with(
           ['/usr/bin/java','-jar', source, '-b', aem_res[:home], '-unpack'], execute_options
           ).and_return(0)
@@ -209,6 +233,13 @@ describe provider_class do
         ).and_return("/opt/aem/crx-quickstart/app/cq-quickstart-5.6.1-standalone.jar\n")
 
       expect(FileUtils).to receive(:remove_entry_secure).with('/opt/aem/crx-quickstart')
+
+      filestats = Stat.new("1001", "1001") 
+      id = Id.new('aem')
+
+      expect(File).to receive(:stat).and_return(filestats)
+      expect(Etc).to receive(:getpwuid).with("1001").and_return(id)
+      expect(Etc).to receive(:getgrgid).with("1001").and_return(id)
 
       provider.destroy
 
