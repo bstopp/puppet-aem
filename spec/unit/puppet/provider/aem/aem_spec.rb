@@ -164,9 +164,25 @@ describe provider_class do
 
     it 'unpacks the jar to home directory' do
           
-      expect(Puppet::Util::Execution).to receive(:execute).with(
-        ['/usr/bin/java','-jar', source, '-b', aem_res[:home], '-unpack'], execute_options
-        ).and_return(0)
+      expect(Puppet::Util::Execution).to receive(:execute).exactly(3).times.and_return(0)
+
+        class FakeResponseFail
+          def code
+            500
+          end
+        end
+
+        class FakeResponsePass
+          def code
+            200
+          end
+        end
+
+        response = FakeResponseFail.new
+
+        response2 = FakeResponsePass.new
+
+        expect(Net::HTTP).to receive(:get_response).with(URI.parse("http://localhost:4502")).and_return(response,response2)
       
       provider.create
     end
@@ -205,14 +221,32 @@ describe provider_class do
         expect(Etc).to receive(:getpwnam).with('aem').and_return(struct)
         expect(Etc).to receive(:getgrnam).with('aem').and_return(struct)
 
-        expect(Puppet::Util::Execution).to receive(:execute).with(
-          ['/usr/bin/java','-jar', source, '-b', aem_res[:home], '-unpack'], execute_options
-          ).and_return(0)
+        expect(Puppet::Util::Execution).to receive(:execute).exactly(3).times.and_return(0)
+
+        class FakeResponseFail
+          def code
+            500
+          end
+        end
+
+        class FakeResponsePass
+          def code
+            200
+          end
+        end
+
+        response = FakeResponseFail.new
+
+        response2 = FakeResponsePass.new
+
+        expect(Net::HTTP).to receive(:get_response).with(URI.parse("http://localhost:4502")).and_return(response,response2)
         
         provider.create
       end
     end
   end
+
+  
   
   describe '#destroy' do
 
