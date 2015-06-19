@@ -162,12 +162,17 @@ describe provider_class do
       })
     end
 
-    it 'unpacks the jar to home directory' do
+    it 'creates the AEM instance' do
           
       expect(Puppet::Util::Execution).to receive(:execute).with(
         ['/usr/bin/java','-jar', source, '-b', aem_res[:home], '-unpack'], execute_options
         ).and_return(0)
       
+      expect(File).to receive(:rename).with(
+        '/opt/aem/crx-quickstart/bin/start', '/opt/aem/crx-quickstart/bin/start-orig')
+
+      expect(Puppet::Type.type(:file)).to receive(:new)
+
       provider.create
     end
     
@@ -208,7 +213,10 @@ describe provider_class do
         expect(Puppet::Util::Execution).to receive(:execute).with(
           ['/usr/bin/java','-jar', source, '-b', aem_res[:home], '-unpack'], execute_options
           ).and_return(0)
-        
+
+        expect(File).to receive(:rename).with(
+          '/opt/aem/crx-quickstart/bin/start', '/opt/aem/crx-quickstart/bin/start-orig')
+
         provider.create
       end
     end

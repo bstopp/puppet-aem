@@ -265,6 +265,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  beaker
   beaker-puppet_install_helper
   beaker-rspec
   facter
@@ -277,4 +278,4 @@ DEPENDENCIES
   serverspec
 
 BUNDLED WITH
-   1.10.3
+   1.10.4

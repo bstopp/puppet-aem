@@ -1,4 +1,4 @@
-
+require 'erb'
 require 'etc'
 require 'fileutils'
 require 'puppet/provider/aem'
@@ -7,6 +7,8 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
 
   mk_resource_methods
 
+  defaultfor :kernel => :linux
+  
   commands :find => 'find'
   commands :java => 'java'
 
@@ -71,6 +73,8 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
 
     Puppet::Provider.execute(cmd, @exec_options)
 
+    create_start_script
+
   end
 
   def destroy
@@ -80,6 +84,27 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
   end
 
   private
+
+  def create_start_script()
+    # Move the original script.
+    path = "#{@resource[:home]}/crx-quickstart/bin"
+    start_file = "#{path}/start"
+    File.rename(start_file, "#{start_file}-orig")
+
+    opts = {
+      :ensure   => :file,
+      :path     => "#{start_file}",
+      :backup   => :false,
+      :content  => template("aem/start-#{@resource[:version]}.erb"),
+      :mode     => '0700',
+    }
+
+    opts[:owner] = @resource[:user] unless @resource[:user].nil? || @resource[:user].empty?
+    opts[:group] = @resource[:group] unless @resource[:group].nil? || @resource[:group].empty?
+
+    Puppet::Type.type(:file).new(opts)
+
+  end
 
   def self.found_to_hash(line)
     line.strip!

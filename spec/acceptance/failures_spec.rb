@@ -2,6 +2,13 @@ require 'spec_helper_acceptance'
 
 describe 'Required Fields tests.', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
 
+  let :facts do
+    { 
+      :kernel => 'Linux'
+    }
+  end
+
+  
   before :need_home => :true do
     pp = <<-MANIFEST
       file { '/opt/aem' :
