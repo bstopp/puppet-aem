@@ -72,39 +72,14 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
 
     Puppet::Provider.execute(cmd, @exec_options)
 
-    #create_start_scripts
-    #call_start_script
-    #monitor_site
-    #call_stop_script
+    create_start_scripts
+    call_start_script
+    monitor_site
+    call_stop_script
 
   end
 
-  def create_start_scripts
-
-  end
-
-  def call_start_script
-
-    cmd = "#{@resource[:home]}/crx-quickstart/static/bin/start"
-
-    Puppet::Provider.execute(cmd)
-  end
-
-  def monitor_site
-    responsecode = 500
-    until responsecode == 200 
-      @uri = "http://localhost:4502"  
-      @request = Net::HTTP.get_response(URI.parse(@uri))
-      responsecode = @request.code
-      sleep 10 unless responsecode == 200
-    end
-  end
-
-  def call_stop_script
-    cmd = "#{@resource[:home]}/crx-quickstart/static/bin/stop"
-
-    Puppet::Provider.execute(cmd)
-  end
+  
 
   def destroy
     query if get(:home) == :absent
@@ -133,6 +108,33 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
     end
 
     return hash
+  end
+
+  def create_start_scripts
+
+  end
+
+  def call_start_script
+
+    cmd = ".#{@resource[:home]}/crx-quickstart/static/bin/start"
+
+    Puppet::Provider.execute(cmd)
+  end
+
+  def monitor_site
+    responsecode = 500
+    until responsecode == 200 
+      @uri = "http://localhost:4502"  
+      @request = Net::HTTP.get_response(URI.parse(@uri))
+      responsecode = @request.code
+      sleep 10 unless responsecode == 200
+    end
+  end
+
+  def call_stop_script
+    cmd = ".#{@resource[:home]}/crx-quickstart/static/bin/stop"
+
+    Puppet::Provider.execute(cmd)
   end
 
 end
