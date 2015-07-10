@@ -4,6 +4,11 @@ require 'beaker/puppet_install_helper'
 
 run_puppet_install_helper
 
+if ENV["RS_PROVISION"] == "no" or ENV["BEAKER_provision"] == "no"
+  add_foss_defaults_on(hosts)
+  add_puppet_paths_on(hosts)
+end
+
 UNSUPPORTED_PLATFORMS = ['Suse','windows','AIX','Solaris']
 
 RSpec.configure do |c|

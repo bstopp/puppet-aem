@@ -1,7 +1,9 @@
 require 'erb'
 require 'etc'
 require 'fileutils'
+require 'puppet'
 require 'puppet/provider/aem'
+require 'net/http'
 
 Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provider::AEM do
 
@@ -45,65 +47,115 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
     installs
   end
 
+
+  def create
+
+    update_exec_opts
+    cmd = ["#{command(:java)}",'-jar', @resource[:source], '-b', @resource[:home], '-unpack']
+    execute(cmd, @exec_options)
+
+    create_cfg_script
+    create_start_script
+#    call_start_script
+#    monitor_site
+#    call_stop_script
+
+  end
+
+  
+
+  def destroy
+    query if @resoruce[:home] == :absent
+
+    FileUtils.remove_entry_secure("#{@resource[:home]}/crx-quickstart") unless get(:home) == :absent
+  end
+
+  private
+
+  def get_bin_dir
+    "#{@resource[:home]}/crx-quickstart/bin"
+  end
+
   # Find the resource instance; populate hash of values based on
   # result of find.
   def query
 
     cmd = [@resource[:home], "-name \"#{self.class::LAUNCHPAD_NAME}\"", '-type f']
-
     found = find(cmd)
 
     @property_hash.update(self.class.found_to_hash(found))
     @property_hash.dup
   end
 
-  def create
+  def update_exec_opts
 
-    unless @resource[:user].nil? || @resource[:user].empty?
-      user = Etc.getpwnam(@resource[:user])
+    unless resource[:user].nil? || resource[:user].empty?
+      user = Etc.getpwnam(resource[:user])
       @exec_options[:uid] = user.uid
     end
-
-    unless @resource[:group].nil? || @resource[:group].empty?
-      grp = Etc.getgrnam(@resource[:group])
+        
+    unless resource[:group].nil? || resource[:group].empty?
+      grp = Etc.getgrnam(resource[:group])
       @exec_options[:gid] = grp.gid
     end
 
-    cmd = ["#{command(:java)}",'-jar', @resource[:source], '-b', @resource[:home], '-unpack']
+  end
 
-    Puppet::Provider.execute(cmd, @exec_options)
+  def read_erb_tpl(file)
+    environment = Puppet.lookup(:environments).get(Puppet[:environment])
+    template = Puppet::Parser::Files.find_template("aem/#{file}", environment)
 
-    create_start_script
+    tpldata = File.read(template)
+    tpldata = ERB.new(tpldata).result(binding)
+    tpldata
+  end
+
+  def write_erb_file(file, contents)
+
+    File.write(file, contents)
+    File.chmod(0750, file)
+
+    File.chown(@exec_options[:uid], @exec_options[:gid], file)
 
   end
 
-  def destroy
-    query if get(:home) == :absent
-
-    FileUtils.remove_entry_secure("#{get(:home)}/crx-quickstart") unless get(:home) == :absent
+  def create_cfg_script
+    filename = 'start-config'
+    contents = read_erb_tpl("#{filename}.erb")
+    write_erb_file("#{get_bin_dir()}/#{filename}", contents)
   end
 
-  private
+  def create_start_script
 
-  def create_start_script()
     # Move the original script.
-    path = "#{@resource[:home]}/crx-quickstart/bin"
-    start_file = "#{path}/start"
+    start_file = "#{get_bin_dir()}/start"
     File.rename(start_file, "#{start_file}-orig")
 
-    opts = {
-      :ensure   => :file,
-      :path     => "#{start_file}",
-      :backup   => :false,
-      :content  => template("aem/start-#{@resource[:version]}.erb"),
-      :mode     => '0700',
-    }
+    filename = 'start'
+    contents = read_erb_tpl("#{filename}.erb")
+    write_erb_file("#{@resource[:home]}/crx-quickstart/bin/#{filename}", contents)
+  end
 
-    opts[:owner] = @resource[:user] unless @resource[:user].nil? || @resource[:user].empty?
-    opts[:group] = @resource[:group] unless @resource[:group].nil? || @resource[:group].empty?
+  def call_start_script
 
-    Puppet::Type.type(:file).new(opts)
+    cmd = "#{@resource[:home]}/crx-quickstart/bin/start"
+    execute(cmd, @exec_options)
+  end
 
+  def monitor_site
+    uri = URI.parse("http://localhost:4502")
+    responsecode = 0
+    until responsecode == 200 
+      request = Net::HTTP.get_response(uri)
+      responsecode = request.code
+      sleep 10 unless responsecode == 200
+    end
+  end
+
+  def call_stop_script
+    cmd = "#{@resource[:home]}/crx-quickstart/bin/stop"
+
+    execute(cmd, @exec_options)
   end
 
   def self.found_to_hash(line)
@@ -126,5 +178,4 @@ Puppet::Type.type(:aem).provide :aem, :source => :aem, :parent => Puppet::Provid
 
     return hash
   end
-
 end

@@ -12,6 +12,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         ensure      => 'directory',
         group       => 'aem',
         owner       => 'aem',
+        backup      => 'false',
       }
 
       file { '/opt/aem/faux' :
@@ -37,18 +38,24 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
     apply_manifest(pp, :catch_failures => true)
   end
 
-  after :context do
-    pp = <<-MANIFEST
-      file { '/opt/aem' :
-        ensure      => 'absent',
-        force       => 'true',
-      }
-    MANIFEST
-    apply_manifest(pp, :catch_failures => true)
-  end
+#  after :context do
+#    pp = <<-MANIFEST
+#      file { '/opt/aem' :
+#        ensure      => 'absent',
+#        force       => 'true',
+#      }
+#    MANIFEST
+#    apply_manifest(pp, :catch_failures => true)
+#  end
 
   context '#create' do
 
+    let :facts do
+      {
+        :environment => :root
+      }
+    end
+    
     it 'should work with no errors' do
       pp = <<-MANIFEST
         aem { 'aem' :
@@ -56,8 +63,9 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
           version     => '6.1.0',
           home        => '/opt/aem',
           source      => '/tmp/aem-quickstart-4502.jar',
-          group       => 'aem',
+          port        => 4502,
           user        => 'aem',
+          group       => 'aem',
         }
       MANIFEST
 
