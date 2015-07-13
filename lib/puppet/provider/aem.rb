@@ -1,15 +1,29 @@
 class Puppet::Provider::AEM < Puppet::Provider
 
-  def self.prefetch(resources)
+  self::LAUNCHPAD_NAME  = 'cq-quickstart-*-standalone*.jar'
+  self::INSTALL_FIELDS  = [:home, :version]
 
-    found = instances
+  def initialize(resource = nil)
 
-    resources.keys.each do |name|
-      if provider = found.find{ |prov| prov.get(:home) == resources[name][:home] }
-        resources[name][:provider] = provider
-      end
-    end
+    super(resource)
+    @exec_options = {
+      :failonfail => true,
+      :combine => true,
+      :custom_environment => {},
+    }
+
   end
+
+#  def self.prefetch(resources)
+#
+#    found = instances
+#
+#    resources.keys.each do |name|
+#      if provider = found.find{ |prov| prov.get(:home) == resources[name][:home] }
+#        resources[name][:provider] = provider
+#      end
+#    end
+#  end
 
   def properties
     if @property_hash.empty?
@@ -19,10 +33,20 @@ class Puppet::Provider::AEM < Puppet::Provider
   end
 
   def exists?
-    @property_hash[:ensure] == :present
-    #instances.each do |inst|
-    #  return true if inst[:home] == @property_hash[:home]
-    #end
+
+    return false unless File.exists?(resource[:home])
+    Dir.foreach("#{resource[:home]}/apps") do |entry|
+      return true if entry =~ /^#{resource[:home]}\/apps\/cq-quickstart.*\.jar$/
+    end
+
+    return false
   end
+
+  def destroy
+
+    path = File.join(@resource[:home], 'crx-quickstart')
+    FileUtils.remove_entry_secure(path)
+  end
+
 
 end

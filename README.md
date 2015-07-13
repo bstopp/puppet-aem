@@ -1,13 +1,13 @@
-# adobe_experience_manager
+# aem - Adobe Experience Manager Module
 
 #### Table of Contents
 
 1. [Overview](#overview)
 2. [Module Description - What the module does and why it is useful](#module-description)
-3. [Setup - The basics of getting started with adobe_experience_manager](#setup)
-    * [What adobe_experience_manager affects](#what-adobe_experience_manager-affects)
+3. [Setup - The basics of getting started with aem](#setup)
+    * [What aem affects](#what-aem-affects)
     * [Setup requirements](#setup-requirements)
-    * [Beginning with adobe_experience_manager](#beginning-with-adobe_experience_manager)
+    * [Beginning with aem](#beginning-with-aem)
 4. [Usage - Configuration options and additional functionality](#usage)
 5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
 5. [Limitations - OS compatibility, etc.](#limitations)
@@ -25,7 +25,7 @@ but not upgrading as all versions of AEM aren't backwards compatable.
 
 ## Setup
 
-### What adobe_experience_manager affects
+### What aem affects
 
 This will create or modify a directory of your choice in order to install AEM.
 
@@ -34,7 +34,7 @@ This will create or modify a directory of your choice in order to install AEM.
 
 An AEM jar file is required for setup.
 
-### Beginning with adobe_experience_manager
+### Beginning with aem
 
 The very basic steps needed for a user to get the module up and running.
 

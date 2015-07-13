@@ -3,4 +3,4 @@ fixtures:
     stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
     java: "https://github.com/puppetlabs/puppetlabs-java.git"
   symlinks:
-    adobe_experience_manager: "#{source_dir}"
+    aem: "#{source_dir}"

@@ -7,158 +7,210 @@ describe Puppet::Type.type(:aem) do
 
   let(:source) { '/opt/aem/cq-author-4502.jar' }
 
+  before do
+    @provider_class = described_class.provide(:simple) { mk_resource_methods }
+    @provider_class.stubs(:suitable?).returns true
+    described_class.stubs(:defaultprovider).returns @provider_class
+  end
+
   before :each, :platform => :linux do
-    Puppet::Util::Platform.stubs(:windows?).returns(false)
+    expect(Puppet::Util::Platform).to receive(:windows?).and_return(false)
   end
 
   before :each, :platform => :windows do
-    Puppet::Util::Platform.stubs(:windows?).returns(true)
+    expect(Puppet::Util::Platform).to receive(:windows?).and_return(true)
   end
 
-  before :example do
-    expect(File).to receive(:exists?).with(source).and_return(true)
-    expect(Dir).to receive(:exists?).and_return(true)
+  before :example, :setup => :required do
+    expect(Puppet::Util).to receive(:absolute_path?).and_return(true).at_most(1)
+    expect(Dir).to receive(:exists?).and_return(true).at_most(1)
 
-    Puppet::Util.stubs(:absolute_path?).returns(true)
-    @aem = Puppet::Type.type(:aem).new(
-      {
-        :name => 'author',
-        :ensure => :present,
-        :source => source,
-        :version => '6.1'
-    })
+    expect(File).to receive(:exists?).with(source).and_return(true).at_most(1)
   end
 
-  it 'should require a name' do
-    expect {
-      Puppet::Type.type(:aem).new({})
-    }.to raise_error(Puppet::Error, 'Title or name must be provided')
+  describe 'namevar validation' do
+    it 'should have :name as its namevar' do
+      expect(described_class.key_attributes).to eq([:name])
+    end
   end
 
-  describe 'name' do
-
-    it 'should accept a name' do
-      expect(@aem[:name]).to eq('author')
+  describe 'when validating attributes' do
+    [:name, :source].each do |param|
+      it "should have a #{param} parameter" do
+        expect(described_class.attrtype(param)).to eq(:param)
+      end
     end
 
-    it 'name should be lowercase'  do
-      @aem[:name] = 'PUBLISH'
-      expect(@aem[:name]).to eq('publish')
+    [:version, :home, :user, :group, :port, :type, :user, :group].each do |property|
+      it "should have a #{property} property" do
+        expect(described_class.attrtype(property)).to eq(:property)
+      end
     end
+  end
 
-  end # End name
+  describe 'when validating values' do
 
-  describe 'source' do
-
-    it 'should require source if ensure present' do
-      expect(Dir).to receive(:exists?).and_return(true)
-      expect {
-        Puppet::Type.type(:aem).new({ :name => 'author', :ensure => :present })
-      }.to raise_error(Puppet::Error, /Source jar is required/)
-    end
-
-    it 'should require source to exist' do
-      expect(File).to receive(:exists?).with('/no/jar').and_return(false)
-      expect {
-        Puppet::Type.type(:aem).new({
-          :name     => 'author',
-          :ensure   => :present,
-          :source   => '/no/jar',
-        })
-      }.to raise_error(Puppet::Error)
-    end
-
-  end # End source
-
-  describe 'version' do
-
-    #it 'should require version if ensure is present' do
-    #  expect {
-    #    File.stubs(:exists?).with(:file).returns(:true)
-    #    Puppet::Type.type(:aem).new({:name => 'author', :ensure => :present, :source => :source})
-    #  }.to raise_error(Puppet::Error, /Version is required/)
-    #end
-
-    it 'should accept a version' do
-      expect(@aem[:version]).to eq('6.1')
-    end
-
-    it 'should accept a version major/minor/bug' do
-      @aem[:version] = '5.6.1'
-      expect(@aem[:version]).to eq('5.6.1')
-    end
-
-    it 'should require minor version' do
-      expect{ @aem[:version] = '6' }.to raise_error(Puppet::Error)
-    end
-
-    it 'should not require bug version' do
-      @aem[:version] = '6.1'
-      expect(@aem[:version]).to eq('6.1')
-    end
-
-    it 'should allow no more than more than bug version' do
-      expect{ @aem[:version] = '5.6.1.0' }.to raise_error(Puppet::Error)
-    end
-  end #End version
-
-  describe 'home parameter' do
-
-    context 'linux', :platform => :linux do
-
-      it 'should have default linux value' do
-        expect(@aem[:home]).to eq('/opt/aem')
+    describe 'ensure', :setup => :required do
+      it 'should support present as a value for ensure' do
+        expect { described_class.new(:name => 'bar', :ensure => :present, :source => source) }.to_not raise_error
       end
 
-      it 'should accept linux absolute paths' do
-        expect(Dir).to receive(:exists?).and_return(true)
-        @aem[:home] = '/opt/aem/author'
-        expect(@aem[:home]).to eq('/opt/aem/author')
+      it 'should support absent as a value for ensure' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent) }.to_not raise_error
       end
 
-      it 'should require an absolute path' do
-        Puppet::Util.stubs(:absolute_path?).returns(false)
-        expect { @aem[:home] = 'not valid' }.to raise_error(Puppet::Error)
+      it 'should not support other values' do
+        expect { described_class.new(:name => 'bar', :ensure => :bar) }.to raise_error(Puppet::Error, /Invalid value/)
       end
-    end # End linux
+    end
 
-    context 'windows', :platform => :windows do
-
-      it 'should have default windows value' do
-        expect(@aem[:home]).to eq('C:/aem')
+    describe 'name', :setup => :required do
+      it 'should be required' do
+        expect { described_class.new({}) }.to raise_error(Puppet::Error, 'Title or name must be provided')
       end
 
-      it 'should accept windows absolute paths' do
-        expect(Dir).to receive(:exists?).and_return(true)
-        @aem[:home] = 'C:/opt/aem/author'
-        expect(@aem[:home]).to eq('C:/opt/aem/author')
+      it 'should accept a name' do
+        inst = described_class.new(:name => 'bar')
+        expect(inst[:name]).to eq('bar')
+      end
+
+      it 'should be munged to lowercase'  do
+        inst = described_class.new(:name => 'BAR')
+        expect(inst[:name]).to eq('bar')
+      end
+    end
+
+    describe 'source', :setup => :required do
+      it 'should require source to be specified' do
+        expect { described_class.new(:name => 'bar', :ensure => :present) }.to raise_error(
+        Puppet::Error, /Source jar is required/)
+      end
+
+      it 'should require source to exist' do
+        expect(File).to receive(:exists?).with('foo.jar').and_return(false)
+        expect { described_class.new(:name => 'bar', :ensure => :present, :source => 'foo.jar') }.to raise_error(
+        Puppet::Error, /AEM installer .* not found/)
+      end
+
+      it 'should work as expected when ensure is :present' do
+        expect { described_class.new(:name => 'bar', :ensure => :present, :source => source) }.to_not raise_error
+      end
+    end
+
+    describe 'version', :setup => :required do
+      it 'should support valid major/minor format' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :version => 6.0) }.to_not raise_error
+      end
+
+      it 'should support valid major/minor/revision format' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :version => '6.0.0') }.to_not raise_error
+      end
+
+      it 'should require minor version' do
+        expect { described_class.new(:name => 'bar', :version => 6) }.to raise_error(Puppet::Error, /Invalid value/)
+      end
+
+      it 'should not support beyond bug fix version' do
+        expect { described_class.new(:name => 'bar', :version => '6.0.0.0') }.to raise_error(Puppet::Error, /Invalid value/)
+      end
+
+      it 'should munge to a string' do
+        inst = described_class.new(:name => 'bar', :ensure => :absent, :version => 6.0)
+        expect( inst[:version] ).to be_a(String)
       end
       
-      it 'should require an absolute path' do
-        Puppet::Util.stubs(:absolute_path?).returns(false)
-        expect { @aem[:home] = 'not valid' }.to raise_error(Puppet::Error)
+    end
+
+    describe 'home' do
+      context 'linux', :platform => :linux do
+        it 'should have a default value', :setup => :required do
+          inst = described_class.new(:name => 'bar', :ensure => :absent)
+          expect( inst[:home] ).to eq('/opt/aem')
+        end
+
+        it 'should require absolute paths' do
+          expect { described_class.new(:name => 'bar', :ensure => :present,
+            :home => 'not/absolute', :source => source) }.to raise_error(Puppet::Error, /fully qualified/)
+        end
+
+        it 'should require path to exist' do
+          expect { described_class.new(:name => 'bar', :ensure => :present,
+            :home => '/does/not/exist', :source => source) }.to raise_error(Puppet::Error, /not found/)
+        end
       end
-    end # End windows
 
-  end # End home
+      context 'windows', :platform => :windows do
+        it 'should have a default value', :setup => :required do
+          inst = described_class.new(:name => 'bar', :ensure => :absent)
+          expect( inst[:home] ).to eq('C:/aem')
+        end
 
-  describe 'autorequire' do
-#    it 'autorequires the user to run as' do
-#      fail("Implement test cases.")
-#    end
-#
-#    it 'autorequires the group to run as' do
-#      fail("Implement test cases.")
-#    end
-#
-#    it 'autorequires the source file' do
-#      fail("Implement test cases.")
-#    end
-#
-#    it 'autorequires the home directory' do
-#      fail("Implement test cases.")
-#    end
+        it 'should require absolute paths' do
+          expect { described_class.new(:name => 'bar', :ensure => :present,
+            :home => 'not/absolute', :source => source) }.to raise_error(Puppet::Error, /fully qualified/)
+        end
+
+        it 'should require path to exist' do
+          expect { described_class.new(:name => 'bar', :ensure => :present,
+            :home => 'C:/not/absolute', :source => source) }.to raise_error(Puppet::Error, /not found/)
+        end
+      end
+    end
+
+    describe 'port', :setup => :required do
+      it 'should have a default value' do
+        inst = described_class.new(:name => 'bar', :ensure => :absent)
+        expect( inst[:port] ).to eq(4502)
+      end
+
+      it 'should always be a number' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :port => 'NaN')
+        }.to raise_error(Puppet::Error, /Invalid value/)
+      end
+    end
+
+    describe 'type', :setup => :required do
+      it 'should have a default value' do
+        inst = described_class.new(:name => 'bar', :ensure => :absent)
+        expect( inst[:type] ).to eq(:author)
+      end
+
+      it 'should support type author' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :type => :author)
+        }.to_not raise_error
+      end
+
+      it 'should support type publish' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :type => :publish)
+        }.to_not raise_error
+      end
+
+      it 'should not support type any other value' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :type => :anothertype)
+        }.to raise_error(Puppet::Error, /Invalid value/)
+      end
+
+    end
 
   end
-  
+
+  describe 'autorequire' do
+    #    it 'autorequires the user to run as' do
+    #      fail("Implement test cases.")
+    #    end
+    #
+    #    it 'autorequires the group to run as' do
+    #      fail("Implement test cases.")
+    #    end
+    #
+    #    it 'autorequires the source file' do
+    #      fail("Implement test cases.")
+    #    end
+    #
+    #    it 'autorequires the home directory' do
+    #      fail("Implement test cases.")
+    #    end
+
+  end
+
 end

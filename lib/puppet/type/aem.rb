@@ -4,17 +4,18 @@ Puppet::Type.newtype(:aem) do
 
   @doc = "Install AEM on a system. This includes:
 
-      - Configuring preinstall properties for appropriate launch state.
+      - Configuring pre-install properties for appropriate launch state.
       - Managing licensing information
       - Cycling the system after installation to ensure final state."
 
   ensurable
+  #TODO Consider adding other ensurable "managed" vs "unmanaged
 
   #TODO Consider adding features.
 
   newparam(:name, :namevar => true) do
     desc "The name of the AEM Instance."
-    
+
     munge do |value|
       value.downcase
     end
@@ -41,11 +42,7 @@ Puppet::Type.newtype(:aem) do
       "#{value}"
     end
 
-    # Figure out how to not set this unless read from installation of instance
-    def insync?(is)
-      "#{is}" == "#{should}"
-    end
-
+    #TODO This can't be changed after installation
   end
 
   newproperty(:home) do
@@ -57,7 +54,7 @@ Puppet::Type.newtype(:aem) do
 
     validate do |value|
       unless Puppet::Util.absolute_path?(value)
-        fail Puppet::Error, "AEM Home must be fully qualified, not '#{value}'"
+        fail Puppet::ResourceError, "AEM Home must be fully qualified, not '#{value}'"
       end
       fail("AEM home directory (#{value}) not found.") unless Dir.exists?(value)
 
@@ -65,22 +62,27 @@ Puppet::Type.newtype(:aem) do
 
   end
 
+  newproperty(:port) do
+
+    defaultto 4502
+    newvalues(/^\d+$/)
+
+  end
+
+  newproperty(:type) do
+
+    defaultto :author
+    newvalues(:author, :publish)
+    #TODO This can't be changed after installation
+
+  end
+
   newproperty(:user) do
+    #TODO This can't be changed after installation
   end
 
   newproperty(:group) do
-  end
-
-  newproperty(:port) do
-    
-  end
-
-  autorequire(:user) do
-
-  end
-
-  autorequire(:group) do
-
+    #TODO This can't be changed after installation
   end
 
   autorequire(:file) do
@@ -96,6 +98,20 @@ Puppet::Type.newtype(:aem) do
     autos
   end
 
+  autorequire(:user) do
+    @parameters[:user]
+  end
+
+  [:user, :group].each do |type|
+    autorequire(type) do
+      if @parameters.include?(type)
+        val = @parameters[type]
+        puts "Autorequire #{type}: #{val}"
+        val
+      end
+    end
+  end
+
   validate do
     if self[:ensure] == :present and self[:source].nil?
       fail('Source jar is required when ensure is present')
@@ -105,19 +121,18 @@ Puppet::Type.newtype(:aem) do
     #end
   end
 
-  
-#  newparam(:include_sample_content) do
-#    desc "Specify whether or not to include sample content"
-#    defaultto :true
-#    newvalues(:true, :false)
-#  end
+  #  newparam(:include_sample_content) do
+  #    desc "Specify whether or not to include sample content"
+  #    defaultto :true
+  #    newvalues(:true, :false)
+  #  end
 
-#  newproperty(:port) do
-#    desc "The port to which AEM will bind."
-#    defaultto '4502'
-#    newvalues(/^\d+$/)
-#  end
-  
+  #  newproperty(:port) do
+  #    desc "The port to which AEM will bind."
+  #    defaultto '4502'
+  #    newvalues(/^\d+$/)
+  #  end
+
   # TODO Add log level property
   # TODO Add JVM property
   # TODO Add Mono properties
