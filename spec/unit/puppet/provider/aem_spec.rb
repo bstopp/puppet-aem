@@ -28,8 +28,8 @@ describe Puppet::Provider::AEM do
 
   before :example do
     expect(Puppet::Util).to receive(:absolute_path?).and_return(true).at_most(1)
-    expect(Dir).to receive(:exists?).and_return(true).at_most(1)
-    expect(File).to receive(:exists?).with(source).and_return(true).at_most(1)
+    expect(File).to receive(:directory?).and_return(true).at_most(1)
+    expect(File).to receive(:file?).with(source).and_return(true).at_most(1)
   end
 
   describe 'exists?' do
@@ -41,7 +41,7 @@ describe Puppet::Provider::AEM do
       ]
     end
     it 'should not if home directory does not' do
-      expect(File).to receive(:exists?).with(resource[:home]).and_return(false)
+      expect(File).to receive(:directory?).with(resource[:home]).and_return(false)
 
       provider = @provider_class.new
       provider.resource = resource
@@ -49,7 +49,7 @@ describe Puppet::Provider::AEM do
     end
 
     it 'should not if jar file does not' do
-      expect(File).to receive(:exists?).with(resource[:home]).and_return(true)
+      expect(File).to receive(:directory?).with(resource[:home]).and_return(true)
 
       rec = expect(Dir).to receive(:foreach)
       msgex = nil
@@ -63,7 +63,7 @@ describe Puppet::Provider::AEM do
     end
 
     it 'should if jar does' do
-      expect(File).to receive(:exists?).with(resource[:home]).and_return(true)
+      expect(File).to receive(:directory?).with(resource[:home]).and_return(true)
       contents = no_contents.dup
       contents << '/opt/aem/apps/cq-quickstart-anything.jar'
 

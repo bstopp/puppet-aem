@@ -8,15 +8,15 @@ describe Puppet::Type.type(:aem).provider(:linux) do
   let (:install_name) { 'cq-quickstart-*-standalone*.jar' }
 
   before :each do
-    #    Puppet::Util.stubs(:which).with('find').returns('/bin/find')
     described_class.stubs(:which).with('find').returns('/bin/find')
-    #    Puppet::Util.stubs(:which).with('java').returns('/usr/bin/java')
     described_class.stubs(:which).with('java').returns('/usr/bin/java')
   end
 
   let(:resource) do
-    expect(File).to receive(:exists?).with(source).and_return(true)
-    expect(Dir).to receive(:exists?).with('/opt/aem').and_return(true)
+    allow(File).to receive(:file?).with(any_args).and_call_original
+    expect(File).to receive(:file?).with(source).and_return(true)
+    allow(File).to receive(:directory?).with(any_args).and_call_original
+    expect(File).to receive(:directory?).with('/opt/aem').and_return(true)
     Puppet::Type.type(:aem).new({
       :name     => 'aem',
       :ensure   => :present,
@@ -68,54 +68,100 @@ describe Puppet::Type.type(:aem).provider(:linux) do
 
   describe 'self.instances' do
 
-    let(:installs) do
-      <<-FIND_OUTPUT
-      /opt/aem/crx-quickstart/app/cq-quickstart-5.6.1-standalone.jar
-      /opt/aem/author/crx-quickstart/app/cq-quickstart-6.0.0-standalone.jar
-      /opt/aem/publish/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar
-      FIND_OUTPUT
-    end
-
     it 'should have an instances method' do
       expect(described_class).to respond_to(:instances)
     end
 
-    it 'returns an array of installs' do
-      expect(Puppet::Util::Execution).to receive(:execpipe).with(['/bin/find', '/', "-name \"#{install_name}\"", '-type f']).and_yield(installs)
+    shared_examples 'self.instances' do |opts|
+      it {
+        expect(Puppet::Util::Execution).to receive(:execpipe).with(['/bin/find', '/', "-name \"#{install_name}\"", '-type f']).and_yield(installs)
+        expect(File).to receive(:stat).and_return(filestats)
+        expect(Etc).to receive(:getpwuid).with(ugid).and_return(id)
+        expect(Etc).to receive(:getgrgid).with(ugid).and_return(id)
 
-      expect(File).to receive(:stat).and_return(filestats).exactly(3).times
-      expect(Etc).to receive(:getpwuid).with(ugid).and_return(id).exactly(3).times
-      expect(Etc).to receive(:getgrgid).with(ugid).and_return(id).exactly(3).times
+        props = {
+          :name     => opts[:home],
+          :home     => opts[:home],
+          :version  => opts[:version],
+          :ensure   => :present,
+          :user     => 'aem',
+          :group    => 'aem',
+        }
 
-      installed = described_class.instances
+        if opts[:env]
+          envfile = File.join(opts[:home], 'bin', 'start-env')
+          expect(File).to receive(:file?).with(envfile).and_return(true)
+          expect(File).to receive(:readable?).with(envfile).and_return(true)
 
-      expect(installed[0].properties).to eq({
-        :name     => '/opt/aem',
-        :home     => '/opt/aem',
-        :version  => '5.6.1',
-        :ensure   => :present,
-        :user     => 'aem',
-        :group    => 'aem',
-      })
+          envcontents = "\n"
+          if opts[:env][:port]
+            envcontents << "CQ_PORT=#{opts[:env][:port]}\n"
+            props.store(:port, opts[:env][:port])
+          end
 
-      expect(installed[1].properties).to eq({
-        :name     => '/opt/aem/author',
-        :home     => '/opt/aem/author',
-        :version  => '6.0.0',
-        :ensure   => :present,
-        :user     => 'aem',
-        :group    => 'aem',
-      })
+          if opts[:env][:type]
+            envcontents << "CQ_TYPE=#{opts[:env][:type]}\n"
+            props.store(:type, opts[:env][:type].to_s)
+          end
 
-      expect(installed.last.properties).to eq({
-        :name     => '/opt/aem/publish',
-        :home     => '/opt/aem/publish',
-        :version  => '6.1.0',
-        :ensure   => :present,
-        :user     => 'aem',
-        :group    => 'aem',
-      })
+          expect(File).to receive(:read).with(envfile).and_return(envcontents)
+        end
 
+        installed = described_class.instances
+        expect(installed[0].properties).to eq(props)
+      }
+    end
+
+    describe 'should support standard filename' do
+
+      let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-5.6.1-standalone.jar' }
+
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '5.6.1'
+    end
+
+    describe 'should support arbitrary home directory size' do
+
+      let(:installs) { '/opt/aem/author/path/to/home/crx-quickstart/app/cq-quickstart-6.0.0-standalone.jar' }
+
+      it_should_behave_like 'self.instances', :home => '/opt/aem/author/path/to/home', :version => '6.0.0'
+    end
+
+    describe 'should support v6.1 filename' do
+
+      let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar' }
+
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '6.1.0'
+    end
+
+    describe 'should support empty env file ' do
+
+      let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar' }
+
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '6.1.0', :env => { }
+    end
+
+    describe 'should support env file with port' do
+
+      let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar' }
+      envprops  = { :port => 5 }
+
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '6.1.0', :env => envprops
+    end
+
+    describe 'should support env file with type' do
+
+      let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar' }
+      envprops  = { :type => :author }
+
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '6.1.0', :env => envprops
+    end
+
+    describe 'should support env file with port & type' do
+
+      let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar' }
+      envprops  = { :type => :author, :port => 8080 }
+
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '6.1.0', :env => envprops
     end
   end
 
@@ -204,8 +250,10 @@ describe Puppet::Type.type(:aem).provider(:linux) do
 
     describe 'supports non default port' do
       let(:resource) do
-        expect(File).to receive(:exists?).with(source).and_return(true)
-        expect(Dir).to receive(:exists?).with('/opt/aem').and_return(true)
+        allow(File).to receive(:file?).with(any_args).and_call_original
+        expect(File).to receive(:file?).with(source).and_return(true)
+        allow(File).to receive(:directory?).with(any_args).and_call_original
+        expect(File).to receive(:directory?).with('/opt/aem').and_return(true)
         Puppet::Type.type(:aem).new({
           :name     => 'aem',
           :ensure   => :present,
@@ -221,8 +269,10 @@ describe Puppet::Type.type(:aem).provider(:linux) do
 
     describe 'creates config file with values' do
       let(:resource) do
-        expect(File).to receive(:exists?).with(source).and_return(true)
-        expect(Dir).to receive(:exists?).with('/opt/aem').and_return(true)
+        allow(File).to receive(:file?).with(any_args).and_call_original
+        expect(File).to receive(:file?).with(source).and_return(true)
+        allow(File).to receive(:directory?).with(any_args).and_call_original
+        expect(File).to receive(:directory?).with('/opt/aem').and_return(true)
         Puppet::Type.type(:aem).new({
           :name     => 'aem',
           :ensure   => :present,

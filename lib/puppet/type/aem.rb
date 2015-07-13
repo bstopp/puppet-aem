@@ -29,7 +29,7 @@ Puppet::Type.newtype(:aem) do
     desc "The AEM installer jar to use for installation."
 
     validate do |value|
-      fail("AEM installer jar (#{value}) not found.") unless File.exists?(value)
+      fail("AEM installer jar (#{value}) not found.") unless File.file?(value)
     end
 
   end
@@ -56,7 +56,7 @@ Puppet::Type.newtype(:aem) do
       unless Puppet::Util.absolute_path?(value)
         fail Puppet::ResourceError, "AEM Home must be fully qualified, not '#{value}'"
       end
-      fail("AEM home directory (#{value}) not found.") unless Dir.exists?(value)
+      fail("AEM home directory (#{value}) not found.") unless File.directory?(value)
 
     end
 

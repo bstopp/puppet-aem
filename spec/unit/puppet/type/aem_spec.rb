@@ -23,9 +23,9 @@ describe Puppet::Type.type(:aem) do
 
   before :example, :setup => :required do
     expect(Puppet::Util).to receive(:absolute_path?).and_return(true).at_most(1)
-    expect(Dir).to receive(:exists?).and_return(true).at_most(1)
+    expect(File).to receive(:directory?).and_return(true).at_most(1)
 
-    expect(File).to receive(:exists?).with(source).and_return(true).at_most(1)
+    expect(File).to receive(:file?).with(source).and_return(true).at_most(1)
   end
 
   describe 'namevar validation' do
@@ -87,7 +87,7 @@ describe Puppet::Type.type(:aem) do
       end
 
       it 'should require source to exist' do
-        expect(File).to receive(:exists?).with('foo.jar').and_return(false)
+        expect(File).to receive(:file?).with('foo.jar').and_return(false)
         expect { described_class.new(:name => 'bar', :ensure => :present, :source => 'foo.jar') }.to raise_error(
         Puppet::Error, /AEM installer .* not found/)
       end
