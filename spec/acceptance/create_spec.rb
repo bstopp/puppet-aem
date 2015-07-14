@@ -59,11 +59,10 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
     it 'should work with no errors' do
       pp = <<-MANIFEST
         aem { 'aem' :
-          ensure      => 'present',
+          ensure      => present,
+          source      => '/tmp/aem-quickstart.jar',
           version     => '6.1.0',
           home        => '/opt/aem',
-          source      => '/tmp/aem-quickstart-4502.jar',
-          port        => 4502,
           user        => 'aem',
           group       => 'aem',
         }
@@ -85,7 +84,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         ensure      => 'present',
         version     => '6.1.0',
         home        => '/opt/aem/faux',
-        source      => '/tmp/aem-quickstart-4502.jar',
+        source      => '/tmp/aem-quickstart.jar',
       }
       MANIFEST
 

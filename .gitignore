@@ -6,7 +6,6 @@ spec/fixtures/
 coverage/
 .idea/
 *.iml
-files/aem-quickstart-*jar
 .project
 .buildpath
 log/

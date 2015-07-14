@@ -11,7 +11,7 @@ Puppet::Type.newtype(:aem) do
   ensurable
   #TODO Consider adding other ensurable "managed" vs "unmanaged
 
-  #TODO Consider adding features.
+  #TODO Consider adding features (crx2, mongo)
 
   newparam(:name, :namevar => true) do
     desc "The name of the AEM Instance."
@@ -106,7 +106,6 @@ Puppet::Type.newtype(:aem) do
     autorequire(type) do
       if @parameters.include?(type)
         val = @parameters[type]
-        puts "Autorequire #{type}: #{val}"
         val
       end
     end

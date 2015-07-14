@@ -6,5 +6,42 @@
 # This file manages the configuration of the run script.
 #
 
-CQ_PORT=<%= @resource[:port] %>
-CQ_TYPE=<%= @resource[:type] %>
+
+PORT=<%= @resource[:port] %>
+TYPE=<%= @resource[:type] %>
+CONTEXT_PATH=
+RUNMODES=
+BASE_FOLDER=
+
+LOG_LEVEL=
+
+DEBUG_PORT=
+
+
+JVM_MEM_OPTS='-Xmx1024m -XX:MaxPermSize=256M'
+
+JVM_OPTS='-server -Djava.awt.headless=true <%# @resource[:jvm_opts] %>'
+
+SLING_PROPS='conf/sling.properties'
+
+# Do we ever implement these?
+#HOST=
+#FILE_SIZE_LIMIT
+
+# ------------------------------------------------------------------------------
+# persistence mode
+# ------------------------------------------------------------------------------
+# the persistence mode can not be switched for an existing repository
+#CQ_RUNMODE="${CQ_RUNMODE},crx3,crx3tar"
+#CQ_RUNMODE="${CQ_RUNMODE},crx3,crx3mongo"
+
+# settings for mongo db
+#if [ -z "$CQ_MONGO_HOST" ]; then
+#	CQ_MONGO_HOST=127.0.0.1
+#fi
+#if [ -z "$CQ_MONGO_PORT" ]; then
+#	CQ_MONGO_PORT=27017
+#fi
+#if [ -z "$CQ_MONGO_DB" ]; then
+#	CQ_MONGO_DB=aem6
+#fi

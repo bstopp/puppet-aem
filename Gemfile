@@ -1,6 +1,7 @@
 source ENV['GEM_SOURCE'] || 'https://rubygems.org'
 
 group :development, :tests do
+  gem 'rspec',  '~> 3.3',       :require => false
   gem 'rake',                   :require => false
   gem 'metadata-json-lint',     :require => false
   gem 'rspec-puppet',           :require => false
@@ -9,12 +10,10 @@ group :development, :tests do
 end
 
 group :system_tests do
-  #gem 'beaker', '~> 2.14', '>=2.14.2',  :require => false
-  gem 'beaker',                         :require => false
+  gem 'beaker', '>=2.15.0',             :require => false
   gem 'beaker-rspec',                   :require => false
   gem 'serverspec',                     :require => false
-  gem 'beaker-puppet_install_helper',   :require => false
-  #gem 'beaker-puppet_install_helper','~> 0.1', '>= 0.1.4', :require => false
+  gem 'beaker-puppet_install_helper', '>= 0.2.1', :require => false
 end
 
 if facterversion = ENV['FACTER_GEM_VERSION']

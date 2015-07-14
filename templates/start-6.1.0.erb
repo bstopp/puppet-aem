@@ -7,63 +7,11 @@
 # is named 'start-orig' in this folder.
 #
 
-# hostname of the interface that this server should listen to
-#if [ -z "$CQ_HOST" ]; then
-#	CQ_HOST=
-#fi
-
-# runmode(s)
-# will not be used if repository is already present
-#if [ -z "$CQ_RUNMODE" ]; then
-#	CQ_RUNMODE='author'
-#fi
-
-# name of the jarfile
-#if [ -z "$CQ_JARFILE" ]; then
-#	CQ_JARFILE=''
-#fi
-
-# default JVM options
-#if [ -z "$CQ_JVM_OPTS" ]; then
-#	CQ_JVM_OPTS='-server -Xmx1024m -XX:MaxPermSize=256M -Djava.awt.headless=true'
-#fi
-
-# file size limit (ulimit)
-#if [ -z "$CQ_FILE_SIZE_LIMIT" ]; then
-#	CQ_FILE_SIZE_LIMIT=8192
-#fi
-
-# TODO Add debug logic.
-# TODO Add Log level logic.
-
-
-# ------------------------------------------------------------------------------
-# persistence mode
-# ------------------------------------------------------------------------------
-# the persistence mode can not be switched for an existing repository
-#CQ_RUNMODE="${CQ_RUNMODE},crx3,crx3tar"
-#CQ_RUNMODE="${CQ_RUNMODE},crx3,crx3mongo"
-
-# settings for mongo db
-#if [ -z "$CQ_MONGO_HOST" ]; then
-#	CQ_MONGO_HOST=127.0.0.1
-#fi
-#if [ -z "$CQ_MONGO_PORT" ]; then
-#	CQ_MONGO_PORT=27017
-#fi
-#if [ -z "$CQ_MONGO_DB" ]; then
-#	CQ_MONGO_DB=aem6
-#fi
-
-# ------------------------------------------------------------------------------
-# do not configure below this point
-# ------------------------------------------------------------------------------
-
-if [ $CQ_FILE_SIZE_LIMIT ]; then
+if [ $FILE_SIZE_LIMIT ]; then
 	CURRENT_ULIMIT=`ulimit`
 	if [ $CURRENT_ULIMIT != "unlimited" ]; then
-		if [ $CURRENT_ULIMIT -lt $CQ_FILE_SIZE_LIMIT ]; then
-			echo "ulimit ${CURRENT_ULIMIT} is too small (must be at least ${CQ_FILE_SIZE_LIMIT})"
+		if [ $CURRENT_ULIMIT -lt $FILE_SIZE_LIMIT ]; then
+			echo "ulimit ${CURRENT_ULIMIT} is too small (must be at least ${FILE_SIZE_LIMIT})"
 			exit 1
 		fi
 	fi
@@ -71,40 +19,46 @@ fi
 
 BIN_PATH=$(dirname $0)
 cd $BIN_PATH/..
-if [ -z $CQ_JARFILE ]; then
-	CQ_JARFILE=`ls app/*.jar | head -1`
-fi
-CURR_DIR=$(basename $(pwd))
-cd ..
-START_OPTS="start -c ${CURR_DIR} -i launchpad"
-if [ $CQ_PORT ]; then
-	START_OPTS="${START_OPTS} -p ${CQ_PORT}"
-fi
-if [ $CQ_RUNMODE ]; then
-	CQ_JVM_OPTS="${CQ_JVM_OPTS} -Dsling.run.modes=${CQ_RUNMODE}"
-fi
-if [ $CQ_HOST ]; then
-	CQ_JVM_OPTS="${CQ_JVM_OPTS} -Dorg.apache.felix.http.host=${CQ_HOST}"
-    START_OPTS="${START_OPTS} -a ${CQ_HOST}"
-fi
-if [ $CQ_MONGO_HOST ]; then
-    START_OPTS="${START_OPTS} -Doak.mongo.host=${CQ_MONGO_HOST}"
-fi
-if [ $CQ_MONGO_PORT ]; then
-    START_OPTS="${START_OPTS} -Doak.mongo.port=${CQ_MONGO_PORT}"
-fi
-if [ $CQ_MONGO_DB ]; then
-    START_OPTS="${START_OPTS} -Doak.mongo.db=${CQ_MONGO_DB}"
+
+. bin/start-env
+
+if [ -z $JARFILE ]; then
+	JARFILE=`ls app/*.jar | head -1`
 fi
 
-if [ $CQ_USE_JAAS ]; then
-    CQ_JVM_OPTS="${CQ_JVM_OPTS} -Djava.security.auth.login.config=${CQ_JAAS_CONFIG}"
-fi
-START_OPTS="${START_OPTS} -Dsling.properties=conf/sling.properties"
+CURR_DIR=$(basename $(pwd))
+cd ..
+
+START_OPTS="start -c ${CURR_DIR} -i launchpad -p ${PORT}"
+START_OPTS="${START_OPTS} -Dsling.properties=${SLING_PROPS}"
+
+JVM_OPTS="${JVM_MEM_OPTS} ${JVM_OPTS} -Dsling.run.modes=${TYPE},${RUNMODES}"
+
+#if [ $HOST ]; then
+#	JVM_OPTS="${JVM_OPTS} -Dorg.apache.felix.http.host=${HOST}"
+#    START_OPTS="${START_OPTS} -a ${HOST}"
+#fi
+
+#TODO Add if logic for erb based on feature mongo when implemented
+#if [ $CQ_MONGO_HOST ]; then
+#    START_OPTS="${START_OPTS} -Doak.mongo.host=${CQ_MONGO_HOST}"
+#fi
+#if [ $CQ_MONGO_PORT ]; then
+#    START_OPTS="${START_OPTS} -Doak.mongo.port=${CQ_MONGO_PORT}"
+#fi
+#if [ $CQ_MONGO_DB ]; then
+#    START_OPTS="${START_OPTS} -Doak.mongo.db=${CQ_MONGO_DB}"
+#fi
+
+#TODO Update this if version is < 5.6.1; or on crx2
+#if [ $CQ_USE_JAAS ]; then
+#    JVM_OPTS="${JVM_OPTS} -Djava.security.auth.login.config=${JAAS_CONFIG}"
+#fi
+
 
 (
   (
-    java $CQ_JVM_OPTS -jar $CURR_DIR/$CQ_JARFILE $START_OPTS &
+    java $JVM_OPTS -jar $CURR_DIR/$JARFILE $START_OPTS &
     echo $! > $CURR_DIR/conf/cq.pid
   ) >> $CURR_DIR/logs/stdout.log 2>&1
 ) &

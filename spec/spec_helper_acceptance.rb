@@ -4,20 +4,15 @@ require 'beaker/puppet_install_helper'
 
 run_puppet_install_helper
 
-if ENV["RS_PROVISION"] == "no" or ENV["BEAKER_provision"] == "no"
-  add_foss_defaults_on(hosts)
-  add_puppet_paths_on(hosts)
-end
-
 UNSUPPORTED_PLATFORMS = ['Suse','windows','AIX','Solaris']
 
 RSpec.configure do |c|
   module_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
-  aem_installer = File.expand_path(File.join(module_root, 'files', 'aem-quickstart-4502.jar'))
+  aem_installer = File.expand_path(File.join(module_root, 'files', 'aem-quickstart-6.0.jar'))
 
   scp_to(hosts, aem_installer, 
-    '/tmp/aem-quickstart-4502.jar') unless ENV["RS_PROVISION="] == "no" or ENV["BEAKER_provision"] == "no"
+    '/tmp/aem-quickstart.jar') unless ENV["RS_PROVISION="] == "no" or ENV["BEAKER_provision"] == "no"
 
   c.formatter = :documentation
 

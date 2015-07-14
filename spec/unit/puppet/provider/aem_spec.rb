@@ -31,52 +31,74 @@ describe Puppet::Provider::AEM do
     expect(File).to receive(:directory?).and_return(true).at_most(1)
     expect(File).to receive(:file?).with(source).and_return(true).at_most(1)
   end
+  
+  describe 'self.prefetch' do
+    it 'should respond' do
+      expect(described_class).to respond_to(:prefetch)
+    end
+  end
 
   describe 'exists?' do
-    let(:no_contents) do
-      [
-        '/opt/aem/apps/no-match.jar',
-        '/opt/aem/apps/not-cq-quickstart-anything.jar',
-        '/opt/aem/apps/cq-quickstart-nothing.notjar'
-      ]
+    
+    shared_examples 'exists_check' do |opts|
+      it {
+        provider = @provider_class.new( { :ensure => opts[:ensure] })
+        expect( provider.exists? ).to eq(opts[:present])
+      }
     end
-    it 'should not if home directory does not' do
-      expect(File).to receive(:directory?).with(resource[:home]).and_return(false)
-
-      provider = @provider_class.new
-      provider.resource = resource
-      expect( provider.exists? ).to be_falsy
+    
+    describe 'ensure is absent' do
+      it_should_behave_like 'exists_check', :ensure => :absent, :present => false
     end
 
-    it 'should not if jar file does not' do
-      expect(File).to receive(:directory?).with(resource[:home]).and_return(true)
-
-      rec = expect(Dir).to receive(:foreach)
-      msgex = nil
-      no_contents.each do |c|
-        msgex = rec.and_yield(c)
-      end
-
-      provider = @provider_class.new
-      provider.resource = resource
-      expect( provider.exists? ).to be_falsy
+    describe 'ensure is present' do
+      it_should_behave_like 'exists_check', :ensure => :present, :present => true
     end
 
-    it 'should if jar does' do
-      expect(File).to receive(:directory?).with(resource[:home]).and_return(true)
-      contents = no_contents.dup
-      contents << '/opt/aem/apps/cq-quickstart-anything.jar'
-
-      rec = expect(Dir).to receive(:foreach)
-      msgex = nil
-      contents.each do |c|
-        msgex = rec.and_yield(c)
-      end
-      
-      provider = @provider_class.new
-      provider.resource = resource
-      expect( provider.exists? ).to be_truthy
-    end
+#    let(:no_contents) do
+#      [
+#        '/opt/aem/apps/no-match.jar',
+#        '/opt/aem/apps/not-cq-quickstart-anything.jar',
+#        '/opt/aem/apps/cq-quickstart-nothing.notjar'
+#      ]
+#    end
+#    it 'should not if home directory does not' do
+#      expect(File).to receive(:directory?).with(resource[:home]).and_return(false)
+#
+#      provider = @provider_class.new
+#      provider.resource = resource
+#      expect( provider.exists? ).to be_falsy
+#    end
+#
+#    it 'should not if jar file does not' do
+#      expect(File).to receive(:directory?).with(resource[:home]).and_return(true)
+#
+#      rec = expect(Dir).to receive(:foreach)
+#      msgex = nil
+#      no_contents.each do |c|
+#        msgex = rec.and_yield(c)
+#      end
+#
+#      provider = @provider_class.new
+#      provider.resource = resource
+#      expect( provider.exists? ).to be_falsy
+#    end
+#
+#    it 'should if jar does' do
+#      expect(File).to receive(:directory?).with(resource[:home]).and_return(true)
+#      contents = no_contents.dup
+#      contents << '/opt/aem/apps/cq-quickstart-anything.jar'
+#
+#      rec = expect(Dir).to receive(:foreach)
+#      msgex = nil
+#      contents.each do |c|
+#        msgex = rec.and_yield(c)
+#      end
+#      
+#      provider = @provider_class.new
+#      provider.resource = resource
+#      expect( provider.exists? ).to be_truthy
+#    end
   end
 
   describe 'destroy' do

@@ -30,7 +30,7 @@ describe 'Required Fields tests.', :unless => UNSUPPORTED_PLATFORMS.include?(fac
 
   context 'home directory' do
 
-    it 'Requires the home directory to exist' do
+    it 'requires the home directory to exist' do
       pp = <<-MANIFEST
         aem { 'aem' :
           ensure      => 'present',
@@ -39,7 +39,7 @@ describe 'Required Fields tests.', :unless => UNSUPPORTED_PLATFORMS.include?(fac
       MANIFEST
 
       apply_manifest pp, :expect_failures => true do |result|
-        expect( result.formatted_output() ).to match(/AEM home directory.*not found/)
+        expect( result.formatted_output() ).to match(/not found/)
       end
 
     end
@@ -47,7 +47,7 @@ describe 'Required Fields tests.', :unless => UNSUPPORTED_PLATFORMS.include?(fac
 
   context 'source parameter' do
 
-    it 'Requires the source to be specified', :need_home => :true  do
+    it 'requires the source to be specified', :need_home => :true  do
       pp = <<-MANIFEST
         aem { 'aem' :
           ensure      => 'present',

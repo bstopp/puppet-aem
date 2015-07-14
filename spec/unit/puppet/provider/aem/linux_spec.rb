@@ -195,10 +195,10 @@ describe Puppet::Type.type(:aem).provider(:linux) do
           port = false
           type = false
 
-          if /CQ_PORT=#{resource[:port]}/ =~ contents
+          if /PORT=#{resource[:port]}/ =~ contents
             port = true
           end
-          if /CQ_TYPE=#{resource[:type]}/ =~ contents
+          if /TYPE=#{resource[:type]}/ =~ contents
             type = true
           end
 
