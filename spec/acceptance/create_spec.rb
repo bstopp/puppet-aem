@@ -4,6 +4,8 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
 
   before :context do
     pp = <<-MANIFEST
+      File { backup => false, }
+
       group { 'aem' : ensure => 'present' }
 
       user { 'aem' : ensure => 'present', gid =>  'aem' }
@@ -12,22 +14,25 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         ensure      => 'directory',
         group       => 'aem',
         owner       => 'aem',
-        backup      => 'false',
       }
 
       file { '/opt/aem/faux' :
         ensure          => 'directory',
-         
       }
 
       file { '/opt/aem/faux/crx-quickstart' :
         ensure          => 'directory',
-         
+      }
+      file { '/opt/aem/faux/crx-quickstart/bin' :
+        ensure        => 'directory',
+      }
+      file { '/opt/aem/faux/crx-quickstart/bin/start-env' :
+        ensure        => 'file',
+        content       => "PORT=4502\nTYPE=author",
       }
 
       file { '/opt/aem/faux/crx-quickstart/app' :
         ensure          => 'directory',
-         
       }
 
       file { '/opt/aem/faux/crx-quickstart/app/cq-quickstart-6.1.0-standalone.jar' :
@@ -38,15 +43,16 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
     apply_manifest(pp, :catch_failures => true)
   end
 
-#  after :context do
-#    pp = <<-MANIFEST
-#      file { '/opt/aem' :
-#        ensure      => 'absent',
-#        force       => 'true',
-#      }
-#    MANIFEST
-#    apply_manifest(pp, :catch_failures => true)
-#  end
+  after :context do
+    pp = <<-MANIFEST
+      File { backup => false, }
+      file { '/opt/aem' :
+        ensure      => 'absent',
+        force       => 'true',
+      }
+    MANIFEST
+    apply_manifest(pp, :catch_failures => true)
+  end
 
   context '#create' do
 
@@ -55,13 +61,15 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         :environment => :root
       }
     end
-    
+
     it 'should work with no errors' do
       pp = <<-MANIFEST
+        File { backup => false, }
+
         aem { 'aem' :
           ensure      => present,
           source      => '/tmp/aem-quickstart.jar',
-          version     => '6.1.0',
+          version     => '6.0.0',
           home        => '/opt/aem',
           user        => 'aem',
           group       => 'aem',
@@ -78,24 +86,26 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
       end
     end
 
-    it 'should not change existing install' do
-      pp = <<-MANIFEST
-      aem { 'existing' :
-        ensure      => 'present',
-        version     => '6.1.0',
-        home        => '/opt/aem/faux',
-        source      => '/tmp/aem-quickstart.jar',
-      }
-      MANIFEST
-
-      apply_manifest(pp, :catch_changes => true)
-
-    end
-
     it 'should be owned by specified user/group' do
       shell('stat -c "%U:%G" /opt/aem/crx-quickstart/app/cq-quickstart*.jar') do |result|
         expect(result.stdout).to match('aem:aem')
       end
     end
+
+    it 'should not change existing install' do
+      pp = <<-MANIFEST
+        File { backup => false, }
+
+        aem { 'existing' :
+          ensure      => 'present',
+          version     => '6.1.0',
+          home        => '/opt/aem/faux',
+          source      => '/tmp/aem-quickstart.jar',
+        }
+      MANIFEST
+
+      apply_manifest(pp, :catch_changes => true)
+    end
+
   end
 end

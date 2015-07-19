@@ -1,12 +1,11 @@
-require 'erb'
-require 'etc'
-require 'fileutils'
 require 'puppet'
 require 'puppet/provider/aem'
-require 'net/http'
 
 Puppet::Type.type(:aem).provide :linux, :parent => Puppet::Provider::AEM do
 
+  self::START_ENV_FILE = 'start-env'
+  self::START_FILE = 'start'
+  self::STOP_FILE = 'stop'
 
   confine :kernel => :linux
   defaultfor :kernel => :linux
@@ -15,7 +14,7 @@ Puppet::Type.type(:aem).provide :linux, :parent => Puppet::Provider::AEM do
   commands :java => 'java'
 
   mk_resource_methods
-  
+
   def self.instances
     installs = []
 
@@ -34,34 +33,18 @@ Puppet::Type.type(:aem).provide :linux, :parent => Puppet::Provider::AEM do
     installs
   end
 
-  def create
-
-    update_exec_opts
-    unpack_jar
-    create_env_script
-    create_start_script
-    call_start_script
-    monitor_site
-    call_stop_script
-
+  def self.get_env_properties(hash)
+    filename = File.join(hash[:home], 'crx-quickstart', 'bin', self::START_ENV_FILE)
+    if File.file?(filename) && File.readable?(filename)
+      contents = File.read(filename)
+      #TODO Is there any way to make this cleaner?
+      hash[:port] = $1.to_i if contents =~ /PORT=(\S+)/
+      hash[:type] = $1.intern if contents =~ /TYPE=(\S+)/
+      # Add additional configuration properties here
+    end
   end
 
   protected
 
-  def unpack_jar
-    cmd = ["#{command(:java)}",'-jar', @resource[:source], '-b', @resource[:home], '-unpack']
-    execute(cmd, @exec_options)
-  end
-
-  # Find the resource instance; populate hash of values based on
-  # result of find.
-  #  def query
-  #
-  #    cmd = [@resource[:home], "-name \"#{self.class::LAUNCHPAD_NAME}\"", '-type f']
-  #    found = find(cmd)
-  #
-  #    @property_hash.update(self.class.found_to_hash(found))
-  #    @property_hash.dup
-  #  end
 
 end

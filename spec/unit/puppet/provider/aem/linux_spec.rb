@@ -24,6 +24,7 @@ describe Puppet::Type.type(:aem).provider(:linux) do
       :version  => '6.1',
       :home     => '/opt/aem',
       :provider => 'linux',
+      :snooze   => 0,
     })
   end
 
@@ -59,6 +60,10 @@ describe Puppet::Type.type(:aem).provider(:linux) do
     MockResponse.new
   end
 
+  let(:exception) do
+    Errno::ECONNREFUSED.new
+  end
+
   Stat = Struct.new(:uid, :gid)
   Id = Struct.new(:name)
 
@@ -89,19 +94,19 @@ describe Puppet::Type.type(:aem).provider(:linux) do
         }
 
         if opts[:env]
-          envfile = File.join(opts[:home], 'bin', 'start-env')
+          envfile = File.join(opts[:home], 'crx-quickstart', 'bin', 'start-env')
           expect(File).to receive(:file?).with(envfile).and_return(true)
           expect(File).to receive(:readable?).with(envfile).and_return(true)
 
           envcontents = "\n"
           if opts[:env][:port]
-            envcontents << "CQ_PORT=#{opts[:env][:port]}\n"
+            envcontents << "PORT=#{opts[:env][:port]}\n"
             props.store(:port, opts[:env][:port])
           end
 
           if opts[:env][:type]
-            envcontents << "CQ_TYPE=#{opts[:env][:type]}\n"
-            props.store(:type, opts[:env][:type].to_s)
+            envcontents << "TYPE=#{opts[:env][:type]}\n"
+            props.store(:type, opts[:env][:type].intern)
           end
 
           expect(File).to receive(:read).with(envfile).and_return(envcontents)
@@ -209,7 +214,7 @@ describe Puppet::Type.type(:aem).provider(:linux) do
 
         # Creates start script
         expect(File).to receive(:rename).with(/start/,/start-orig/).and_return(0)
-        expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start-6.1.0.erb')
+        expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start.erb')
         expect(File).to receive(:write).and_return(0)
         expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
         expect(File).to receive(:chown).with(userid, groupid, any_args)
@@ -217,15 +222,35 @@ describe Puppet::Type.type(:aem).provider(:linux) do
         # Starts the system
         expect(provider).to receive(:execute).with(/start/, execute_options).and_return(0)
 
-        # Monitor System
-        #TODO Figure out why this doesn't work with two responses.
-        # expect(http).to receive(:get_response).with(any_args).once.ordered.and_return(failed_response)
+        # Monitor System for on
+        expect(Net::HTTP).to receive(:get_response) do |uri|
+          uri.path == "http://localhost:#{resource[:port]}"
+        end.once.ordered.and_return(failed_response)
+        expect(failed_response).to receive(:kind_of?).twice.and_return(false)
+
         expect(Net::HTTP).to receive(:get_response) do |uri|
           uri.path == "http://localhost:#{resource[:port]}"
         end.once.ordered.and_return(success_response)
+        if (opts && opts[:redirect])
+          expect(success_response).to receive(:kind_of?).and_return(false)
+        end
+        expect(success_response).to receive(:kind_of?).and_return(true)
 
         # Stop System
         expect(provider).to receive(:execute).with(/stop/, execute_options).and_return(0)
+
+        # Monitor System for off
+        expect(Net::HTTP).to receive(:get_response) do |uri|
+          uri.path == "http://localhost:#{resource[:port]}"
+        end.once.ordered.and_return(success_response)
+        if (opts && opts[:redirect])
+          expect(success_response).to receive(:kind_of?).and_return(false)
+        end
+        expect(success_response).to receive(:kind_of?).and_return(true)
+
+        expect(Net::HTTP).to receive(:get_response) do |uri|
+          uri.path == "http://localhost:#{resource[:port]}"
+        end.once.ordered.and_throw(exception)
 
         provider.create
 
@@ -262,6 +287,7 @@ describe Puppet::Type.type(:aem).provider(:linux) do
           :home     => '/opt/aem',
           :provider => 'linux',
           :port => 8080,
+          :snooze   => 0,
         })
       end
       it_should_behave_like 'create_instance'
@@ -282,10 +308,66 @@ describe Puppet::Type.type(:aem).provider(:linux) do
           :provider => 'linux',
           :port     => 8080,
           :type     => :author,
+          :snooze   => 0,
         })
       end
       it_should_behave_like 'create_instance'
     end
+
+    describe 'creates instance with redirect for monitor' do
+      it_should_behave_like 'create_instance', :redirect => true
+    end
+
+    describe 'monitor timeout' do
+      let(:resource) do
+        allow(File).to receive(:file?).with(any_args).and_call_original
+        expect(File).to receive(:file?).with(source).and_return(true)
+        allow(File).to receive(:directory?).with(any_args).and_call_original
+        expect(File).to receive(:directory?).with('/opt/aem').and_return(true)
+        Puppet::Type.type(:aem).new({
+          :name     => 'aem',
+          :ensure   => :present,
+          :source   => source,
+          :version  => '6.1',
+          :home     => '/opt/aem',
+          :provider => 'linux',
+          :snooze   => 10,
+          :timeout  => 5,
+        })
+      end
+
+      it 'should throw error when monitor timeout occurs' do
+        
+        # Unpacks the jar file
+        expect(provider).to receive(:execute).with(['/usr/bin/java','-jar', source, '-b', resource[:home], '-unpack'],
+        execute_options).and_return(0)
+
+        # Creates the env file
+        expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start-env.erb')
+        expect(File).to receive(:write).and_return(0)
+        expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
+        expect(File).to receive(:chown).with(any_args)
+
+        # Creates start script
+        expect(File).to receive(:rename).with(/start/,/start-orig/).and_return(0)
+        expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start.erb')
+        expect(File).to receive(:write).and_return(0)
+        expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
+        expect(File).to receive(:chown).with(any_args)
+
+        # Starts the system
+        expect(provider).to receive(:execute).with(/start/, execute_options).and_return(0)
+
+        # Monitor System for on
+        expect(Net::HTTP).to receive(:get_response) do |uri|
+          uri.path == "http://localhost:#{resource[:port]}"
+        end.once.ordered.and_return(failed_response)
+        expect(failed_response).to receive(:kind_of?).twice.and_return(false)
+
+        expect { provider.create }.to raise_error(Timeout::Error)
+      end
+    end
+
   end
 
 end

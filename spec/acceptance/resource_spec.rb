@@ -3,7 +3,10 @@ require 'spec_helper_acceptance'
 describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
 
   before :context do
+    
+    #TODO As properties are added to env file, add them to the fake one here.
     pp = <<-MANIFEST
+      File { backup => false, }
       file { '/opt/aem' :
         ensure          => 'directory',
          
@@ -16,6 +19,13 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         ensure          => 'directory',
          
       }
+      file { '/opt/aem/crx-quickstart/bin' :
+        ensure        => 'directory',
+      }
+      file { '/opt/aem/crx-quickstart/bin/start-env' :
+        ensure        => 'file',
+        content       => "PORT=4502\nTYPE=author",
+      }
       file { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone.jar' :
         ensure        => 'file',
         content       => '',
@@ -26,6 +36,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
 
   after :context do
     pp = <<-MANIFEST
+      File { backup => false, }
       file { '/opt/aem' :
         ensure      => 'absent',
         force       => 'true',
@@ -54,10 +65,13 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
           end
         end
 
+        #TODO As properties are supported in the env file, add tests for them here
         expect(data['group']).to match('root')
         expect(data['user']).to match('root')
         expect(data['version']).to match('6.1.0')
         expect(data['home']).to match('/opt/aem')
+        expect(data['port']).to match('4502')
+        expect(data['type']).to match('author')
 
       end
 

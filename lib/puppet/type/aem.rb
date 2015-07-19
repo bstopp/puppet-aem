@@ -9,7 +9,7 @@ Puppet::Type.newtype(:aem) do
       - Cycling the system after installation to ensure final state."
 
   ensurable
-  #TODO Consider adding other ensurable "managed" vs "unmanaged
+  #TODO Consider adding other ensurable "managed" vs "unmanaged"
 
   #TODO Consider adding features (crx2, mongo)
 
@@ -33,6 +33,27 @@ Puppet::Type.newtype(:aem) do
     end
 
   end
+  
+  newparam(:timeout) do
+    desc <<-EOT
+      Timeout for the start process when monitoring for start and stop.
+      If the system does not enter the necessary state by the timeout, an error is raised. 
+
+      Value is in seconds. Default = 10 minutes
+    EOT
+    
+    defaultto 6000
+  end
+
+  newparam(:snooze) do
+    desc <<-EOT
+      Snooze value for wait when monitoring for AEM state transition during installation
+      
+      Value is in seconds; default = 10 seconds
+    EOT
+    
+    defaultto 10
+  end
 
   newproperty(:version) do
     desc "The version of AEM installed."
@@ -40,6 +61,10 @@ Puppet::Type.newtype(:aem) do
 
     munge do |value|
       "#{value}"
+    end
+
+    def insync?(is)
+      is == should
     end
 
     #TODO This can't be changed after installation
@@ -73,6 +98,11 @@ Puppet::Type.newtype(:aem) do
 
     defaultto :author
     newvalues(:author, :publish)
+    
+    def issync?(is)
+      warning( "Type cannot be modified after installation. [Existing = #{@property_hash[:type]}, New = #{value}]") unless is == should 
+      true
+    end
     #TODO This can't be changed after installation
 
   end

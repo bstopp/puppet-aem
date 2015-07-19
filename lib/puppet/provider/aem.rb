@@ -1,19 +1,13 @@
+require 'erb'
+require 'etc'
+require 'fileutils'
+require 'net/http'
+
 class Puppet::Provider::AEM < Puppet::Provider
 
   self::LAUNCHPAD_NAME  = 'cq-quickstart-*-standalone*.jar'
   self::INSTALL_FIELDS  = [:home, :version]
   self::INSTALL_REGEX   = %r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar$}
-
-  def initialize(resource = nil)
-
-    super(resource)
-    @exec_options = {
-      :failonfail => true,
-      :combine => true,
-      :custom_environment => {},
-    }
-
-  end
 
   def self.prefetch(resources)
 
@@ -26,6 +20,18 @@ class Puppet::Provider::AEM < Puppet::Provider
     end
   end
 
+  def initialize(resource = nil)
+
+    super(resource)
+    @exec_options = {
+      :failonfail => true,
+      :combine => true,
+      :custom_environment => {},
+    }
+    @property_flush = {}
+
+  end
+
   def properties
     if @property_hash.empty?
       @property_hash[:ensure] = :absent
@@ -34,22 +40,41 @@ class Puppet::Provider::AEM < Puppet::Provider
   end
 
   def exists?
-
     @property_hash[:ensure] == :present
-    #    return false unless File.directory?(resource[:home])
-    #    Dir.foreach(File.join(resource[:home], 'apps')) do |entry|
-    #      return true if entry =~ /^#{resource[:home]}\/apps\/cq-quickstart.*\.jar$/
-    #    end
-    #
-    #    return false
+  end
+
+  def create
+
+    update_exec_opts
+    unpack_jar
+    create_env_script
+    create_start_script
+    call_start_script
+    monitor_site
+    call_stop_script
+    monitor_site(:off)
+    @property_hash[:ensure] = :present
   end
 
   def destroy
 
     path = File.join(@resource[:home], 'crx-quickstart')
     FileUtils.remove_entry_secure(path)
+    @property_hash.clear
   end
 
+  def version=(value)
+    warning("Version cannot be modified after installation. [Existing = #{@property_hash[:version]}, New = #{value}]")
+  end
+
+  def type=(value)
+    @property_flush[:type] = value
+  end
+
+  def flush
+    create_env_script
+  end
+  
   protected
 
   def self.found_to_hash(line)
@@ -66,24 +91,12 @@ class Puppet::Provider::AEM < Puppet::Provider
       hash[:user] = Etc.getpwuid(stat.uid).name
       hash[:group] = Etc.getgrgid(stat.gid).name
 
-      get_env_properties(hash)
+      self.get_env_properties(hash)
     else
       Puppet.debug("Failed to match install line #{line}")
     end
 
     return hash
-  end
-
-  def self.get_env_properties(hash)
-    filename = File.join(hash[:home], 'bin', 'start-env')
-    if File.file?(filename) && File.readable?(filename)
-      contents = File.read(filename)
-      #TODO Is there any way to make this cleaner?
-      hash[:port] = $1.to_i if contents =~ /CQ_PORT=(\S+)/
-      hash[:type] = $1 if contents =~ /CQ_TYPE=(\S+)/
-
-      # Add additional configuration properties here
-    end
   end
 
   def update_exec_opts
@@ -123,11 +136,12 @@ class Puppet::Provider::AEM < Puppet::Provider
   end
 
   def unpack_jar
-    fail Puppet::Error, "Default provider cannot run jar unpack command."
+    cmd = ["#{command(:java)}",'-jar', @resource[:source], '-b', @resource[:home], '-unpack']
+    execute(cmd, @exec_options)
   end
 
   def create_env_script
-    filename = 'start-env'
+    filename = self.class::START_ENV_FILE
     contents = read_erb_tpl("#{filename}.erb")
     write_erb_file(File.join(get_bin_dir(), "#{filename}"), contents)
   end
@@ -135,31 +149,43 @@ class Puppet::Provider::AEM < Puppet::Provider
   def create_start_script
 
     # Move the original script.
-    filename = 'start'
+    filename = self.class::START_FILE
     start_file = File.join(get_bin_dir(), filename)
     File.rename(start_file, "#{start_file}-orig")
 
-    contents = read_erb_tpl("#{filename}-#{@resource[:version]}.erb")
+    contents = read_erb_tpl("#{filename}.erb")
     write_erb_file(File.join(@resource[:home], 'crx-quickstart', 'bin', "#{filename}"), contents)
   end
 
   def call_start_script
-    cmd = File.join(@resource[:home], 'crx-quickstart', 'bin', 'start')
+    cmd = File.join(@resource[:home], 'crx-quickstart', 'bin', self.class::START_FILE)
     execute(cmd, @exec_options)
   end
 
-  def monitor_site
+  # Checks the system to for a state, loops until it reaches that state
+  def monitor_site(desired_state = :on)
+
     uri = URI.parse("http://localhost:#{resource[:port]}")
-    responsecode = 0
-    until responsecode == 200
-      request = Net::HTTP.get_response(uri)
-      responsecode = request.code
-      sleep 10 unless responsecode == 200
-    end
+
+    Timeout::timeout(@resource[:timeout]) {
+
+      while true
+        begin
+          response = Net::HTTP.get_response(uri)
+          return if ((response.kind_of? Net::HTTPSuccess) ||
+          (response.kind_of? Net::HTTPRedirection)) &&
+          desired_state == :on
+        rescue
+          return if desired_state == :off
+        end
+        sleep @resource[:snooze]
+      end
+    }
+
   end
 
   def call_stop_script
-    cmd = File.join(@resource[:home], 'crx-quickstart', 'bin', 'stop')
+    cmd = File.join(@resource[:home], 'crx-quickstart', 'bin', self.class::STOP_FILE)
     execute(cmd, @exec_options)
   end
 

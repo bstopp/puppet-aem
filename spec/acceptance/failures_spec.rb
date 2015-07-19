@@ -11,6 +11,7 @@ describe 'Required Fields tests.', :unless => UNSUPPORTED_PLATFORMS.include?(fac
   
   before :need_home => :true do
     pp = <<-MANIFEST
+      File { backup => false, }
       file { '/opt/aem' :
         ensure      => 'directory',
       }
@@ -20,7 +21,8 @@ describe 'Required Fields tests.', :unless => UNSUPPORTED_PLATFORMS.include?(fac
 
   after :need_home => :true do
     pp = <<-MANIFEST
-      file { '/opt/aem' :
+    File { backup => false, }
+    file { '/opt/aem' :
         ensure      => 'absent',
         force       => 'true',
       }
@@ -32,9 +34,13 @@ describe 'Required Fields tests.', :unless => UNSUPPORTED_PLATFORMS.include?(fac
 
     it 'requires the home directory to exist' do
       pp = <<-MANIFEST
+        File { backup => false, }
+
         aem { 'aem' :
-          ensure      => 'present',
+          home        => '/opt/aem/does/not/exist',
+          ensure      => present,
           version     => '6.1.0',
+          source      => '/tmp/aem-quickstart.jar',
         }
       MANIFEST
 

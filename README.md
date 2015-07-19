@@ -58,8 +58,13 @@ with things. (We are working on automating this section!)
 
 This is where you list OS compatibility, version compatibility, etc.
 
+If you set up an instance as absent but it's not ever been managed, this module will still delete the instance.
+
+
 ## Development
 
 This module is still early on, as long as additions follow the overall flow and do not include an aem jar, they will be appriciated.
 
+
+`
 
