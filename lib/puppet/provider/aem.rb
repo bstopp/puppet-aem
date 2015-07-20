@@ -54,6 +54,7 @@ class Puppet::Provider::AEM < Puppet::Provider
     call_stop_script
     monitor_site(:off)
     @property_hash[:ensure] = :present
+    @property_flush[:method] = :create
   end
 
   def destroy
@@ -61,6 +62,7 @@ class Puppet::Provider::AEM < Puppet::Provider
     path = File.join(@resource[:home], 'crx-quickstart')
     FileUtils.remove_entry_secure(path)
     @property_hash.clear
+    @property_flush[:method] = :destroy
   end
 
   def version=(value)
@@ -72,7 +74,9 @@ class Puppet::Provider::AEM < Puppet::Provider
   end
 
   def flush
-    create_env_script
+    create_env_script unless @property_flush[:method]
+    @property_hash = resource.to_hash
+    @property_flush.clear
   end
   
   protected

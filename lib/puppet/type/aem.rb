@@ -47,7 +47,7 @@ Puppet::Type.newtype(:aem) do
 
   newparam(:snooze) do
     desc <<-EOT
-      Snooze value for wait when monitoring for AEM state transition during installation
+      Snooze value for wait when monitoring for AEM state transition during installation.
       
       Value is in seconds; default = 10 seconds
     EOT
@@ -57,6 +57,7 @@ Puppet::Type.newtype(:aem) do
 
   newproperty(:version) do
     desc "The version of AEM installed."
+
     newvalues(/^\d+\.\d+(\.\d+)?$/)
 
     munge do |value|

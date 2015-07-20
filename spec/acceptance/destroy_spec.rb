@@ -40,23 +40,23 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
     apply_manifest(pp, :catch_failures => true)
   end
 
-#  after :context do
-#    pp = <<-MANIFEST
-#      file { '/opt/aem' :
-#        ensure      => 'absent',
-#        force       => 'true',
-#      }
-#    
-#    MANIFEST
-#    apply_manifest(pp, :catch_failures => true)
-#  end
+  after :context do
+    pp = <<-MANIFEST
+      file { '/opt/aem' :
+        ensure      => 'absent',
+        force       => 'true',
+      }
+    
+    MANIFEST
+    apply_manifest(pp, :catch_failures => true)
+  end
 
   context '#destroy' do
 
     it 'should work with no errors.' do
       pp = <<-MANIFEST
         aem { '/opt/aem/faux' :
-          ensure      => 'absent',
+          ensure      => absent,
           home        => '/opt/aem/faux',
         }
       MANIFEST

@@ -7,11 +7,10 @@
 #
 
 
-PORT=<%= @resource[:port] %>
-TYPE=<%= @resource[:type] %>
-CONTEXT_PATH=
+PORT=<%= @property_flush[:port] || @resource[:port] %>
+TYPE=<%= @property_flush[:type] || @resource[:type] %>
+#CONTEXT_PATH=-Dorg.apache.felix.http.context_path
 RUNMODES=
-BASE_FOLDER=
 
 LOG_LEVEL=
 

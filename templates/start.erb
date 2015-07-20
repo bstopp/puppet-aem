@@ -32,10 +32,14 @@ cd ..
 START_OPTS="start -c ${CURR_DIR} -i launchpad -p ${PORT}"
 START_OPTS="${START_OPTS} -Dsling.properties=${SLING_PROPS}"
 
+if [ $LOG_LEVEL ]; then
+    START_OPTS="${START_OPTS} -l WARN"
+fi
+
 JVM_OPTS="${JVM_MEM_OPTS} ${JVM_OPTS} -Dsling.run.modes=${TYPE},${RUNMODES}"
 
 #if [ $HOST ]; then
-#	JVM_OPTS="${JVM_OPTS} -Dorg.apache.felix.http.host=${HOST}"
+#    JVM_OPTS="${JVM_OPTS} -Dorg.apache.felix.http.host=${HOST}"
 #    START_OPTS="${START_OPTS} -a ${HOST}"
 #fi
 

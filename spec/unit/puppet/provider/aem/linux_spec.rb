@@ -13,9 +13,9 @@ describe Puppet::Type.type(:aem).provider(:linux) do
   end
 
   let(:resource) do
-    allow(File).to receive(:file?).with(any_args).and_call_original
+    allow(File).to receive(:file?).with(any_args).at_least(1).and_call_original
     expect(File).to receive(:file?).with(source).and_return(true)
-    allow(File).to receive(:directory?).with(any_args).and_call_original
+    allow(File).to receive(:directory?).with(any_args).at_least(1).and_call_original
     expect(File).to receive(:directory?).with('/opt/aem').and_return(true)
     Puppet::Type.type(:aem).new({
       :name     => 'aem',
@@ -331,8 +331,8 @@ describe Puppet::Type.type(:aem).provider(:linux) do
           :version  => '6.1',
           :home     => '/opt/aem',
           :provider => 'linux',
-          :snooze   => 10,
-          :timeout  => 5,
+          :snooze   => 3,
+          :timeout  => 1,
         })
       end
 
