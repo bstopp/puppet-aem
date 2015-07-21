@@ -43,16 +43,16 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
     apply_manifest(pp, :catch_failures => true)
   end
 
-#  after :context do
-#    pp = <<-MANIFEST
-#      File { backup => false, }
-#      file { '/opt/aem' :
-#        ensure      => 'absent',
-#        force       => 'true',
-#      }
-#    MANIFEST
-#    apply_manifest(pp, :catch_failures => true)
-#  end
+  after :context do
+    pp = <<-MANIFEST
+      File { backup => false, }
+      file { '/opt/aem' :
+        ensure      => 'absent',
+        force       => 'true',
+      }
+    MANIFEST
+    apply_manifest(pp, :catch_failures => true)
+  end
 
   context '#create' do
 
@@ -72,7 +72,6 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
           home        => '/opt/aem',
           user        => 'aem',
           group       => 'aem',
-          user        => 'aem',
         }
       MANIFEST
 
