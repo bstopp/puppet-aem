@@ -55,6 +55,7 @@ describe 'Required Fields tests.', :unless => UNSUPPORTED_PLATFORMS.include?(fac
 
     it 'requires the source to be specified', :need_home => :true  do
       pp = <<-MANIFEST
+        File { backup => false, }
         aem { 'aem' :
           ensure      => 'present',
           version     => '6.1.0',

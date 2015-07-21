@@ -4,6 +4,8 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
 
   before :context do
     pp = <<-MANIFEST
+      File { backup => false, }
+      
       file { '/opt/aem' :
         ensure          => 'directory',
          
@@ -42,6 +44,8 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
 
   after :context do
     pp = <<-MANIFEST
+      File { backup => false, }
+
       file { '/opt/aem' :
         ensure      => 'absent',
         force       => 'true',
@@ -55,6 +59,8 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
 
     it 'should work with no errors.' do
       pp = <<-MANIFEST
+        File { backup => false, }
+
         aem { '/opt/aem/faux' :
           ensure      => absent,
           home        => '/opt/aem/faux',
