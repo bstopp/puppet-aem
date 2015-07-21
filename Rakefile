@@ -1,13 +1,12 @@
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-syntax/tasks/puppet-syntax'
-require 'puppet-lint/tasks/puppet-lint'
 require 'rubocop/rake_task'
 
 exclude_paths = [
   "spec/**/*"
 ]
 
-task :default => [ :spec, :syntax, :lint, :rubocop ]
+task :default => [ :spec, :lint, :rubocop ]
 
 PuppetLint.configuration.fail_on_warnings = true
 PuppetLint.configuration.send('relative')

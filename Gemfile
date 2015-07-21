@@ -6,13 +6,11 @@ group :development, :tests do
   gem 'metadata-json-lint',     :require => false
   gem 'rspec-puppet',           :require => false
   gem 'puppetlabs_spec_helper', :require => false
-  gem 'puppet-lint',            :require => false
 end
 
 group :linting do
   gem 'coveralls',              :require => false
   gem 'puppet-lint',            :require => false
-  gem 'puppet-syntax',          :require => false
   gem 'rubocop',                :require => false
 end
 
