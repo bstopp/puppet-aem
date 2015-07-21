@@ -133,7 +133,9 @@ class Puppet::Provider::AEM < Puppet::Provider
 
   def write_erb_file(file, contents)
 
-    File.write(file, contents)
+    f = File.new(file, "w")
+    f.write(contents)
+    f.close()
     File.chmod(0750, file)
     File.chown(@exec_options[:uid], @exec_options[:gid], file)
 

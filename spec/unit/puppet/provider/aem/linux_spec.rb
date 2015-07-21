@@ -64,6 +64,8 @@ describe Puppet::Type.type(:aem).provider(:linux) do
     Errno::ECONNREFUSED.new
   end
 
+  let(:mock_file) { double('File') }
+
   Stat = Struct.new(:uid, :gid)
   Id = Struct.new(:name)
 
@@ -195,7 +197,10 @@ describe Puppet::Type.type(:aem).provider(:linux) do
 
         # Creates the env file
         expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start-env.erb')
-        expect(File).to receive(:write) do |file, contents|
+        envfile = File.join(resource[:home], 'crx-quickstart', 'bin', 'start-env')
+
+        expect(File).to receive(:new).with(envfile, any_args).and_return(mock_file)
+        expect(mock_file).to receive(:write) do |contents|
           # Add fields here when new properties are added to env file
           port = false
           type = false
@@ -209,13 +214,20 @@ describe Puppet::Type.type(:aem).provider(:linux) do
 
           expect(port && type).to be_truthy
         end.and_return(0)
+        expect(mock_file).to receive(:close)
+
         expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
         expect(File).to receive(:chown).with(userid, groupid, any_args)
 
         # Creates start script
         expect(File).to receive(:rename).with(/start/,/start-orig/).and_return(0)
+        
         expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start.erb')
-        expect(File).to receive(:write).and_return(0)
+        startfile = File.join(resource[:home], 'crx-quickstart', 'bin', 'start')
+        expect(File).to receive(:new).with(startfile, any_args).and_return(mock_file)
+        expect(mock_file).to receive(:write).and_return(0)
+        expect(mock_file).to receive(:close)
+
         expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
         expect(File).to receive(:chown).with(userid, groupid, any_args)
 
@@ -344,14 +356,18 @@ describe Puppet::Type.type(:aem).provider(:linux) do
 
         # Creates the env file
         expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start-env.erb')
-        expect(File).to receive(:write).and_return(0)
+        expect(File).to receive(:new).and_return(mock_file)
+        expect(mock_file).to receive(:write).and_return(0)
+        expect(mock_file).to receive(:close)
         expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
         expect(File).to receive(:chown).with(any_args)
 
         # Creates start script
         expect(File).to receive(:rename).with(/start/,/start-orig/).and_return(0)
         expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start.erb')
-        expect(File).to receive(:write).and_return(0)
+        expect(File).to receive(:new).and_return(mock_file)
+        expect(mock_file).to receive(:write).and_return(0)
+        expect(mock_file).to receive(:close)
         expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
         expect(File).to receive(:chown).with(any_args)
 

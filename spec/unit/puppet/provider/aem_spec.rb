@@ -39,11 +39,7 @@ describe Puppet::Provider::AEM do
     described_class.stubs(:which).with('java').returns('/usr/bin/java')
   end
 
-  #  before :example do
-  #    expect(Puppet::Util).to receive(:absolute_path?).and_return(true).at_most(1)
-  #    expect(File).to receive(:directory?).and_return(true).at_most(1)
-  #    expect(File).to receive(:file?).with(source).and_return(true).at_most(1)
-  #  end
+  let(:mock_file) { double('File') }
 
   describe 'self.prefetch' do
     it 'should respond' do
@@ -91,7 +87,9 @@ describe Puppet::Provider::AEM do
 
         # Updates the env file
         expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start-env.erb')
-        expect(File).to receive(:write) do |file, contents|
+        envfile = File.join(resource[:home], 'crx-quickstart', 'bin', 'start-env')
+        expect(File).to receive(:new).with(envfile, any_args).and_return(mock_file)
+        expect(mock_file).to receive(:write) do |contents|
 
           # Add fields here when new properties are added to env file
           port = false
@@ -106,6 +104,7 @@ describe Puppet::Provider::AEM do
 
           expect(port && type).to be_truthy
         end.and_return(0)
+        expect(mock_file).to receive(:close)
         expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
         expect(File).to receive(:chown).with(any_args)
 

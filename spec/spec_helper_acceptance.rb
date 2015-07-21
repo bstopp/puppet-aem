@@ -9,7 +9,7 @@ UNSUPPORTED_PLATFORMS = ['Suse','windows','AIX','Solaris']
 RSpec.configure do |c|
   module_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
-  aem_installer = File.expand_path(File.join(module_root, 'files', 'aem-quickstart-6.0.jar'))
+  aem_installer = File.expand_path(File.join(module_root, 'files', 'aem-quickstart.jar'))
 
   scp_to(hosts, aem_installer, 
     '/tmp/aem-quickstart.jar') unless ENV["RS_PROVISION="] == "no" or ENV["BEAKER_provision"] == "no"

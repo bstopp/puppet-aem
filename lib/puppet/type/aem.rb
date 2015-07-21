@@ -104,9 +104,14 @@ Puppet::Type.newtype(:aem) do
       warning( "Type cannot be modified after installation. [Existing = #{@property_hash[:type]}, New = #{value}]") unless is == should 
       true
     end
-    #TODO This can't be changed after installation
-
   end
+
+  # TODO Add samplecontent property
+  # TODO Add runmodes properties
+  # TODO Add log level property
+  # TODO Add JVM property
+  # TODO Add Mongo properties
+  # TODO Add Debug Properties
 
   newproperty(:user) do
     #TODO This can't be changed after installation
@@ -146,25 +151,6 @@ Puppet::Type.newtype(:aem) do
     if self[:ensure] == :present and self[:source].nil?
       fail('Source jar is required when ensure is present')
     end
-    #if self[:ensure] == :present and self[:version].nil?
-    #  fail('Version is required when ensure is present')
-    #end
   end
 
-  #  newparam(:include_sample_content) do
-  #    desc "Specify whether or not to include sample content"
-  #    defaultto :true
-  #    newvalues(:true, :false)
-  #  end
-
-  #  newproperty(:port) do
-  #    desc "The port to which AEM will bind."
-  #    defaultto '4502'
-  #    newvalues(/^\d+$/)
-  #  end
-
-  # TODO Add log level property
-  # TODO Add JVM property
-  # TODO Add Mono properties
-  # TODO Add Debug Properties
 end
