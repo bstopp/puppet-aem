@@ -1,4 +1,4 @@
-# aem - Adobe Experience Manager Module
+# aem - Adobe Experience Manager
 
 #### Table of Contents
 
@@ -15,56 +15,173 @@
 
 ## Overview
 
-This module installs the Adobe Experience Manager (AEM) version of your choice into your vm, saving you from doing it manually.
+The AEM module installs, configures and manages an AEM instance.
 
 ## Module Description
 
-This module installs AEM from the jar file you provide into the VM it sets up.  
-It can support options for different users, directories, and versions.  It also supports deletion
-but not upgrading as all versions of AEM aren't backwards compatable.  
+The AEM module introduces the `aem` resource which is used to manage and configure an installation of AEM utilizing the Puppet DSL.
 
 ## Setup
 
-### What aem affects
+### What AEM affects
 
-This will create or modify a directory of your choice in order to install AEM.
-
+  * AEM Installations
 
 ### Setup Requirements 
 
-An AEM jar file is required for setup.
+AEM uses Ruby-based providers, so you must enable pluginsync. Java is also required to be installed on the system. Finally, due to the AEM platform being proprietary, this module does not provide installation jar files, it must be provided by the consumer.
 
-### Beginning with aem
+### Beginning with AEM
 
-The very basic steps needed for a user to get the module up and running.
+A minimal AEM configuration is specified as:
 
-If your most recent release breaks compatibility or requires particular steps
-for upgrading, you may wish to include an additional section here: Upgrading
-(For an example, see http://forge.puppetlabs.com/puppetlabs/firewall).
+~~~
+aem { 'aem' :
+  ensure      => present,
+  source      => '/path/to/aem-quickstart.jar',
+  version     => '6.0.0',
+  home        => '/path/to/home',
+}
+~~~
+
+See [Useage](#usage) and [Reference](#reference) for options and detailed explanations.
 
 ## Usage
 
-Put the classes, types, and resources for customizing, configuring, and doing
-the fancy stuff with your module here.
+### AEM Resource
+
+The `aem` resource definition is used to install and manage an AEM instance. An AEM installation is considered complete when the following steps have occurred:
+
+  * Unpacking the source file. (See [documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/custom-standalone-install.html#Further options available from the Quickstart file).)
+  * Configuring the start script (See [documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/command-line-start-and-stop.html).)
+  * Starting & Stopping the server, creating base repository. _This does not create a service._
+
+_Configuring an AEM installation where an unmanaged one exists is undefined._
+
+#### Minimal Definition
+
+This is  the minimal required `aem` resource definition to install AEM. The default property values will be used, and the installation user:group will be `root:root`.
+
+~~~
+aem { 'aem' :
+  ensure      => present,
+  source      => '/path/to/aem-quickstart.jar',
+  version     => '6.0.0',
+  home        => '/path/to/home',
+}
+~~~
+
+#### Specific User/Group Example
+
+You can optionally specify either a user and/or group to own the installation. This user and/or group will be used when executing the installation process. (Normal policies apply, see Puppet Provider _execute(*args)_ DSL defintion.)
+
+~~~
+aem { 'aem' :
+  ensure      => present,
+  source      => '/path/to/aem-quickstart.jar',
+  version     => '6.0.0',
+  home        => '/path/to/home',
+  user        => 'aem',
+  group       => 'aem',
+}
+~~~
+
+#### Specify type Example
+
+You can specify the type of AEM installation to create. This is either `author` or `publish`, once specified it cannot be changed. (See [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Installation Run Modes))
+
+~~~
+aem { 'aem' :
+  ensure      => present,
+  source      => '/path/to/aem-quickstart.jar',
+  version     => '6.0.0',
+  home        => '/path/to/home',
+  type        => publish,
+}
+~~~
+
+#### Specify port Example
+
+You can specify the port on which AEM will listen. (See [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/custom-standalone-install.html#Changing the Port Number by Renaming the File))
+
+~~~
+aem { 'aem' :
+  ensure      => present,
+  source      => '/path/to/aem-quickstart.jar',
+  version     => '6.0.0',
+  home        => '/path/to/home',
+  port        => 8080,
+}
+~~~
 
 ## Reference
 
-Here, list the classes, types, providers, facts, etc contained in your module.
-This section should include all of the under-the-hood workings of your module so
-people know what the module is touching on their system but don't need to mess
-with things. (We are working on automating this section!)
+Types:
+
+  * [aem](#type-aem)
+
+###Type: aem
+
+This type enables you to manage AEM instances within Puppet.
+
+####Providers
+**Note:** Not all features are available with all providers.
+
+  * `linux`: Linux type provider
+    * Supported features: 
+
+**Autorequires:**
+
+If Puppet is managing the home directory, user, or group parameters, the aem resource will autorequire those resources.
+
+####Parameters
+
+  * `name`: name of the AEM resource.
+
+  * `ensure`: Ensures that the resource is present. Valid values are `present`, `absent`.
+
+  * `source`: Source jar file to use, provided by user.
+
+  * `version`: Optional. Version of AEM.
+
+  * `home`: Home directory in which AEM will be installed. Default to `/opt/aem` or `C:/opt/aem` depending on platform.
+
+  * `port`: Port on which AEM will listen. [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/custom-standalone-install.html#Changing the Port Number by Renaming the File) 
+
+  * `user`: User for installation. Defaults to puppet user.
+
+  * `group`: Group for installation. Defaults to puppet group.
+
+  * `type`: AEM installation type, one of `author` or `publish`. [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Installation Run Modes)
+
+  * `timeout`: Timeout allowed for startup monitoring. If the installation doesn't finish by the timeout, an error will be generated. Value is specified in seconds. Default value: `10 minutes`.
+
+  * `snooze`: Wait period between checks for installation completion. When monitoring the system for up state, this is the wait period between checks. Value is specified in seconds. Default value: `10 seconds`.
 
 ## Limitations
 
-This is where you list OS compatibility, version compatibility, etc.
+### OS Compatibility
 
-If you set up an instance as absent but it's not ever been managed, this module will still delete the instance.
+This module has been tested on: 
 
+  * CentOS 6, 7
+  * Ubuntu 12.04, 14.04
+  * Debian 6.0, 7.8 
+
+### AEM Compatibility
+
+This module has been tested with the following AEM versions:
+
+  * 6.0
+  * 6.1
+
+### Warnings
+
+Defining an AEM resource as absent will remove the instance from the system, regardless of whether or not it was originally managed by puppet.
 
 ## Development
 
-This module is still early on, as long as additions follow the overall flow and do not include an aem jar, they will be appriciated.
+This module in its early stages, any updates or feature additions are welcome. 
 
-
-`
+_Please make sure you do not include any AEM Installer jars in PRs._
 
