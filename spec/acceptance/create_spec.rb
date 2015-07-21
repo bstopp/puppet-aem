@@ -69,7 +69,6 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         aem { 'aem' :
           ensure      => present,
           source      => '/tmp/aem-quickstart.jar',
-          version     => '6.0.0',
           home        => '/opt/aem',
           user        => 'aem',
           group       => 'aem',
