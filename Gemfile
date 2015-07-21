@@ -9,6 +9,13 @@ group :development, :tests do
   gem 'puppet-lint',            :require => false
 end
 
+group :linting do
+  gem 'coveralls',              :require => false
+  gem 'puppet-lint',            :require => false
+  gem 'puppet-syntax',          :require => false
+  gem 'rubocop',                :require => false
+end
+
 group :system_tests do
   gem 'beaker', '~>2.18',               :require => false
   gem 'beaker-rspec',                   :require => false

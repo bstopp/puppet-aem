@@ -27,7 +27,7 @@ Puppet::Type.type(:aem).provide :linux, :parent => Puppet::Provider::AEM do
         end
       end
     rescue Puppet::ExecutionFailure
-      raise Puppet::Error, 'Failed to find AEM instances.', $!.backtrace
+      raise Puppet::Error, 'Failed to find AEM instances.', $ERROR_INFO.backtrace
     end
 
     installs
@@ -37,14 +37,11 @@ Puppet::Type.type(:aem).provide :linux, :parent => Puppet::Provider::AEM do
     filename = File.join(hash[:home], 'crx-quickstart', 'bin', self::START_ENV_FILE)
     if File.file?(filename) && File.readable?(filename)
       contents = File.read(filename)
-      #TODO Is there any way to make this cleaner?
+      # TODO: Is there any way to make this cleaner?
       hash[:port] = $1.to_i if contents =~ /PORT=(\S+)/
       hash[:type] = $1.intern if contents =~ /TYPE=(\S+)/
       # Add additional configuration properties here
     end
   end
-
-  protected
-
 
 end

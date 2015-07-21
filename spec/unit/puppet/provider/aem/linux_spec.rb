@@ -238,15 +238,15 @@ describe Puppet::Type.type(:aem).provider(:linux) do
         expect(Net::HTTP).to receive(:get_response) do |uri|
           uri.path == "http://localhost:#{resource[:port]}"
         end.once.ordered.and_return(failed_response)
-        expect(failed_response).to receive(:kind_of?).twice.and_return(false)
+        expect(failed_response).to receive(:is_a?).twice.and_return(false)
 
         expect(Net::HTTP).to receive(:get_response) do |uri|
           uri.path == "http://localhost:#{resource[:port]}"
         end.once.ordered.and_return(success_response)
         if (opts && opts[:redirect])
-          expect(success_response).to receive(:kind_of?).and_return(false)
+          expect(success_response).to receive(:is_a?).and_return(false)
         end
-        expect(success_response).to receive(:kind_of?).and_return(true)
+        expect(success_response).to receive(:is_a?).and_return(true)
 
         # Stop System
         expect(provider).to receive(:execute).with(/stop/, execute_options).and_return(0)
@@ -256,9 +256,9 @@ describe Puppet::Type.type(:aem).provider(:linux) do
           uri.path == "http://localhost:#{resource[:port]}"
         end.once.ordered.and_return(success_response)
         if (opts && opts[:redirect])
-          expect(success_response).to receive(:kind_of?).and_return(false)
+          expect(success_response).to receive(:is_a?).and_return(false)
         end
-        expect(success_response).to receive(:kind_of?).and_return(true)
+        expect(success_response).to receive(:is_a?).and_return(true)
 
         expect(Net::HTTP).to receive(:get_response) do |uri|
           uri.path == "http://localhost:#{resource[:port]}"
@@ -378,7 +378,7 @@ describe Puppet::Type.type(:aem).provider(:linux) do
         expect(Net::HTTP).to receive(:get_response) do |uri|
           uri.path == "http://localhost:#{resource[:port]}"
         end.once.ordered.and_return(failed_response)
-        expect(failed_response).to receive(:kind_of?).twice.and_return(false)
+        expect(failed_response).to receive(:is_a?).twice.and_return(false)
 
         expect { provider.create }.to raise_error(Timeout::Error)
       end

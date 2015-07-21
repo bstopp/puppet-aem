@@ -3,6 +3,7 @@ require 'etc'
 require 'fileutils'
 require 'net/http'
 
+# Base provider logic which is platform agnostic.
 class Puppet::Provider::AEM < Puppet::Provider
 
   self::LAUNCHPAD_NAME  = 'cq-quickstart-*-standalone*.jar'
@@ -14,7 +15,7 @@ class Puppet::Provider::AEM < Puppet::Provider
     found = instances
 
     resources.keys.each do |name|
-      if provider = found.find { |prov| prov.get(:home) == resources[name][:home] }
+      if (provider = found.find { |prov| prov.get(:home) == resources[name][:home] })
         resources[name].provider = provider
       end
     end
@@ -26,16 +27,14 @@ class Puppet::Provider::AEM < Puppet::Provider
     @exec_options = {
       :failonfail => true,
       :combine => true,
-      :custom_environment => {},
+      :custom_environment => {}
     }
     @property_flush = {}
 
   end
 
   def properties
-    if @property_hash.empty?
-      @property_hash[:ensure] = :absent
-    end
+    @property_hash[:ensure] = :absent if @property_hash.empty?
     @property_hash.dup
   end
 
@@ -78,14 +77,14 @@ class Puppet::Provider::AEM < Puppet::Provider
     @property_hash = resource.to_hash
     @property_flush.clear
   end
-  
+
   protected
 
   def self.found_to_hash(line)
     line.strip!
     hash = {}
 
-    if match = self::INSTALL_REGEX.match(line)
+    if (match = self::INSTALL_REGEX.match(line))
       self::INSTALL_FIELDS.zip(match.captures) { |f, v| hash[f] = v }
       hash[:name] = hash[:home]
       hash[:ensure] = :present
@@ -95,12 +94,12 @@ class Puppet::Provider::AEM < Puppet::Provider
       hash[:user] = Etc.getpwuid(stat.uid).name
       hash[:group] = Etc.getgrgid(stat.gid).name
 
-      self.get_env_properties(hash)
+      get_env_properties(hash)
     else
       Puppet.debug("Failed to match install line #{line}")
     end
 
-    return hash
+    hash
   end
 
   def update_exec_opts
@@ -110,21 +109,21 @@ class Puppet::Provider::AEM < Puppet::Provider
       @exec_options[:uid] = user.uid
     end
 
-    unless resource[:group].nil? || resource[:group].empty?
-      grp = Etc.getgrnam(resource[:group])
-      @exec_options[:gid] = grp.gid
-    end
+    return if resource[:group].nil? || resource[:group].empty?
+
+    grp = Etc.getgrnam(resource[:group])
+    @exec_options[:gid] = grp.gid
 
   end
 
-  def get_bin_dir
+  def build_bin_dir
     File.join(@resource[:home], 'crx-quickstart', 'bin')
   end
 
   def read_erb_tpl(file)
 
     environment = Puppet.lookup(:environments).get(Puppet[:environment])
-    template = Puppet::Parser::Files.find_template(File.join('aem',"#{file}"), environment)
+    template = Puppet::Parser::Files.find_template(File.join('aem', "#{file}"), environment)
 
     tpldata = File.read(template)
     tpldata = ERB.new(tpldata).result(binding)
@@ -133,30 +132,30 @@ class Puppet::Provider::AEM < Puppet::Provider
 
   def write_erb_file(file, contents)
 
-    f = File.new(file, "w")
+    f = File.new(file, 'w')
     f.write(contents)
-    f.close()
+    f.close
     File.chmod(0750, file)
     File.chown(@exec_options[:uid], @exec_options[:gid], file)
 
   end
 
   def unpack_jar
-    cmd = ["#{command(:java)}",'-jar', @resource[:source], '-b', @resource[:home], '-unpack']
+    cmd = ["#{command(:java)}", '-jar', @resource[:source], '-b', @resource[:home], '-unpack']
     execute(cmd, @exec_options)
   end
 
   def create_env_script
     filename = self.class::START_ENV_FILE
     contents = read_erb_tpl("#{filename}.erb")
-    write_erb_file(File.join(get_bin_dir(), "#{filename}"), contents)
+    write_erb_file(File.join(build_bin_dir, "#{filename}"), contents)
   end
 
   def create_start_script
 
     # Move the original script.
     filename = self.class::START_FILE
-    start_file = File.join(get_bin_dir(), filename)
+    start_file = File.join(build_bin_dir, filename)
     File.rename(start_file, "#{start_file}-orig")
 
     contents = read_erb_tpl("#{filename}.erb")
@@ -173,20 +172,19 @@ class Puppet::Provider::AEM < Puppet::Provider
 
     uri = URI.parse("http://localhost:#{resource[:port]}")
 
-    Timeout::timeout(@resource[:timeout]) {
+    Timeout.timeout(@resource[:timeout]) do
 
-      while true
+      Kernel.loop do
         begin
           response = Net::HTTP.get_response(uri)
-          return if ((response.kind_of? Net::HTTPSuccess) ||
-          (response.kind_of? Net::HTTPRedirection)) &&
-          desired_state == :on
+          return if ((response.is_a? Net::HTTPSuccess) ||
+                     (response.is_a? Net::HTTPRedirection)) && desired_state == :on
         rescue
           return if desired_state == :off
         end
         sleep @resource[:snooze]
       end
-    }
+    end
 
   end
 

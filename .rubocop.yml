@@ -1,0 +1,39 @@
+
+# Configure options
+Style/HashSyntax:
+  EnforcedStyle: hash_rockets
+
+Metrics/AbcSize:
+  Max: 30
+
+Metrics/ClassLength:
+  Max: 250
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/LineLength:
+  Max: 120
+
+Metrics/MethodLength:
+  Max: 20
+
+# Disabled undesired features
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/EmptyLinesAroundBlockBody:
+  Enabled: false
+
+Style/EmptyLinesAroundClassBody:
+  Enabled: false
+
+Style/EmptyLinesAroundMethodBody:
+  Enabled: false
+
+Style/PerlBackrefs:
+  Enabled: false
+
+Style/SymbolProc:
+  Enabled: false 
+
