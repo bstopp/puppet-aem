@@ -39,7 +39,6 @@ A minimal AEM configuration is specified as:
 aem { 'aem' :
   ensure      => present,
   source      => '/path/to/aem-quickstart.jar',
-  version     => '6.0.0',
   home        => '/path/to/home',
 }
 ~~~
@@ -52,7 +51,7 @@ See [Useage](#usage) and [Reference](#reference) for options and detailed explan
 
 The `aem` resource definition is used to install and manage an AEM instance. An AEM installation is considered complete when the following steps have occurred:
 
-  * Unpacking the source file. (See [documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/custom-standalone-install.html#Further options available from the Quickstart file).)
+  * Unpacking the source file (See [documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/custom-standalone-install.html#Further options available from the Quickstart file).)
   * Configuring the start script (See [documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/command-line-start-and-stop.html).)
   * Starting & Stopping the server, creating base repository. _This does not create a service._
 
@@ -66,7 +65,6 @@ This is  the minimal required `aem` resource definition to install AEM. The defa
 aem { 'aem' :
   ensure      => present,
   source      => '/path/to/aem-quickstart.jar',
-  version     => '6.0.0',
   home        => '/path/to/home',
 }
 ~~~
@@ -79,7 +77,6 @@ You can optionally specify either a user and/or group to own the installation. T
 aem { 'aem' :
   ensure      => present,
   source      => '/path/to/aem-quickstart.jar',
-  version     => '6.0.0',
   home        => '/path/to/home',
   user        => 'aem',
   group       => 'aem',
@@ -94,7 +91,6 @@ You can specify the type of AEM installation to create. This is either `author` 
 aem { 'aem' :
   ensure      => present,
   source      => '/path/to/aem-quickstart.jar',
-  version     => '6.0.0',
   home        => '/path/to/home',
   type        => publish,
 }
@@ -108,7 +104,6 @@ You can specify the port on which AEM will listen. (See [AEM documentation](http
 aem { 'aem' :
   ensure      => present,
   source      => '/path/to/aem-quickstart.jar',
-  version     => '6.0.0',
   home        => '/path/to/home',
   port        => 8080,
 }
@@ -142,7 +137,7 @@ If Puppet is managing the home directory, user, or group parameters, the aem res
 
   * `source`: Source jar file to use, provided by user.
 
-  * `version`: Optional. Version of AEM.
+  * `version`: Optional. Version of AEM. If not specified, will be found via _quickstart_ jar name.
 
   * `home`: Home directory in which AEM will be installed. Default to `/opt/aem` or `C:/opt/aem` depending on platform.
 
