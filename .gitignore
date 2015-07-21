@@ -1,3 +1,4 @@
+
 pkg/
 vendor/
 spec/fixtures/
@@ -9,3 +10,4 @@ coverage/
 .project
 .buildpath
 log/
+junit/
