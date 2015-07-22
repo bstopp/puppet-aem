@@ -4,6 +4,12 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
 
   before :context do
     
+    env = <<-ENV
+      PORT=4502
+      TYPE=author
+      RUNMODES=dev,mockup
+    ENV
+    
     #TODO As properties are added to env file, add them to the fake one here.
     pp = <<-MANIFEST
       File { backup => false, }
@@ -24,7 +30,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
       }
       file { '/opt/aem/crx-quickstart/bin/start-env' :
         ensure        => 'file',
-        content       => "PORT=4502\nTYPE=author",
+        content       => "#{env}",
       }
       file { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone.jar' :
         ensure        => 'file',
@@ -72,9 +78,9 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         expect(data['home']).to match('/opt/aem')
         expect(data['port']).to match('4502')
         expect(data['type']).to match('author')
+        expect(data['runmodes']).to match("['dev', 'mockup']")
 
       end
-
     end
 
   end

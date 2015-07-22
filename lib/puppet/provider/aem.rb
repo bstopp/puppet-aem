@@ -64,14 +64,6 @@ class Puppet::Provider::AEM < Puppet::Provider
     @property_flush[:method] = :destroy
   end
 
-  def version=(value)
-    warning("Version cannot be modified after installation. [Existing = #{@property_hash[:version]}, New = #{value}]")
-  end
-
-  def type=(value)
-    @property_flush[:type] = value
-  end
-
   def flush
     create_env_script unless @property_flush[:method]
     @property_hash = resource.to_hash
@@ -178,7 +170,7 @@ class Puppet::Provider::AEM < Puppet::Provider
         begin
           response = Net::HTTP.get_response(uri)
           return if ((response.is_a? Net::HTTPSuccess) ||
-                     (response.is_a? Net::HTTPRedirection)) && desired_state == :on
+                      (response.is_a? Net::HTTPRedirection)) && desired_state == :on
         rescue
           return if desired_state == :off
         end

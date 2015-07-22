@@ -24,11 +24,7 @@ describe Puppet::Provider::AEM do
   }
 
   before do
-    @provider_class = Puppet::Type.type(:aem).provide(:simple,
-    :parent => Puppet::Provider::AEM) {
-      self::START_ENV_FILE = 'start-env'
-      mk_resource_methods
-    }
+    @provider_class = Puppet::Type.type(:aem).provide(:simple, :parent => :linux) 
     @provider_class.stubs(:suitable?).returns true
     Puppet::Type.type(:aem).stubs(:defaultprovider).returns @provider_class
 
@@ -81,37 +77,43 @@ describe Puppet::Provider::AEM do
     shared_examples 'update_env' do |opts|
       it {
 
-        opts.each do |k, v|
-          resource[k] = v
-        end
-
         # Updates the env file
         expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start-env.erb')
         envfile = File.join(resource[:home], 'crx-quickstart', 'bin', 'start-env')
         expect(File).to receive(:new).with(envfile, any_args).and_return(mock_file)
         expect(mock_file).to receive(:write) do |contents|
 
-          # Add fields here when new properties are added to env file
-          port = false
-          type = false
+          if value = opts[:port] 
+            match = /PORT=(#{value})/.match(contents).captures
+            expect(match).not_to be(nil)
+          end 
 
-          if /PORT=#{opts[:port] || resource[:port]}/ =~ contents
-            port = true
-          end
-          if /TYPE=#{opts[:type] || resource[:type]}/ =~ contents
-            type = true
-          end
-
-          expect(port && type).to be_truthy
+          if value = opts[:runmodes] 
+            value = value.is_a?(Array) ? value.join(',') : value
+            match = /RUNMODES=(#{value})/.match(contents).captures
+            expect(match).not_to be(nil)
+          end 
+          
         end.and_return(0)
+        
         expect(mock_file).to receive(:close)
         expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
         expect(File).to receive(:chown).with(any_args)
 
         provider = @provider_class.new
         provider.resource = resource
+
+        opts.each do |k, v|
+          resource[k] = v
+        end
+
         provider.flush
 
+        expect(provider.properties).to eq(resource.to_hash)
+        
+        opts.each do |k, v|
+          expect(provider.properties[k]).to eq(v)
+        end
       }
     end
 
@@ -119,14 +121,13 @@ describe Puppet::Provider::AEM do
       it_should_behave_like 'update_env', :port => 8080
     end
 
-    describe 'update type' do
-      it_should_behave_like 'update_env', :type => :publish
+    describe 'update runmodes' do
+      it_should_behave_like 'update_env', :runmodes => ['dev', 'stage', 'client', 'vml']
     end
 
-    describe 'update type' do
-      it_should_behave_like 'update_env', :port => 8080, :type => :publish
+    describe 'update runmode' do
+      it_should_behave_like 'update_env', :runmodes => ['production']
     end
-
   end
 
 end

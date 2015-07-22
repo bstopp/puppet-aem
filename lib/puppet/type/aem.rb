@@ -6,7 +6,11 @@ Puppet::Type.newtype(:aem) do
 
       - Configuring pre-install properties for appropriate launch state.
       - Managing licensing information
-      - Cycling the system after installation to ensure final state."
+      - Cycling the system after installation to ensure final state.
+
+      A number of options are specified as properties, though they can
+      not be changed after initial setup. They are specified as properties
+      as they can be inspected, even if updating the value is not supported."
 
   ensurable
   # TODO: Consider adding other ensurable "managed" vs "unmanaged"
@@ -65,10 +69,10 @@ Puppet::Type.newtype(:aem) do
     end
 
     def insync?(is)
-      is == should
+      warning("Version cannot be modified after installation. [Existing = #{is}, New = #{should}]") unless is == should
+      true
     end
 
-    # TODO: This can't be changed after installation
   end
 
   newproperty(:home) do
@@ -86,10 +90,10 @@ Puppet::Type.newtype(:aem) do
       fail("AEM home directory (#{value}) not found.") unless File.directory?(value)
 
     end
-
   end
 
   newproperty(:port) do
+    desc 'The port on which AEM will listen.'
 
     defaultto 4502
     newvalues(/^\d+$/)
@@ -99,26 +103,41 @@ Puppet::Type.newtype(:aem) do
 
     defaultto :author
     newvalues(:author, :publish)
-    def issync?(is)
-      warning("Type cannot be modified after installation. \
-        [Existing = #{@property_hash[:type]}, New = #{value}]") unless is == should
+    def insync?(is)
+      warning("Type cannot be modified after installation. [Existing = #{is}, New = #{should}]") unless is == should
       true
     end
   end
 
+  newproperty(:runmodes, :array_matching => :all) do
+    desc 'Runmodes for the Sling engine, excluding :type and :samplecontent'
+    def insync?(is)
+      if is.is_a?(Array) && @should.is_a?(Array)
+        is.sort == @should.sort
+      else
+        is == @should
+      end
+    end
+  end
+
   # TODO: Add samplecontent property
-  # TODO: Add runmodes properties
   # TODO: Add log level property
   # TODO: Add JVM property
   # TODO: Add Mongo properties
   # TODO: Add Debug Properties
 
   newproperty(:user) do
-    # TODO: This can't be changed after installation
+    def insync?(is)
+      warning("User cannot be modified after installation. [Existing = #{is}, New = #{should}]") unless is == should
+      true
+    end
   end
 
   newproperty(:group) do
-    # TODO: This can't be changed after installation
+    def insync?(is)
+      warning("Group cannot be modified after installation. [Existing = #{is}, New = #{should}]") unless is == should
+      true
+    end
   end
 
   autorequire(:file) do
