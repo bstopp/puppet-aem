@@ -42,7 +42,7 @@ Puppet::Type.newtype(:aem) do
       Value is in seconds. Default = 10 minutes
     EOT
 
-    defaultto 6000
+    defaultto 600
   end
 
   newparam(:snooze) do
