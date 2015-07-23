@@ -84,7 +84,7 @@ describe Puppet::Provider::AEM do
 
   describe 'start-env' do
     it 'should have default values' do
-      
+
       expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start-env.erb')
       envfile = File.join(resource[:home], 'crx-quickstart', 'bin', 'start-env')
       expect(File).to receive(:new).with(envfile, any_args).and_return(mock_file)
@@ -102,12 +102,15 @@ describe Puppet::Provider::AEM do
         match = /JVM_MEM_OPTS='(#{defaults[:jvm_mem_opts]})'/.match(contents).captures
         expect(match).not_to be(nil)
 
+        match = /CONTEXT_ROOT/.match(contents)
+        expect(match).to be(nil)
+
       end.and_return(0)
-      
+
       expect(mock_file).to receive(:close)
       expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
       expect(File).to receive(:chown).with(any_args)
-  
+
       provider = @provider_class.new
       provider.resource = resource
       provider.flush
@@ -140,6 +143,15 @@ describe Puppet::Provider::AEM do
             match = /JVM_MEM_OPTS='(#{value})'/.match(contents).captures
             expect(match).not_to be(nil)
           end
+
+          if value = opts[:context_root]
+            match = /CONTEXT_ROOT='(#{value})'/.match(contents).captures
+            expect(match).not_to be(nil)
+          else
+            match = /CONTEXT_ROOT/.match(contents)
+            expect(match).to be(nil)
+          end
+
         end.and_return(0)
 
         expect(mock_file).to receive(:close)
@@ -177,6 +189,10 @@ describe Puppet::Provider::AEM do
 
     describe 'update jvm memory' do
       it_should_behave_like 'update_env', :jvm_mem_opts => '-Xmx2048m -XX:MaxPermSize=512m'
+    end
+
+    describe 'update context root' do
+      it_should_behave_like 'update_env', :context_root => 'contextroot'
     end
   end
 

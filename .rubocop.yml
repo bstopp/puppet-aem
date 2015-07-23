@@ -18,6 +18,9 @@ Metrics/LineLength:
 Metrics/MethodLength:
   Max: 20
 
+Metrix/PerceivedComplexity:
+  Max: 20
+
 # Disabled undesired features
 Style/ClassAndModuleChildren:
   Enabled: false

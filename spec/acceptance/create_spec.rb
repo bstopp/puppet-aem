@@ -81,6 +81,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
           user          => 'aem',
           group         => 'aem',
           jvm_mem_opts  => '-Xmx2048m -XX:MaxPermSize=512M',
+          context_root  => 'contextpath'
         }
       MANIFEST
 

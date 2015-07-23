@@ -30,6 +30,11 @@ CURR_DIR=$(basename $(pwd))
 cd ..
 
 START_OPTS="start -c ${CURR_DIR} -i launchpad -p ${PORT}"
+
+if [ -n "$CONTEXT_ROOT" ]; then
+    START_OPTS="${START_OPTS} -r ${CONTEXT_ROOT}"
+fi
+
 START_OPTS="${START_OPTS} -Dsling.properties=${SLING_PROPS}"
 
 if [ $LOG_LEVEL ]; then

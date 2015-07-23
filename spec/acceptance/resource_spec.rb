@@ -9,22 +9,23 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
       TYPE=author
       RUNMODES=dev,mockup
       JVM_MEM_OPTS='-Xmx4096m -XX:MaxPermSize=1024M'
+      CONTEXT_ROOT='contextrootpath'
     ENV
-    
+
     #TODO As properties are added to env file, add them to the fake one here.
     pp = <<-MANIFEST
       File { backup => false, }
       file { '/opt/aem' :
         ensure          => 'directory',
-         
+ 
       }
       file { '/opt/aem/crx-quickstart' :
         ensure          => 'directory',
-         
+ 
       }
       file { '/opt/aem/crx-quickstart/app' :
         ensure          => 'directory',
-         
+ 
       }
       file { '/opt/aem/crx-quickstart/bin' :
         ensure        => 'directory',
@@ -41,17 +42,17 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
     apply_manifest(pp, :catch_failures => true)
   end
 
-#  after :context do
-#    pp = <<-MANIFEST
-#      File { backup => false, }
-#      file { '/opt/aem' :
-#        ensure      => 'absent',
-#        force       => 'true',
-#      }
-#      
-#    MANIFEST
-#    apply_manifest(pp, :catch_failures => true)
-#  end
+  after :context do
+    pp = <<-MANIFEST
+      File { backup => false, }
+      file { '/opt/aem' :
+        ensure      => 'absent',
+        force       => 'true',
+      }
+
+    MANIFEST
+    apply_manifest(pp, :catch_failures => true)
+  end
 
   context 'puppet resource' do
 
@@ -81,6 +82,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         expect(data['type']).to match('author')
         expect(data['runmodes']).to match("['dev', 'mockup']")
         expect(data['jvm_mem_opts']).to match('-Xmx4096m -XX:MaxPermSize=1024M')
+        expect(data['context_root']).to match('contextrootpath')
 
       end
     end
