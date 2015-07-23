@@ -12,8 +12,9 @@ TYPE=<%= @resource[:type] %>
 RUNMODES=<%= @resource[:runmodes].join(",") if @resource[:runmodes] %>
 DEBUG_PORT=
 
-LOG_LEVEL=
-#CONTEXT_PATH=-Dorg.apache.felix.http.context_path
+<% if @resource[:context_root] %>
+CONTEXT_ROOT='<%= @resource[:context_root] %>'
+<% end %>
 
 JVM_MEM_OPTS='<%= @resource[:jvm_mem_opts] %>'
 
@@ -24,6 +25,9 @@ SLING_PROPS='conf/sling.properties'
 # Do we ever implement these?
 #HOST=
 #FILE_SIZE_LIMIT
+
+# This doesn't ever seem to work
+#LOG_LEVEL=
 
 # ------------------------------------------------------------------------------
 # persistence mode

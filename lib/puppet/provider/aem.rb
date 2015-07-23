@@ -66,7 +66,7 @@ class Puppet::Provider::AEM < Puppet::Provider
 
   def flush
     create_env_script unless @property_flush[:method]
-    @property_hash = resource.to_hash
+    @property_hash = @resource.to_hash
     @property_flush.clear
   end
 
@@ -104,6 +104,7 @@ class Puppet::Provider::AEM < Puppet::Provider
       hash[:type] = $1.intern if contents =~ /TYPE=(\S+)/
       hash[:runmodes] = $1.split(',') if contents =~ /RUNMODES=(\S+)/
       hash[:jvm_mem_opts] = $1 if contents =~ /JVM_MEM_OPTS='(.+?)'/
+      hash[:context_root] = $1 if contents =~ /CONTEXT_ROOT='(.+?)'/
 
       # Add additional configuration properties here
     end
@@ -111,14 +112,14 @@ class Puppet::Provider::AEM < Puppet::Provider
 
   def update_exec_opts
 
-    unless resource[:user].nil? || resource[:user].empty?
-      user = Etc.getpwnam(resource[:user])
+    unless @resource[:user].nil? || @resource[:user].empty?
+      user = Etc.getpwnam(@resource[:user])
       @exec_options[:uid] = user.uid
     end
 
-    return if resource[:group].nil? || resource[:group].empty?
+    return if @resource[:group].nil? || @resource[:group].empty?
 
-    grp = Etc.getgrnam(resource[:group])
+    grp = Etc.getgrnam(@resource[:group])
     @exec_options[:gid] = grp.gid
 
   end
@@ -177,7 +178,12 @@ class Puppet::Provider::AEM < Puppet::Provider
   # Checks the system to for a state, loops until it reaches that state
   def monitor_site(desired_state = :on)
 
-    uri = URI.parse("http://localhost:#{resource[:port]}")
+    # If context root is not blank, need to ensure URI has a trailing slash,
+    # otherwise the system redirects, thus shutting down before installation is complete.
+    uri_s = "http://localhost:#{@resource[:port]}/"
+    uri_s = "#{uri_s}#{@resource[:context_root]}/" if @resource[:context_root]
+
+    uri = URI.parse(uri_s)
 
     Timeout.timeout(@resource[:timeout]) do
 

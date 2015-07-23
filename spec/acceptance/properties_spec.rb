@@ -203,4 +203,26 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
       shell("grep -- '#{opts}' /opt/aem/crx-quickstart/bin/start-env", {:acceptable_exit_codes => 0})
     end
   end
+
+  context 'context_root' do
+
+    it 'should update the start-env file' do
+
+      path = 'contextroot'
+
+      pp = <<-MANIFEST
+        File { backup => false, }
+
+        aem { 'aem' :
+          home          => '/opt/aem',
+          ensure        => present,
+          source        => '/tmp/aem-quickstart.jar',
+          context_root  => "#{path}"
+        }
+      MANIFEST
+      apply_manifest(pp, :expect_changes => true)
+      shell("grep '#{path}' /opt/aem/crx-quickstart/bin/start-env", {:acceptable_exit_codes => 0})
+    end
+  end
+
 end

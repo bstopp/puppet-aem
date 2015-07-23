@@ -96,6 +96,7 @@ Puppet::Type.newtype(:aem) do
   end
 
   newproperty(:type) do
+    desc 'The AEM type, either Author or Publish. See AEM documentation for more information.'
 
     defaultto :author
     newvalues(:author, :publish)
@@ -107,6 +108,7 @@ Puppet::Type.newtype(:aem) do
 
   newproperty(:runmodes, :array_matching => :all) do
     desc 'Runmodes for the Sling engine, excluding :type and :samplecontent'
+
     def insync?(is)
       if is.is_a?(Array) && @should.is_a?(Array)
         is.sort == @should.sort
@@ -117,14 +119,20 @@ Puppet::Type.newtype(:aem) do
   end
 
   newproperty(:jvm_mem_opts) do
+    desc 'The JVM Memory settings.'
+
     defaultto '-Xmx1024m -XX:MaxPermSize=256M'
   end
 
+  newproperty(:context_root) do
+    desc 'The context root.'
+  end
+
   # TODO: Add samplecontent property
-  # TODO: Add log level property
   # TODO: Add JVM property
   # TODO: Add Mongo properties
   # TODO: Add Debug Properties
+  # TODO: Add Address?
 
   newproperty(:user) do
     def insync?(is)

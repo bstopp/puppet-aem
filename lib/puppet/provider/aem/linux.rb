@@ -15,6 +15,7 @@ Puppet::Type.type(:aem).provide :linux, :parent => Puppet::Provider::AEM do
 
   mk_resource_methods
 
+  # This is here only because of the find command.
   def self.instances
     installs = []
 

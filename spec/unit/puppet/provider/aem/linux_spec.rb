@@ -177,14 +177,16 @@ describe Puppet::Type.type(:aem).provider(:linux) do
     shared_examples 'create_instance' do |opts|
       it {
 
-        if !opts.nil? && !opts[:user].nil? && !opts[:user].empty?
+        opts ||= { }
+
+        if !opts[:user].nil? && !opts[:user].empty?
           expect(Etc).to receive(:getpwnam).with(opts[:user]).and_return(filestats)
           execute_options[:uid] = ugid
           resource[:user] = opts[:user]
           userid = ugid
         end
 
-        if !opts.nil? && !opts[:group].nil? && !opts[:group].empty?
+        if !opts[:group].nil? && !opts[:group].empty?
           expect(Etc).to receive(:getgrnam).with(opts[:group]).and_return(filestats)
           execute_options[:gid] = ugid
           resource[:group] = opts[:group]
@@ -200,20 +202,7 @@ describe Puppet::Type.type(:aem).provider(:linux) do
         envfile = File.join(resource[:home], 'crx-quickstart', 'bin', 'start-env')
 
         expect(File).to receive(:new).with(envfile, any_args).and_return(mock_file)
-        expect(mock_file).to receive(:write) do |contents|
-          # Add fields here when new properties are added to env file
-          port = false
-          type = false
-
-          if /PORT=#{resource[:port]}/ =~ contents
-            port = true
-          end
-          if /TYPE=#{resource[:type]}/ =~ contents
-            type = true
-          end
-
-          expect(port && type).to be_truthy
-        end.and_return(0)
+        expect(mock_file).to receive(:write).and_return(0)
         expect(mock_file).to receive(:close)
 
         expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
@@ -221,7 +210,7 @@ describe Puppet::Type.type(:aem).provider(:linux) do
 
         # Creates start script
         expect(File).to receive(:rename).with(/start/,/start-orig/).and_return(0)
-        
+
         expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start.erb')
         startfile = File.join(resource[:home], 'crx-quickstart', 'bin', 'start')
         expect(File).to receive(:new).with(startfile, any_args).and_return(mock_file)
@@ -236,14 +225,32 @@ describe Puppet::Type.type(:aem).provider(:linux) do
 
         # Monitor System for on
         expect(Net::HTTP).to receive(:get_response) do |uri|
-          uri.path == "http://localhost:#{resource[:port]}"
+          result = false
+          if opts[:context_root]
+            result = (uri.to_s == "http://localhost:#{resource[:port]}/#{resource[:context_root]}/")
+          else
+            result = (uri.to_s == "http://localhost:#{resource[:port]}/")
+          end
+
+          result || fail
+
         end.once.ordered.and_return(failed_response)
+
         expect(failed_response).to receive(:is_a?).twice.and_return(false)
 
         expect(Net::HTTP).to receive(:get_response) do |uri|
-          uri.path == "http://localhost:#{resource[:port]}"
+          result = false
+          if opts[:context_root]
+            result = (uri.to_s == "http://localhost:#{resource[:port]}/#{resource[:context_root]}/")
+          else
+            result = (uri.to_s == "http://localhost:#{resource[:port]}/")
+          end
+
+          result || fail
+
         end.once.ordered.and_return(success_response)
-        if (opts && opts[:redirect])
+
+        if (opts[:redirect])
           expect(success_response).to receive(:is_a?).and_return(false)
         end
         expect(success_response).to receive(:is_a?).and_return(true)
@@ -253,9 +260,17 @@ describe Puppet::Type.type(:aem).provider(:linux) do
 
         # Monitor System for off
         expect(Net::HTTP).to receive(:get_response) do |uri|
-          uri.path == "http://localhost:#{resource[:port]}"
+          result = false
+          if opts[:context_root]
+            result = (uri.to_s == "http://localhost:#{resource[:port]}/#{resource[:context_root]}/")
+          else
+            result = (uri.to_s == "http://localhost:#{resource[:port]}/")
+          end
+          result || fail
+
         end.once.ordered.and_return(success_response)
-        if (opts && opts[:redirect])
+
+        if (opts[:redirect])
           expect(success_response).to receive(:is_a?).and_return(false)
         end
         expect(success_response).to receive(:is_a?).and_return(true)
@@ -292,38 +307,37 @@ describe Puppet::Type.type(:aem).provider(:linux) do
         allow(File).to receive(:directory?).with(any_args).and_call_original
         expect(File).to receive(:directory?).with('/opt/aem').and_return(true)
         Puppet::Type.type(:aem).new({
-          :name     => 'aem',
-          :ensure   => :present,
-          :source   => source,
-          :version  => '6.1',
-          :home     => '/opt/aem',
-          :provider => 'linux',
-          :port => 8080,
-          :snooze   => 0,
+          :name         => 'aem',
+          :ensure       => :present,
+          :source       => source,
+          :version      => '6.1',
+          :home         => '/opt/aem',
+          :provider     => 'linux',
+          :port         => 8080,
+          :snooze       => 0,
         })
       end
       it_should_behave_like 'create_instance'
     end
 
-    describe 'creates config file with values' do
+    describe 'supports using context root for URI' do
       let(:resource) do
         allow(File).to receive(:file?).with(any_args).and_call_original
         expect(File).to receive(:file?).with(source).and_return(true)
         allow(File).to receive(:directory?).with(any_args).and_call_original
         expect(File).to receive(:directory?).with('/opt/aem').and_return(true)
         Puppet::Type.type(:aem).new({
-          :name     => 'aem',
-          :ensure   => :present,
-          :source   => source,
-          :version  => '6.1',
-          :home     => '/opt/aem',
-          :provider => 'linux',
-          :port     => 8080,
-          :type     => :author,
-          :snooze   => 0,
+          :name         => 'aem',
+          :ensure       => :present,
+          :source       => source,
+          :version      => '6.1',
+          :home         => '/opt/aem',
+          :provider     => 'linux',
+          :snooze       => 0,
+          :context_root => 'contextroot'
         })
       end
-      it_should_behave_like 'create_instance'
+      it_should_behave_like 'create_instance', :context_root => 'contextroot'
     end
 
     describe 'creates instance with redirect for monitor' do
@@ -349,7 +363,7 @@ describe Puppet::Type.type(:aem).provider(:linux) do
       end
 
       it 'should throw error when monitor timeout occurs' do
-        
+
         # Unpacks the jar file
         expect(provider).to receive(:execute).with(['/usr/bin/java','-jar', source, '-b', resource[:home], '-unpack'],
         execute_options).and_return(0)
