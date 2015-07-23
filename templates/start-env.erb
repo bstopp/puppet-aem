@@ -15,9 +15,7 @@ DEBUG_PORT=
 LOG_LEVEL=
 #CONTEXT_PATH=-Dorg.apache.felix.http.context_path
 
-
-
-JVM_MEM_OPTS='-Xmx1024m -XX:MaxPermSize=256M'
+JVM_MEM_OPTS='<%= @resource[:jvm_mem_opts] %>'
 
 JVM_OPTS='-server -Djava.awt.headless=true <%# @resource[:jvm_opts] %>'
 

@@ -23,8 +23,17 @@ describe Puppet::Provider::AEM do
     })
   }
 
+  let(:defaults) {
+    {
+      :port => 4502,
+      :type => :author,
+      :runmodes => '',
+      :jvm_mem_opts => '-Xmx1024m -XX:MaxPermSize=256M'
+    }
+  }
+
   before do
-    @provider_class = Puppet::Type.type(:aem).provide(:simple, :parent => :linux) 
+    @provider_class = Puppet::Type.type(:aem).provide(:simple, :parent => :linux)
     @provider_class.stubs(:suitable?).returns true
     Puppet::Type.type(:aem).stubs(:defaultprovider).returns @provider_class
 
@@ -73,7 +82,40 @@ describe Puppet::Provider::AEM do
 
   end
 
-  describe 'attribute updates' do
+  describe 'start-env' do
+    it 'should have default values' do
+      
+      expect(Puppet::Parser::Files).to receive(:find_template).and_return('templates/start-env.erb')
+      envfile = File.join(resource[:home], 'crx-quickstart', 'bin', 'start-env')
+      expect(File).to receive(:new).with(envfile, any_args).and_return(mock_file)
+      expect(mock_file).to receive(:write) do |contents|
+
+        match = /PORT=(#{defaults[:port]})/.match(contents).captures
+        expect(match).not_to be(nil)
+
+        match = /TYPE=(#{defaults[:type]})/.match(contents).captures
+        expect(match).not_to be(nil)
+
+        match = /RUNMODES=(.*?)\n/.match(contents).captures
+        expect(match[0]).to eq("")
+
+        match = /JVM_MEM_OPTS='(#{defaults[:jvm_mem_opts]})'/.match(contents).captures
+        expect(match).not_to be(nil)
+
+      end.and_return(0)
+      
+      expect(mock_file).to receive(:close)
+      expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
+      expect(File).to receive(:chown).with(any_args)
+  
+      provider = @provider_class.new
+      provider.resource = resource
+      provider.flush
+
+    end
+  end
+
+  describe 'property updates' do
     shared_examples 'update_env' do |opts|
       it {
 
@@ -83,19 +125,23 @@ describe Puppet::Provider::AEM do
         expect(File).to receive(:new).with(envfile, any_args).and_return(mock_file)
         expect(mock_file).to receive(:write) do |contents|
 
-          if value = opts[:port] 
+          if value = opts[:port]
             match = /PORT=(#{value})/.match(contents).captures
             expect(match).not_to be(nil)
-          end 
+          end
 
-          if value = opts[:runmodes] 
+          if value = opts[:runmodes]
             value = value.is_a?(Array) ? value.join(',') : value
             match = /RUNMODES=(#{value})/.match(contents).captures
             expect(match).not_to be(nil)
-          end 
-          
+          end
+
+          if value = opts[:jvm_mem_opts]
+            match = /JVM_MEM_OPTS='(#{value})'/.match(contents).captures
+            expect(match).not_to be(nil)
+          end
         end.and_return(0)
-        
+
         expect(mock_file).to receive(:close)
         expect(File).to receive(:chmod).with(0750, any_args).and_return(0)
         expect(File).to receive(:chown).with(any_args)
@@ -110,7 +156,7 @@ describe Puppet::Provider::AEM do
         provider.flush
 
         expect(provider.properties).to eq(resource.to_hash)
-        
+
         opts.each do |k, v|
           expect(provider.properties[k]).to eq(v)
         end
@@ -127,6 +173,10 @@ describe Puppet::Provider::AEM do
 
     describe 'update runmode' do
       it_should_behave_like 'update_env', :runmodes => ['production']
+    end
+
+    describe 'update jvm memory' do
+      it_should_behave_like 'update_env', :jvm_mem_opts => '-Xmx2048m -XX:MaxPermSize=512m'
     end
   end
 

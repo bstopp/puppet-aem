@@ -94,6 +94,21 @@ class Puppet::Provider::AEM < Puppet::Provider
     hash
   end
 
+  def self.get_env_properties(hash)
+    filename = File.join(hash[:home], 'crx-quickstart', 'bin', self::START_ENV_FILE)
+    if File.file?(filename) && File.readable?(filename)
+      contents = File.read(filename)
+      # TODO: Is there any way to make this cleaner?
+
+      hash[:port] = $1.to_i if contents =~ /PORT=(\S+)/
+      hash[:type] = $1.intern if contents =~ /TYPE=(\S+)/
+      hash[:runmodes] = $1.split(',') if contents =~ /RUNMODES=(\S+)/
+      hash[:jvm_mem_opts] = $1 if contents =~ /JVM_MEM_OPTS='(.+?)'/
+
+      # Add additional configuration properties here
+    end
+  end
+
   def update_exec_opts
 
     unless resource[:user].nil? || resource[:user].empty?

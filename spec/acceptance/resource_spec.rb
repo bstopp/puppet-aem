@@ -8,6 +8,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
       PORT=4502
       TYPE=author
       RUNMODES=dev,mockup
+      JVM_MEM_OPTS='-Xmx4096m -XX:MaxPermSize=1024M'
     ENV
     
     #TODO As properties are added to env file, add them to the fake one here.
@@ -40,22 +41,22 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
     apply_manifest(pp, :catch_failures => true)
   end
 
-  after :context do
-    pp = <<-MANIFEST
-      File { backup => false, }
-      file { '/opt/aem' :
-        ensure      => 'absent',
-        force       => 'true',
-      }
-      
-    MANIFEST
-    apply_manifest(pp, :catch_failures => true)
-  end
+#  after :context do
+#    pp = <<-MANIFEST
+#      File { backup => false, }
+#      file { '/opt/aem' :
+#        ensure      => 'absent',
+#        force       => 'true',
+#      }
+#      
+#    MANIFEST
+#    apply_manifest(pp, :catch_failures => true)
+#  end
 
   context 'puppet resource' do
 
     let(:resource_line) do
-      /(\S+)\s*=>\s*'?(\S+?)'?,/
+      /(\S+)\s*=>\s*'?(.+?)'?,/
     end
 
     it 'lists the instances' do
@@ -79,6 +80,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         expect(data['port']).to match('4502')
         expect(data['type']).to match('author')
         expect(data['runmodes']).to match("['dev', 'mockup']")
+        expect(data['jvm_mem_opts']).to match('-Xmx4096m -XX:MaxPermSize=1024M')
 
       end
     end

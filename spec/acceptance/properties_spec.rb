@@ -3,6 +3,13 @@ require 'spec_helper_acceptance'
 describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
 
   before :context do
+    env = <<-ENV
+      PORT=4502
+      TYPE=author
+      RUNMODES=dev,mockup
+      JVM_MEM_OPTS='-Xmx4096m -XX:MaxPermSize=1024M'
+    ENV
+
     pp = <<-MANIFEST
       File { backup => false, }
 
@@ -24,7 +31,7 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
       }
       file { '/opt/aem/crx-quickstart/bin/start-env' :
         ensure        => 'file',
-        content       => "PORT=4502\nTYPE=author",
+        content       => "#{env}",
       }
 
       file { '/opt/aem/crx-quickstart/app' :
@@ -58,10 +65,11 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
         File { backup => false, }
 
         aem { 'aem' :
-          home        => '/opt/aem',
-          ensure      => present,
-          source      => '/tmp/aem-quickstart.jar',
-          version     => '6.0.0',
+          home          => '/opt/aem',
+          ensure        => present,
+          source        => '/tmp/aem-quickstart.jar',
+          jvm_mem_opts  => '-Xmx4096m -XX:MaxPermSize=1024M',
+          version       => '6.0.0',
         }
       MANIFEST
 
@@ -82,6 +90,7 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
           home        => '/opt/aem',
           ensure      => present,
           source      => '/tmp/aem-quickstart.jar',
+          jvm_mem_opts  => '-Xmx4096m -XX:MaxPermSize=1024M',
           type        => publish
         }
       MANIFEST
@@ -103,6 +112,7 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
           home        => '/opt/aem',
           ensure      => present,
           source      => '/tmp/aem-quickstart.jar',
+          jvm_mem_opts  => '-Xmx4096m -XX:MaxPermSize=1024M',
           user        => 'aem',
         }
       MANIFEST
@@ -124,6 +134,7 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
           home        => '/opt/aem',
           ensure      => present,
           source      => '/tmp/aem-quickstart.jar',
+          jvm_mem_opts  => '-Xmx4096m -XX:MaxPermSize=1024M',
           group       => 'aem',
         }
       MANIFEST
@@ -144,6 +155,7 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
           home        => '/opt/aem',
           ensure      => present,
           source      => '/tmp/aem-quickstart.jar',
+          jvm_mem_opts  => '-Xmx4096m -XX:MaxPermSize=1024M',
           runmodes    => ['dev','client', 'server', 'mock'],
         }
       MANIFEST
@@ -152,6 +164,9 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
     end
 
     it 'should update the start-env file with single value' do
+
+      mode = 'production'
+
       pp = <<-MANIFEST
         File { backup => false, }
 
@@ -159,12 +174,33 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
           home        => '/opt/aem',
           ensure      => present,
           source      => '/tmp/aem-quickstart.jar',
-          runmodes    => 'production',
+          jvm_mem_opts  => '-Xmx4096m -XX:MaxPermSize=1024M',
+          runmodes    => "#{mode}",
         }
       MANIFEST
       apply_manifest(pp, :expect_changes => true)
-      shell("grep 'production' /opt/aem/crx-quickstart/bin/start-env", {:acceptable_exit_codes => 0})
+      shell("grep '#{mode}' /opt/aem/crx-quickstart/bin/start-env", {:acceptable_exit_codes => 0})
     end
   end
 
+  context 'jvm_mem_opts' do
+
+    it 'should update the start-env file' do
+
+      opts = '-Xmx2048m -XX:MaxPermSize=512M'
+
+      pp = <<-MANIFEST
+        File { backup => false, }
+
+        aem { 'aem' :
+          home          => '/opt/aem',
+          ensure        => present,
+          source        => '/tmp/aem-quickstart.jar',
+          jvm_mem_opts  => "#{opts}"
+        }
+      MANIFEST
+      apply_manifest(pp, :expect_changes => true)
+      shell("grep -- '#{opts}' /opt/aem/crx-quickstart/bin/start-env", {:acceptable_exit_codes => 0})
+    end
+  end
 end

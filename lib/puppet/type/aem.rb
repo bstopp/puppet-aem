@@ -39,22 +39,18 @@ Puppet::Type.newtype(:aem) do
   end
 
   newparam(:timeout) do
-    desc <<-EOT
-      Timeout for the start process when monitoring for start and stop.
-      If the system does not enter the necessary state by the timeout, an error is raised.
+    desc 'Timeout for the start process when monitoring for start and stop.
+          If the system does not enter the necessary state by the timeout, an error is raised.
 
-      Value is in seconds. Default = 10 minutes
-    EOT
+          Value is in seconds. Default = 10 minutes'
 
     defaultto 600
   end
 
   newparam(:snooze) do
-    desc <<-EOT
-      Snooze value for wait when monitoring for AEM state transition during installation.
+    desc 'Snooze value for wait when monitoring for AEM state transition during installation.
 
-      Value is in seconds; default = 10 seconds
-    EOT
+          Value is in seconds; default = 10 seconds'
 
     defaultto 10
   end
@@ -118,6 +114,10 @@ Puppet::Type.newtype(:aem) do
         is == @should
       end
     end
+  end
+
+  newproperty(:jvm_mem_opts) do
+    defaultto '-Xmx1024m -XX:MaxPermSize=256M'
   end
 
   # TODO: Add samplecontent property

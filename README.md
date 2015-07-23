@@ -154,6 +154,8 @@ If Puppet is managing the home directory, user, or group parameters, the aem res
 
   * `runmodes`: An array of runmodes to apply to the AEM instance [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html). Do not use this to set options available via `type` configuration.
 
+  * `jvm_mem_opts`: Specify options for the JVM memory. This is separated from the JVM opts to simplify configurations. Defaults to `-Xmx1024m -XX:MaxPermSize=256M`.
+
   * `timeout`: Timeout allowed for startup monitoring. If the installation doesn't finish by the timeout, an error will be generated. Value is specified in seconds. Default value: `10 minutes`.
 
   * `snooze`: Wait period between checks for installation completion. When monitoring the system for up state, this is the wait period between checks. Value is specified in seconds. Default value: `10 seconds`.
