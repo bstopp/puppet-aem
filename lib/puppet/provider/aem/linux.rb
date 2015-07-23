@@ -38,8 +38,11 @@ Puppet::Type.type(:aem).provide :linux, :parent => Puppet::Provider::AEM do
     if File.file?(filename) && File.readable?(filename)
       contents = File.read(filename)
       # TODO: Is there any way to make this cleaner?
+
       hash[:port] = $1.to_i if contents =~ /PORT=(\S+)/
       hash[:type] = $1.intern if contents =~ /TYPE=(\S+)/
+      hash[:runmodes] = $1.split(',') if contents =~ /RUNMODES=(\S+)/
+
       # Add additional configuration properties here
     end
   end

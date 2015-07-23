@@ -7,14 +7,14 @@
 #
 
 
-PORT=<%= @property_flush[:port] || @resource[:port] %>
-TYPE=<%= @property_flush[:type] || @resource[:type] %>
-#CONTEXT_PATH=-Dorg.apache.felix.http.context_path
-RUNMODES=
+PORT=<%= @resource[:port] %>
+TYPE=<%= @resource[:type] %>
+RUNMODES=<%= @resource[:runmodes].join(",") if @resource[:runmodes] %>
+DEBUG_PORT=
 
 LOG_LEVEL=
+#CONTEXT_PATH=-Dorg.apache.felix.http.context_path
 
-DEBUG_PORT=
 
 
 JVM_MEM_OPTS='-Xmx1024m -XX:MaxPermSize=256M'
