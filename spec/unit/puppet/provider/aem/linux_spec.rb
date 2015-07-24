@@ -7,6 +7,8 @@ describe Puppet::Type.type(:aem).provider(:linux) do
   let(:source) { '/opt/aem/cq-author-4502.jar' }
   let (:install_name) { 'cq-quickstart-*-standalone*.jar' }
 
+  let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.0.0-standalone.jar' }
+
   before :each do
     described_class.stubs(:which).with('find').returns('/bin/find')
     described_class.stubs(:which).with('java').returns('/usr/bin/java')
@@ -87,13 +89,16 @@ describe Puppet::Type.type(:aem).provider(:linux) do
         expect(Etc).to receive(:getgrgid).with(ugid).and_return(id)
 
         props = {
-          :name     => opts[:home],
-          :home     => opts[:home],
-          :version  => opts[:version],
-          :ensure   => :present,
-          :user     => 'aem',
-          :group    => 'aem',
+          :name             => opts[:home],
+          :home             => opts[:home],
+          :version          => '6.0.0',
+          :ensure           => :present,
+          :user             => 'aem',
+          :group            => 'aem',
         }
+
+
+        props[:version] = opts[:version] if opts[:version]
 
         if opts[:env]
           envfile = File.join(opts[:home], 'crx-quickstart', 'bin', 'start-env')
@@ -111,10 +116,26 @@ describe Puppet::Type.type(:aem).provider(:linux) do
             props.store(:type, opts[:env][:type].intern)
           end
 
+          if opts[:env][:runmodes]
+            envcontents << "RUNMODES=#{opts[:env][:runmodes]}"
+            props[:runmodes] = opts[:env][:runmodes].split(',')
+          end
+
+          if opts[:env][:jvm_mem_opts]
+            envcontents << "JVM_MEM_OPTS='#{opts[:env][:jvm_mem_opts]}'"
+            props[:jvm_mem_opts] = opts[:env][:jvm_mem_opts]
+          end
+
+          if opts[:env][:context_root]
+            envcontents << "CONTEXT_ROOT='#{opts[:env][:context_root]}'"
+            props[:context_root] = opts[:env][:context_root]
+          end
+
           expect(File).to receive(:read).with(envfile).and_return(envcontents)
         end
 
         installed = described_class.instances
+
         expect(installed[0].properties).to eq(props)
       }
     end
@@ -142,34 +163,39 @@ describe Puppet::Type.type(:aem).provider(:linux) do
 
     describe 'should support empty env file ' do
 
-      let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar' }
-
-      it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '6.1.0', :env => { }
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :env => { }
     end
 
     describe 'should support env file with port' do
 
-      let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar' }
       envprops  = { :port => 5 }
-
-      it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '6.1.0', :env => envprops
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
     end
 
     describe 'should support env file with type' do
 
-      let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar' }
       envprops  = { :type => :author }
-
-      it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '6.1.0', :env => envprops
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
     end
 
-    describe 'should support env file with port & type' do
+    describe 'should support env file with runmodes' do
 
-      let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar' }
-      envprops  = { :type => :author, :port => 8080 }
-
-      it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '6.1.0', :env => envprops
+      envprops  = { :runmodes => 'do,ray,me,fa' }
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
     end
+
+    describe 'should support env file with jvm_mem_opts' do
+
+      envprops  = { :jvm_mem_opts => 'some arbitrary memory value' }
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
+    end
+
+    describe 'should support env file with contentx_root' do
+
+      envprops  = { :context_root => 'thisisthecontextroot' }
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
+    end
+
   end
 
   describe 'create' do

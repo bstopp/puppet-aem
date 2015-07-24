@@ -28,7 +28,7 @@ describe Puppet::Provider::AEM do
       :port => 4502,
       :type => :author,
       :runmodes => '',
-      :jvm_mem_opts => '-Xmx1024m -XX:MaxPermSize=256M'
+      :jvm_mem_opts => '-Xmx1024m -XX:MaxPermSize=256M',
     }
   }
 

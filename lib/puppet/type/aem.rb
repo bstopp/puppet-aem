@@ -128,12 +128,6 @@ Puppet::Type.newtype(:aem) do
     desc 'The context root.'
   end
 
-  # TODO: Add samplecontent property
-  # TODO: Add JVM property
-  # TODO: Add Mongo properties
-  # TODO: Add Debug Properties
-  # TODO: Add Address?
-
   newproperty(:user) do
     def insync?(is)
       warning("User cannot be modified after installation. [Existing = #{is}, New = #{should}]") unless is == should
@@ -146,6 +140,13 @@ Puppet::Type.newtype(:aem) do
       warning("Group cannot be modified after installation. [Existing = #{is}, New = #{should}]") unless is == should
       true
     end
+  end
+
+  newproperty(:sample_content, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+    desc 'Whether or not to include the sample content when starting the system.'
+
+    defaultto true
+    newvalues(true, false)
   end
 
   autorequire(:file) do

@@ -101,7 +101,7 @@ class Puppet::Provider::AEM < Puppet::Provider
       # TODO: Is there any way to make this cleaner?
 
       hash[:port] = $1.to_i if contents =~ /PORT=(\S+)/
-      hash[:type] = $1.intern if contents =~ /TYPE=(\S+)/
+      hash[:type] = $1.to_sym if contents =~ /TYPE=(\S+)/
       hash[:runmodes] = $1.split(',') if contents =~ /RUNMODES=(\S+)/
       hash[:jvm_mem_opts] = $1 if contents =~ /JVM_MEM_OPTS='(.+?)'/
       hash[:context_root] = $1 if contents =~ /CONTEXT_ROOT='(.+?)'/

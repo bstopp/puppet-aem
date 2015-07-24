@@ -156,7 +156,7 @@ If Puppet is managing the home directory, user, or group parameters, the aem res
 
   * `jvm_mem_opts`: Specify options for the JVM memory. This is separated from the JVM opts to simplify configurations. Defaults to `-Xmx1024m -XX:MaxPermSize=256M`.
 
-  * `context_root`: The URL context root for the AEM applicaton. [Sling documentation](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) Defaults to `/`.
+  * `context_root`: The URL context root for the AEM applicaton. [Sling documentation](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html). Defaults to `/`.
 
   * `timeout`: Timeout allowed for startup monitoring. If the installation doesn't finish by the timeout, an error will be generated. Value is specified in seconds. Default value: `10 minutes`.
 
