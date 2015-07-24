@@ -83,7 +83,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         expect(data['runmodes']).to match("['dev', 'mockup']")
         expect(data['jvm_mem_opts']).to match('-Xmx4096m -XX:MaxPermSize=1024M')
         expect(data['context_root']).to match('contextrootpath')
-
+        exepct(data['sample_content']).to match('false')
       end
     end
 

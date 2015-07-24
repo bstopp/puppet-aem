@@ -143,11 +143,11 @@ Puppet::Type.newtype(:aem) do
     end
   end
 
-  newproperty(:sample_content, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+  newproperty(:sample_content) do
     desc 'Whether or not to include the sample content when starting the system.'
 
-    defaultto true
-    newvalues(true, false)
+    defaultto :true
+    newvalues(:true, :false)
   end
 
   autorequire(:file) do

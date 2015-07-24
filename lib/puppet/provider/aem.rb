@@ -108,6 +108,12 @@ class Puppet::Provider::AEM < Puppet::Provider
       hash[:jvm_mem_opts] = $1 if contents =~ /JVM_MEM_OPTS='(.+?)'/
       hash[:context_root] = $1 if contents =~ /CONTEXT_ROOT='(.+?)'/
 
+      if contents =~ /SAMPLE_CONTENT=(#{self::NO_SAMPLE_CONTENT})/
+        hash[:sample_content] = :false
+      else
+        hash[:sample_content] = :true
+      end
+
       # Add additional configuration properties here
     end
   end

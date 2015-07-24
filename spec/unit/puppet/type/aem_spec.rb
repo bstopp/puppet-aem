@@ -74,7 +74,7 @@ describe Puppet::Type.type(:aem) do
         expect(inst[:name]).to eq('bar')
       end
 
-      it 'should be munged to lowercase'  do
+      it 'should be munged to lowercase' do
         inst = described_class.new(:name => 'BAR')
         expect(inst[:name]).to eq('bar')
       end
@@ -171,18 +171,16 @@ describe Puppet::Type.type(:aem) do
 
     describe 'type', :setup => :required do
       it 'should have a default value' do
-        inst = described_class.new(:name => 'bar', :ensure => :absent)
+        inst = described_class.new(:name => 'bar', :ensure => :absent) 
         expect( inst[:type] ).to eq(:author)
       end
 
       it 'should support type author' do
-        expect { described_class.new(:name => 'bar', :ensure => :absent, :type => :author)
-        }.to_not raise_error
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :type => :author) }.to_not raise_error
       end
 
       it 'should support type publish' do
-        expect { described_class.new(:name => 'bar', :ensure => :absent, :type => :publish)
-        }.to_not raise_error
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :type => :publish) }.to_not raise_error
       end
 
       it 'should not support type any other value' do
@@ -192,6 +190,22 @@ describe Puppet::Type.type(:aem) do
 
     end
 
+    describe 'runmodes', :setup => :required do
+      it 'should allow a single value' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :runmodes => 'single') }.to_not raise_error
+      end
+
+      it 'should allow an array of values' do
+        runmodes = ['do', 'ray', 'me', 'fa']
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :runmodes => runmodes) }.to_not raise_error
+      end
+
+      it 'should store all array values' do
+        runmodes = ['do', 'ray', 'me', 'fa']
+        inst = described_class.new(:name => 'bar', :ensure => :absent, :runmodes => runmodes)
+        expect(inst.to_hash[:runmodes]).to eq(runmodes)
+      end
+    end
   end
 
   describe 'autorequire' do

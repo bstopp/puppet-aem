@@ -95,17 +95,18 @@ describe Puppet::Type.type(:aem).provider(:linux) do
           :ensure           => :present,
           :user             => 'aem',
           :group            => 'aem',
+          :sample_content   => :true,
         }
 
 
         props[:version] = opts[:version] if opts[:version]
 
-        if opts[:env]
-          envfile = File.join(opts[:home], 'crx-quickstart', 'bin', 'start-env')
-          expect(File).to receive(:file?).with(envfile).and_return(true)
-          expect(File).to receive(:readable?).with(envfile).and_return(true)
+        envfile = File.join(opts[:home], 'crx-quickstart', 'bin', 'start-env')
+        expect(File).to receive(:file?).with(envfile).and_return(true)
+        expect(File).to receive(:readable?).with(envfile).and_return(true)
 
-          envcontents = "\n"
+        envcontents = "\n"
+        if opts[:env]
           if opts[:env][:port]
             envcontents << "PORT=#{opts[:env][:port]}\n"
             props.store(:port, opts[:env][:port])
@@ -117,23 +118,28 @@ describe Puppet::Type.type(:aem).provider(:linux) do
           end
 
           if opts[:env][:runmodes]
-            envcontents << "RUNMODES=#{opts[:env][:runmodes]}"
+            envcontents << "RUNMODES=#{opts[:env][:runmodes]}\n"
             props[:runmodes] = opts[:env][:runmodes].split(',')
           end
 
           if opts[:env][:jvm_mem_opts]
-            envcontents << "JVM_MEM_OPTS='#{opts[:env][:jvm_mem_opts]}'"
+            envcontents << "JVM_MEM_OPTS='#{opts[:env][:jvm_mem_opts]}'\n"
             props[:jvm_mem_opts] = opts[:env][:jvm_mem_opts]
           end
 
           if opts[:env][:context_root]
-            envcontents << "CONTEXT_ROOT='#{opts[:env][:context_root]}'"
+            envcontents << "CONTEXT_ROOT='#{opts[:env][:context_root]}'\n"
             props[:context_root] = opts[:env][:context_root]
           end
 
-          expect(File).to receive(:read).with(envfile).and_return(envcontents)
+          if opts[:env][:sample_content] == :false
+            envcontents << "SAMPLE_CONTENT=#{Puppet::Provider::AEM::NO_SAMPLE_CONTENT}\n"
+            props[:sample_content] = opts[:env][:sample_content]
+          end
+
         end
 
+        expect(File).to receive(:read).with(envfile).and_return(envcontents)
         installed = described_class.instances
 
         expect(installed[0].properties).to eq(props)
@@ -193,6 +199,11 @@ describe Puppet::Type.type(:aem).provider(:linux) do
     describe 'should support env file with contentx_root' do
 
       envprops  = { :context_root => 'thisisthecontextroot' }
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
+    end
+
+    describe 'should support env file with no sample content' do
+      envprops = { :sample_content => :false }
       it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
     end
 

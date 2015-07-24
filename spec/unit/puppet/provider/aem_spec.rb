@@ -91,19 +91,22 @@ describe Puppet::Provider::AEM do
       expect(mock_file).to receive(:write) do |contents|
 
         match = /PORT=(#{defaults[:port]})/.match(contents).captures
-        expect(match).not_to be(nil)
+        expect(match).to_not be(nil)
 
         match = /TYPE=(#{defaults[:type]})/.match(contents).captures
-        expect(match).not_to be(nil)
+        expect(match).to_not be(nil)
 
         match = /RUNMODES=(.*?)\n/.match(contents).captures
         expect(match[0]).to eq("")
 
         match = /JVM_MEM_OPTS='(#{defaults[:jvm_mem_opts]})'/.match(contents).captures
-        expect(match).not_to be(nil)
+        expect(match).to_not be(nil)
 
         match = /CONTEXT_ROOT/.match(contents)
         expect(match).to be(nil)
+
+        match = /SAMPLE_CONTENT=(.*?)\n/.match(contents).captures
+        expect(match[0]).to eq("")
 
       end.and_return(0)
 
@@ -130,26 +133,31 @@ describe Puppet::Provider::AEM do
 
           if value = opts[:port]
             match = /PORT=(#{value})/.match(contents).captures
-            expect(match).not_to be(nil)
+            expect(match).to_not be(nil)
           end
 
           if value = opts[:runmodes]
             value = value.is_a?(Array) ? value.join(',') : value
             match = /RUNMODES=(#{value})/.match(contents).captures
-            expect(match).not_to be(nil)
+            expect(match).to_not be(nil)
           end
 
           if value = opts[:jvm_mem_opts]
             match = /JVM_MEM_OPTS='(#{value})'/.match(contents).captures
-            expect(match).not_to be(nil)
+            expect(match).to_not be(nil)
           end
 
           if value = opts[:context_root]
             match = /CONTEXT_ROOT='(#{value})'/.match(contents).captures
-            expect(match).not_to be(nil)
+            expect(match).to_not be(nil)
           else
             match = /CONTEXT_ROOT/.match(contents)
             expect(match).to be(nil)
+          end
+
+          if opts[:sample_content] == :false
+            match = /SAMPLE_CONTENT=(#{Puppet::Provider::AEM::NO_SAMPLE_CONTENT})/.match(contents).captures
+            expect(match).to_not be(nil)
           end
 
         end.and_return(0)
@@ -166,7 +174,6 @@ describe Puppet::Provider::AEM do
         end
 
         provider.flush
-
         expect(provider.properties).to eq(resource.to_hash)
 
         opts.each do |k, v|
@@ -193,6 +200,10 @@ describe Puppet::Provider::AEM do
 
     describe 'update context root' do
       it_should_behave_like 'update_env', :context_root => 'contextroot'
+    end
+
+    describe 'update sample_content' do
+      it_should_behave_like 'update_env', :sample_content => :false
     end
   end
 

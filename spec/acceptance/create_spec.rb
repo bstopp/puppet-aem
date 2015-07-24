@@ -75,13 +75,14 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         File { backup => false, }
 
         aem { 'aem' :
-          ensure        => present,
-          source        => '/tmp/aem-quickstart.jar',
-          home          => '/opt/aem',
-          user          => 'aem',
-          group         => 'aem',
-          jvm_mem_opts  => '-Xmx2048m -XX:MaxPermSize=512M',
-          context_root  => 'contextpath'
+          ensure          => present,
+          source          => '/tmp/aem-quickstart.jar',
+          home            => '/opt/aem',
+          user            => 'aem',
+          group           => 'aem',
+          jvm_mem_opts    => '-Xmx2048m -XX:MaxPermSize=512M',
+          context_root    => 'contextpath',
+          sample_content  => false,
         }
       MANIFEST
 
