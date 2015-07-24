@@ -1,4 +1,5 @@
 require 'pathname'
+require 'puppet/parameter/boolean'
 
 Puppet::Type.newtype(:aem) do
 

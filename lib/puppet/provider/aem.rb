@@ -10,6 +10,8 @@ class Puppet::Provider::AEM < Puppet::Provider
   self::INSTALL_FIELDS  = [:home, :version]
   self::INSTALL_REGEX   = %r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar$}
 
+  self::NO_SAMPLE_CONTENT = 'nosamplecontent'
+
   def self.prefetch(resources)
 
     found = instances
