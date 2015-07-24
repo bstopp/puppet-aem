@@ -31,7 +31,7 @@ cd ..
 
 START_OPTS="start -c ${CURR_DIR} -i launchpad -p ${PORT}"
 
-if [ -n "$CONTEXT_ROOT" ]; then
+if [ -n "${CONTEXT_ROOT}" ]; then
     START_OPTS="${START_OPTS} -r ${CONTEXT_ROOT}"
 fi
 
@@ -41,8 +41,17 @@ if [ $LOG_LEVEL ]; then
     START_OPTS="${START_OPTS} -l WARN"
 fi
 
-JVM_OPTS="${JVM_MEM_OPTS} ${JVM_OPTS} -Dsling.run.modes=${TYPE},${RUNMODES}"
+RUN_MODES="${TYPE}"
 
+if [ -n "${RUNMODES}" ]; then
+    RUN_MODES="${RUN_MODES},${RUNMODES}"
+fi
+
+if [ -n "${SAMPLE_CONTENT}" ]; then
+    RUN_MODES="${RUN_MODES},${SAMPLE_CONTENT}"
+fi
+
+JVM_OPTS="${JVM_MEM_OPTS} ${JVM_OPTS} -Dsling.run.modes=${RUN_MODES}"
 
 #TODO Update this if version is < 5.6.1; or on crx2
 #if [ $CQ_USE_JAAS ]; then
