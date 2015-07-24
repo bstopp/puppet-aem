@@ -10,6 +10,8 @@ class Puppet::Provider::AEM < Puppet::Provider
   self::INSTALL_FIELDS  = [:home, :version]
   self::INSTALL_REGEX   = %r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar$}
 
+  self::NO_SAMPLE_CONTENT = 'nosamplecontent'
+
   def self.prefetch(resources)
 
     found = instances
@@ -101,10 +103,16 @@ class Puppet::Provider::AEM < Puppet::Provider
       # TODO: Is there any way to make this cleaner?
 
       hash[:port] = $1.to_i if contents =~ /PORT=(\S+)/
-      hash[:type] = $1.intern if contents =~ /TYPE=(\S+)/
+      hash[:type] = $1.to_sym if contents =~ /TYPE=(\S+)/
       hash[:runmodes] = $1.split(',') if contents =~ /RUNMODES=(\S+)/
       hash[:jvm_mem_opts] = $1 if contents =~ /JVM_MEM_OPTS='(.+?)'/
       hash[:context_root] = $1 if contents =~ /CONTEXT_ROOT='(.+?)'/
+
+      if contents =~ /SAMPLE_CONTENT=(#{self::NO_SAMPLE_CONTENT})/
+        hash[:sample_content] = :false
+      else
+        hash[:sample_content] = :true
+      end
 
       # Add additional configuration properties here
     end

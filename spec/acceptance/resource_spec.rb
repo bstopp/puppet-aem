@@ -9,6 +9,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
       TYPE=author
       RUNMODES=dev,mockup
       JVM_MEM_OPTS='-Xmx4096m -XX:MaxPermSize=1024M'
+      SAMPLE_CONTENT=nosamplecontent
       CONTEXT_ROOT='contextrootpath'
     ENV
 
@@ -83,7 +84,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         expect(data['runmodes']).to match("['dev', 'mockup']")
         expect(data['jvm_mem_opts']).to match('-Xmx4096m -XX:MaxPermSize=1024M')
         expect(data['context_root']).to match('contextrootpath')
-
+        expect(data['sample_content']).to match('false')
       end
     end
 
