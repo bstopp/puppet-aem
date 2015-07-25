@@ -127,6 +127,11 @@ describe Puppet::Type.type(:aem).provider(:linux) do
             props[:sample_content] = opts[:env][:sample_content]
           end
 
+          if opts[:env][:debug_port]
+            envcontents << "DEBUG_PORT=#{opts[:env][:debug_port]}\n"
+            props[:debug_port] = opts[:env][:debug_port]
+          end
+
           if opts[:env][:context_root]
             envcontents << "CONTEXT_ROOT='#{opts[:env][:context_root]}'\n"
             props[:context_root] = opts[:env][:context_root]
@@ -201,7 +206,13 @@ describe Puppet::Type.type(:aem).provider(:linux) do
       it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
     end
 
-    describe 'should support env file with contentx_root' do
+    describe 'should support env file with debug port' do
+
+      envprops = { :debug_port => 54321 }
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
+    end
+
+    describe 'should support env file with context_root' do
   
       envprops  = { :context_root => 'thisisthecontextroot' }
       it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops

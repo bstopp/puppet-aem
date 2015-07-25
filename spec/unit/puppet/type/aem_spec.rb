@@ -41,8 +41,8 @@ describe Puppet::Type.type(:aem) do
       end
     end
 
-    [:version, :home, :port, :type, :runmodes, :jvm_opts,
-      :jvm_mem_opts, :context_root, :user, :group, :sample_content].each do |property|
+    [:version, :home, :port, :type, :runmodes, :jvm_opts, :jvm_mem_opts, 
+      :debug_port, :context_root, :user, :group, :sample_content].each do |property|
       it "should have a #{property} property" do
         expect(described_class.attrtype(property)).to eq(:property)
       end
@@ -141,6 +141,7 @@ describe Puppet::Type.type(:aem) do
 
       it 'should munge to a string' do
         inst = described_class.new(:name => 'bar', :ensure => :absent, :version => 6.0)
+        inst[:version].class
         expect( inst[:version] ).to be_a(String)
       end
       
@@ -237,6 +238,19 @@ describe Puppet::Type.type(:aem) do
         inst = described_class.new(:name => 'bar', :ensure => :absent)
         expect( inst[:jvm_mem_opts] ).to eq('-Xmx1024m -XX:MaxPermSize=256M')
       end
+    end
+
+    describe 'debug_port', :setup => :required do
+      it 'should accept numbers' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :debug_port => 12345) }.to_not raise_error
+      end
+
+      it 'should accept only numbers' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :debug_port => 'NaN')
+          }.to raise_error(Puppet::Error, /Invalid value/)
+
+      end
+
     end
 
     describe 'sample_content', :setup => :required do

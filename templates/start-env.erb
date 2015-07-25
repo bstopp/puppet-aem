@@ -11,7 +11,7 @@ PORT=<%= @resource[:port] %>
 TYPE=<%= @resource[:type] %>
 RUNMODES='<%= @resource[:runmodes].join(",") if @resource[:runmodes] %>'
 SAMPLE_CONTENT='<%= "nosamplecontent" if @resource[:sample_content] == :false %>'
-DEBUG_PORT=
+DEBUG_PORT=<%= @resource[:debug_port] %>
 
 <% if @resource[:context_root] %>
 CONTEXT_ROOT='<%= @resource[:context_root] %>'

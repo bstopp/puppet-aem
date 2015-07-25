@@ -83,6 +83,8 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
           jvm_mem_opts    => '-Xmx2048m -XX:MaxPermSize=512M',
           context_root    => 'contextpath',
           sample_content  => false,
+          debug_port      => 30303,
+          port            => 8080,
         }
       MANIFEST
 
