@@ -103,6 +103,9 @@ describe Puppet::Provider::AEM do
         match = /SAMPLE_CONTENT='(.*?)'\n/.match(contents).captures
         expect(match[0]).to eq("")
 
+        match = /DEBUG_PORT=(\d*)\n/.match(contents).captures
+        expect(match[0]).to eq("")
+
         match = /CONTEXT_ROOT/.match(contents)
         expect(match).to be(nil)
 
@@ -149,6 +152,11 @@ describe Puppet::Provider::AEM do
           if opts[:sample_content] == :false
             match = /SAMPLE_CONTENT='(#{Puppet::Provider::AEM::NO_SAMPLE_CONTENT})'/.match(contents).captures
             expect(match).to_not be(nil)
+          end
+
+          if value = opts[:debug_port]
+            match = /DEBUG_PORT=(#{value})\n/.match(contents).captures
+            expect(match[0]).to_not be(nil)
           end
 
           if value = opts[:context_root]
@@ -205,6 +213,10 @@ describe Puppet::Provider::AEM do
 
     describe 'update sample content' do
       it_should_behave_like 'update_env', :sample_content => :false
+    end
+
+    describe 'update debug port' do
+      it_should_behave_like 'update_env', :debug_port => 12345
     end
 
     describe 'update context root' do

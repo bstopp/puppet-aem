@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/bstopp/puppet-aem.svg?branch=master)](https://travis-ci.org/bstopp/puppet-aem)
 [![Coverage Status](https://coveralls.io/repos/bstopp/puppet-aem/badge.svg?branch=feature%2Faem6&service=github)](https://coveralls.io/github/bstopp/puppet-aem?branch=feature%2Faem6)
+[![Dependency Status](https://gemnasium.com/bstopp/puppet-aem.svg)](https://gemnasium.com/bstopp/puppet-aem)
 [![Code Climate](https://codeclimate.com/github/bstopp/puppet-aem/badges/gpa.svg)](https://codeclimate.com/github/bstopp/puppet-aem)
 [![Test Coverage](https://codeclimate.com/github/bstopp/puppet-aem/badges/coverage.svg)](https://codeclimate.com/github/bstopp/puppet-aem/coverage)
 

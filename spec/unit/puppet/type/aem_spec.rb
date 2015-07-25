@@ -141,6 +141,7 @@ describe Puppet::Type.type(:aem) do
 
       it 'should munge to a string' do
         inst = described_class.new(:name => 'bar', :ensure => :absent, :version => 6.0)
+        inst[:version].class
         expect( inst[:version] ).to be_a(String)
       end
       

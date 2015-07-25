@@ -136,6 +136,10 @@ Puppet::Type.newtype(:aem) do
 
     defaultto 4502
     newvalues(/^\d+$/)
+
+    munge do |value|
+      value.to_i
+    end
   end
 
   newproperty(:runmodes, :array_matching => :all) do
@@ -167,6 +171,10 @@ Puppet::Type.newtype(:aem) do
          -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=<<port>>'
 
     newvalues(/^\d+$/)
+
+    munge do |value|
+      value.to_i
+    end
   end
 
   newproperty(:context_root) do

@@ -247,7 +247,7 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
     end
   end
 
-  context 'jvm_mem' do
+  context 'jvm_opts' do
 
     it 'should update the start-env file' do
 
@@ -265,6 +265,27 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
       MANIFEST
       apply_manifest(pp, :expect_changes => true)
       shell("grep -- '#{opts}' /opt/aem/crx-quickstart/bin/start-env", {:acceptable_exit_codes => 0})
+    end
+  end
+
+  context 'debug port' do
+
+    it 'should update the start-env file' do
+
+      port = 54321
+
+      pp = <<-MANIFEST
+        File { backup => false, }
+
+        aem { 'aem' :
+          home          => '/opt/aem',
+          ensure        => present,
+          source        => '/tmp/aem-quickstart.jar',
+          debug_port      => #{port}
+        }
+      MANIFEST
+      apply_manifest(pp, :expect_changes => true)
+      shell("grep -- '#{port}' /opt/aem/crx-quickstart/bin/start-env", {:acceptable_exit_codes => 0})
     end
   end
 
