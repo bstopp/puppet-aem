@@ -9,9 +9,10 @@ group :development, :tests do
 end
 
 group :linting do
-  gem 'coveralls',              :require => false
-  gem 'puppet-lint',            :require => false
-  gem 'rubocop',                :require => false
+  gem 'codeclimate-test-reporter',  :require => false
+  gem 'coveralls',                  :require => false
+  gem 'puppet-lint',                :require => false
+  gem 'rubocop',                    :require => false
 end
 
 group :system_tests do

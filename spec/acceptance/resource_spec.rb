@@ -12,6 +12,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
       CONTEXT_ROOT='contextrootpath'
       JVM_MEM_OPTS='-Xmx4096m -XX:MaxPermSize=1024M'
       JVM_OPTS='-XX:+UseParNewGC'
+      DEBUG_PORT=54321
     ENV
 
     #TODO As properties are added to env file, add them to the fake one here.
@@ -84,6 +85,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         expect(data['runmodes']).to match("['dev', 'mockup']")
         expect(data['jvm_mem_opts']).to match('-Xmx4096m -XX:MaxPermSize=1024M')
         expect(data['jvm_opts']).to match('-XX:+UseParNewGC')
+        expect(data['debug_port']).to match('54321')
         expect(data['context_root']).to match('contextrootpath')
         expect(data['sample_content']).to match('false')
       end

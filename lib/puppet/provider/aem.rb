@@ -100,23 +100,27 @@ class Puppet::Provider::AEM < Puppet::Provider
     filename = File.join(hash[:home], 'crx-quickstart', 'bin', self::START_ENV_FILE)
     if File.file?(filename) && File.readable?(filename)
       contents = File.read(filename)
-      # TODO: Is there any way to make this cleaner?
-
-      hash[:port] = $1.to_i if contents =~ /\sPORT=(\S+)\s/
-      hash[:type] = $1.to_sym if contents =~ /\sTYPE=(\S+)\s/
-      hash[:runmodes] = $1.split(',') if contents =~ /\sRUNMODES='(\S+)'\s/
-      hash[:sample_content] = :true
-
-      if contents =~ /\sSAMPLE_CONTENT='(#{self::NO_SAMPLE_CONTENT})'\s/
-        hash[:sample_content] = :false
-      end
-
-      hash[:context_root] = $1 if contents =~ /\sCONTEXT_ROOT='(.+?)'\s/
-      hash[:jvm_mem_opts] = $1 if contents =~ /\sJVM_MEM_OPTS='(.+?)'\s/
-      hash[:jvm_opts] = $1 if contents =~ /\sJVM_OPTS='(.+?)'\s/
-
-      # Add additional configuration properties here
+      populate_hash(hash, contents)
     end
+  end
+
+  def self.populate_hash(hash, contents)
+
+    # TODO: Is there any way to make this cleaner?
+    hash[:port] = $1.to_i if contents =~ /\sPORT=(\d+)\s/
+    hash[:type] = $1.to_sym if contents =~ /\sTYPE=(\S+)\s/
+    hash[:runmodes] = $1.split(',') if contents =~ /\sRUNMODES='(\S+)'\s/
+    hash[:sample_content] = :true
+    hash[:debug_port] = $1.to_i if contents =~ /\sDEBUG_PORT=(\d+)\s/
+
+    if contents =~ /\sSAMPLE_CONTENT='(#{self::NO_SAMPLE_CONTENT})'\s/
+      hash[:sample_content] = :false
+    end
+
+    hash[:context_root] = $1 if contents =~ /\sCONTEXT_ROOT='(.+?)'\s/
+    hash[:jvm_mem_opts] = $1 if contents =~ /\sJVM_MEM_OPTS='(.+?)'\s/
+    hash[:jvm_opts] = $1 if contents =~ /\sJVM_OPTS='(.+?)'\s/
+    # Add additional configuration properties here
   end
 
   def update_exec_opts
