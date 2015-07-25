@@ -10,7 +10,6 @@ end
 
 group :linting do
   gem 'codeclimate-test-reporter',  :require => false
-  gem 'coveralls',                  :require => false
   gem 'puppet-lint',                :require => false
   gem 'rubocop',                    :require => false
 end
