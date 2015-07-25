@@ -202,7 +202,7 @@ describe Puppet::Provider::AEM do
       it_should_behave_like 'update_env', :context_root => 'contextroot'
     end
 
-    describe 'update sample_content' do
+    describe 'update sample content' do
       it_should_behave_like 'update_env', :sample_content => :false
     end
   end
