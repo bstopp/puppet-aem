@@ -35,13 +35,14 @@ describe Puppet::Type.type(:aem) do
   end
 
   describe 'when validating attributes' do
-    [:name, :source].each do |param|
+    [:name, :source, :timeout, :snooze].each do |param|
       it "should have a #{param} parameter" do
         expect(described_class.attrtype(param)).to eq(:param)
       end
     end
 
-    [:version, :home, :user, :group, :type,   :port].each do |property|
+    [:version, :home, :port, :type, :runmodes, 
+      :jvm_mem_opts, :context_root, :user, :group, :sample_content].each do |property|
       it "should have a #{property} property" do
         expect(described_class.attrtype(property)).to eq(:property)
       end
@@ -94,6 +95,30 @@ describe Puppet::Type.type(:aem) do
 
       it 'should work as expected when ensure is :present' do
         expect { described_class.new(:name => 'bar', :ensure => :present, :source => source) }.to_not raise_error
+      end
+    end
+
+    describe 'timeout', :setup => :required do
+      it 'should have a default value' do
+        inst = described_class.new(:name => 'bar', :ensure => :absent)
+        expect( inst[:timeout] ).to eq(600)
+      end
+
+      it 'should always be a number' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :timeout => 'NaN')
+          }.to raise_error(Puppet::Error, /Invalid value/)
+      end
+    end
+
+    describe 'snooze', :setup => :required do
+      it 'should have a default value' do
+        inst = described_class.new(:name => 'bar', :ensure => :absent)
+        expect( inst[:snooze] ).to eq(10)
+      end
+
+      it 'should always be a number' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :timeout => 'NaN')
+          }.to raise_error(Puppet::Error, /Invalid value/)
       end
     end
 
@@ -206,6 +231,35 @@ describe Puppet::Type.type(:aem) do
         expect(inst.to_hash[:runmodes]).to eq(runmodes)
       end
     end
+
+    describe 'jvm_mem_opts', :setup => :required do
+      it 'should have a default value' do
+        inst = described_class.new(:name => 'bar', :ensure => :absent)
+        expect( inst[:jvm_mem_opts] ).to eq('-Xmx1024m -XX:MaxPermSize=256M')
+      end
+    end
+
+    describe 'sample_content', :setup => :required do
+      it 'should have a default value' do
+        inst = described_class.new(:name => 'bar', :ensure => :absent)
+        expect( inst[:sample_content] ).to eq(:true)
+      end
+
+      it 'should support true value' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :sample_content => :true) }.to_not raise_error
+      end
+
+      it 'should support false value' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :sample_content => :false) }.to_not raise_error
+      end
+
+      it 'should not support any other value' do
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :sample_content => :nottrueorfalse)
+        }.to raise_error(Puppet::Error, /Invalid value/)
+      end
+
+    end
+
   end
 
   describe 'autorequire' do

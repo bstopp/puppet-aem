@@ -1,5 +1,4 @@
 require 'pathname'
-require 'puppet/parameter/boolean'
 
 Puppet::Type.newtype(:aem) do
 
@@ -46,6 +45,7 @@ Puppet::Type.newtype(:aem) do
           Value is in seconds. Default = 10 minutes'
 
     defaultto 600
+    newvalues(/^\d+$/)
   end
 
   newparam(:snooze) do
@@ -97,7 +97,7 @@ Puppet::Type.newtype(:aem) do
   end
 
   newproperty(:type) do
-    desc 'The AEM type, either Author or Publish. See AEM documentation for more information.'
+    desc 'The AEM type, either Author or Publish.'
 
     defaultto :author
     newvalues(:author, :publish)
@@ -108,7 +108,7 @@ Puppet::Type.newtype(:aem) do
   end
 
   newproperty(:runmodes, :array_matching => :all) do
-    desc 'Runmodes for the Sling engine, excluding :type and :samplecontent'
+    desc 'Runmodes for the Sling engine, excluding :type and :sample_content'
 
     def insync?(is)
       if is.is_a?(Array) && @should.is_a?(Array)

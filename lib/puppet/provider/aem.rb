@@ -110,8 +110,6 @@ class Puppet::Provider::AEM < Puppet::Provider
 
       if contents =~ /SAMPLE_CONTENT=(#{self::NO_SAMPLE_CONTENT})/
         hash[:sample_content] = :false
-      else
-        hash[:sample_content] = :true
       end
 
       # Add additional configuration properties here

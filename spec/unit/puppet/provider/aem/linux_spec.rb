@@ -95,7 +95,6 @@ describe Puppet::Type.type(:aem).provider(:linux) do
           :ensure           => :present,
           :user             => 'aem',
           :group            => 'aem',
-          :sample_content   => :true,
         }
 
 
