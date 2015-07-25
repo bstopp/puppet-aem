@@ -119,6 +119,12 @@ Puppet::Type.newtype(:aem) do
     end
   end
 
+  newproperty(:jvm_opts) do
+    desc 'JVM Options, this is separate from the Memory options.
+
+         These options are always included: -server -Djava.awt.headless=true'
+  end
+
   newproperty(:jvm_mem_opts) do
     desc 'The JVM Memory settings.'
 
