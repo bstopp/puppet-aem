@@ -41,7 +41,7 @@ describe Puppet::Type.type(:aem) do
       end
     end
 
-    [:version, :home, :port, :type, :runmodes, 
+    [:version, :home, :port, :type, :runmodes, :jvm_opts,
       :jvm_mem_opts, :context_root, :user, :group, :sample_content].each do |property|
       it "should have a #{property} property" do
         expect(described_class.attrtype(property)).to eq(:property)

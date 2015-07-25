@@ -3,13 +3,16 @@ require 'spec_helper_acceptance'
 describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
 
   before :context do
+
     env = <<-ENV
       PORT=4502
       TYPE=author
-      RUNMODES=dev,mockup
-      JVM_MEM_OPTS='-Xmx4096m -XX:MaxPermSize=1024M'
+      RUNMODES='dev,mockup'
+      SAMPLE_CONTENT=''
+      JVM_MEM_OPTS='-Xmx1024m -XX:MaxPermSize=256M'
+      JVM_OPTS='-XX:+UseParNewGC'
     ENV
-
+  
     pp = <<-MANIFEST
       File { backup => false, }
 
@@ -23,6 +26,13 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
         owner       => 'aem',
       }
 
+      file { '/opt/aem/new' :
+        ensure      => 'directory',
+        group       => 'aem',
+        owner       => 'aem',
+      }
+
+      
       file { '/opt/aem/crx-quickstart' :
         ensure          => 'directory',
       }
@@ -68,7 +78,6 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
           home          => '/opt/aem',
           ensure        => present,
           source        => '/tmp/aem-quickstart.jar',
-          jvm_mem_opts  => '-Xmx4096m -XX:MaxPermSize=1024M',
           version       => '6.0.0',
         }
       MANIFEST
@@ -87,16 +96,36 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
         File { backup => false, }
 
         aem { 'aem' :
-          home        => '/opt/aem',
-          ensure      => present,
-          source      => '/tmp/aem-quickstart.jar',
-          jvm_mem_opts  => '-Xmx4096m -XX:MaxPermSize=1024M',
-          type        => publish
+          home          => '/opt/aem',
+          ensure        => present,
+          source        => '/tmp/aem-quickstart.jar',
+          type          => publish
         }
       MANIFEST
 
       apply_manifest pp, :catch_changes => true do |result|
         expect( result.formatted_output() ).to match(/Type cannot be modified after installation/)
+      end
+    end
+  end
+
+  context 'sample content' do
+
+    it 'should log a warning when updating' do
+
+      pp = <<-MANIFEST
+        File { backup => false, }
+
+        aem { 'aem' :
+          home            => '/opt/aem',
+          ensure          => present,
+          source          => '/tmp/aem-quickstart.jar',
+          sample_content  => false
+        }
+      MANIFEST
+
+      apply_manifest pp, :catch_changes => true do |result|
+        expect( result.formatted_output() ).to match(/Sample Content cannot be modified after installation/)
       end
     end
   end
@@ -109,11 +138,10 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
         File { backup => false, }
 
         aem { 'aem' :
-          home        => '/opt/aem',
-          ensure      => present,
-          source      => '/tmp/aem-quickstart.jar',
-          jvm_mem_opts  => '-Xmx4096m -XX:MaxPermSize=1024M',
-          user        => 'aem',
+          home          => '/opt/aem',
+          ensure        => present,
+          source        => '/tmp/aem-quickstart.jar',
+          user          => 'aem',
         }
       MANIFEST
 
@@ -131,17 +159,34 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
         File { backup => false, }
 
         aem { 'aem' :
-          home        => '/opt/aem',
-          ensure      => present,
-          source      => '/tmp/aem-quickstart.jar',
-          jvm_mem_opts  => '-Xmx4096m -XX:MaxPermSize=1024M',
-          group       => 'aem',
+          home          => '/opt/aem',
+          ensure        => present,
+          source        => '/tmp/aem-quickstart.jar',
+          group         => 'aem',
         }
       MANIFEST
 
       apply_manifest pp, :catch_changes => true do |result|
         expect( result.formatted_output() ).to match(/Group cannot be modified after installation/)
       end
+    end
+  end
+
+  context 'port' do 
+    it 'should update the start-env file' do 
+
+      pp = <<-MANIFEST
+        File { backup => false, }
+
+        aem { 'aem' :
+          home          => '/opt/aem',
+          ensure        => present,
+          source        => '/tmp/aem-quickstart.jar',
+          port          => 8080,
+        }
+      MANIFEST
+      apply_manifest(pp, :expect_changes => true)
+      shell("grep '8080' /opt/aem/crx-quickstart/bin/start-env", {:acceptable_exit_codes => 0})
     end
   end
 
@@ -155,7 +200,6 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
           home        => '/opt/aem',
           ensure      => present,
           source      => '/tmp/aem-quickstart.jar',
-          jvm_mem_opts  => '-Xmx4096m -XX:MaxPermSize=1024M',
           runmodes    => ['dev','client', 'server', 'mock'],
         }
       MANIFEST
@@ -174,7 +218,6 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
           home        => '/opt/aem',
           ensure      => present,
           source      => '/tmp/aem-quickstart.jar',
-          jvm_mem_opts  => '-Xmx4096m -XX:MaxPermSize=1024M',
           runmodes    => "#{mode}",
         }
       MANIFEST
@@ -197,6 +240,27 @@ describe 'property update', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfa
           ensure        => present,
           source        => '/tmp/aem-quickstart.jar',
           jvm_mem_opts  => "#{opts}"
+        }
+      MANIFEST
+      apply_manifest(pp, :expect_changes => true)
+      shell("grep -- '#{opts}' /opt/aem/crx-quickstart/bin/start-env", {:acceptable_exit_codes => 0})
+    end
+  end
+
+  context 'jvm_mem' do
+
+    it 'should update the start-env file' do
+
+      opts = '-XX:+UseParNewGC'
+
+      pp = <<-MANIFEST
+        File { backup => false, }
+
+        aem { 'aem' :
+          home          => '/opt/aem',
+          ensure        => present,
+          source        => '/tmp/aem-quickstart.jar',
+          jvm_opts      => "#{opts}"
         }
       MANIFEST
       apply_manifest(pp, :expect_changes => true)

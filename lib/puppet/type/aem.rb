@@ -79,6 +79,11 @@ Puppet::Type.newtype(:aem) do
       Puppet::Util::Platform.windows? ? 'C:/aem' : '/opt/aem'
     end
 
+    def insync?(is)
+      warning("Home cannot be modified after installation. [Existing = #{is}, New = #{should}]") unless is == should
+      true
+    end
+
     validate do |value|
 
       unless Puppet::Util.absolute_path?(value)
@@ -87,13 +92,6 @@ Puppet::Type.newtype(:aem) do
       fail("AEM home directory (#{value}) not found.") unless File.directory?(value)
 
     end
-  end
-
-  newproperty(:port) do
-    desc 'The port on which AEM will listen.'
-
-    defaultto 4502
-    newvalues(/^\d+$/)
   end
 
   newproperty(:type) do
@@ -107,32 +105,16 @@ Puppet::Type.newtype(:aem) do
     end
   end
 
-  newproperty(:runmodes, :array_matching => :all) do
-    desc 'Runmodes for the Sling engine, excluding :type and :sample_content'
+  newproperty(:sample_content) do
+    desc 'Whether or not to include the sample content when starting the system.'
 
+    defaultto :true
+    newvalues(:true, :false)
     def insync?(is)
-      if is.is_a?(Array) && @should.is_a?(Array)
-        is.sort == @should.sort
-      else
-        is == @should
-      end
+      warning('Sample Content cannot be modified after installation. '\
+              "[Existing = #{is}, New = #{should}]") unless is == should
+      true
     end
-  end
-
-  newproperty(:jvm_opts) do
-    desc 'JVM Options, this is separate from the Memory options.
-
-         These options are always included: -server -Djava.awt.headless=true'
-  end
-
-  newproperty(:jvm_mem_opts) do
-    desc 'The JVM Memory settings.'
-
-    defaultto '-Xmx1024m -XX:MaxPermSize=256M'
-  end
-
-  newproperty(:context_root) do
-    desc 'The context root.'
   end
 
   newproperty(:user) do
@@ -149,11 +131,38 @@ Puppet::Type.newtype(:aem) do
     end
   end
 
-  newproperty(:sample_content) do
-    desc 'Whether or not to include the sample content when starting the system.'
+  newproperty(:port) do
+    desc 'The port on which AEM will listen.'
 
-    defaultto :true
-    newvalues(:true, :false)
+    defaultto 4502
+    newvalues(/^\d+$/)
+  end
+
+  newproperty(:runmodes, :array_matching => :all) do
+    desc 'Runmodes for the Sling engine, excluding :type and :sample_content'
+
+    def insync?(is)
+      if is.is_a?(Array) && @should.is_a?(Array)
+        is.sort == @should.sort
+      else
+        is == @should
+      end
+    end
+  end
+
+  newproperty(:jvm_mem_opts) do
+    desc 'The JVM Memory settings.'
+
+    defaultto '-Xmx1024m -XX:MaxPermSize=256M'
+  end
+
+  newproperty(:jvm_opts) do
+    desc 'JVM Options, this is separate from the Memory options.
+         These options are always included: -server -Djava.awt.headless=true'
+  end
+
+  newproperty(:context_root) do
+    desc 'The context root.'
   end
 
   autorequire(:file) do
