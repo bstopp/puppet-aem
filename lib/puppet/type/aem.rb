@@ -157,8 +157,16 @@ Puppet::Type.newtype(:aem) do
   end
 
   newproperty(:jvm_opts) do
-    desc 'JVM Options, this is separate from the Memory options.
-         These options are always included: -server -Djava.awt.headless=true'
+    desc 'JVM Options, this is separate from the Memory options. '\
+         'These options are always included: -server -Djava.awt.headless=true'
+  end
+
+  newproperty(:debug_port) do
+    desc 'Remote debugging connection port. Adds the following JVM options to support '\
+         'remote debugging:
+         -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=<<port>>'
+
+    newvalues(/^\d+$/)
   end
 
   newproperty(:context_root) do
