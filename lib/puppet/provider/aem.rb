@@ -102,15 +102,18 @@ class Puppet::Provider::AEM < Puppet::Provider
       contents = File.read(filename)
       # TODO: Is there any way to make this cleaner?
 
-      hash[:port] = $1.to_i if contents =~ /PORT=(\S+)/
-      hash[:type] = $1.to_sym if contents =~ /TYPE=(\S+)/
-      hash[:runmodes] = $1.split(',') if contents =~ /RUNMODES=(\S+)/
-      hash[:jvm_mem_opts] = $1 if contents =~ /JVM_MEM_OPTS='(.+?)'/
-      hash[:context_root] = $1 if contents =~ /CONTEXT_ROOT='(.+?)'/
+      hash[:port] = $1.to_i if contents =~ /\sPORT=(\S+)\s/
+      hash[:type] = $1.to_sym if contents =~ /\sTYPE=(\S+)\s/
+      hash[:runmodes] = $1.split(',') if contents =~ /\sRUNMODES='(\S+)'\s/
+      hash[:sample_content] = :true
 
-      if contents =~ /SAMPLE_CONTENT=(#{self::NO_SAMPLE_CONTENT})/
+      if contents =~ /\sSAMPLE_CONTENT='(#{self::NO_SAMPLE_CONTENT})'\s/
         hash[:sample_content] = :false
       end
+
+      hash[:context_root] = $1 if contents =~ /\sCONTEXT_ROOT='(.+?)'\s/
+      hash[:jvm_mem_opts] = $1 if contents =~ /\sJVM_MEM_OPTS='(.+?)'\s/
+      hash[:jvm_opts] = $1 if contents =~ /\sJVM_OPTS='(.+?)'\s/
 
       # Add additional configuration properties here
     end

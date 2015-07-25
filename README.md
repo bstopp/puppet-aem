@@ -156,6 +156,8 @@ If Puppet is managing the home directory, user, or group parameters, the aem res
 
   * `jvm_mem_opts`: Specify options for the JVM memory. This is separated from the JVM opts to simplify configurations. Defaults to `-Xmx1024m -XX:MaxPermSize=256M`.
 
+  * `jvm_opts`: Options to pass to the JVM. There is no default for this property, but the following value is always passed: `-server -Djava.awt.headless=true`
+
   * `context_root`: The URL context root for the AEM applicaton. [Sling documentation](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html). Defaults to `/`.
 
   * `samplecontent`: Whether or not to include the sample content (Geometrixx). [AEM Documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Using samplecontent and nosamplecontent). Defaults to `true`.

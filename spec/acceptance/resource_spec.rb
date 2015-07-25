@@ -7,10 +7,11 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
     env = <<-ENV
       PORT=4502
       TYPE=author
-      RUNMODES=dev,mockup
-      JVM_MEM_OPTS='-Xmx4096m -XX:MaxPermSize=1024M'
-      SAMPLE_CONTENT=nosamplecontent
+      RUNMODES='dev,mockup'
+      SAMPLE_CONTENT='nosamplecontent'
       CONTEXT_ROOT='contextrootpath'
+      JVM_MEM_OPTS='-Xmx4096m -XX:MaxPermSize=1024M'
+      JVM_OPTS='-XX:+UseParNewGC'
     ENV
 
     #TODO As properties are added to env file, add them to the fake one here.
@@ -18,15 +19,14 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
       File { backup => false, }
       file { '/opt/aem' :
         ensure          => 'directory',
- 
+
       }
       file { '/opt/aem/crx-quickstart' :
-        ensure          => 'directory',
- 
+        ensure          => 'directory', 
       }
       file { '/opt/aem/crx-quickstart/app' :
         ensure          => 'directory',
- 
+
       }
       file { '/opt/aem/crx-quickstart/bin' :
         ensure        => 'directory',
@@ -83,6 +83,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         expect(data['type']).to match('author')
         expect(data['runmodes']).to match("['dev', 'mockup']")
         expect(data['jvm_mem_opts']).to match('-Xmx4096m -XX:MaxPermSize=1024M')
+        expect(data['jvm_opts']).to match('-XX:+UseParNewGC')
         expect(data['context_root']).to match('contextrootpath')
         expect(data['sample_content']).to match('false')
       end

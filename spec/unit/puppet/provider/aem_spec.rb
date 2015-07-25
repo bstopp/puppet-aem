@@ -25,10 +25,11 @@ describe Puppet::Provider::AEM do
 
   let(:defaults) {
     {
-      :port => 4502,
-      :type => :author,
-      :runmodes => '',
-      :jvm_mem_opts => '-Xmx1024m -XX:MaxPermSize=256M',
+      :port               => 4502,
+      :type               => :author,
+      :runmodes           => '',
+      :jvm_mem_opts       => '-Xmx1024m -XX:MaxPermSize=256M',
+      :sample_content     => :true
     }
   }
 
@@ -96,16 +97,19 @@ describe Puppet::Provider::AEM do
         match = /TYPE=(#{defaults[:type]})/.match(contents).captures
         expect(match).to_not be(nil)
 
-        match = /RUNMODES=(.*?)\n/.match(contents).captures
+        match = /RUNMODES='(.*?)'/.match(contents).captures
         expect(match[0]).to eq("")
 
-        match = /JVM_MEM_OPTS='(#{defaults[:jvm_mem_opts]})'/.match(contents).captures
-        expect(match).to_not be(nil)
+        match = /SAMPLE_CONTENT='(.*?)'\n/.match(contents).captures
+        expect(match[0]).to eq("")
 
         match = /CONTEXT_ROOT/.match(contents)
         expect(match).to be(nil)
 
-        match = /SAMPLE_CONTENT=(.*?)\n/.match(contents).captures
+        match = /JVM_MEM_OPTS='(#{defaults[:jvm_mem_opts]})'/.match(contents).captures
+        expect(match).to_not be(nil)
+
+        match = /\sJVM_OPTS='(.*?)'\s/.match(contents).captures
         expect(match[0]).to eq("")
 
       end.and_return(0)
@@ -138,12 +142,12 @@ describe Puppet::Provider::AEM do
 
           if value = opts[:runmodes]
             value = value.is_a?(Array) ? value.join(',') : value
-            match = /RUNMODES=(#{value})/.match(contents).captures
+            match = /RUNMODES='(#{value})'/.match(contents).captures
             expect(match).to_not be(nil)
           end
 
-          if value = opts[:jvm_mem_opts]
-            match = /JVM_MEM_OPTS='(#{value})'/.match(contents).captures
+          if opts[:sample_content] == :false
+            match = /SAMPLE_CONTENT='(#{Puppet::Provider::AEM::NO_SAMPLE_CONTENT})'/.match(contents).captures
             expect(match).to_not be(nil)
           end
 
@@ -155,9 +159,14 @@ describe Puppet::Provider::AEM do
             expect(match).to be(nil)
           end
 
-          if opts[:sample_content] == :false
-            match = /SAMPLE_CONTENT=(#{Puppet::Provider::AEM::NO_SAMPLE_CONTENT})/.match(contents).captures
+          if value = opts[:jvm_mem_opts]
+            match = /JVM_MEM_OPTS='(#{value})'/.match(contents).captures
             expect(match).to_not be(nil)
+          end
+
+          if value = opts[:jvm_opts]
+            match = /\sJVM_OPTS='(#{value})'\s/.match(contents).captures
+            expect(match[0]).to eq(value)
           end
 
         end.and_return(0)
@@ -186,24 +195,28 @@ describe Puppet::Provider::AEM do
       it_should_behave_like 'update_env', :port => 8080
     end
 
-    describe 'update runmodes' do
-      it_should_behave_like 'update_env', :runmodes => ['dev', 'stage', 'client', 'vml']
-    end
-
     describe 'update runmode' do
       it_should_behave_like 'update_env', :runmodes => ['production']
     end
 
-    describe 'update jvm memory' do
-      it_should_behave_like 'update_env', :jvm_mem_opts => '-Xmx2048m -XX:MaxPermSize=512m'
+    describe 'update runmodes' do
+      it_should_behave_like 'update_env', :runmodes => ['dev', 'stage', 'client', 'vml']
+    end
+
+    describe 'update sample content' do
+      it_should_behave_like 'update_env', :sample_content => :false
     end
 
     describe 'update context root' do
       it_should_behave_like 'update_env', :context_root => 'contextroot'
     end
 
-    describe 'update sample content' do
-      it_should_behave_like 'update_env', :sample_content => :false
+    describe 'update jvm memory' do
+      it_should_behave_like 'update_env', :jvm_mem_opts => '-Xmx2048m -XX:MaxPermSize=512m'
+    end
+
+    describe 'update jvm opts' do
+      it_should_behave_like 'update_env', :jvm_opts => '-Dsome.jvm.option=somevalue'
     end
   end
 

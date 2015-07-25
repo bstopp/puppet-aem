@@ -95,6 +95,7 @@ describe Puppet::Type.type(:aem).provider(:linux) do
           :ensure           => :present,
           :user             => 'aem',
           :group            => 'aem',
+          :sample_content   => :true,
         }
 
 
@@ -117,13 +118,13 @@ describe Puppet::Type.type(:aem).provider(:linux) do
           end
 
           if opts[:env][:runmodes]
-            envcontents << "RUNMODES=#{opts[:env][:runmodes]}\n"
+            envcontents << "RUNMODES='#{opts[:env][:runmodes]}'\n"
             props[:runmodes] = opts[:env][:runmodes].split(',')
           end
 
-          if opts[:env][:jvm_mem_opts]
-            envcontents << "JVM_MEM_OPTS='#{opts[:env][:jvm_mem_opts]}'\n"
-            props[:jvm_mem_opts] = opts[:env][:jvm_mem_opts]
+          if opts[:env][:sample_content] == :false
+            envcontents << "SAMPLE_CONTENT='#{Puppet::Provider::AEM::NO_SAMPLE_CONTENT}'\n"
+            props[:sample_content] = opts[:env][:sample_content]
           end
 
           if opts[:env][:context_root]
@@ -131,9 +132,14 @@ describe Puppet::Type.type(:aem).provider(:linux) do
             props[:context_root] = opts[:env][:context_root]
           end
 
-          if opts[:env][:sample_content] == :false
-            envcontents << "SAMPLE_CONTENT=#{Puppet::Provider::AEM::NO_SAMPLE_CONTENT}\n"
-            props[:sample_content] = opts[:env][:sample_content]
+          if opts[:env][:jvm_mem_opts]
+            envcontents << "JVM_MEM_OPTS='#{opts[:env][:jvm_mem_opts]}'\n"
+            props[:jvm_mem_opts] = opts[:env][:jvm_mem_opts]
+          end
+
+          if opts[:env][:jvm_opts]
+            envcontents << "JVM_OPTS='#{opts[:env][:jvm_opts]}'\n"
+            props[:jvm_opts] = opts[:env][:jvm_opts]
           end
 
         end
@@ -189,20 +195,27 @@ describe Puppet::Type.type(:aem).provider(:linux) do
       it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
     end
 
+    describe 'should support env file with no sample content' do
+
+      envprops = { :sample_content => :false }
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
+    end
+
+    describe 'should support env file with contentx_root' do
+  
+      envprops  = { :context_root => 'thisisthecontextroot' }
+      it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
+    end
+
     describe 'should support env file with jvm_mem_opts' do
 
       envprops  = { :jvm_mem_opts => 'some arbitrary memory value' }
       it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
     end
 
-    describe 'should support env file with contentx_root' do
-
-      envprops  = { :context_root => 'thisisthecontextroot' }
-      it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
-    end
-
-    describe 'should support env file with no sample content' do
-      envprops = { :sample_content => :false }
+    describe 'should support env file with jvm_opts' do
+  
+      envprops  = { :jvm_opts => 'some arbitrary JVM option' }
       it_should_behave_like 'self.instances', :home => '/opt/aem', :env => envprops
     end
 
