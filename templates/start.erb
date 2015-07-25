@@ -53,12 +53,6 @@ fi
 
 JVM_OPTS="${JVM_MEM_OPTS} ${DEFAULT_JVM_OPTS} ${JVM_OPTS} -Dsling.run.modes=${RUN_MODES}"
 
-#TODO Update this if version is < 5.6.1; or on crx2
-#if [ $CQ_USE_JAAS ]; then
-#    JVM_OPTS="${JVM_OPTS} -Djava.security.auth.login.config=${JAAS_CONFIG}"
-#fi
-
-
 (
   (
     java $JVM_OPTS -jar $CURR_DIR/$JARFILE $START_OPTS &
