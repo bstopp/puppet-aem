@@ -19,7 +19,8 @@ CONTEXT_ROOT='<%= @resource[:context_root] %>'
 
 JVM_MEM_OPTS='<%= @resource[:jvm_mem_opts] %>'
 
-JVM_OPTS='-server -Djava.awt.headless=true <%# @resource[:jvm_opts] %>'
+DEFAULT_JVM_OPTS='-server -Djava.awt.headless=true'
+JVM_OPTS='<%= @resource[:jvm_opts] %>'
 
 SLING_PROPS='conf/sling.properties'
 
