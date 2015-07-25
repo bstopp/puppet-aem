@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/bstopp/puppet-aem.svg?branch=master)](https://travis-ci.org/bstopp/puppet-aem)
 [![Coverage Status](https://coveralls.io/repos/bstopp/puppet-aem/badge.svg?branch=feature%2Faem6&service=github)](https://coveralls.io/github/bstopp/puppet-aem?branch=feature%2Faem6)
 [![Code Climate](https://codeclimate.com/github/bstopp/puppet-aem/badges/gpa.svg)](https://codeclimate.com/github/bstopp/puppet-aem)
+[![Test Coverage](https://codeclimate.com/github/bstopp/puppet-aem/badges/coverage.svg)](https://codeclimate.com/github/bstopp/puppet-aem/coverage)
 
 # aem - Adobe Experience Manager
 
@@ -158,6 +159,8 @@ If Puppet is managing the home directory, user, or group parameters, the aem res
   * `jvm_mem_opts`: Specify options for the JVM memory. This is separated from the JVM opts to simplify configurations. Defaults to `-Xmx1024m -XX:MaxPermSize=256M`.
 
   * `jvm_opts`: Options to pass to the JVM. There is no default for this property, but the following value is always passed: `-server -Djava.awt.headless=true`
+
+  * `debug_port`: Port on which to listen for remote debugging connections. Setting this will add the following JVM options: `-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=<<port>>`
 
   * `context_root`: The URL context root for the AEM applicaton. [Sling documentation](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html). Defaults to `/`.
 

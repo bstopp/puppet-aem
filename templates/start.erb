@@ -51,6 +51,10 @@ if [ -n "${SAMPLE_CONTENT}" ]; then
     RUN_MODES="${RUN_MODES},${SAMPLE_CONTENT}"
 fi
 
+if [ -n "${DEBUG_PORT}" ]; then
+    DEBUG_OPTS="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=${DEBUG_PORT}"
+fi
+
 JVM_OPTS="${JVM_MEM_OPTS} ${DEFAULT_JVM_OPTS} ${JVM_OPTS} -Dsling.run.modes=${RUN_MODES}"
 
 (
