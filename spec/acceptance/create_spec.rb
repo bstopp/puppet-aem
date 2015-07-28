@@ -18,32 +18,26 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
 
       user { 'aem' : ensure => 'present', gid =>  'aem' }
 
-      file { '/opt/aem' :
-        ensure      => 'directory',
-        group       => 'aem',
-        owner       => 'aem',
-      }
-
-      file { '/opt/aem/faux' :
+      file { '/opt/faux' :
         ensure          => 'directory',
       }
 
-      file { '/opt/aem/faux/crx-quickstart' :
+      file { '/opt/faux/crx-quickstart' :
         ensure          => 'directory',
       }
-      file { '/opt/aem/faux/crx-quickstart/bin' :
+      file { '/opt/faux/crx-quickstart/bin' :
         ensure        => 'directory',
       }
-      file { '/opt/aem/faux/crx-quickstart/bin/start-env' :
+      file { '/opt/faux/crx-quickstart/bin/start-env' :
         ensure        => 'file',
         content       => "#{env}",
       }
 
-      file { '/opt/aem/faux/crx-quickstart/app' :
+      file { '/opt/faux/crx-quickstart/app' :
         ensure          => 'directory',
       }
 
-      file { '/opt/aem/faux/crx-quickstart/app/cq-quickstart-6.1.0-standalone.jar' :
+      file { '/opt/faux/crx-quickstart/app/cq-quickstart-6.1.0-standalone.jar' :
         ensure        => 'file',
         content       => '',
       }
@@ -86,6 +80,13 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
           debug_port      => 30303,
           port            => 8080,
         }
+
+        file { '/opt/aem' :
+          ensure      => 'directory',
+          group       => 'aem',
+          owner       => 'aem',
+        }
+
       MANIFEST
 
       apply_manifest(pp, :catch_failures => true)
@@ -110,7 +111,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
 
         aem { 'existing' :
           ensure      => 'present',
-          home        => '/opt/aem/faux',
+          home        => '/opt/faux',
           source      => '/tmp/aem-quickstart.jar',
         }
       MANIFEST
