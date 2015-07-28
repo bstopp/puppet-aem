@@ -31,8 +31,6 @@ Puppet::Type.newtype(:aem) do
 
   newparam(:source) do
     desc 'The AEM installer jar to use for installation.'
-
-
   end
 
   newparam(:timeout) do
