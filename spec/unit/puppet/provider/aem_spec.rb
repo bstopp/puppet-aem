@@ -10,9 +10,7 @@ describe Puppet::Provider::AEM do
 
   let(:resource) {
     allow(File).to receive(:file?).with(any_args).at_least(1).and_call_original
-    expect(File).to receive(:file?).with(source).and_return(true)
     allow(File).to receive(:directory?).with(any_args).at_least(1).and_call_original
-    expect(File).to receive(:directory?).with('/opt/aem').and_return(true)
     Puppet::Type.type(:aem).new({
       :name     => 'foo',
       :ensure   => :present,

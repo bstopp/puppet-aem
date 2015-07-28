@@ -22,19 +22,19 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
         ensure        => 'file',
         content       => '',
       }
-      file { '/opt/aem/faux' :
+      file { '/opt/faux' :
         ensure          => 'directory',
          
       }
-      file { '/opt/aem/faux/crx-quickstart' :
+      file { '/opt/faux/crx-quickstart' :
         ensure          => 'directory',
          
       }
-      file { '/opt/aem/faux/crx-quickstart/app' :
+      file { '/opt/faux/crx-quickstart/app' :
         ensure          => 'directory',
          
       }
-      file { '/opt/aem/faux/crx-quickstart/app/cq-quickstart-6.1.0-standalone.jar' :
+      file { '/opt/faux/crx-quickstart/app/cq-quickstart-6.1.0-standalone.jar' :
         ensure        => 'file',
         content       => '',
       }
@@ -61,9 +61,9 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
       pp = <<-MANIFEST
         File { backup => false, }
 
-        aem { '/opt/aem/faux' :
+        aem { '/opt/faux' :
           ensure      => absent,
-          home        => '/opt/aem/faux',
+          home        => '/opt/faux',
         }
       MANIFEST
 
@@ -72,7 +72,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
     end
 
     it 'should have deleted the crx-quickstart directory' do
-      shell('test -d /opt/aem/faux/crx-quickstart', :acceptable_exit_codes => 1)
+      shell('test -d /opt/faux/crx-quickstart', :acceptable_exit_codes => 1)
     end
 
     it 'should not have deleted the other installation' do

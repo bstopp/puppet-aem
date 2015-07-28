@@ -16,9 +16,7 @@ describe Puppet::Type.type(:aem).provider(:linux) do
 
   let(:resource) do
     allow(File).to receive(:file?).with(any_args).at_least(1).and_call_original
-    expect(File).to receive(:file?).with(source).and_return(true)
     allow(File).to receive(:directory?).with(any_args).at_least(1).and_call_original
-    expect(File).to receive(:directory?).with('/opt/aem').and_return(true)
     Puppet::Type.type(:aem).new({
       :name     => 'aem',
       :ensure   => :present,
@@ -363,9 +361,7 @@ describe Puppet::Type.type(:aem).provider(:linux) do
     describe 'supports non default port' do
       let(:resource) do
         allow(File).to receive(:file?).with(any_args).and_call_original
-        expect(File).to receive(:file?).with(source).and_return(true)
         allow(File).to receive(:directory?).with(any_args).and_call_original
-        expect(File).to receive(:directory?).with('/opt/aem').and_return(true)
         Puppet::Type.type(:aem).new({
           :name         => 'aem',
           :ensure       => :present,
@@ -383,9 +379,7 @@ describe Puppet::Type.type(:aem).provider(:linux) do
     describe 'supports using context root for URI' do
       let(:resource) do
         allow(File).to receive(:file?).with(any_args).and_call_original
-        expect(File).to receive(:file?).with(source).and_return(true)
         allow(File).to receive(:directory?).with(any_args).and_call_original
-        expect(File).to receive(:directory?).with('/opt/aem').and_return(true)
         Puppet::Type.type(:aem).new({
           :name         => 'aem',
           :ensure       => :present,
@@ -407,9 +401,7 @@ describe Puppet::Type.type(:aem).provider(:linux) do
     describe 'monitor timeout' do
       let(:resource) do
         allow(File).to receive(:file?).with(any_args).and_call_original
-        expect(File).to receive(:file?).with(source).and_return(true)
         allow(File).to receive(:directory?).with(any_args).and_call_original
-        expect(File).to receive(:directory?).with('/opt/aem').and_return(true)
         Puppet::Type.type(:aem).new({
           :name     => 'aem',
           :ensure   => :present,
