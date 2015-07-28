@@ -87,12 +87,6 @@ describe Puppet::Type.type(:aem) do
         Puppet::Error, /Source jar is required/)
       end
 
-      it 'should require source to exist' do
-        expect(File).to receive(:file?).with('foo.jar').and_return(false)
-        expect { described_class.new(:name => 'bar', :ensure => :present, :source => 'foo.jar') }.to raise_error(
-        Puppet::Error, /AEM installer .* not found/)
-      end
-
       it 'should work as expected when ensure is :present' do
         expect { described_class.new(:name => 'bar', :ensure => :present, :source => source) }.to_not raise_error
       end
@@ -158,11 +152,6 @@ describe Puppet::Type.type(:aem) do
           expect { described_class.new(:name => 'bar', :ensure => :present,
             :home => 'not/absolute', :source => source) }.to raise_error(Puppet::Error, /fully qualified/)
         end
-
-        it 'should require path to exist' do
-          expect { described_class.new(:name => 'bar', :ensure => :present,
-            :home => '/does/not/exist', :source => source) }.to raise_error(Puppet::Error, /not found/)
-        end
       end
 
       context 'windows', :platform => :windows do
@@ -174,11 +163,6 @@ describe Puppet::Type.type(:aem) do
         it 'should require absolute paths' do
           expect { described_class.new(:name => 'bar', :ensure => :present,
             :home => 'not/absolute', :source => source) }.to raise_error(Puppet::Error, /fully qualified/)
-        end
-
-        it 'should require path to exist' do
-          expect { described_class.new(:name => 'bar', :ensure => :present,
-            :home => 'C:/not/absolute', :source => source) }.to raise_error(Puppet::Error, /not found/)
         end
       end
     end
