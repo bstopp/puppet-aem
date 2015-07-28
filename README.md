@@ -189,6 +189,8 @@ This module has been tested with the following AEM versions:
 
 ### Warnings
 
+It is up to the consumer to ensure that the correct version of Java is installed based on the AEM version. See [AEM Documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/technical-requirements.html) for compatibility.
+
 Defining an AEM resource as absent will remove the instance from the system, regardless of whether or not it was originally managed by puppet.
 
 ## Development
