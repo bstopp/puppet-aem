@@ -7,16 +7,16 @@
 
 #### Table of Contents
 
-1. [Overview](#overview)
-2. [Module Description - What the module does and why it is useful](#module-description)
-3. [Setup - The basics of getting started with aem](#setup)
-    * [What aem affects](#what-aem-affects)
+1. [Overview - What is the AEM module?](#overview)
+2. [Module Description - What does the module do?](#module-description)
+3. [Setup - The basics of getting started with AEM module](#setup)
+    * [What AEM affects](#what-aem-affects)
     * [Setup requirements](#setup-requirements)
-    * [Beginning with aem](#beginning-with-aem)
-4. [Usage - Configuration options and additional functionality](#usage)
-5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
+    * [Beginning with AEM](#beginning-with-aem)
+4. [Usage - How to use the module](#usage)
+5. [Reference - AEM Module type and providers](#reference)
 5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
+6. [Development - Contributing to the module](#development)
 
 ## Overview
 
@@ -30,7 +30,7 @@ The AEM module introduces the `aem` resource which is used to manage and configu
 
 ### What AEM affects
 
-  * AEM Installations
+  * AEM Installations may be modified by using this module. See [warnings](#warnings), for how existing instances are affected by enabling a this module.
 
 ### Setup Requirements 
 
@@ -127,8 +127,7 @@ This type enables you to manage AEM instances within Puppet.
 ####Providers
 **Note:** Not all features are available with all providers.
 
-  * `linux`: Linux type provider
-    * Supported features: 
+  * `linux`: Linux provider
 
 **Autorequires:**
 
@@ -136,39 +135,39 @@ If Puppet is managing the home directory, user, or group parameters, the aem res
 
 ####Parameters
 
-  * `name`: name of the AEM resource.
+  * `name`: (namevar) Required. Specifies the name of the AEM resource.
 
-  * `ensure`: Ensures that the resource is present. Valid values are `present`, `absent`.
+  * `ensure`: Required. Ensures that the resource is present. Valid values are `present`, `absent`.
 
-  * `source`: Source jar file to use, provided by user.
+  * `context_root`: Optional. Specifies the URL context root for the AEM application. [Sling documentation](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html). Defaults to `/`.
 
-  * `version`: Optional. Version of AEM. If not specified, will be found via _quickstart_ jar name.
+  * `debug_port`: Optional. Specifies the port on which to listen for remote debugging connections. Setting this will add the following JVM options: `-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=<<port>>` Valid options: any port number. 
 
-  * `home`: Home directory in which AEM will be installed. Default to `/opt/aem` or `C:/opt/aem` depending on platform.
+  * `group`: Optional. Sets the group for installation. Valid options: any valid group. Default: puppet executor group.
 
-  * `port`: Port on which AEM will listen. [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/custom-standalone-install.html#Changing the Port Number by Renaming the File) 
+  * `home`: Required. Sets the directory in which AEM will be installed. Valid options: Any absolute system path. Default: `/opt/aem` or `C:/opt/aem`.
 
-  * `user`: User for installation. Defaults to puppet user.
+  * `jvm_mem_opts`: Optional. Specifies options for the JVM memory. This is separated from the JVM opts to simplify configurations. Valid options: any valid JVM parameter string. Default: `-Xmx1024m -XX:MaxPermSize=256M`.
 
-  * `group`: Group for installation. Defaults to puppet group.
+  * `jvm_opts`: Optional. Specifies options to pass to the JVM. Valid options: any valid JVM parameter string. Default: None, but the following value is always passed, and cannot be overwritten: `-server -Djava.awt.headless=true`
 
-  * `type`: AEM installation type, one of `author` or `publish`. [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Installation Run Modes)
+  * `port`: Optional. Specifies the port on which AEM will listen. Valid options: any valid port. Default: 4502. [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/custom-standalone-install.html#Changing the Port Number by Renaming the File)
 
-  * `runmodes`: An array of runmodes to apply to the AEM instance [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html). Do not use this to set options available via `type` configuration.
+  * `runmodes`: Optional. Sets the array of runmodes to apply to the AEM instance. Do not use this to set options available via `type` configuration, or a `samplecontent` runmode. Valid options: any string array. [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html).
 
-  * `jvm_mem_opts`: Specify options for the JVM memory. This is separated from the JVM opts to simplify configurations. Defaults to `-Xmx1024m -XX:MaxPermSize=256M`.
+  * `samplecontent`: Optional. Sets whether or not to include the sample content (e.g. Geometrixx). Valid options: `true` or `false`. Default: `true`. [AEM Documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Using samplecontent and nosamplecontent).
 
-  * `jvm_opts`: Options to pass to the JVM. There is no default for this property, but the following value is always passed: `-server -Djava.awt.headless=true`
+  * `snooze`: Optional. Sets the wait period between checks for installation completion. When monitoring the system for up state, this is the wait period between checks. Value is specified in seconds. Valid options: any number. Default: `10`.
 
-  * `debug_port`: Port on which to listen for remote debugging connections. Setting this will add the following JVM options: `-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=<<port>>`
+  * `source`: Required. Sets the source jar file to use, provided by user. Valid options: any absolute file.
 
-  * `context_root`: The URL context root for the AEM applicaton. [Sling documentation](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html). Defaults to `/`.
+  * `timeout`: Optional. Sets the timeout allowed for startup monitoring. If the installation doesn't finish by the timeout, an error will be generated. Value is specified in seconds. Valid option: any number. Default: `600`.
 
-  * `samplecontent`: Whether or not to include the sample content (Geometrixx). [AEM Documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Using samplecontent and nosamplecontent). Defaults to `true`.
+  * `type`: Optional. Specifies the AEM installation type. Valid options: `author` or `publish`. Default: `author`. [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Installation Run Modes)
 
-  * `timeout`: Timeout allowed for startup monitoring. If the installation doesn't finish by the timeout, an error will be generated. Value is specified in seconds. Default value: `10 minutes`.
+  * `user`: Optional. Sets the user for installation. Valid options: any valid group. Defaults: puppet executor user.
 
-  * `snooze`: Wait period between checks for installation completion. When monitoring the system for up state, this is the wait period between checks. Value is specified in seconds. Default value: `10 seconds`.
+  * `version`: Optional. Sets the version of AEM. If not specified, will be found via _quickstart_ jar name. Valid options: any semantic version. 
 
 ## Limitations
 

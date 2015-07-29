@@ -1,6 +1,6 @@
 {
 	"name": "bstopp-aem",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"author": "Bryan Stopp (bryan.stopp@gmail.com)",
 	"license": "Apache-2.0",
 	"summary": "Install and configure Adobe Experience Manager instances.",
@@ -14,7 +14,7 @@
 	],
 	"requirements": [{
 			"name": "puppet",
-			"version_requirement": ">= 4.0.0"
+			"version_requirement": ">= 3.8.1"
 		}
 	],
 	"operatingsystem_support": [{
@@ -35,7 +35,6 @@
 		}
 	],
 	"tags": [ "aem",
-		"cq",
-		"cms"
+		"cq"
 	]
 }
