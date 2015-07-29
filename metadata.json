@@ -1,22 +1,40 @@
 {
-  "name": "bstopp-aem",
-  "version": "0.1.0",
-  "author": "bstopp",
-  "summary": "Install and configure Adobe Experience Manager instances.",
-  "license": "Apache-2.0",
-  "source": "git://github.com/bstopp/puppet-aem-module.git",
-  "project_page": "https://github.com/bstopp/puppet-aem-module",
-  "issues_url": "https://github.com/bstopp/puppet-aem-module/issues",
-  "requirements": [
-    {
-      "name": "puppet",
-      "version_requirement": ">= 4.x"
-    }
-  ],
-  "dependencies": [
-    {
-      "name": "puppetlabs-stdlib",
-      "version_requirement": ">= 4.6.0"
-    }
-  ]
+	"name": "bstopp-aem",
+	"version": "1.0.0",
+	"author": "Bryan Stopp (bryan.stopp@gmail.com)",
+	"license": "Apache-2.0",
+	"summary": "Install and configure Adobe Experience Manager instances.",
+	"source": "https://github.com/bstopp/puppet-aem",
+	"project_page": "https://github.com/bstopp/puppet-aem",
+	"issues_url": "https://github.com/bstopp/puppet-aem/issues",
+	"dependencies": [{
+			"name": "puppetlabs/stdlib",
+			"version_requirement": "4.x"
+		}
+	],
+	"requirements": [{
+			"name": "puppet",
+			"version_requirement": ">= 3.8.1"
+		}
+	],
+	"operatingsystem_support": [{
+			"operatingsystem": "CentOS",
+			"operatingsystemrelease": [ "6.8",
+				"7"
+			]
+		},{
+			"operatingsystem": "Ubuntu",
+			"operatingsystemrelease": [ "10.04",
+				"12.04"
+			]
+		},{
+			"operatingsystem": "Debian",
+			"operatingsystemrelease": [ "6.0",
+				"7.8"
+			]
+		}
+	],
+	"tags": [ "aem",
+		"cq"
+	]
 }

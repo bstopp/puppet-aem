@@ -1,0 +1,16 @@
+.vagrant/
+coverage/
+files/
+junit/
+log/
+pkg/
+.brackets.json
+.codeclimate.yml
+.fixtures.yml
+.gitignore
+.project
+.rubocop.yml
+.sync.yml
+.travis.yml
+cw.sh
+Gemfile.lock
