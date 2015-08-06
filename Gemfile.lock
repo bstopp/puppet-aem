@@ -9,7 +9,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     addressable (2.3.8)
-    ast (2.0.0)
+    ast (2.1.0)
     astrolabe (1.3.1)
       parser (~> 2.2)
     autoparse (0.3.3)
@@ -21,7 +21,7 @@ GEM
     aws-sdk-v1 (1.64.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
-    beaker (2.18.1)
+    beaker (2.18.3)
       aws-sdk (~> 1.57)
       docker-api
       fission (~> 0.4)
@@ -49,7 +49,7 @@ GEM
       simplecov (>= 0.7.1, < 1.0.0)
     diff-lcs (1.2.5)
     docile (1.1.5)
-    docker-api (1.22.0)
+    docker-api (1.22.2)
       excon (>= 0.38.0)
       json
     excon (0.45.4)
@@ -86,7 +86,7 @@ GEM
     fog-atmos (0.1.0)
       fog-core
       fog-xml
-    fog-aws (0.7.3)
+    fog-aws (0.7.4)
       fog-core (~> 1.27)
       fog-json (~> 1.0)
       fog-xml (~> 0.1)
@@ -276,7 +276,7 @@ GEM
     simplecov-html (0.10.0)
     spdx-licenses (1.0.0)
       json
-    specinfra (2.38.1)
+    specinfra (2.40.0)
       net-scp
       net-ssh (~> 2.7)
       net-telnet

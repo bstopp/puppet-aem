@@ -146,7 +146,9 @@ class Puppet::Provider::AEM < Puppet::Provider
     environment = Puppet.lookup(:environments).get(Puppet[:environment])
     template = Puppet::Parser::Files.find_template(File.join('aem', "#{file}"), environment)
 
+    puts "Template #{template}"
     tpldata = File.read(template)
+    puts "Tpldata #{tpldata}"
     tpldata = ERB.new(tpldata).result(binding)
     tpldata
   end
