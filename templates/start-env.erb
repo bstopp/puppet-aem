@@ -7,20 +7,20 @@
 #
 
 
-PORT=<%= @resource[:port] %>
-TYPE=<%= @resource[:type] %>
-RUNMODES='<%= @resource[:runmodes].join(",") if @resource[:runmodes] %>'
-SAMPLE_CONTENT='<%= "nosamplecontent" if @resource[:sample_content] == :false %>'
-DEBUG_PORT=<%= @resource[:debug_port] %>
+PORT=<%= @port %>
+TYPE='<%= @type %>'
+RUNMODES='<%= @runmodes.join(",") if @runmodes %>'
+SAMPLE_CONTENT='<%= "nosamplecontent" if @sample_content == false %>'
+DEBUG_PORT=<%= @debug_port %>
 
-<% if @resource[:context_root] %>
-CONTEXT_ROOT='<%= @resource[:context_root] %>'
+<% if @context_root %>
+CONTEXT_ROOT='<%= @context_root %>'
 <% end %>
 
-JVM_MEM_OPTS='<%= @resource[:jvm_mem_opts] %>'
+JVM_MEM_OPTS='<%= @jvm_mem_opts %>'
 
 DEFAULT_JVM_OPTS='-server -Djava.awt.headless=true'
-JVM_OPTS='<%= @resource[:jvm_opts] %>'
+JVM_OPTS='<%= @jvm_opts %>'
 
 SLING_PROPS='conf/sling.properties'
 

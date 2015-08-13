@@ -1,0 +1,291 @@
+require 'spec_helper'
+
+describe 'aem', :type => :class do
+
+  let :default_facts do
+    {
+      :kernel     => 'Linux'
+    }
+  end
+
+  let :title do 'aem' end
+
+  let :default_params do
+    {
+      :source => '/tmp/aem-quickstart.jar'
+    }
+  end
+
+  context 'parameter validation' do
+    let :facts do default_facts end
+
+    context 'ensure' do
+
+      context 'absent' do
+        let :params do
+          default_params.merge({ :ensure => 'absent' })
+        end
+        it { is_expected.to compile }
+      end
+
+      context 'invalid' do
+        let :params do
+          default_params.merge({ :ensure => 'invalid' })
+        end
+
+        it { expect { is_expected.to compile }.to raise_error(/not supported for ensure/) }
+      end
+    end
+
+    context 'context_root' do
+      let :params do
+        default_params.merge({ :context_root => 'contextroot' })
+      end
+      it { is_expected.to compile }
+      it { is_expected.to contain_class('aem').with(
+        'context_root' => 'contextroot'
+        )
+      }
+    end
+
+    context 'debug_port' do
+      context 'valid' do
+        let :params do
+          default_params.merge({ :debug_port => 12345 })
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_class('aem').with(
+          'debug_port' => 12345
+          )
+        }
+      end
+
+      context 'NaN' do
+        let :params do
+          default_params.merge({ :debug_port => 'NaN'})
+        end
+        it { expect { is_expected.to compile }.to raise_error(/to be an Integer/) }
+      end
+    end
+
+    context 'home' do
+
+      context 'not absolute' do
+        let :params do
+          default_params.merge({ :home => 'not/absolute/path'})
+        end
+        it { expect { is_expected.to compile }.to raise_error(/is not an absolute path/) }
+      end
+
+    end
+
+    context 'manage_group' do
+      context 'false' do
+        let :params do
+          default_params.merge({ :manage_group => false })
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_class('aem').with(
+          'manage_group' => false
+          )
+        }
+        it { is_expected.not_to contain_group('aem') }
+      end
+
+      context 'invalid' do
+        let :params do
+          default_params.merge({ :manage_group => 'not boolean'})
+        end
+        it { expect { is_expected.to compile }.to raise_error(/is not a boolean/) }
+      end
+    end
+
+    context 'manage_home' do
+      context 'false' do
+        let :params do
+          default_params.merge({ :manage_home => false })
+        end
+
+        context 'home does not exist' do
+          it { expect { is_expected.to compile }.to raise_error(/Could not retrieve dependency/) }
+        end
+        context 'home exists' do
+          let :pre_condition do
+            'file { "/opt/aem" : ensure => "directory" }'
+          end
+          it { is_expected.to compile }
+          it { is_expected.to contain_class('aem').with(
+            'manage_home' => false
+            )
+          }
+        end
+      end
+
+      context 'invalid' do
+        let :params do
+          default_params.merge({ :manage_home => 'not boolean'})
+        end
+        it { expect { is_expected.to compile }.to raise_error(/is not a boolean/) }
+      end
+    end
+
+    context 'manage_user' do
+      context 'false' do
+        let :params do
+          default_params.merge({ :manage_user => false })
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_class('aem').with(
+          'manage_user' => false
+          )
+        }
+        it { is_expected.not_to contain_user('aem') }
+      end
+
+      context 'invalid' do
+        let :params do
+          default_params.merge({ :manage_user => 'not boolean'})
+        end
+        it { expect { is_expected.to compile }.to raise_error(/is not a boolean/) }
+      end
+    end
+
+    context 'port' do
+      context 'NaN' do
+        let :params do
+          default_params.merge({ :port => 'NaN'})
+        end
+        it { expect { is_expected.to compile }.to raise_error(/to be an Integer/) }
+      end
+    end
+
+    context 'runmodes' do
+
+      context 'valid' do
+        let :params do
+          default_params.merge({ :runmodes => ['arunmode', 'anotherrunmode'] })
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_class('aem').with(
+          'runmodes' => ['arunmode', 'anotherrunmode']
+          )
+        }
+      end
+
+      context 'invalid' do
+        let :params do
+          default_params.merge({ :runmodes => { 'a' => 'hash' } })
+        end
+        it { expect { is_expected.to compile }.to raise_error(/is not an Array/) }
+      end
+    end
+
+    context 'sample_content' do
+      context 'false' do
+        let :params do
+          default_params.merge({ :sample_content => false })
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_class('aem').with(
+          'sample_content' => false
+          )
+        }
+      end
+
+      context 'invalid' do
+        let :params do
+          default_params.merge({ :sample_content => 'not boolean'})
+        end
+        it { expect { is_expected.to compile }.to raise_error(/is not a boolean/) }
+      end
+    end
+
+    context 'snooze' do
+      context 'NaN' do
+        let :params do
+          default_params.merge({ :snooze => 'NaN'})
+        end
+        it { expect { is_expected.to compile }.to raise_error(/to be an Integer/) }
+      end
+    end
+
+    context 'source' do
+      context 'windows' do
+        let :params do
+          default_params.merge({ :source => 'C:/absolute/path'})
+        end
+        it { is_expected.to compile }
+      end
+
+      context 'not absolute' do
+        let :params do
+          default_params.merge({ :source => 'not/absolute/path'})
+        end
+        it { expect { is_expected.to compile }.to raise_error(/is not an absolute path/) }
+      end
+
+    end
+
+    context 'timeout' do
+      context 'NaN' do
+        let :params do
+          default_params.merge({ :timeout => 'NaN'})
+        end
+        it { expect { is_expected.to compile }.to raise_error(/to be an Integer/) }
+      end
+    end
+
+    context 'type' do
+
+      context 'publish' do
+        let :params do
+          default_params.merge({ :type => 'publish' })
+        end
+        it { is_expected.to compile }
+      end
+
+      context 'invalid' do
+        let :params do
+          default_params.merge({ :type => 'invalid' })
+        end
+
+        it { expect { is_expected.to compile }.to raise_error(/not supported for type/) }
+      end
+
+    end
+
+    context 'version' do
+
+      context 'major' do
+        let :params do
+          default_params.merge({ :version => '1' })
+        end
+        it { expect { is_expected.to compile }.to raise_error(/not a valid version/) }
+      end
+
+      context 'major minor' do
+        let :params do
+          default_params.merge({ :version => '1.2' })
+        end
+
+        it { is_expected.to compile }
+      end
+
+      context 'major minor bug' do
+        let :params do
+          default_params.merge({ :version => '1.2.3' })
+        end
+
+        it { is_expected.to compile }
+      end
+
+      context 'major minor bug other' do
+        let :params do
+          default_params.merge({ :version => '1.2.3.4' })
+        end
+        it { expect { is_expected.to compile }.to raise_error(/not a valid version/) }
+      end
+    end
+
+  end
+end

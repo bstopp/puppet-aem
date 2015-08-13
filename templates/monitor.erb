@@ -1,0 +1,30 @@
+#!/usr/bin/ruby
+
+require 'net/http'
+
+# Checks the system to for a state, loops until it reaches that state
+
+desired_state = ARGV[0] == "off" ? :off : :on
+
+# If context root is not blank, need to ensure URI has a trailing slash,
+# otherwise the system redirects, thus shutting down before installation is complete.
+uri_s = "http://localhost:<%= @port %>/"
+<% if @context_root -%>
+uri_s = "#{uri_s}<%= @context_root %>/"
+<% end -%>
+
+uri = URI.parse(uri_s)
+
+Timeout.timeout(<%= @timeout %>) do
+
+  Kernel.loop do
+    begin
+      response = Net::HTTP.get_response(uri)
+      return if ((response.is_a? Net::HTTPSuccess) ||
+               (response.is_a? Net::HTTPRedirection)) && desired_state == :on
+    rescue
+      return if desired_state == :off
+    end
+    sleep <%= @snooze %>
+  end
+end
