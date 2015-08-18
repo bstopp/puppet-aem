@@ -30,6 +30,13 @@ RSpec.configure do |c|
       manifest = "class { 'java' : }"
       apply_manifest_on(host, manifest)
 
+      # Make sure selinux is disabled before each test or apache won't work.
+      if ! UNSUPPORTED_PLATFORMS.include?(fact('osfamily'))
+        on host, puppet('apply', '-e',
+                          %{"exec { 'setenforce 0': path   => '/bin:/sbin:/usr/bin:/usr/sbin', onlyif => 'which setenforce && getenforce | grep Enforcing', }"}),
+                          { :acceptable_exit_codes => [0] }
+      end
+
     end
   end
 end

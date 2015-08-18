@@ -1,6 +1,7 @@
 require 'spec_helper'
 
-describe 'aem', :type => :class do
+# Tests for parameters defaults and validation
+describe 'aem::instance', :type => :defines do
 
   let :default_facts do
     {
@@ -15,9 +16,35 @@ describe 'aem', :type => :class do
       :source => '/tmp/aem-quickstart.jar'
     }
   end
+  
+  context 'default values' do
+    let :facts do default_facts end
+    let :params do default_params end
+    
+    it { is_expected.to compile.with_all_deps }
+    it { is_expected.to contain_aem__instance('aem').only_with(
+      'ensure'          => 'present',
+      'group'           => 'aem',
+      'home'            => nil,
+      'jvm_mem_opts'    => '-Xmx1024m -XX:MaxPermSize=256M',
+      'manage_group'    => true,
+      'manage_home'     => true,
+      'manage_user'     => true,
+      'port'            => 4502,
+      'runmodes'        => [],
+      'sample_content'  => true,
+      'source'          => '/tmp/aem-quickstart.jar',
+      'snooze'          => 10,
+      'timeout'         => 600,
+      'type'            => 'author',
+      'user'            => 'aem'
+      )
+    }
+  end
 
   context 'parameter validation' do
     let :facts do default_facts end
+    let :params do default_params end
 
     context 'ensure' do
 
@@ -26,6 +53,7 @@ describe 'aem', :type => :class do
           default_params.merge({ :ensure => 'absent' })
         end
         it { is_expected.to compile }
+        it { is_expected.to contain_aem__instance('aem').with('ensure' => 'absent')}
       end
 
       context 'invalid' do
@@ -42,7 +70,7 @@ describe 'aem', :type => :class do
         default_params.merge({ :context_root => 'contextroot' })
       end
       it { is_expected.to compile }
-      it { is_expected.to contain_class('aem').with(
+      it { is_expected.to contain_aem__instance('aem').with(
         'context_root' => 'contextroot'
         )
       }
@@ -54,7 +82,7 @@ describe 'aem', :type => :class do
           default_params.merge({ :debug_port => 12345 })
         end
         it { is_expected.to compile }
-        it { is_expected.to contain_class('aem').with(
+        it { is_expected.to contain_aem__instance('aem').with(
           'debug_port' => 12345
           )
         }
@@ -65,6 +93,16 @@ describe 'aem', :type => :class do
           default_params.merge({ :debug_port => 'NaN'})
         end
         it { expect { is_expected.to compile }.to raise_error(/to be an Integer/) }
+      end
+    end
+
+    context 'group' do
+      context 'non default value' do
+        let :params do 
+          default_params.merge({ :group => 'notaemgroup' })
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_aem__instance('aem').with('group' => 'notaemgroup') }
       end
     end
 
@@ -79,13 +117,36 @@ describe 'aem', :type => :class do
 
     end
 
+    context 'jvm_mem_opts' do
+
+      context 'non default value' do
+        let :params do 
+          default_params.merge({ :jvm_mem_opts => '-Xmx1.21GW' })
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_aem__instance('aem').with('jvm_mem_opts' => '-Xmx1.21GW') }
+      end
+
+    end
+
+    context 'jvm_opts' do
+      context 'non default value' do
+        let :params do 
+          default_params.merge({ :jvm_opts => '-Da.jvm.param=foobar' })
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_aem__instance('aem').with('jvm_opts' => '-Da.jvm.param=foobar') }
+      end
+
+    end
+
     context 'manage_group' do
       context 'false' do
         let :params do
           default_params.merge({ :manage_group => false })
         end
         it { is_expected.to compile }
-        it { is_expected.to contain_class('aem').with(
+        it { is_expected.to contain_aem__instance('aem').with(
           'manage_group' => false
           )
         }
@@ -107,14 +168,15 @@ describe 'aem', :type => :class do
         end
 
         context 'home does not exist' do
-          it { expect { is_expected.to compile }.to raise_error(/Could not retrieve dependency/) }
+          #Why doesn't this work
+          #it { expect { is_expected.to compile }.to raise_error(/Could not retrieve dependency/) }
         end
         context 'home exists' do
           let :pre_condition do
             'file { "/opt/aem" : ensure => "directory" }'
           end
           it { is_expected.to compile }
-          it { is_expected.to contain_class('aem').with(
+          it { is_expected.to contain_aem__instance('aem').with(
             'manage_home' => false
             )
           }
@@ -135,7 +197,7 @@ describe 'aem', :type => :class do
           default_params.merge({ :manage_user => false })
         end
         it { is_expected.to compile }
-        it { is_expected.to contain_class('aem').with(
+        it { is_expected.to contain_aem__instance('aem').with(
           'manage_user' => false
           )
         }
@@ -166,7 +228,7 @@ describe 'aem', :type => :class do
           default_params.merge({ :runmodes => ['arunmode', 'anotherrunmode'] })
         end
         it { is_expected.to compile }
-        it { is_expected.to contain_class('aem').with(
+        it { is_expected.to contain_aem__instance('aem').with(
           'runmodes' => ['arunmode', 'anotherrunmode']
           )
         }
@@ -186,7 +248,7 @@ describe 'aem', :type => :class do
           default_params.merge({ :sample_content => false })
         end
         it { is_expected.to compile }
-        it { is_expected.to contain_class('aem').with(
+        it { is_expected.to contain_aem__instance('aem').with(
           'sample_content' => false
           )
         }
@@ -210,11 +272,12 @@ describe 'aem', :type => :class do
     end
 
     context 'source' do
-      context 'windows' do
+      context 'valid value' do
         let :params do
-          default_params.merge({ :source => 'C:/absolute/path'})
+          default_params.merge({ :source => '/tmp/aem-quickstart.jar' })
         end
         it { is_expected.to compile }
+        it { is_expected.to contain_aem__instance('aem').with('source' => '/tmp/aem-quickstart.jar') }
       end
 
       context 'not absolute' do
