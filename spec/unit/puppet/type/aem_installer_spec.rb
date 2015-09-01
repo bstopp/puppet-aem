@@ -109,11 +109,6 @@ describe Puppet::Type.type(:aem_installer) do
     end
 
     describe 'snooze' do
-      it 'should have a default value' do
-        inst = described_class.new(:name => 'bar', :ensure => :absent, :home => '/opt/aem')
-        expect( inst[:snooze] ).to eq(10)
-      end
-
       it 'should always be a number' do
         expect { described_class.new(:name => 'bar', :ensure => :absent, :home => '/opt/aem', :timeout => 'NaN')
         }.to raise_error(Puppet::Error, /Invalid value/)
@@ -121,11 +116,6 @@ describe Puppet::Type.type(:aem_installer) do
     end
 
     describe 'timeout' do
-      it 'should have a default value' do
-        inst = described_class.new(:name => 'bar', :ensure => :absent, :home => '/opt/aem')
-        expect( inst[:timeout] ).to eq(600)
-      end
-
       it 'should always be a number' do
         expect { described_class.new(:name => 'bar', :ensure => :absent, :home => '/opt/aem', :timeout => 'NaN')
         }.to raise_error(Puppet::Error, /Invalid value/)

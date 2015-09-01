@@ -61,7 +61,7 @@ describe 'AEM Provider', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamil
       pp = <<-MANIFEST
         File { backup => false, }
 
-        aem { '/opt/faux' :
+        aem::instance { 'aem' :
           ensure      => absent,
           home        => '/opt/faux',
         }

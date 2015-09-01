@@ -29,7 +29,6 @@ define aem::package (
       file { $home:
         ensure  => directory,
         mode    => '0644',
-        recurse => true,
       }
 
       File[$home]
@@ -45,12 +44,13 @@ define aem::package (
 
   } else {
     # Remove installation
-    file { "${home}/crx-quickstart": ensure => absent, }
+    file { "${home}/crx-quickstart": ensure => absent, force => true }
 
     # Remove managed home directory
     if !defined(File[$home]) and $manage_home {
       file { $home:
-        ensure  => $ensure,
+        ensure  => absent,
+        force   => true,
       }
 
       File["${home}/crx-quickstart"]

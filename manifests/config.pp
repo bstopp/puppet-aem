@@ -23,6 +23,7 @@ define aem::config(
     owner => $user,
   }
 
+
   # Create the env script
   file { "${home}/crx-quickstart/bin/start-env":
     ensure  => file,

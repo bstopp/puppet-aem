@@ -62,7 +62,11 @@ This is a private class intended to start, monitor, and stop an AEM instance, in
     desc 'Snooze value for wait when monitoring for AEM state transition during installation.
           Value is in seconds; default = 10 seconds'
 
-    defaultto 10
+    newvalues(/^\d+$/)
+    
+    munge do |value|
+      value.to_i
+    end
   end
 
   newparam(:timeout) do
@@ -70,8 +74,11 @@ This is a private class intended to start, monitor, and stop an AEM instance, in
           If the system does not enter the necessary state by the timeout, an error is raised.
           Value is in seconds. Default = 10 minutes'
 
-    defaultto 600
     newvalues(/^\d+$/)
+
+    munge do |value|
+      value.to_i
+    end
   end
 
   newproperty(:user) do

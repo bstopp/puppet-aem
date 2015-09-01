@@ -21,6 +21,7 @@ HOSTS:
     hypervisor : vagrant
     ip: '10.255.33.129'
 CONFIG:
+  log_level: verbose
   type: foss
   vagrant_memsize : 4096
   vagrant_cpus : 2

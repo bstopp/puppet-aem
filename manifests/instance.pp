@@ -60,7 +60,9 @@ define aem::instance (
 
   validate_bool($sample_content)
   validate_integer($snooze)
-  validate_absolute_path($source)
+  if ($ensure == 'present') {
+    validate_absolute_path($source)
+  }
 
   validate_integer($timeout)
 
@@ -82,19 +84,21 @@ define aem::instance (
     user        => $user,
   }
 
-  # configuration
-  aem::config { $name :
-    context_root   => $context_root,
-    debug_port     => $debug_port,
-    group          => $group,
-    home           => $_home,
-    jvm_mem_opts   => $jvm_mem_opts,
-    jvm_opts       => $jvm_opts,
-    port           => $port,
-    runmodes       => $runmodes,
-    sample_content => $sample_content,
-    type           => $type,
-    user           => $user,
+  if ($ensure == 'present') {
+    # configuration
+    aem::config { $name:
+      context_root   => $context_root,
+      debug_port     => $debug_port,
+      group          => $group,
+      home           => $_home,
+      jvm_mem_opts   => $jvm_mem_opts,
+      jvm_opts       => $jvm_opts,
+      port           => $port,
+      runmodes       => $runmodes,
+      sample_content => $sample_content,
+      type           => $type,
+      user           => $user,
+    }
   }
 
   aem_installer { $name:
@@ -109,6 +113,8 @@ define aem::instance (
   }
 
   if ($ensure == 'present') {
+
+    # Is there no way to do this better?
     if $manage_group {
       Anchor['aem::begin']
       -> Group[$group]
@@ -119,6 +125,12 @@ define aem::instance (
       Anchor['aem::begin']
       -> User[$user]
       -> Aem::Package[$name]
+
+      if $manage_group {
+        Anchor['aem::begin']
+        -> Group[$group]
+        -> User[$user]
+      }
     }
 
     Anchor['aem::begin']
@@ -129,6 +141,24 @@ define aem::instance (
   } else {
     Anchor['aem::begin']
     -> Aem::Package[$name]
+
+    # I mean seriously.
+    if $manage_user {
+      Anchor['aem::begin']
+      -> User[$user]
+
+    }
+
+    if $manage_group {
+      Anchor['aem::begin']
+      -> Group[$group]
+
+      if $manage_user {
+        Anchor['aem::begin']
+        -> User[$user]
+        -> Group[$group]
+      }
+    }
 
   }
 }
