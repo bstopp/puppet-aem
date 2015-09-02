@@ -27,8 +27,8 @@ define aem::package (
     # Manage home directory.
     if !defined(File[$home]) and $manage_home {
       file { $home:
-        ensure  => directory,
-        mode    => '0644',
+        ensure => directory,
+        mode   => '0644',
       }
 
       File[$home]
@@ -49,8 +49,8 @@ define aem::package (
     # Remove managed home directory
     if !defined(File[$home]) and $manage_home {
       file { $home:
-        ensure  => absent,
-        force   => true,
+        ensure => absent,
+        force  => true,
       }
 
       File["${home}/crx-quickstart"]

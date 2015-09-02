@@ -26,7 +26,3 @@ RSpec.configure do |config|
 
   config.mock_with :rspec
 end
-
-#shared_examples :compile, :compile => true do
-#  it { should compile.with_all_deps }
-#end

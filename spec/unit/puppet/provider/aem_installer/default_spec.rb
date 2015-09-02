@@ -75,9 +75,63 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
     described_class.stubs(:which).with('java').returns('/usr/bin/java')
   end
 
-  describe 'self.prefetch' do
-    it 'should respond' do
-      expect(described_class).to respond_to(:prefetch)
+  describe 'aem_installer class' do
+    describe 'self.prefetch' do
+      it 'should respond' do
+        expect(described_class).to respond_to(:prefetch)
+      end
+    end
+
+    describe 'self.instances' do
+
+      it 'should have an instances method' do
+        expect(described_class).to respond_to(:instances)
+      end
+
+      shared_examples 'self.instances' do |opts|
+        it {
+          expect(Puppet::Util::Execution).to receive(:execpipe).with(['/bin/find', '/', "-name \"#{install_name}\"", '-type f']).and_yield(installs)
+          expect(File).to receive(:stat).and_return(filestats)
+          expect(Etc).to receive(:getpwuid).with(ugid).and_return(id)
+          expect(Etc).to receive(:getgrgid).with(ugid).and_return(id)
+          expect(File).to receive(:exist?).and_return(true)
+
+          props = {
+            :name             => opts[:home],
+            :home             => opts[:home],
+            :ensure           => :present,
+            :user             => 'aem',
+            :group            => 'aem',
+          }
+
+          props[:version] = opts[:version] if opts[:version]
+
+          installed = described_class.instances
+
+          expect(installed[0].properties).to eq(props)
+        }
+      end
+
+      describe 'should support standard filename' do
+
+        let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-5.6.1-standalone.jar' }
+
+        it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '5.6.1'
+      end
+
+      describe 'should support arbitrary home directory size' do
+
+        let(:installs) { '/opt/aem/author/path/to/home/crx-quickstart/app/cq-quickstart-6.0.0-standalone.jar' }
+
+        it_should_behave_like 'self.instances', :home => '/opt/aem/author/path/to/home', :version => '6.0.0'
+      end
+
+      describe 'should support v6.1 filename' do
+
+        let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar' }
+
+        it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '6.1.0'
+      end
     end
   end
 
@@ -108,58 +162,6 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
       provider.destroy
     end
 
-  end
-
-  describe 'self.instances' do
-
-    it 'should have an instances method' do
-      expect(described_class).to respond_to(:instances)
-    end
-
-    shared_examples 'self.instances' do |opts|
-      it {
-        expect(Puppet::Util::Execution).to receive(:execpipe).with(['/bin/find', '/', "-name \"#{install_name}\"", '-type f']).and_yield(installs)
-        expect(File).to receive(:stat).and_return(filestats)
-        expect(Etc).to receive(:getpwuid).with(ugid).and_return(id)
-        expect(Etc).to receive(:getgrgid).with(ugid).and_return(id)
-        expect(File).to receive(:exist?).and_return(true)
-
-        props = {
-          :name             => opts[:home],
-          :home             => opts[:home],
-          :ensure           => :present,
-          :user             => 'aem',
-          :group            => 'aem',
-        }
-
-        props[:version] = opts[:version] if opts[:version]
-
-        installed = described_class.instances
-
-        expect(installed[0].properties).to eq(props)
-      }
-    end
-
-    describe 'should support standard filename' do
-
-      let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-5.6.1-standalone.jar' }
-
-      it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '5.6.1'
-    end
-
-    describe 'should support arbitrary home directory size' do
-
-      let(:installs) { '/opt/aem/author/path/to/home/crx-quickstart/app/cq-quickstart-6.0.0-standalone.jar' }
-
-      it_should_behave_like 'self.instances', :home => '/opt/aem/author/path/to/home', :version => '6.0.0'
-    end
-
-    describe 'should support v6.1 filename' do
-
-      let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-launchpad.jar' }
-
-      it_should_behave_like 'self.instances', :home => '/opt/aem', :version => '6.1.0'
-    end
   end
 
   describe 'create' do

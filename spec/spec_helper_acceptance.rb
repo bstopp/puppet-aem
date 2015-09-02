@@ -53,10 +53,6 @@ unless ENV['BEAKER_provision'] == 'no'
   on master, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
   on master, puppet('module', 'install', 'puppetlabs-java'), { :acceptable_exit_codes => [0,1] }
 
-
-  #run_puppet_install_helper_on(master)
-
-
   manifest = "class { 'java' : }"
   apply_manifest_on(master, manifest)
 

@@ -63,7 +63,7 @@ This is a private class intended to start, monitor, and stop an AEM instance, in
           Value is in seconds; default = 10 seconds'
 
     newvalues(/^\d+$/)
-    
+
     munge do |value|
       value.to_i
     end

@@ -2,8 +2,6 @@ require 'etc'
 require 'fileutils'
 require 'net/http'
 
-# Base provider logic which is platform agnostic.
-#class Puppet::Provider::AemInstaller < Puppet::Provider
 Puppet::Type.type(:aem_installer).provide :default, :parent => Puppet::Provider do
 
   self::START_FILE = 'start'
@@ -11,9 +9,6 @@ Puppet::Type.type(:aem_installer).provide :default, :parent => Puppet::Provider 
   self::LAUNCHPAD_NAME  = 'cq-quickstart-*-standalone*.jar'
   self::INSTALL_FIELDS  = [:home, :version]
   self::INSTALL_REGEX   = %r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar$}
-
-#  confine :kernel => :linux
-#  defaultfor :kernel => :linux
 
   commands :find => 'find'
   commands :java => 'java'
