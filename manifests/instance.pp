@@ -19,7 +19,7 @@ define aem::instance (
   $type           = author,
   $user           = 'aem',
   $version        = undef) {
-  anchor { 'aem::begin': }
+  anchor { "aem::${name}::begin": }
 
   validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
 
@@ -116,45 +116,45 @@ define aem::instance (
 
     # Is there no way to do this better?
     if $manage_group {
-      Anchor['aem::begin']
+      Anchor["aem::${name}::begin"]
       -> Group[$group]
       -> Aem::Package[$name]
     }
 
     if $manage_user {
-      Anchor['aem::begin']
+      Anchor["aem::${name}::begin"]
       -> User[$user]
       -> Aem::Package[$name]
 
       if $manage_group {
-        Anchor['aem::begin']
+        Anchor["aem::${name}::begin"]
         -> Group[$group]
         -> User[$user]
       }
     }
 
-    Anchor['aem::begin']
+    Anchor["aem::${name}::begin"]
     -> Aem::Package[$name]
     -> Aem::Config[$name]
     -> Aem_Installer[$name]
 
   } else {
-    Anchor['aem::begin']
+    Anchor["aem::${name}::begin"]
     -> Aem::Package[$name]
 
     # I mean seriously.
     if $manage_user {
-      Anchor['aem::begin']
+      Anchor["aem::${name}::begin"]
       -> User[$user]
 
     }
 
     if $manage_group {
-      Anchor['aem::begin']
+      Anchor["aem::${name}::begin"]
       -> Group[$group]
 
       if $manage_user {
-        Anchor['aem::begin']
+        Anchor["aem::${name}::begin"]
         -> User[$user]
         -> Group[$group]
       }
