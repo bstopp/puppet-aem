@@ -5,11 +5,13 @@ describe 'aem::instance', :type => :defines do
 
   let :default_facts do
     {
-      :kernel     => 'Linux'
+      :kernel => 'Linux'
     }
   end
 
-  let :title do 'aem' end
+  let :title do
+    'aem'
+  end
 
   let :default_params do
     {
@@ -19,18 +21,30 @@ describe 'aem::instance', :type => :defines do
 
   context 'default install' do
 
-    let :params do default_params end
-    let :facts do default_facts end
+    let :params do
+      default_params
+    end
+    let :facts do
+      default_facts
+    end
 
     it { is_expected.to compile.with_all_deps }
-    it { is_expected.to contain_user('aem').with(
-      'ensure' => 'present',
-      'gid' => 'aem')
-    }
-    it { is_expected.to contain_group('aem').with( 'ensure' => 'present' ) }
+
+    it do
+      is_expected.to contain_user('aem').with(
+        'ensure' => 'present',
+        'gid' => 'aem'
+      )
+    end
+
+    it { is_expected.to contain_group('aem').with('ensure' => 'present') }
 
     it { is_expected.to contain_anchor('aem::aem::begin') }
-    it { is_expected.to contain_aem__package('aem').with(
+
+    it do
+      is_expected.to contain_aem__package(
+        'aem'
+      ).with(
         'ensure'        => 'present',
         'group'         => 'aem',
         'home'          => '/opt/aem',
@@ -38,8 +52,12 @@ describe 'aem::instance', :type => :defines do
         'source'        => '/tmp/aem-quickstart.jar',
         'user'          => 'aem'
       )
-    }
-    it { is_expected.to contain_aem__config('aem').with(
+    end
+
+    it do
+      is_expected.to contain_aem__config(
+        'aem'
+      ).with(
         'context_root'    => nil,
         'debug_port'      => nil,
         'group'           => 'aem',
@@ -52,19 +70,22 @@ describe 'aem::instance', :type => :defines do
         'type'            => 'author',
         'user'            => 'aem'
       )
-    }
+    end
 
-    it { is_expected.to contain_aem_installer('aem').with(
-      'ensure'        => 'present',
-      'context_root'  => nil,
-      'group'         => 'aem',
-      'home'          => '/opt/aem',
-      'port'          => 4502,
-      'snooze'        => 10,
-      'timeout'       => 600,
-      'user'          => 'aem'
+    it do
+      is_expected.to contain_aem_installer(
+        'aem'
+      ).with(
+        'ensure'        => 'present',
+        'context_root'  => nil,
+        'group'         => 'aem',
+        'home'          => '/opt/aem',
+        'port'          => 4502,
+        'snooze'        => 10,
+        'timeout'       => 600,
+        'user'          => 'aem'
       )
-    }
+    end
 
     it { is_expected.to contain_aem__package('aem').that_requires('Group[aem]') }
     it { is_expected.to contain_group('aem').that_requires('Anchor[aem::aem::begin]') }
@@ -76,69 +97,85 @@ describe 'aem::instance', :type => :defines do
     it { is_expected.to contain_aem__config('aem').that_requires('Aem::Package[aem]') }
     it { is_expected.to contain_aem__package('aem').that_requires('Anchor[aem::aem::begin]') }
 
-    it { is_expected.to contain_file('/opt/aem').with(
-      'ensure'  => 'directory',
-      'group'   => 'aem',
-      'owner'   => 'aem'
+    it do
+      is_expected.to contain_file(
+        '/opt/aem'
+      ).with(
+        'ensure'  => 'directory',
+        'group'   => 'aem',
+        'owner'   => 'aem'
       )
-    }
+    end
 
-    it { is_expected.to contain_exec('aem unpack').with(
-      'command'     => 'java -jar /tmp/aem-quickstart.jar -b /opt/aem -unpack',
-      'creates'     => '/opt/aem/crx-quickstart',
-      'group'       => 'aem',
-      'onlyif'      => ['which java', 'test -f /tmp/aem-quickstart.jar'],
-      'user'        => 'aem'
+    it do
+      is_expected.to contain_exec(
+        'aem unpack'
+      ).with(
+        'command'     => 'java -jar /tmp/aem-quickstart.jar -b /opt/aem -unpack',
+        'creates'     => '/opt/aem/crx-quickstart',
+        'group'       => 'aem',
+        'onlyif'      => ['which java', 'test -f /tmp/aem-quickstart.jar'],
+        'user'        => 'aem'
       )
-    }
+    end
 
     it { is_expected.to contain_exec('aem unpack').that_requires('File[/opt/aem]') }
 
-    it { is_expected.to contain_file('/opt/aem/crx-quickstart/bin/start-env').with(
-      'ensure'      => 'file',
-      'content'     => /.*/,
-      'group'       => 'aem',
-      'owner'       => 'aem'
+    it do
+      is_expected.to contain_file(
+        '/opt/aem/crx-quickstart/bin/start-env'
+      ).with(
+        'ensure'      => 'file',
+        'content'     => /.*/,
+        'group'       => 'aem',
+        'owner'       => 'aem'
       )
-    }
+    end
 
-    it { is_expected.to contain_file('/opt/aem/crx-quickstart/bin/start.orig').with(
-      'ensure'      => 'file',
-      'group'       => 'aem',
-      'source'      => '/opt/aem/crx-quickstart/bin/start',
-      'owner'       => 'aem'
+    it do
+      is_expected.to contain_file(
+        '/opt/aem/crx-quickstart/bin/start.orig'
+      ).with(
+        'ensure'      => 'file',
+        'group'       => 'aem',
+        'source'      => '/opt/aem/crx-quickstart/bin/start',
+        'owner'       => 'aem'
       )
-    }
+    end
 
-    it { is_expected.to contain_file('/opt/aem/crx-quickstart/bin/start').with(
-      'ensure'      => 'file',
-      'group'       => 'aem',
-      'source'      => 'puppet:///modules/aem/start',
-      'owner'       => 'aem'
-      ).that_requires('File[/opt/aem/crx-quickstart/bin/start.orig]')
-    }
+    it do
+      is_expected.to contain_file(
+        '/opt/aem/crx-quickstart/bin/start'
+      ).with(
+        'ensure'      => 'file',
+        'group'       => 'aem',
+        'source'      => 'puppet:///modules/aem/start',
+        'owner'       => 'aem'
+      ).that_requires(
+        'File[/opt/aem/crx-quickstart/bin/start.orig]'
+      )
+    end
 
   end
 
   context 'default remove' do
 
-    let :params do default_params.merge({ :ensure => 'absent' }) end
-    let :facts do default_facts end
+    let :params do
+      default_params.merge(:ensure => 'absent')
+    end
+    let :facts do
+      default_facts
+    end
 
     it { is_expected.to compile.with_all_deps }
 
-    it { is_expected.to contain_aem_installer('aem').with(
-      'ensure'  => 'absent'
-      )
-    }
-
-    it { is_expected.to contain_file('/opt/aem').with( 'ensure' => 'absent' ) }
+    it { is_expected.to contain_file('/opt/aem').with('ensure' => 'absent') }
 
     it { is_expected.to contain_file('/opt/aem').that_requires('File[/opt/aem/crx-quickstart]') }
-    
-    it { is_expected.to contain_user('aem').with( 'ensure' => 'absent' ) }
-    it { is_expected.to contain_group('aem').with( 'ensure' => 'absent' ) }
-      
+
+    it { is_expected.to contain_user('aem').with('ensure' => 'absent') }
+    it { is_expected.to contain_group('aem').with('ensure' => 'absent') }
+
     it { is_expected.to contain_aem__package('aem').that_requires('Anchor[aem::aem::begin]') }
   end
 end

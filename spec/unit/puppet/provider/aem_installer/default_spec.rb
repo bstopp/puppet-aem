@@ -4,30 +4,30 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:aem_installer).provider(:default) do
 
-  let(:resource) {
+  let(:resource) do
     allow(File).to receive(:file?).with(any_args).at_least(1).and_call_original
     allow(File).to receive(:directory?).with(any_args).at_least(1).and_call_original
-    Puppet::Type.type(:aem_installer).new({
+    Puppet::Type.type(:aem_installer).new(
       :name     => 'foo',
       :ensure   => :present,
       :version  => '6.1',
-      :home     => '/opt/aem',
-    })
-  }
+      :home     => '/opt/aem'
+    )
+  end
 
   let(:install_name) { 'cq-quickstart-*-standalone*.jar' }
 
   let(:installs) { '/opt/aem/crx-quickstart/app/cq-quickstart-6.0.0-standalone.jar' }
 
   let(:resource) do
-    Puppet::Type.type(:aem_installer).new({
+    Puppet::Type.type(:aem_installer).new(
       :name     => 'aem',
       :ensure   => :present,
       :version  => '6.1',
       :home     => '/opt/aem',
       :provider => 'default',
-      :snooze   => 0,
-    })
+      :snooze   => 0
+    )
   end
 
   let(:provider) do
@@ -40,7 +40,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
     {
       :failonfail             => true,
       :combine                => true,
-      :custom_environment     => {},
+      :custom_environment     => {}
     }
   end
 
@@ -89,8 +89,13 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
       end
 
       shared_examples 'self.instances' do |opts|
-        it {
-          expect(Puppet::Util::Execution).to receive(:execpipe).with(['/bin/find', '/', "-name \"#{install_name}\"", '-type f']).and_yield(installs)
+        it do
+          expect(
+            Puppet::Util::Execution
+          ).to receive(:execpipe).with(
+            ['/bin/find', '/', "-name \"#{install_name}\"", '-type f']
+          ).and_yield(installs)
+
           expect(File).to receive(:stat).and_return(filestats)
           expect(Etc).to receive(:getpwuid).with(ugid).and_return(id)
           expect(Etc).to receive(:getgrgid).with(ugid).and_return(id)
@@ -101,7 +106,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
             :home             => opts[:home],
             :ensure           => :present,
             :user             => 'aem',
-            :group            => 'aem',
+            :group            => 'aem'
           }
 
           props[:version] = opts[:version] if opts[:version]
@@ -109,7 +114,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
           installed = described_class.instances
 
           expect(installed[0].properties).to eq(props)
-        }
+        end
       end
 
       describe 'should support standard filename' do
@@ -138,10 +143,10 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
   describe 'exists?' do
 
     shared_examples 'exists_check' do |opts|
-      it {
-        provider = @provider_class.new( { :ensure => opts[:ensure] })
-        expect( provider.exists? ).to eq(opts[:present])
-      }
+      it do
+        provider = @provider_class.new(:ensure => opts[:ensure])
+        expect(provider.exists?).to eq(opts[:present])
+      end
     end
 
     describe 'ensure is absent' do
@@ -167,9 +172,9 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
   describe 'create' do
 
     shared_examples 'create_instance' do |opts|
-      it {
+      it do
 
-        opts ||= { }
+        opts ||= {}
 
         if !opts[:user].nil? && !opts[:user].empty?
           expect(Etc).to receive(:getpwnam).with(opts[:user]).and_return(filestats)
@@ -199,7 +204,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
 
         expect(Net::HTTP).to receive(:get_response).with(uri).ordered.once.and_return(mock_response)
 
-        if (opts[:redirect])
+        if opts[:redirect]
           expect(mock_response).to receive(:is_a?).ordered.and_return(false)
         end
         expect(mock_response).to receive(:is_a?).ordered.and_return(true)
@@ -209,7 +214,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
 
         # Monitor System for off
         expect(Net::HTTP).to receive(:get_response).with(uri).ordered.once.and_return(mock_response)
-        if (opts[:redirect])
+        if opts[:redirect]
           expect(mock_response).to receive(:is_a?).ordered.and_return(false)
         end
         expect(mock_response).to receive(:is_a?).ordered.and_return(true)
@@ -218,7 +223,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
 
         provider.create
 
-      }
+      end
     end
 
     describe 'creates instance as root' do
@@ -239,30 +244,30 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
 
     describe 'supports non default port' do
       let(:resource) do
-        Puppet::Type.type(:aem_installer).new({
+        Puppet::Type.type(:aem_installer).new(
           :name         => 'aem',
           :ensure       => :present,
           :version      => '6.1',
           :home         => '/opt/aem',
           :provider     => 'default',
           :port         => 8080,
-          :snooze       => 0,
-        })
+          :snooze       => 0
+        )
       end
       it_should_behave_like 'create_instance'
     end
 
     describe 'supports using context root for URI' do
       let(:resource) do
-        Puppet::Type.type(:aem_installer).new({
+        Puppet::Type.type(:aem_installer).new(
           :name         => 'aem',
           :context_root => 'contextroot',
           :ensure       => :present,
           :version      => '6.1',
           :home         => '/opt/aem',
           :provider     => 'default',
-          :snooze       => 0,
-        })
+          :snooze       => 0
+        )
       end
       it_should_behave_like 'create_instance', :context_root => 'contextroot'
     end
@@ -275,15 +280,15 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
       let(:resource) do
         allow(File).to receive(:file?).with(any_args).and_call_original
         allow(File).to receive(:directory?).with(any_args).and_call_original
-        Puppet::Type.type(:aem_installer).new({
+        Puppet::Type.type(:aem_installer).new(
           :name     => 'aem',
           :ensure   => :present,
           :version  => '6.1',
           :home     => '/opt/aem',
           :provider => 'default',
           :snooze   => 3,
-          :timeout  => 1,
-        })
+          :timeout  => 1
+        )
       end
 
       it 'should throw error when monitor timeout occurs' do

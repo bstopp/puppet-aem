@@ -99,17 +99,17 @@ define aem::instance (
       type           => $type,
       user           => $user,
     }
-  }
 
-  aem_installer { $name:
-    ensure       => $ensure,
-    context_root => $context_root,
-    group        => $group,
-    home         => $_home,
-    port         => $port,
-    snooze       => $snooze,
-    timeout      => $timeout,
-    user         => $user,
+    aem_installer { $name:
+      ensure       => $ensure,
+      context_root => $context_root,
+      group        => $group,
+      home         => $_home,
+      port         => $port,
+      snooze       => $snooze,
+      timeout      => $timeout,
+      user         => $user,
+    }
   }
 
   if ($ensure == 'present') {
