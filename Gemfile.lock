@@ -16,12 +16,12 @@ GEM
       addressable (>= 2.3.1)
       extlib (>= 0.9.15)
       multi_json (>= 1.0.0)
-    aws-sdk (1.65.0)
-      aws-sdk-v1 (= 1.65.0)
-    aws-sdk-v1 (1.65.0)
+    aws-sdk (1.66.0)
+      aws-sdk-v1 (= 1.66.0)
+    aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
-    beaker (2.21.0)
+    beaker (2.23.0)
       aws-sdk (~> 1.57)
       beaker-answers (~> 0.0)
       docker-api
@@ -39,22 +39,22 @@ GEM
       rsync (~> 1.0.9)
       stringify-hash (~> 0.0)
       unf (~> 0.1)
-    beaker-answers (0.1.0)
+    beaker-answers (0.2.2)
       require_all (~> 1.3.2)
       stringify-hash (~> 0.0.0)
     beaker-puppet_install_helper (0.3.1)
       beaker (~> 2.0)
-    beaker-rspec (5.2.0)
+    beaker-rspec (5.2.2)
       beaker (~> 2.0)
       rspec
       serverspec (~> 2)
       specinfra (~> 2)
     builder (3.2.2)
-    codeclimate-test-reporter (0.4.7)
+    codeclimate-test-reporter (0.4.8)
       simplecov (>= 0.7.1, < 1.0.0)
     diff-lcs (1.2.5)
     docile (1.1.5)
-    docker-api (1.22.3)
+    docker-api (1.22.4)
       excon (>= 0.38.0)
       json
     excon (0.45.4)
@@ -65,13 +65,13 @@ GEM
       multipart-post (>= 1.2, < 3)
     fission (0.5.0)
       CFPropertyList (~> 2.2)
-    fog (1.33.0)
+    fog (1.34.0)
       fog-atmos
       fog-aws (>= 0.6.0)
       fog-brightbox (~> 0.4)
       fog-core (~> 1.32)
-      fog-dynect
-      fog-ecloud (= 0.1.1)
+      fog-dynect (~> 0.0.2)
+      fog-ecloud (~> 0.1)
       fog-google (>= 0.0.2)
       fog-json
       fog-local
@@ -112,7 +112,7 @@ GEM
       fog-core
       fog-json
       fog-xml
-    fog-ecloud (0.1.1)
+    fog-ecloud (0.3.0)
       fog-core
       fog-xml
     fog-google (0.0.7)
@@ -140,7 +140,7 @@ GEM
       fog-core
       fog-json
       fog-xml
-    fog-sakuracloud (1.0.1)
+    fog-sakuracloud (1.1.1)
       fog-core
       fog-json
     fog-serverlove (0.1.2)
@@ -195,16 +195,16 @@ GEM
     jwt (1.5.1)
     launchy (2.4.3)
       addressable (~> 2.3)
-    little-plugger (1.1.3)
+    little-plugger (1.1.4)
     logging (2.0.0)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     memoist (0.12.0)
     metaclass (0.0.4)
-    metadata-json-lint (0.0.6)
+    metadata-json-lint (0.0.11)
       json
       spdx-licenses (~> 1.0)
-    mime-types (2.6.1)
+    mime-types (2.6.2)
     mini_portile (0.6.2)
     minitest (5.8.0)
     mocha (1.1.0)
@@ -221,7 +221,7 @@ GEM
     parser (2.2.2.6)
       ast (>= 1.1, < 3.0)
     powerpack (0.1.1)
-    puppet (4.2.1)
+    puppet (4.2.2)
       facter (> 2.0, < 4)
       hiera (>= 2.0, < 4)
       json_pure
@@ -261,18 +261,18 @@ GEM
       rspec
     rspec-support (3.3.0)
     rsync (1.0.9)
-    rubocop (0.33.0)
+    rubocop (0.34.1)
       astrolabe (~> 1.3)
       parser (>= 2.2.2.5, < 3.0)
       powerpack (~> 0.1)
       rainbow (>= 1.99.1, < 3.0)
       ruby-progressbar (~> 1.4)
     ruby-progressbar (1.7.5)
-    serverspec (2.22.0)
+    serverspec (2.23.1)
       multi_json
       rspec (~> 3.0)
       rspec-its
-      specinfra (~> 2.42)
+      specinfra (~> 2.43)
     sfl (2.2)
     signet (0.6.1)
       addressable (~> 2.3)
@@ -287,7 +287,7 @@ GEM
     simplecov-html (0.10.0)
     spdx-licenses (1.0.0)
       json
-    specinfra (2.42.2)
+    specinfra (2.43.4)
       net-scp
       net-ssh (~> 2.7)
       net-telnet
@@ -321,4 +321,4 @@ DEPENDENCIES
   serverspec
 
 BUNDLED WITH
-   1.10.4
+   1.10.6
