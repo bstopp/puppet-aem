@@ -63,3 +63,4 @@ JVM_OPTS="${JVM_MEM_OPTS} ${DEFAULT_JVM_OPTS} ${JVM_OPTS} ${DEBUG_OPTS} -Dsling.
     echo $! > $CURR_DIR/conf/cq.pid
   ) >> $CURR_DIR/logs/stdout.log 2>&1
 ) &
+

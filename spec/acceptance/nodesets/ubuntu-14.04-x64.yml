@@ -1,13 +1,25 @@
 HOSTS:
-  ubuntu-1404-x64:
+  master:
     roles:
       - master
-    platform: ubuntu-14.04-x86_64
-    box : puppetlabs/ubuntu-14.04-64-nocm
-    box_url : https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-14.04-64-nocm
-    hypervisor : vagrant
-    
+      - dashboard
+      - database
+    platform: el-7-x86_64
+    box: puppetlabs/centos-7.0-64-nocm
+    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
+    hypervisor: vagrant
+
+  agent:
+    roles:
+      - agent
+      - default
+    platform: ubuntu-1404-amd64
+    box: puppetlabs/ubuntu-14.04-64-nocm
+    box_url: https://vagrantcloud.com/puppetlabs/boxes/ubuntu-14.04-64-nocm
+    hypervisor: vagrant
+
 CONFIG:
+  log_level: verbose
   type: foss
   vagrant_memsize : 4096
   vagrant_cpus : 2

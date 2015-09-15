@@ -6,20 +6,18 @@
 # This file manages the configuration of the run script.
 #
 
-TYPE='<%= @type %>'
-PORT=<%= @port %>
-RUNMODES='<%= @runmodes.join(",") if @runmodes %>'
-SAMPLE_CONTENT='<%= "nosamplecontent" if @sample_content == false %>'
-DEBUG_PORT=<%= @debug_port %>
+PORT=4502
+TYPE='author'
+RUNMODES=''
+SAMPLE_CONTENT=''
+DEBUG_PORT=
 
-<% if @context_root %>
-CONTEXT_ROOT='<%= @context_root %>'
-<% end %>
 
-JVM_MEM_OPTS='<%= @jvm_mem_opts %>'
+
+JVM_MEM_OPTS='-Xmx1024m -XX:MaxPermSize=256M'
 
 DEFAULT_JVM_OPTS='-server -Djava.awt.headless=true'
-JVM_OPTS='<%= @jvm_opts %>'
+JVM_OPTS=''
 
 SLING_PROPS='conf/sling.properties'
 
