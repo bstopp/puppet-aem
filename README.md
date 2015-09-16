@@ -144,7 +144,7 @@ aem::instance { 'aem' :
 
 This type enables you to manage AEM instances within Puppet. Declare one `aem::instance` per managed AEM server desired.
 
-** Parametrs within `aem::instance`**:
+** Parametrs within `aem::instance`:**
 
 #####`name`
 Namevar. Required. Specifies the name of the AEM instance.
@@ -216,7 +216,7 @@ This define sets up the start templates to ensure the AEM instance executes with
 
 ### Private Types
 
-#### Type: `aem_installer
+#### Type: `aem_installer`
 This custom type starts the AEM instance to create the base repository, monitors for it's initalization, then shuts the system down.
 
 ## Limitations
