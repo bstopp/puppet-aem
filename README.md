@@ -3,7 +3,6 @@
 [![Code Climate](https://codeclimate.com/github/bstopp/puppet-aem/badges/gpa.svg)](https://codeclimate.com/github/bstopp/puppet-aem)
 [![Test Coverage](https://codeclimate.com/github/bstopp/puppet-aem/badges/coverage.svg)](https://codeclimate.com/github/bstopp/puppet-aem/coverage)
 
-
 # aem - Adobe Experience Manager
 
 #### Table of Contents
@@ -16,6 +15,9 @@
     * [Beginning with AEM](#beginning-with-aem)
 4. [Usage - How to use the module](#usage)
 5. [Reference - AEM Module type and providers](#reference)
+    * [Public defines](#public-defines)
+    * [Private defines](#private-defines)
+    * [Private types](#private-types)
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Development - Contributing to the module](#development)
 
@@ -136,7 +138,6 @@ aem::instance { 'aem' :
   - [Define: aem::config](#define-aemconfig)
 - [**Private Types**](#private-types)
   - [Type: Aem_Installer](#type-aem_installer)
-- [**Templates**](#templates)
 
 ### Public Defines
 
