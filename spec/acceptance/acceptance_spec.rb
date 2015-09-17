@@ -68,8 +68,6 @@ describe 'aem::instance' do
   aem::instance { \"publish\" :
     source          => \"/tmp/aem-quickstart.jar\",
     home            => \"/opt/aem/publish\",
-    user            => \"aem\",
-    group           => \"aem\",
     manage_home     => false,
     manage_user     => false,
     manage_group    => false,
@@ -88,6 +86,26 @@ describe 'aem::instance' do
   file { \"/opt/aem/publish\" :
     ensure          => \"directory\",
   }
+
+  Aem::License {
+    customer    => \"Vagrant Test\",
+    license_key => \"fake-key-for-testing\",
+    version     => \"6.1.0\",
+  }
+
+  aem::license { \"author\" :
+    group   => \"vagrant\",
+    user    => \"vagrant\",
+    home    => \"/opt/aem/author\",
+  }
+
+  aem::license { \"publish\" :
+    home    => \"/opt/aem/publish\",
+  }
+
+  Aem::Instance[\"author\"] -> Aem::License[\"author\"]
+  Aem::Instance[\"publish\"] -> Aem::License[\"publish\"]
+
 }'
 
     MANIFEST
@@ -190,6 +208,62 @@ describe 'aem::instance' do
       it 'should update the jvm settings' do
         shell("grep -- JVM_OPTS=\\'-XX:+UseParNewGC\\' /opt/aem/publish/crx-quickstart/bin/start-env",
               :acceptable_exit_codes => 0)
+      end
+    end
+
+    context 'license' do
+      context 'author' do 
+        it 'should have license file' do
+          shell("test -f /opt/aem/publish/license.properties", :acceptable_exit_codes => 0)
+        end
+
+        it 'should have correct owner:group' do
+          shell('stat -c "%U:%G" /opt/aem/author/license.properties') do |result|
+            expect(result.stdout).to match('vagrant:vagrant')
+          end
+        end
+
+        it 'should contain customer' do
+          shell('grep "license.customer.name=Vagrant Test" /opt/aem/author/license.properties',
+                :acceptable_exit_codes => 0)
+        end
+
+        it 'should contain licnese_key' do
+          shell('grep "license.downloadID=fake-key-for-testing" /opt/aem/author/license.properties',
+                :acceptable_exit_codes => 0)
+        end
+
+        it 'should contain version' do
+          shell('grep "license.product.version=6.1.0" /opt/aem/publish/license.properties',
+                :acceptable_exit_codes => 0)
+        end
+      end
+
+      context 'publish' do 
+        it 'should have license file' do
+          shell("test -f /opt/aem/publish/license.properties", :acceptable_exit_codes => 0)
+        end
+
+        it 'should have correct owner:group' do
+          shell('stat -c "%U:%G" /opt/aem/publish/license.properties') do |result|
+            expect(result.stdout).to match('aem:aem')
+          end
+        end
+
+        it 'should contain customer' do
+          shell('grep "license.customer.name=Vagrant Test" /opt/aem/publish/license.properties',
+                :acceptable_exit_codes => 0)
+        end
+
+        it 'should contain licnese_key' do
+          shell('grep "license.downloadID=fake-key-for-testing" /opt/aem/publish/license.properties',
+                :acceptable_exit_codes => 0)
+        end
+
+        it 'should contain version' do
+          shell('grep "license.product.version=6.1.0" /opt/aem/publish/license.properties',
+                :acceptable_exit_codes => 0)
+        end
       end
     end
 

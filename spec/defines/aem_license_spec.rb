@@ -63,8 +63,29 @@ describe 'aem::license', :type => :defines do
 
     end
 
+    context 'license' do
+
+      context 'not specified' do
+        let :params do
+          tmp = default_params.clone
+          tmp.delete(:license_key)
+          tmp
+        end
+        it { expect { is_expected.to compile }.to raise_error(/License key must be specified./) }
+      end
+
+      context 'ensure absent but not specifed' do
+        let :params do
+          tmp = default_params.merge(:ensure => 'absent')
+          tmp.delete(:license_key)
+          tmp
+        end
+        it { is_expected.to compile }
+      end
+    end
+
   end
-  
+
   describe 'creates the file' do
 
     let :params do
@@ -118,17 +139,8 @@ describe 'aem::license', :type => :defines do
     end
 
     context 'license key' do
-      context 'not specified' do
-        let :params do
-          tmp = default_params.clone
-          tmp.delete(:license_key)
-          tmp
-        end
-        it { expect { is_expected.to compile }.to raise_error(/License key must be specified./) }
-      end
 
       it do
-
         val = params[:license_key]
 
         is_expected.to contain_file(

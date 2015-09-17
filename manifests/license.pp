@@ -16,7 +16,7 @@ define aem::license (
 
   validate_absolute_path($home)
 
-  if $license_key == undef {
+  if $ensure == 'present' and $license_key == undef {
     fail('License key must be specified.')
   }
 
