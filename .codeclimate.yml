@@ -1,4 +1,3 @@
-languages:
-  Ruby: true
-exclude_paths:
-- "spec/**/*"
+engines:
+  rubocop:
+    enabled: true

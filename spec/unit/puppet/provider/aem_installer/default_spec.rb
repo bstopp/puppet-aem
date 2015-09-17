@@ -1,5 +1,3 @@
-#!/usr/bin/evn ruby
-
 require 'spec_helper'
 
 describe Puppet::Type.type(:aem_installer).provider(:default) do

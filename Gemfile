@@ -1,15 +1,15 @@
 source ENV['GEM_SOURCE'] || 'https://rubygems.org'
 
 group :development, :tests do
-  gem 'rspec',  '~> 3.3',       :require => false
-  gem 'rake',                   :require => false
-  gem 'metadata-json-lint',     :require => false
-  gem 'rspec-puppet',           :require => false
-  gem 'puppetlabs_spec_helper', :require => false
+  gem 'rspec',  '~> 3.3',          :require => false
+  gem 'rake',                      :require => false
+  gem 'metadata-json-lint',        :require => false
+  gem 'rspec-puppet',              :require => false
+  gem 'puppetlabs_spec_helper',    :require => false
+  gem 'codeclimate-test-reporter', :require => false
 end
 
 group :linting do
-  gem 'codeclimate-test-reporter',  :require => false
   gem 'puppet-lint',                :require => false
   gem 'rubocop',                    :require => false
 end
