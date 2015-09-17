@@ -129,10 +129,34 @@ aem::instance { 'aem' :
 }
 ~~~
 
+#### Specify License Example
+
+This is an example for defining an AEM instance, and a license.
+
+~~~
+# Add Instance
+aem::instance { 'aem' :
+  source         => '/path/to/aem-quickstart.jar',
+  sample_content => false,
+}
+# Add License
+aem::license { 'aem' :
+  customer    => 'Customer Name',
+  home        => '/opt/aem',
+  license_key => 'enter-your-key-here',
+  version     => '6.1.0',
+}
+# Ensure Instance before License (home must exist)
+Aem::Instance['aem'] -> Aem::License['aem']
+
+~~~
+
+
 ## Reference
 
 - [**Public Defines**](#public-defines)
   - [Define: aem::instance](#define-aeminstance)
+  - [Define: aem::license](#define-aemlicense)
 - [**Private Defines**](#private-defines)
   - [Define: aem::package](#define-aempackage)
   - [Define: aem::config](#define-aemconfig)
@@ -147,7 +171,7 @@ This type enables you to manage AEM instances within Puppet. Declare one `aem::i
 
 ** Parametrs within `aem::instance`:**
 
-#####`name`
+##### `name`
 Namevar. Required. Specifies the name of the AEM instance.
 
 ##### `ensure`
@@ -157,12 +181,12 @@ Optional. Changes the state of the AEM instance. Valid values are `present` or `
 Optional. Specifies the URL context root for the AEM application. [Sling documentation](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html). Defaults to `/`.
 
 ##### `debug_port`
-Optional. Specifies the port on which to listen for remote debugging connections. Setting this will add the following JVM options: `-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=<<port>>` Valid options: any port number. 
+Optional. Specifies the port on which to listen for remote debugging connections. Setting this will add the following JVM options: `-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=<<port>>` Valid options: any port number.
 
 ##### `group`
 Optional. Sets the group for installation. Valid options: any valid group. Default: `aem`.
 
-#####`home`
+##### `home`
 Optional. Sets the directory in which AEM will be installed. Valid options: Any absolute system path. Default: `/opt/aem`.
 
 ##### `jvm_mem_opts`
@@ -202,10 +226,40 @@ Optional. Sets the timeout allowed for startup monitoring. If the installation d
 Optional. Specifies the AEM installation type. Valid options: `author` or `publish`. Default: `author`. [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Installation Run Modes)
 
 ##### `user`
-Optional. Sets the user for installation. Valid options: any valid group. Default: `aem`.
+Optional. Sets the user for installation. Valid options: any valid user. Default: `aem`.
 
 ##### `version`
 Optional. Sets the version of AEM. Informational only, does not affect installation or resource management. Valid options: any semantic version. 
+
+#### Define: `aem::license`
+
+This type enables you to manage AEM license. Declare one `aem::license` per managed AEM server.
+
+** Parametrs within `aem::license`:**
+
+##### `name`
+Namevar. Required. Specifies the name of the AEM license.
+
+##### `ensure`
+Optional. Changes the state of the AEM license. Valid values are `present` or `absent`. Default: `present`.
+
+##### `customer`
+Optional. Specifies the customer name for the license file.
+
+##### `group`
+Optional. Sets the group for file ownership. Valid options: any valid group. Default: `aem`.
+
+##### `home`
+Required. Sets the directory in which the license will be placed. Valid options: Any absolute system path.
+
+##### `license_key`
+Required. Sets the license key for AEM. Valid options: any string.
+
+##### `user`
+Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `aem`.
+
+##### `version`
+Optional. Sets the version of AEM for the license file contents. Valid options: any string. 
 
 ### Private Defines
 
