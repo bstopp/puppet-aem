@@ -1,6 +1,6 @@
 {
 	"name": "bstopp-aem",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"author": "Bryan Stopp (bryan.stopp@gmail.com)",
 	"license": "Apache-2.0",
 	"summary": "Install and configure Adobe Experience Manager instances.",
