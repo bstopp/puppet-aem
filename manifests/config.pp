@@ -41,8 +41,8 @@ define aem::config(
   # Create the start script
   file { "${home}/crx-quickstart/bin/start":
     ensure  => file,
+    content => template("${module_name}/start.erb"),
     mode    => '0755',
-    source  => "puppet:///modules/${module_name}/start",
     require => File["${home}/crx-quickstart/bin/start.orig"],
   }
 

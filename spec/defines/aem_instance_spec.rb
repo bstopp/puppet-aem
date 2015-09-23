@@ -148,8 +148,8 @@ describe 'aem::instance', :type => :defines do
         '/opt/aem/crx-quickstart/bin/start'
       ).with(
         'ensure'      => 'file',
+        'content'     => /.*/,
         'group'       => 'aem',
-        'source'      => 'puppet:///modules/aem/start',
         'owner'       => 'aem'
       ).that_requires(
         'File[/opt/aem/crx-quickstart/bin/start.orig]'
