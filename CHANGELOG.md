@@ -1,3 +1,10 @@
+## 2015-09-24 - Release 2.0.1
+### Summary
+Bug fix release.
+
+#### Features:
+Moved *start* file to templates folder to fix issue with module build.
+
 ## 2015-09-17 - Release 2.0.0
 ### Summary
 Fully functional AEM installation module management. Installs and allows changing of standard AEM run configuration options.
