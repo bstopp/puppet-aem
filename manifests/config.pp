@@ -1,6 +1,6 @@
 # == Class: aem::config
 #
-# Configure the AEM instance with the appropriate parameter values, ensuring
+# Configure the AEM instance with the appropriate parameter values
 #
 # Do not use this class directly.
 #
