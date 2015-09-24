@@ -28,12 +28,6 @@ describe 'aem::instance' do
     mode          => \"0755\",
   }
 
-  file { \"/opt/faux/crx-quickstart/bin/start\" :
-    ensure        => \"file\",
-    source       => "puppet:///modules/aem/start",
-    mode          => \"0755\",
-  }
-
   file { \"/opt/faux/crx-quickstart/bin/start.orig\" :
     ensure        => \"file\",
     content       => \"\",
