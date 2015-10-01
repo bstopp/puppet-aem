@@ -152,8 +152,11 @@ define aem::instance (
     -> Aem::Config[$name]
     -> Aem_Installer[$name]
     -> Aem::License <| |>
-    -> Aem::Service[$name]
-
+    ~> Aem::Service[$name]
+    
+    Aem::Config[$name]
+    ~> Aem::Service[$name]
+  
   } else {
     Anchor["aem::${name}::begin"]
     -> Aem::Service[$name]

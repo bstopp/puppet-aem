@@ -108,6 +108,8 @@ describe 'aem::instance', :type => :defines do
     #it { is_expected.to contain_aem__service('aem').that_requires('Aem::License <| |>') }
     it { is_expected.to contain_aem_installer('aem').that_requires('Aem::Config[aem]') }
     it { is_expected.to contain_aem__config('aem').that_requires('Aem::Package[aem]') }
+    it { is_expected.to contain_aem__config('aem').that_notifies('Aem::Service[aem]') }
+          
     it { is_expected.to contain_aem__package('aem').that_requires('Anchor[aem::aem::begin]') }
 
 
