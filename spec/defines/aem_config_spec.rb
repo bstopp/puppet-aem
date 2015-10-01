@@ -5,7 +5,8 @@ describe 'aem::instance', :type => :defines do
 
   let :default_facts do
     {
-      :kernel => 'Linux'
+      :kernel           => 'Linux',
+      :operatingsystem  => 'CentOS',
     }
   end
 

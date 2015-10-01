@@ -5,7 +5,8 @@ describe 'aem::instance', :type => :defines do
 
   let :default_facts do
     {
-      :kernel => 'Linux'
+      :kernel           => 'Linux',
+      :operatingsystem  => 'CentOS',
     }
   end
 
@@ -41,6 +42,7 @@ describe 'aem::instance', :type => :defines do
         'port'            => 4502,
         'runmodes'        => [],
         'sample_content'  => true,
+        'status'          => 'enabled',
         'source'          => '/tmp/aem-quickstart.jar',
         'snooze'          => 10,
         'timeout'         => 600,
@@ -251,6 +253,47 @@ describe 'aem::instance', :type => :defines do
           default_params.merge(:sample_content => 'not boolean')
         end
         it { expect { is_expected.to compile }.to raise_error(/is not a boolean/) }
+      end
+    end
+
+    context 'status' do
+      context 'enabled' do
+        let :params do
+          default_params.merge(:status => 'enabled')
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_aem__instance('aem').with('status' => 'enabled') }
+      end
+
+      context 'disabled' do
+        let :params do
+          default_params.merge(:status => 'disabled')
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_aem__instance('aem').with('status' => 'disabled') }
+      end
+
+      context 'running' do
+        let :params do
+          default_params.merge(:status => 'running')
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_aem__instance('aem').with('status' => 'running') }
+      end
+
+      context 'unmanaged' do
+        let :params do
+          default_params.merge(:status => 'unmanaged')
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_aem__instance('aem').with('status' => 'unmanaged') }
+      end
+
+      context 'invalid' do
+        let :params do
+          default_params.merge(:status => 'invalid')
+        end
+        it { expect { is_expected.to compile }.to raise_error(/Allowed values are 'enabled', 'disabled', 'running' and 'unmanaged'/) }
       end
     end
 

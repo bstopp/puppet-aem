@@ -64,3 +64,6 @@ JVM_OPTS="${JVM_MEM_OPTS} ${DEFAULT_JVM_OPTS} ${JVM_OPTS} ${DEBUG_OPTS} -Dsling.
   ) >> $CURR_DIR/logs/stdout.log 2>&1
 ) &
 
+# This is here to make sure that the PID file can be created if using a Service
+# Otherwise it may not exist when monitoring starts.
+sleep 15

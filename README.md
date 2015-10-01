@@ -23,21 +23,21 @@
 
 ## Overview
 
-The AEM module installs, configures and manages an AEM instance.
+The AEM module installs, configures and manages an AEM installation, license, and service.
 
 ## Module Description
 
-The AEM module introduces the `aem::instance` resource which is used to manage and configure an installation of AEM utilizing the Puppet DSL.
+The AEM module introduces the `aem::instance` resource which is used to manage and configure an installation of AEM utilizing the Puppet DSL. This module also introduces the `aem::license` and `aem::service` types; see usage for details.
 
 ## Setup
 
 ### What AEM affects
 
-  * AEM Installations may be modified by using this module. See [warnings](#warnings), for how existing instances are affected by enabling a this module.
+AEM Installations may be modified by using this module. See [warnings](#warnings), for how existing instances are affected by enabling a this module.
 
 ### Setup Requirements 
 
-AEM uses Ruby-based providers, so you must enable pluginsync. Java is also required to be installed on the system. Finally, due to the AEM platform being proprietary, this module does not provide the installation jar file, it must be provided by the consumer.
+AEM uses Ruby-based providers, so you must enable pluginsync. Java is also required to be installed on the system. Finally, due to the AEM platform being proprietary, this module does not provide the installation jar file; it must be provided by the consumer.
 
 ### Beginning with AEM
 
@@ -53,7 +53,7 @@ See [Useage](#usage) and [Reference](#reference) for options and detailed explan
 
 ## Usage
 
-### AEM Resource
+### Aem::Instance
 
 The `aem::instance` resource definition is used to install and manage an AEM instance. An AEM installation is considered complete when the following steps have occurred:
 
@@ -61,11 +61,39 @@ The `aem::instance` resource definition is used to install and manage an AEM ins
   * Configuring the start script (See [documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/command-line-start-and-stop.html).)
   * Starting & Stopping the server, creating base repository. _This does not create a service._
 
-_Configuring an AEM installation where an unmanaged one exists is undefined._
+_Configuring an AEM installation where an unmanaged one exists is undefined (Theoretically it should work)._
+
+### Aem::License
+
+The `aem::license` resource definition is used to install and manage an AEM license file. As of v2.1.0 of this module, all `aem::license` catalog entries are applied as part of the module resource lifecycle. All `aem::license` entries are guaranteed to be applied before an associated `aem::service` resource (if *status* is not **unmanaged**).
+
+**Upgrading to 2.1.0 may require edits to catalogs if explicit dependency was specified.**
+
+### Aem::Service
+
+The `aem::service` resource definition is used to install and manage an AEM Instance as a service. If the `aem::instance` property is not **unmanaged**, an `aem::service` resource will be created with the name *aem-<name>* where **<name>** is the `aem::instance` *name*. 
+
+Therefore you can manage `aem::service` resources via *puppet resource* commands:
+
+~~~
+# Assume Catalog definition:
+aem::instance { 'author' :
+...
+status => 'enabled',
+...
+}
+
+# Puppet resource service command:
+> puppet resource service aem-author
+service { 'aem-author' :
+  ensure => 'running',
+  enable => true,
+}
+~~~
 
 #### Minimal Definition
 
-This is  the minimal required `aem::instance` resource definition to install AEM. The default property values will be used, and the installation user:group will be `aem:aem`. This user and group will be created. The AEM instance will be installed to `/opt/aem`, which will also be created.
+This is the minimal required `aem::instance` resource definition to install AEM. The default property values will be used, and the installation user:group will be `aem:aem`. This user and group will be created. The AEM instance will be installed to `/opt/aem`, which will also be created. A service definition wil be created (named *'aem-aem'*), enabled andrunning. 
 
 ~~~
 aem::instance { 'aem' :
@@ -87,7 +115,7 @@ aem::instance { 'aem' :
 
 #### Specify type Example
 
-You can specify the type of AEM installation to create. This is either `author` or `publish`. Although changing the defintion will update the associated configuration script, it will have no impact on the operation of the AEM instance. (See [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Installation Run Modes))
+You can specify the type of AEM installation to create. This is either `author` or `publish`. Once an instance is created, changing the defintion will update the associated configuration script. However this update will have no impact on the operation of the AEM instance. (See [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Installation Run Modes))
 
 ~~~
 aem::instance { 'aem' :
@@ -109,7 +137,7 @@ aem::instance { 'aem' :
 
 #### Specify runmodes Example
 
-You can specify additional runmodes for the AEM instance. (See [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Customized Run Modes))
+You can specify additional runmodes for the AEM instance. See notes on *runmodes* usage with respect to *type* and *sample_content*. (See [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Customized Run Modes))
 
 ~~~
 aem::instance { 'aem' :
@@ -120,7 +148,7 @@ aem::instance { 'aem' :
 
 #### Specify samplecontent Example
 
-You can disable the sample content (Geometrixx) that comes with AEM. (See [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Using samplecontent and nosamplecontent))
+You can disable the sample content (Geometrixx) that comes with AEM. See notes on *sample_content* usage with respect to *runmodes*. (See [AEM documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Using samplecontent and nosamplecontent))
 
 ~~~
 aem::instance { 'aem' :
@@ -146,17 +174,14 @@ aem::license { 'aem' :
   license_key => 'enter-your-key-here',
   version     => '6.1.0',
 }
-# Ensure Instance before License (home must exist)
-Aem::Instance['aem'] -> Aem::License['aem']
-
 ~~~
-
 
 ## Reference
 
 - [**Public Defines**](#public-defines)
   - [Define: aem::instance](#define-aeminstance)
   - [Define: aem::license](#define-aemlicense)
+  - [Define: aem::service](#define-aemservice)
 - [**Private Defines**](#private-defines)
   - [Define: aem::package](#define-aempackage)
   - [Define: aem::config](#define-aemconfig)
@@ -169,7 +194,7 @@ Aem::Instance['aem'] -> Aem::License['aem']
 
 This type enables you to manage AEM instances within Puppet. Declare one `aem::instance` per managed AEM server desired.
 
-** Parametrs within `aem::instance`:**
+**Parameters within `aem::instance`:**
 
 ##### `name`
 Namevar. Required. Specifies the name of the AEM instance.
@@ -219,6 +244,13 @@ Optional. Sets the wait period between checks for installation completion. When 
 ##### `source`
 Required. Sets the source jar file to use, provided by user. Valid options: any absolute file.
 
+##### `status`
+Optional. Changes the state of the service on the system, defining whether or not the service starts at system boot and/or is currently running. Valid values are:
+* `enabled`: Start at boot & currently running (**Default**)
+* `disabled`: Not started at boot & not currently running.
+* `running`: Not started at boot but is currently running.
+* `unmanaged`: Don't manage it with service manager, running state is arbitrary.
+
 ##### `timeout`
 Optional. Sets the timeout allowed for startup monitoring. If the installation doesn't finish by the timeout, an error will be generated. Value is specified in seconds. Valid option: any number. Default: `600`.
 
@@ -261,6 +293,34 @@ Optional. Sets the user for for file ownership. Valid options: any valid user. D
 ##### `version`
 Optional. Sets the version of AEM for the license file contents. Valid options: any string. 
 
+#### Define: `aem::service`
+
+This type enables you to manage an AEM instance as a service. Creating a separate configuration for this is not necesary unless the `aem::instance`'s *manage_service* is **false**. Declare one `aem::service` per managed AEM server.
+
+** Parametrs within `aem::service`:**
+
+##### `name`
+Namevar. Required. Specifies the name of the AEM Service.
+
+##### `ensure`
+Optional. Changes the state of the AEM Service within puppet. Valid values are `present` or `absent`. Default: `present`.
+
+##### `group`
+Optional. Sets the group for file ownership. Valid options: any valid group. Default: `aem`.
+
+##### `home`
+Required. Sets the directory in which the AEM instance exists, necessary for service configuration definition. Valid options: Any absolute system path.
+
+##### `status`
+Optional. Changes the state of the service on the system, defining whether or not the service starts at system boot and/or is currently running. Valid values are:
+* `enabled`: Start at boot & currently running (**Default**)
+* `disabled`: Not started at boot & not currently running.
+* `running`: Not started at boot but is currently running.
+* `unmanaged`: Don't manage it with service manager, running state is arbitrary.
+
+##### `user`
+Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `aem`.
+
 ### Private Defines
 
 #### Define: `aem::package`
@@ -282,7 +342,9 @@ This module has been tested on:
 
   * CentOS 6, 7
   * Ubuntu 12.04, 14.04
-  * Debian 6.0, 7.8
+  * Debian 6.0, 7.8*
+
+*See [Known Issues](#known-issues)*
 
 ### AEM Compatibility
 
@@ -296,6 +358,10 @@ This module has been tested with the following AEM versions:
 It is up to the consumer to ensure that the correct version of Java is installed based on the AEM version. See [AEM Documentation](https://docs.adobe.com/docs/en/aem/6-1/deploy/technical-requirements.html) for compatibility.
 
 Defining an AEM resource as absent will remove the instance from the system, regardless of whether or not it was originally managed by puppet.
+
+### Known Issues
+
+There is an oddity with the `aem::service` support on Debian: even though specifying a valid status sends the correct parameters to the underlying service resource, the service is not enabled, nor do state changes occur correctly. Acceptance tests on those Virtual Machines fail for issues with service management. See [issue #36](https://github.com/bstopp/puppet-aem/issues/36).
 
 ## Development
 
