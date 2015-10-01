@@ -1,8 +1,8 @@
-# == Class: aem::package
+# == Define: aem::package
 #
 # Used to unpack the AEM instance prior to configuration.
 #
-# Do not use this class directly.
+# Do not use this defines directly.
 #
 define aem::package (
   $ensure,

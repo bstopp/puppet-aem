@@ -1,4 +1,8 @@
-
+# == Define: aem::license
+#
+# Used to manage AEM license files.
+#
+#
 define aem::license (
   $ensure      = 'present',
   $customer    = undef,

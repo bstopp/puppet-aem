@@ -1,3 +1,12 @@
+## 2015-10-01 - Release 2.1.0
+### Summary
+Adding service support; AEM instances are now automatically service enabled and started. All license types are included in resource lifecycle. 
+
+#### Features:
+* New `aem::instance` property: *status*.
+* New `aem::service` defines. See documentation on use.
+
+
 ## 2015-09-24 - Release 2.0.1
 ### Summary
 Bug fix release.

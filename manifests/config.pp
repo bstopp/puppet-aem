@@ -1,8 +1,8 @@
-# == Class: aem::config
+# == Define: aem::config
 #
 # Configure the AEM instance with the appropriate parameter values
 #
-# Do not use this class directly.
+# Do not use this defines directly.
 #
 define aem::config(
   $context_root,

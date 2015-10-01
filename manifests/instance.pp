@@ -1,4 +1,8 @@
-
+# == Define: aem::instance
+#
+# This define manages AEM instances.
+#
+#
 define aem::instance (
   $ensure         = 'present',
   $context_root   = undef,
@@ -15,6 +19,7 @@ define aem::instance (
   $sample_content = true,
   $snooze         = 10,
   $source         = undef,
+  $status         = 'enabled',
   $timeout        = 600,
   $type           = author,
   $user           = 'aem',
@@ -59,6 +64,10 @@ define aem::instance (
   validate_array($runmodes)
 
   validate_bool($sample_content)
+
+  validate_re($status, '^(enabled|disabled|running|unmanaged)$',
+    "${status} is not supported for status. Allowed values are 'enabled', 'disabled', 'running' and 'unmanaged'.")
+
   validate_integer($snooze)
   if ($ensure == 'present') {
     validate_absolute_path($source)
@@ -82,6 +91,14 @@ define aem::instance (
     manage_home => $manage_home,
     source      => $source,
     user        => $user,
+  }
+
+  aem::service { $name :
+    ensure => $ensure,
+    status => $status,
+    home   => $_home,
+    user   => $user,
+    group  => $group,
   }
 
   if ($ensure == 'present') {
@@ -110,9 +127,6 @@ define aem::instance (
       timeout      => $timeout,
       user         => $user,
     }
-  }
-
-  if ($ensure == 'present') {
 
     # Is there no way to do this better?
     if $manage_group {
@@ -137,9 +151,12 @@ define aem::instance (
     -> Aem::Package[$name]
     -> Aem::Config[$name]
     -> Aem_Installer[$name]
+    -> Aem::License <| |>
+    -> Aem::Service[$name]
 
   } else {
     Anchor["aem::${name}::begin"]
+    -> Aem::Service[$name]
     -> Aem::Package[$name]
 
     # I mean seriously.

@@ -68,6 +68,7 @@ describe 'aem::instance' do
     jvm_opts        => \"-XX:+UseParNewGC\",
     jvm_mem_opts    => \"-Xmx2048m -XX:MaxPermSize=512M\",
     sample_content  => false,
+    status          => \"running\",
     type            => \"publish\",
     port            => 4503,
     debug_port      => 54321,
@@ -96,9 +97,6 @@ describe 'aem::instance' do
   aem::license { \"publish\" :
     home    => \"/opt/aem/publish\",
   }
-
-  Aem::Instance[\"author\"] -> Aem::License[\"author\"]
-  Aem::Instance[\"publish\"] -> Aem::License[\"publish\"]
 
 }'
 
@@ -133,6 +131,12 @@ describe 'aem::instance' do
             puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
             :acceptable_exit_codes => [0, 2]
           )
+
+          # This is here because there's something wrong with Debian. See Known Issues.
+          if fact('osfamily') == 'Debian'
+            on default, puppet('resource', 'service', 'aem-author', 'ensure=running', 'enable=true')
+          end
+
           on(
             default,
             puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
@@ -261,10 +265,21 @@ describe 'aem::instance' do
       end
     end
 
+    context 'services running' do
+
+      describe service('aem-author') do
+        it { should be_running }
+        it { should be_enabled }
+      end
+  
+      describe service('aem-publish') do
+        it { should_not be_enabled }
+        it { should be_running }
+      end
+    end
+
     context 'running instances' do
       it 'should start author with correct port and context root' do
-        shell('sudo -u vagrant -g vagrant /opt/aem/author/crx-quickstart/bin/start')
-        shell('sudo -u aem -g aem /opt/aem/publish/crx-quickstart/bin/start')
 
         valid = false
         catch(:started) do
@@ -309,10 +324,6 @@ describe 'aem::instance' do
           end
         end
         expect(valid).to eq(true)
-
-        shell('sudo -u vagrant -g vagrant /opt/aem/author/crx-quickstart/bin/stop')
-        shell('sudo -u aem -g aem /opt/aem/publish/crx-quickstart/bin/stop')
-
       end
     end
 
@@ -346,17 +357,14 @@ describe 'aem::instance' do
       MANIFEST
 
       it 'should work with no errors' do
+        on default, puppet('resource', 'service', 'aem-author', 'ensure=stopped')
+        on default, puppet('resource', 'service', 'aem-publish', 'ensure=stopped')
         apply_manifest_on(master, pp, :catch_failures => true)
         fqdn = on(master, 'facter fqdn').stdout.strip
         on(
           default,
           puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
           :acceptable_exit_codes => [0, 2]
-        )
-        on(
-          default,
-          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-          :acceptable_exit_codes => [0]
         )
       end
 
