@@ -342,7 +342,9 @@ This module has been tested on:
 
   * CentOS 6, 7
   * Ubuntu 12.04, 14.04
-  * Debian 6.0, 7.8
+  * Debian 6.0, 7.8*
+
+*See [Known Issues](#known-issues)*
 
 ### AEM Compatibility
 
@@ -359,7 +361,7 @@ Defining an AEM resource as absent will remove the instance from the system, reg
 
 ### Known Issues
 
-There is an oddity with the `aem::service` support on Debian: even though specifying a status of `enabled` sends the correct parameters to the underlying service resource, the service is not enabled by default on an initial catalog run. Acceptance tests on those Virtual Machines fail on second run (due to changes), and a solution has not presented itself.
+There is an oddity with the `aem::service` support on Debian: even though specifying a valid status sends the correct parameters to the underlying service resource, the service is not enabled, nor do state changes occur correctly. Acceptance tests on those Virtual Machines fail for issues with service management. See [issue #36](https://github.com/bstopp/puppet-aem/issues/36).
 
 ## Development
 
