@@ -1,0 +1,17 @@
+<%- | 
+  Hash $properties
+| -%>
+<%- $properties.keys.each | String $key | { -%>
+  <%- if is_array($properties[$key]) { -%>
+<%= $key -%>=["<%= $properties[$key].join('","') -%>"]
+  <%- } else {-%>
+    <%- if is_bool($properties[$key]) { -%>
+      <%- $type = "B" -%>
+    <%- } elsif is_integer($properties[$key]) {-%>
+      <%- $type = "L" -%>
+    <%- } else { -%>
+      <%- $type = "" -%>
+    <%- } -%>
+<%= $key -%>=<%= $type -%>"<%= $properties[$key] -%>"
+  <%- } -%>
+<%- } -%>

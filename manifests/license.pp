@@ -33,4 +33,9 @@ define aem::license (
     owner   => $user,
   }
 
+  if defined(File[$home]) {
+    File[$home]
+    -> File["${home}/license.properties"]
+  }
+
 }

@@ -14,6 +14,7 @@ define aem::instance (
   $manage_group   = true,
   $manage_home    = true,
   $manage_user    = true,
+  $osgi_configs   = undef,
   $port           = 4502,
   $runmodes       = [],
   $sample_content = true,
@@ -24,6 +25,7 @@ define aem::instance (
   $type           = author,
   $user           = 'aem',
   $version        = undef) {
+
   anchor { "aem::${name}::begin": }
 
   validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
@@ -60,6 +62,11 @@ define aem::instance (
 
   validate_bool($manage_home)
 
+  if $osgi_configs {
+    if !is_hash($osgi_configs) and !(is_array($osgi_configs) and is_hash($osgi_configs[0])) {
+      fail("Aem::Instance[${name}]: 'osgi_configs' must be either a Hash or an Array of Hashes")
+    }
+  }
   validate_integer($port)
   validate_array($runmodes)
 
@@ -110,6 +117,7 @@ define aem::instance (
       home           => $_home,
       jvm_mem_opts   => $jvm_mem_opts,
       jvm_opts       => $jvm_opts,
+      osgi_configs   => $osgi_configs,
       port           => $port,
       runmodes       => $runmodes,
       sample_content => $sample_content,
@@ -151,7 +159,6 @@ define aem::instance (
     -> Aem::Package[$name]
     -> Aem::Config[$name]
     -> Aem_Installer[$name]
-    -> Aem::License <| |>
     ~> Aem::Service[$name]
     
     Aem::Config[$name]

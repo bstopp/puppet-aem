@@ -28,7 +28,7 @@ define aem::package (
     if !defined(File[$home]) and $manage_home {
       file { $home:
         ensure => directory,
-        mode   => '0644',
+        mode   => '0775',
       }
 
       File[$home]

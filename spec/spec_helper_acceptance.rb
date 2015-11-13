@@ -76,6 +76,7 @@ unless ENV['BEAKER_provision'] == 'no'
 
   aem_installer = File.expand_path(File.join(module_root, 'spec', 'files', 'aem-quickstart.jar'))
   scp_to(hosts, aem_installer, '/tmp/aem-quickstart.jar')
+  on master, shell('chmod 775 /tmp/aem-quickstart.jar')
   start_env = File.expand_path(File.join(module_root, 'spec', 'files', 'faux-start-env'))
 
   scp_to(hosts, start_env, '/tmp/faux-start-env')
@@ -99,8 +100,8 @@ unless ENV['BEAKER_provision'] == 'no'
   on master, puppet('module', 'install', 'puppetlabs-stdlib'), :acceptable_exit_codes => [0, 1]
   on master, puppet('module', 'install', 'puppetlabs-java'), :acceptable_exit_codes => [0, 1]
 
-  manifest = "class { 'java' : }"
-  apply_manifest_on(master, manifest)
+#  manifest = "class { 'java' : }"
+#  apply_manifest_on(master, manifest)
 
   stop_firewall_on(master)
 

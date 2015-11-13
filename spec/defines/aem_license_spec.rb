@@ -92,13 +92,12 @@ describe 'aem::license', :type => :defines do
       default_params
     end
 
-    
     context 'product name' do
       it do
         is_expected.to contain_file(
-          '/opt/aem/license.properties'
+        '/opt/aem/license.properties'
         ).with_content(
-          /license.product.name=Adobe Experience Manager\s/
+        /license.product.name=Adobe Experience Manager\s/
         )
       end
     end
@@ -107,16 +106,15 @@ describe 'aem::license', :type => :defines do
       it { is_expected.to contain_file('/opt/aem/license.properties').with_mode('0644') }
     end
 
-
     context 'customer' do
 
       it do
         val = params[:customer]
 
-          is_expected.to contain_file(
-          '/opt/aem/license.properties'
+        is_expected.to contain_file(
+        '/opt/aem/license.properties'
         ).with_content(
-          /license.customer.name=#{val}\s/
+        /license.customer.name=#{val}\s/
         )
       end
     end
@@ -144,9 +142,9 @@ describe 'aem::license', :type => :defines do
         val = params[:license_key]
 
         is_expected.to contain_file(
-          '/opt/aem/license.properties'
+        '/opt/aem/license.properties'
         ).with_content(
-          /license.downloadID=#{val}\s/
+        /license.downloadID=#{val}\s/
         )
       end
     end
@@ -175,9 +173,9 @@ describe 'aem::license', :type => :defines do
 
         it do
           is_expected.to contain_file(
-            '/opt/aem/license.properties'
+          '/opt/aem/license.properties'
           ).with_content(
-            /license.product.version=\s/
+          /license.product.version=\s/
           )
         end
 
@@ -188,13 +186,26 @@ describe 'aem::license', :type => :defines do
           val = params[:version]
 
           is_expected.to contain_file(
-            '/opt/aem/license.properties'
+          '/opt/aem/license.properties'
           ).with_content(
-            /license.product.version=#{val}\s/
+          /license.product.version=#{val}\s/
           )
         end
 
       end
+    end
+
+  end
+
+  describe 'requires home directory' do
+    let(:pre_condition) { 'file { "/opt/aem" : }' }
+
+    let :params do
+      default_params
+    end
+
+    context 'default' do
+      it { is_expected.to contain_file('/opt/aem/license.properties').that_requires('File[/opt/aem]') }
     end
 
   end

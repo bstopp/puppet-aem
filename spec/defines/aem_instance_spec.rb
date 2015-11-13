@@ -104,8 +104,6 @@ describe 'aem::instance', :type => :defines do
     it { is_expected.to contain_group('aem').that_requires('Anchor[aem::aem::begin]') }
     it { is_expected.to contain_user('aem').that_requires('Anchor[aem::aem::begin]') }
 
-    # This doesn't work, so there's no test case for the dependency tree.
-    #it { is_expected.to contain_aem__service('aem').that_requires('Aem::License <| |>') }
     it { is_expected.to contain_aem_installer('aem').that_requires('Aem::Config[aem]') }
     it { is_expected.to contain_aem__config('aem').that_requires('Aem::Package[aem]') }
     it { is_expected.to contain_aem__config('aem').that_notifies('Aem::Service[aem]') }
@@ -172,6 +170,119 @@ describe 'aem::instance', :type => :defines do
       )
     end
 
+  end
+
+  describe 'osgi configs' do
+
+    context 'single definition' do
+      let :params do
+        default_params.merge({
+          :osgi_configs => {
+            'osgi.name' => {
+              'key' => 'value',
+              'key2' => 'value2',
+            }
+          }
+        })
+      end
+
+      let :facts do
+        default_facts
+      end
+
+      it { is_expected.to compile.with_all_deps }
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/install/osgi.name.config'
+        ).with(
+          'ensure'    => 'file',
+          'content'   => /key=\"value\"\nkey2=\"value2\"/,
+          'group'     => 'aem',
+          'owner'     => 'aem'
+        )
+      end
+
+    end
+
+    context 'multiple definitions' do
+      let :params do
+        default_params.merge({
+          :osgi_configs => [
+            {
+              'osgi.name' => {
+                'key' => 'value',
+                'key2' => 'value2',
+              }
+            },
+            {
+              'osgi2.name' => {
+                'key3' => 'value3',
+                'key4' => 'value4',
+              }
+            }
+          ]
+        })
+      end
+
+      let :facts do
+        default_facts
+      end
+
+      it { is_expected.to compile.with_all_deps }
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/install/osgi.name.config'
+        ).with(
+          'ensure'    => 'file',
+          'content'   => /key=\"value\"\nkey2=\"value2\"/,
+          'group'     => 'aem',
+          'owner'     => 'aem'
+        )
+      end
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/install/osgi2.name.config'
+        ).with(
+          'ensure'    => 'file',
+          'content'   => /key3=\"value3\"\nkey4=\"value4\"/,
+          'group'     => 'aem',
+          'owner'     => 'aem'
+        )
+      end
+
+    end
+
+    context 'property types' do
+      let :params do
+        default_params.merge({
+          :osgi_configs => {
+            'osgi.name' => {
+              'booltrue'  => true,
+              'boolfalse' => false,
+              'int'       => 12345,
+            }
+          }
+        })
+      end
+
+      let :facts do
+        default_facts
+      end
+
+      it { is_expected.to compile.with_all_deps }
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/install/osgi.name.config'
+        ).with(
+          'ensure'    => 'file',
+          'content'   => /booltrue=B"true"\sboolfalse=B"false"\sint=L"12345"/,
+          'group'     => 'aem',
+          'owner'     => 'aem'
+        )
+      end
+
+    end
   end
 
   context 'default remove' do
