@@ -71,25 +71,7 @@ The `aem::license` resource definition is used to install and manage an AEM lice
 
 ### Aem::Service
 
-The `aem::service` resource definition is used to install and manage an AEM Instance as a service. If the `aem::instance` property is not **unmanaged**, an `aem::service` resource will be created with the name *aem-<name>* where **<name>** is the `aem::instance` *name*. 
-
-Therefore you can manage `aem::service` resources via *puppet resource* commands:
-
-~~~
-# Assume Catalog definition:
-aem::instance { 'author' :
-...
-status => 'enabled',
-...
-}
-
-# Puppet resource service command:
-> puppet resource service aem-author
-service { 'aem-author' :
-  ensure => 'running',
-  enable => true,
-}
-~~~
+The `aem::service` resource definition is used to install and manage an AEM Instance as a service. Setting the `aem::instance` parameter to any value other than **unmanaged** will create a service defintion with the specified state. The name of the service will be *aem-&lt;name&gt;*, where *&lt;name&gt;* is the namevar of the `aem::instance`.
 
 #### Minimal Definition
 
