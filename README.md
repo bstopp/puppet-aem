@@ -71,7 +71,7 @@ The `aem::license` resource definition is used to install and manage an AEM lice
 
 ### Aem::Service
 
-The `aem::service` resource definition is used to install and manage an AEM Instance as a service. Setting the `aem::instance` parameter to any value other than **unmanaged** will create a service defintion with the specified state. The name of the service will be *aem-&lt;name&gt;*, where *&lt;name&gt;* is the namevar of the `aem::instance`.
+The `aem::service` resource definition is used to install and manage an AEM Instance as a service. Setting the `aem::instance` *status* parameter to any value other than **unmanaged** will create a service defintion with the specified state. The name of the service will be *aem-&lt;name&gt;*, where *&lt;name&gt;* is the namevar of the `aem::instance`.
 
 #### Minimal Definition
 
