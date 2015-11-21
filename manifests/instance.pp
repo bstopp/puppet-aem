@@ -151,7 +151,6 @@ define aem::instance (
     -> Aem::Package[$name]
     -> Aem::Config[$name]
     -> Aem_Installer[$name]
-    -> Aem::License <| |>
     ~> Aem::Service[$name]
     
     Aem::Config[$name]
