@@ -65,7 +65,7 @@ _Configuring an AEM installation where an unmanaged one exists is undefined (The
 
 ### Aem::License
 
-The `aem::license` resource definition is used to install and manage an AEM license file. As of v2.1.0 of this module, all `aem::license` catalog entries are applied as part of the module resource lifecycle. All `aem::license` entries are guaranteed to be applied before an associated `aem::service` resource (if *status* is not **unmanaged**).
+The `aem::license` resource definition is used to install and manage an AEM license file. As of v2.1.0 of this module, all `aem::license` catalog entries are applied as part of the module resource lifecycle.
 
 **Upgrading to 2.1.0 may require edits to catalogs if explicit dependency was specified.**
 
