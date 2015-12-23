@@ -7,6 +7,7 @@ describe 'aem::instance', :type => :defines do
     {
       :kernel           => 'Linux',
       :operatingsystem  => 'CentOS',
+      :operatingsystemmajrelease  => '7',
     }
   end
 
