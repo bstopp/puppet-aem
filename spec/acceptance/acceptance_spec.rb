@@ -191,17 +191,51 @@ describe 'aem::instance' do
 
     end
 
-    context 'osgi configs' do
-      it 'should contain osgi config file' do
+#    context 'osgi configs' do
+#      it 'should contain osgi config file' do
+#
+#        valid = false
+#        shell('curl -I http://localhost:4502/') do |result|
+#          valid = result.stdout =~ %r{HTTP\/1.1 302 Found}
+#        end
+#        expect(valid).to eq(true)
+#      end
+#    end
+
+    context 'services running' do
+
+      describe service('aem-author') do
+        it { should be_running }
+        it { should be_enabled }
+      end
+    end
+
+    context 'running instances' do
+      it 'should start author with correct port and context root' do
 
         valid = false
-        shell('curl -I http://localhost:4502/') do |result|
-          valid = result.stdout =~ %r{HTTP\/1.1 302 Found}
+        catch(:started) do
+          Timeout.timeout(200) do
+            Kernel.loop do
+
+              begin
+                shell('curl -I http://localhost:4502/') do |result|
+                  if result.stdout =~ %r{HTTP\/1.1 302 Found}
+                    valid = true
+                    throw :started if valid
+                    break
+                  end
+                end
+              rescue
+              end
+
+              sleep 15
+            end
+          end
         end
         expect(valid).to eq(true)
       end
     end
-
   end
 
   describe 'aem::instance updated' do
