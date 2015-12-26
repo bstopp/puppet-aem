@@ -16,6 +16,7 @@ describe 'aem::instance' do
 
     context 'create' do
       it 'should work with no errors' do
+
         site = <<-MANIFEST
           'node \"agent\" {
             File { backup => false, owner => \"aem\", group => \"aem\" }
@@ -69,6 +70,7 @@ describe 'aem::instance' do
               user            => \"vagrant\",
               group           => \"vagrant\",
               jvm_mem_opts    => \"-Xmx2048m\",
+              timeout         => 1200,
             }
 
             Class[\"java\"] -> File[\"/opt/aem\"] -> Aem::Instance <| |>
@@ -224,6 +226,41 @@ describe 'aem::instance' do
       }
     end
 
+    context 'update service' do
+      it 'needs to have services redefined to update state' do
+        site = <<-MANIFEST
+          'node \"agent\" {
+            File { backup => false, owner => \"aem\", group => \"aem\" }
+
+            aem::service { \"author\" :
+              home            => \"/opt/aem/author\",
+              user            => \"vagrant\",
+              group           => \"vagrant\",
+              status          => \"disabled\",
+            }
+          }'
+        MANIFEST
+
+        pp = <<-MANIFEST
+          file {
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+              ensure => file,
+              content => #{site}
+          }
+        MANIFEST
+
+        apply_manifest_on(master, pp, :catch_failures => true)
+        with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
+          fqdn = on(master, 'facter fqdn').stdout.strip
+          on(
+            default,
+            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+            :acceptable_exit_codes => [0, 2]
+          )
+        end
+      end
+    end
+
     context 'create' do
       it 'should work with no errors' do
         site = <<-MANIFEST
@@ -240,6 +277,7 @@ describe 'aem::instance' do
               sample_content  => false,
               status          => \"running\",
               type            => \"publish\",
+              timeout         => 1200,
               port            => 4503,
               debug_port      => 54321,
               context_root    => \"aem-publish\",
@@ -329,7 +367,7 @@ describe 'aem::instance' do
         catch(:started) do
           Timeout.timeout(200) do
             Kernel.loop do
-    
+
               begin
                 shell('curl -I http://localhost:4503/aem-publish/') do |result|
                   if result.stdout =~ %r{HTTP\/1.1 302 Found}
@@ -352,7 +390,6 @@ describe 'aem::instance' do
   end
 
   describe 'destroy' do
-
 
     it 'should work with no errors' do
 
