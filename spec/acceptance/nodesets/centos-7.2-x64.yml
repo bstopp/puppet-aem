@@ -1,0 +1,25 @@
+HOSTS:
+  master:
+    roles:
+      - master
+      - dashboard
+      - database
+    platform: el-7-x86_64
+    box: puppetlabs/centos-7.2-64-nocm
+    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.2-64-nocm
+    hypervisor: vagrant
+
+  agent:
+    roles:
+      - agent
+      - default
+    platform: el-7-x86_64
+    box: puppetlabs/centos-7.2-64-nocm
+    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.2-64-nocm
+    hypervisor: vagrant
+    dispatcher_file: dispatcher-apache2.4-4.1.11.so
+
+CONFIG:
+  type: foss
+  vagrant_memsize : 4096
+  vagrant_cpus : 1
