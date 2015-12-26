@@ -5,8 +5,9 @@ describe 'aem::instance', :type => :defines do
 
   let :default_facts do
     {
-      :kernel           => 'Linux',
-      :operatingsystem  => 'CentOS',
+      :kernel                     => 'Linux',
+      :operatingsystem            => 'CentOS',
+      :operatingsystemmajrelease  => '7'
     }
   end
 
@@ -73,7 +74,7 @@ describe 'aem::instance', :type => :defines do
         'debug_port'      => nil,
         'group'           => 'aem',
         'home'            => '/opt/aem',
-        'jvm_mem_opts'    => '-Xmx1024m -XX:MaxPermSize=256M',
+        'jvm_mem_opts'    => '-Xmx1024m',
         'jvm_opts'        => nil,
         'port'            => 4502,
         'runmodes'        => [],
@@ -107,9 +108,8 @@ describe 'aem::instance', :type => :defines do
     it { is_expected.to contain_aem_installer('aem').that_requires('Aem::Config[aem]') }
     it { is_expected.to contain_aem__config('aem').that_requires('Aem::Package[aem]') }
     it { is_expected.to contain_aem__config('aem').that_notifies('Aem::Service[aem]') }
-          
-    it { is_expected.to contain_aem__package('aem').that_requires('Anchor[aem::aem::begin]') }
 
+    it { is_expected.to contain_aem__package('aem').that_requires('Anchor[aem::aem::begin]') }
 
     it do
       is_expected.to contain_file(

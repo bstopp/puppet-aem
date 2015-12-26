@@ -3,10 +3,10 @@ require 'puppet-syntax/tasks/puppet-syntax'
 require 'rubocop/rake_task'
 
 exclude_paths = [
-  "spec/**/*"
+  'spec/**/*'
 ]
 
-task :default => [ :spec, :lint, :rubocop ]
+task :default => [:spec, :lint, :rubocop]
 
 PuppetLint.configuration.fail_on_warnings = true
 PuppetLint.configuration.send('relative')

@@ -5,8 +5,9 @@ describe 'aem::instance', :type => :defines do
 
   let :default_facts do
     {
-      :kernel           => 'Linux',
-      :operatingsystem  => 'CentOS',
+      :kernel                    => 'Linux',
+      :operatingsystem           => 'CentOS',
+      :operatingsystemmajrelease => '7'
     }
   end
 
@@ -35,7 +36,7 @@ describe 'aem::instance', :type => :defines do
         'ensure'          => 'present',
         'group'           => 'aem',
         'home'            => nil,
-        'jvm_mem_opts'    => '-Xmx1024m -XX:MaxPermSize=256M',
+        'jvm_mem_opts'    => '-Xmx1024m',
         'manage_group'    => true,
         'manage_home'     => true,
         'manage_user'     => true,
@@ -331,7 +332,11 @@ describe 'aem::instance', :type => :defines do
         let :params do
           default_params.merge(:status => 'invalid')
         end
-        it { expect { is_expected.to compile }.to raise_error(/Allowed values are 'enabled', 'disabled', 'running' and 'unmanaged'/) }
+        it do 
+          expect do 
+            is_expected.to compile 
+          end.to raise_error(/Allowed values are 'enabled', 'disabled', 'running' and 'unmanaged'/)
+        end
       end
     end
 

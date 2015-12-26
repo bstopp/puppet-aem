@@ -1,6 +1,7 @@
 *.iml
 .project
 .buildpath
+*.log
 .vagrant/
 .bundle/
 .idea/

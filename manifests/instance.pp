@@ -9,7 +9,7 @@ define aem::instance (
   $debug_port     = undef,
   $group          = 'aem',
   $home           = undef,
-  $jvm_mem_opts   = '-Xmx1024m -XX:MaxPermSize=256M',
+  $jvm_mem_opts   = '-Xmx1024m',
   $jvm_opts       = undef,
   $manage_group   = true,
   $manage_home    = true,

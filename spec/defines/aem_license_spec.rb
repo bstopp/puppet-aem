@@ -110,11 +110,10 @@ describe 'aem::license', :type => :defines do
 
       it do
         val = params[:customer]
-
         is_expected.to contain_file(
-        '/opt/aem/license.properties'
+          '/opt/aem/license.properties'
         ).with_content(
-        /license.customer.name=#{val}\s/
+          /license.customer.name=#{val}\s/
         )
       end
     end

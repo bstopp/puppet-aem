@@ -16,6 +16,7 @@ describe 'aem::instance' do
 
     context 'create' do
       it 'should work with no errors' do
+
         site = <<-MANIFEST
           'node \"agent\" {
             File { backup => false, owner => \"aem\", group => \"aem\" }
@@ -77,6 +78,7 @@ describe 'aem::instance' do
               group           => \"vagrant\",
               jvm_mem_opts    => \"-Xmx2048m\",
               osgi_configs    => \$osgi,
+              timeout         => 1200,
             }
 
             Class[\"java\"] -> File[\"/opt/aem\"] -> Aem::Instance <| |>
@@ -160,9 +162,9 @@ describe 'aem::instance' do
     end
 
     context 'license' do
-      context 'author' do 
+      context 'author' do
         it 'should have license file' do
-          shell("test -f /opt/aem/author/license.properties", :acceptable_exit_codes => 0)
+          shell('test -f /opt/aem/author/license.properties', :acceptable_exit_codes => 0)
         end
 
         it 'should have correct owner:group' do
@@ -197,11 +199,139 @@ describe 'aem::instance' do
           valid = result.stdout =~ %r{HTTP\/1.1 302 Found}
         end
         expect(valid).to eq(true)
-
       end
     end
 
-    context 'services running' do
+  end
+
+  describe 'aem::instance updated' do
+
+    let :facts do
+      {
+        :environment => :root
+      }
+    end
+
+    context 'update service' do
+      it 'needs to have services redefined to update state' do
+        site = <<-MANIFEST
+          'node \"agent\" {
+            File { backup => false, owner => \"aem\", group => \"aem\" }
+
+            aem::service { \"author\" :
+              home            => \"/opt/aem/author\",
+              user            => \"vagrant\",
+              group           => \"vagrant\",
+              status          => \"disabled\",
+            }
+          }'
+        MANIFEST
+
+        pp = <<-MANIFEST
+          file {
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+              ensure => file,
+              content => #{site}
+          }
+        MANIFEST
+
+        apply_manifest_on(master, pp, :catch_failures => true)
+        with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
+          fqdn = on(master, 'facter fqdn').stdout.strip
+          on(
+            default,
+            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+            :acceptable_exit_codes => [0, 2]
+          )
+        end
+      end
+    end
+
+    context 'create' do
+      it 'should work with no errors' do
+        site = <<-MANIFEST
+          'node \"agent\" {
+            File { backup => false, owner => \"aem\", group => \"aem\" }
+
+            aem::instance { \"author\" :
+              source          => \"/tmp/aem-quickstart.jar\",
+              home            => \"/opt/aem/author\",
+              user            => \"vagrant\",
+              group           => \"vagrant\",
+              jvm_mem_opts    => \"-Xmx2048m -XX:MaxPermSize=512M\",
+              jvm_opts        => \"-XX:+UseParNewGC\",
+              sample_content  => false,
+              status          => \"running\",
+              type            => \"publish\",
+              timeout         => 1200,
+              port            => 4503,
+              debug_port      => 54321,
+              context_root    => \"aem-publish\",
+              runmodes    => [\"dev\", \"client\", \"server\", \"mock\"],
+            }
+          }'
+        MANIFEST
+
+        pp = <<-MANIFEST
+          file {
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+              ensure => file,
+              content => #{site}
+          }
+        MANIFEST
+
+        apply_manifest_on(master, pp, :catch_failures => true)
+        with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
+          fqdn = on(master, 'facter fqdn').stdout.strip
+          on(
+            default,
+            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+            :acceptable_exit_codes => [0, 2]
+          )
+        end
+      end
+    end
+
+    context 'start-env config updates' do
+      it 'should update the type' do
+        shell("grep TYPE=\\'publish\\' /opt/aem/author/crx-quickstart/bin/start-env", :acceptable_exit_codes => 0)
+      end
+
+      it 'should update the port' do
+        shell('grep PORT=4503 /opt/aem/author/crx-quickstart/bin/start-env', :acceptable_exit_codes => 0)
+      end
+
+      it 'should update the runmodes' do
+        shell("grep RUNMODES=\\'dev,client,server,mock\\' /opt/aem/author/crx-quickstart/bin/start-env",
+              :acceptable_exit_codes => 0)
+      end
+
+      it 'should update the sample content' do
+        shell("grep SAMPLE_CONTENT=\\'nosamplecontent\\' /opt/aem/author/crx-quickstart/bin/start-env",
+              :acceptable_exit_codes => 0)
+      end
+
+      it 'should update the debug port' do
+        shell("grep -- 'DEBUG_PORT=54321' /opt/aem/author/crx-quickstart/bin/start-env", :acceptable_exit_codes => 0)
+      end
+
+      it 'should update the context root' do
+        shell("grep CONTEXT_ROOT=\\'aem-publish\\' /opt/aem/author/crx-quickstart/bin/start-env",
+              :acceptable_exit_codes => 0)
+      end
+
+      it 'should update the jvm memory settings' do
+        shell("grep -- \"JVM_MEM_OPTS='-Xmx2048m -XX:MaxPermSize=512M'\" /opt/aem/author/crx-quickstart/bin/start-env",
+              :acceptable_exit_codes => 0)
+      end
+
+      it 'should update the jvm settings' do
+        shell("grep -- JVM_OPTS=\\'-XX:+UseParNewGC\\' /opt/aem/author/crx-quickstart/bin/start-env",
+              :acceptable_exit_codes => 0)
+      end
+    end
+
+    context 'services running in new state' do
 
       describe service('aem-author') do
         it { should be_running }
@@ -239,187 +369,47 @@ describe 'aem::instance' do
 
   end
 
-#  describe 'aem::instance updated' do
-#    
-#    let :facts do
-#      {
-#        :environment => :root
-#      }
-#    end
-#
-#    context 'create' do
-#      it 'should work with no errors' do
-#        site = <<-MANIFEST
-#          'node \"agent\" {
-#            File { backup => false, owner => \"aem\", group => \"aem\" }
-#
-#            aem::instance { \"author\" :
-#              source          => \"/tmp/aem-quickstart.jar\",
-#              home            => \"/opt/aem/author\",
-#              user            => \"vagrant\",
-#              group           => \"vagrant\",
-#              jvm_mem_opts    => \"-Xmx2048m -XX:MaxPermSize=512M\",
-#              jvm_opts        => \"-XX:+UseParNewGC\",
-#              sample_content  => false,
-#              status          => \"running\",
-#              type            => \"publish\",
-#              port            => 4503,
-#              debug_port      => 54321,
-#              context_root    => \"aem-publish\",
-#              runmodes    => [\"dev\", \"client\", \"server\", \"mock\"],
-#            }
-#          }'
-#        MANIFEST
-#
-#        pp = <<-MANIFEST
-#          file {
-#            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-#              ensure => file,
-#              content => #{site}
-#          }
-#        MANIFEST
-#
-#        apply_manifest_on(master, pp, :catch_failures => true)
-#        with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
-#          fqdn = on(master, 'facter fqdn').stdout.strip
-#          fqdn = fqdn.chop if fqdn.end_with?(".")
-#
-#          on(
-#            default,
-#            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-#            :acceptable_exit_codes => [0, 2]
-#          )
-#
-#          on(
-#            default,
-#            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-#            :acceptable_exit_codes => [0]
-#          )
-#        end
-#      end
-#    end
-#
-#    context 'start-env config updates' do
-#      it 'should update the type' do
-#        shell("grep TYPE=\\'publish\\' /opt/aem/author/crx-quickstart/bin/start-env", :acceptable_exit_codes => 0)
-#      end
-#
-#      it 'should update the port' do
-#        shell('grep PORT=4503 /opt/aem/author/crx-quickstart/bin/start-env', :acceptable_exit_codes => 0)
-#      end
-#
-#      it 'should update the runmodes' do
-#        shell("grep RUNMODES=\\'dev,client,server,mock\\' /opt/aem/author/crx-quickstart/bin/start-env",
-#              :acceptable_exit_codes => 0)
-#      end
-#
-#      it 'should update the sample content' do
-#        shell("grep SAMPLE_CONTENT=\\'nosamplecontent\\' /opt/aem/author/crx-quickstart/bin/start-env",
-#              :acceptable_exit_codes => 0)
-#      end
-#
-#      it 'should update the debug port' do
-#        shell("grep -- 'DEBUG_PORT=54321' /opt/aem/author/crx-quickstart/bin/start-env", :acceptable_exit_codes => 0)
-#      end
-#
-#      it 'should update the context root' do
-#        shell("grep CONTEXT_ROOT=\\'aem-publish\\' /opt/aem/author/crx-quickstart/bin/start-env",
-#              :acceptable_exit_codes => 0)
-#      end
-#
-#      it 'should update the jvm memory settings' do
-#        shell("grep -- \"JVM_MEM_OPTS='-Xmx2048m -XX:MaxPermSize=512M'\" /opt/aem/author/crx-quickstart/bin/start-env",
-#              :acceptable_exit_codes => 0)
-#      end
-#    
-#      it 'should update the jvm settings' do
-#        shell("grep -- JVM_OPTS=\\'-XX:+UseParNewGC\\' /opt/aem/author/crx-quickstart/bin/start-env",
-#              :acceptable_exit_codes => 0)
-#      end
-#    end
-#
-#    context 'services running in new state' do
-#
-#      describe service('aem-author') do
-#        it { should_not be_enabled }
-#        it { should be_running }
-#      end
-#    end
-#
-#    context 'running instances' do
-#      it 'should have restarted correct port and context root' do
-#
-#        valid = false
-#
-#        catch(:started) do
-#          Timeout.timeout(200) do
-#            Kernel.loop do
-#
-#              begin
-#                shell('curl -I http://localhost:4503/aem-publish/') do |result|
-#                  if result.stdout =~ %r{HTTP\/1.1 302 Found}
-#                    valid = true
-#                    throw :started if valid
-#                    break
-#                  end
-#                end
-#              rescue
-#                
-#              end
-#              sleep 15
-#            end
-#          end
-#        end
-#        expect(valid).to eq(true)
-#      end
-#    end
-#
-#  end
-#
-#  describe 'destroy' do
-#
-#
-#    it 'should work with no errors' do
-#
-#      site = <<-MANIFEST
-#      'node \"agent\" {
-#        File { backup => false, owner => \"aem\", group => \"aem\" }
-#
-#        aem::instance { \"author\" :
-#          ensure       => absent,
-#          manage_user  => false,
-#          manage_group => false,
-#          manage_home  => false,
-#          user         => \"vagrant\",
-#          group        => \"vagrant\",
-#          home         => \"/opt/aem/author\",
-#        }
-#      }'
-#      MANIFEST
-#
-#      pp = <<-MANIFEST
-#        file {
-#          '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-#            ensure => file,
-#            content => #{site}
-#        }
-#      MANIFEST
-#
-#      on default, puppet('resource', 'service', 'aem-author', 'ensure=stopped')
-#      apply_manifest_on(master, pp, :catch_failures => true)
-#      fqdn = on(master, 'facter fqdn').stdout.strip
-#      fqdn = fqdn.chop if fqdn.end_with?(".")
-#
-#      on(
-#        default,
-#        puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-#        :acceptable_exit_codes => [0, 2]
-#      )
-#    end
-#
-#    it 'should have removed instance repository' do
-#      shell('ls /opt/aem/author/crx-quickstart', :acceptable_exit_codes => 2)
-#    end
-#
-#  end
+  describe 'destroy' do
+
+    it 'should work with no errors' do
+
+      site = <<-MANIFEST
+      'node \"agent\" {
+        File { backup => false, owner => \"aem\", group => \"aem\" }
+
+        aem::instance { \"author\" :
+          ensure       => absent,
+          manage_user  => false,
+          manage_group => false,
+          manage_home  => false,
+          user         => \"vagrant\",
+          group        => \"vagrant\",
+          home         => \"/opt/aem/author\",
+        }
+      }'
+      MANIFEST
+
+      pp = <<-MANIFEST
+        file {
+          '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+            ensure => file,
+            content => #{site}
+        }
+      MANIFEST
+
+      on default, puppet('resource', 'service', 'aem-author', 'ensure=stopped')
+      apply_manifest_on(master, pp, :catch_failures => true)
+      fqdn = on(master, 'facter fqdn').stdout.strip
+      on(
+        default,
+        puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+        :acceptable_exit_codes => [0, 2]
+      )
+    end
+
+    it 'should have removed instance repository' do
+      shell('ls /opt/aem/author/crx-quickstart', :acceptable_exit_codes => 2)
+    end
+
+  end
 end
