@@ -15,7 +15,7 @@ describe 'aem::service', :type => :defines do
 
   let :default_params do
     {
-      :home     => '/opt/aem',
+      :home => '/opt/aem'
     }
   end
 
@@ -44,7 +44,7 @@ describe 'aem::service', :type => :defines do
       context 'version >= 7' do
 
         let :facts do
-          default_facts.merge({ :operatingsystem => os, :operatingsystemmajrelease => '7' })
+          default_facts.merge(:operatingsystem => os, :operatingsystemmajrelease => '7')
         end
 
         let :params do
@@ -53,18 +53,18 @@ describe 'aem::service', :type => :defines do
 
         it do
           is_expected.to contain_aem__service__systemd('aem').with(
-            :ensure        => 'present',
-            :status        => 'enabled',
-            :group         => 'aem',
-            :home          => '/opt/aem',
-            :user          => 'aem'
+            :ensure => 'present',
+            :status => 'enabled',
+            :group  => 'aem',
+            :home   => '/opt/aem',
+            :user   => 'aem'
           )
         end
       end
 
       context 'version < 7' do
         let :facts do
-          default_facts.merge({ :operatingsystem => os, :operatingsystemmajrelease => '6' })
+          default_facts.merge(:operatingsystem => os, :operatingsystemmajrelease => '6')
         end
 
         let :params do
@@ -73,11 +73,11 @@ describe 'aem::service', :type => :defines do
 
         it do
           is_expected.to contain_aem__service__init('aem').with(
-            :ensure        => 'present',
-            :status        => 'enabled',
-            :group         => 'aem',
-            :home          => '/opt/aem',
-            :user          => 'aem'
+            :ensure => 'present',
+            :status => 'enabled',
+            :group  => 'aem',
+            :home   => '/opt/aem',
+            :user   => 'aem'
           )
         end
 
@@ -89,7 +89,7 @@ describe 'aem::service', :type => :defines do
     context 'version >= 8' do
 
       let :facts do
-        default_facts.merge({ :operatingsystem => 'Debian', :operatingsystemmajrelease => '8' })
+        default_facts.merge(:operatingsystem => 'Debian', :operatingsystemmajrelease => '8')
       end
 
       let :params do
@@ -98,18 +98,18 @@ describe 'aem::service', :type => :defines do
 
       it do
         is_expected.to contain_aem__service__systemd('aem').with(
-          :ensure        => 'present',
-          :status        => 'enabled',
-          :group         => 'aem',
-          :home          => '/opt/aem',
-          :user          => 'aem'
+          :ensure => 'present',
+          :status => 'enabled',
+          :group  => 'aem',
+          :home   => '/opt/aem',
+          :user   => 'aem'
         )
       end
     end
 
     context 'version < 7' do
       let :facts do
-        default_facts.merge({ :operatingsystem => 'Debian', :operatingsystemmajrelease => '7' })
+        default_facts.merge(:operatingsystem => 'Debian', :operatingsystemmajrelease => '7')
       end
 
       let :params do
@@ -118,11 +118,11 @@ describe 'aem::service', :type => :defines do
 
       it do
         is_expected.to contain_aem__service__init('aem').with(
-          :ensure        => 'present',
-          :status        => 'enabled',
-          :group         => 'aem',
-          :home          => '/opt/aem',
-          :user          => 'aem'
+          :ensure => 'present',
+          :status => 'enabled',
+          :group  => 'aem',
+          :home   => '/opt/aem',
+          :user   => 'aem'
         )
       end
 
@@ -133,7 +133,7 @@ describe 'aem::service', :type => :defines do
     context 'version >= 15' do
 
       let :facts do
-        default_facts.merge({ :operatingsystem => 'Ubuntu', :operatingsystemmajrelease => '15' })
+        default_facts.merge(:operatingsystem => 'Ubuntu', :operatingsystemmajrelease => '15')
       end
 
       let :params do
@@ -142,18 +142,18 @@ describe 'aem::service', :type => :defines do
 
       it do
         is_expected.to contain_aem__service__systemd('aem').with(
-          :ensure        => 'present',
-          :status        => 'enabled',
-          :group         => 'aem',
-          :home          => '/opt/aem',
-          :user          => 'aem'
+          :ensure => 'present',
+          :status => 'enabled',
+          :group  => 'aem',
+          :home   => '/opt/aem',
+          :user   => 'aem'
         )
       end
     end
 
     context 'version < 7' do
       let :facts do
-        default_facts.merge({ :operatingsystem => 'Ubuntu', :operatingsystemmajrelease => '14' })
+        default_facts.merge(:operatingsystem => 'Ubuntu', :operatingsystemmajrelease => '14')
       end
 
       let :params do
@@ -162,11 +162,11 @@ describe 'aem::service', :type => :defines do
 
       it do
         is_expected.to contain_aem__service__init('aem').with(
-          :ensure        => 'present',
-          :status        => 'enabled',
-          :group         => 'aem',
-          :home          => '/opt/aem',
-          :user          => 'aem'
+          :ensure => 'present',
+          :status => 'enabled',
+          :group  => 'aem',
+          :home   => '/opt/aem',
+          :user   => 'aem'
         )
       end
 

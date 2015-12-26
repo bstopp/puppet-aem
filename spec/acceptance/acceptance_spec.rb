@@ -151,9 +151,9 @@ describe 'aem::instance' do
     end
 
     context 'license' do
-      context 'author' do 
+      context 'author' do
         it 'should have license file' do
-          shell("test -f /opt/aem/author/license.properties", :acceptable_exit_codes => 0)
+          shell('test -f /opt/aem/author/license.properties', :acceptable_exit_codes => 0)
         end
 
         it 'should have correct owner:group' do
@@ -219,7 +219,7 @@ describe 'aem::instance' do
   end
 
   describe 'aem::instance updated' do
-    
+
     let :facts do
       {
         :environment => :root
@@ -344,7 +344,7 @@ describe 'aem::instance' do
         shell("grep -- \"JVM_MEM_OPTS='-Xmx2048m -XX:MaxPermSize=512M'\" /opt/aem/author/crx-quickstart/bin/start-env",
               :acceptable_exit_codes => 0)
       end
-    
+
       it 'should update the jvm settings' do
         shell("grep -- JVM_OPTS=\\'-XX:+UseParNewGC\\' /opt/aem/author/crx-quickstart/bin/start-env",
               :acceptable_exit_codes => 0)
@@ -377,7 +377,7 @@ describe 'aem::instance' do
                   end
                 end
               rescue
-                
+
               end
               sleep 15
             end

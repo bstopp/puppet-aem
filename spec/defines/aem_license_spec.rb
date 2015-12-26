@@ -92,7 +92,7 @@ describe 'aem::license', :type => :defines do
       default_params
     end
 
-    
+
     context 'product name' do
       it do
         is_expected.to contain_file(
@@ -107,17 +107,16 @@ describe 'aem::license', :type => :defines do
       it { is_expected.to contain_file('/opt/aem/license.properties').with_mode('0644') }
     end
 
-
     context 'customer' do
 
       it do
         val = params[:customer]
 
           is_expected.to contain_file(
-          '/opt/aem/license.properties'
-        ).with_content(
-          /license.customer.name=#{val}\s/
-        )
+            '/opt/aem/license.properties'
+          ).with_content(
+            /license.customer.name=#{val}\s/
+          )
       end
     end
 
