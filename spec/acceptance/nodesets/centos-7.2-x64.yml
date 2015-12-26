@@ -17,7 +17,6 @@ HOSTS:
     box: puppetlabs/centos-7.2-64-nocm
     box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.2-64-nocm
     hypervisor: vagrant
-    dispatcher_file: dispatcher-apache2.4-4.1.11.so
 
 CONFIG:
   type: foss

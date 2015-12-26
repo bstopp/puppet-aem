@@ -74,7 +74,7 @@ describe 'aem::instance', :type => :defines do
         'debug_port'      => nil,
         'group'           => 'aem',
         'home'            => '/opt/aem',
-        'jvm_mem_opts'    => '-Xmx1024m -XX:MaxPermSize=256M',
+        'jvm_mem_opts'    => '-Xmx1024m',
         'jvm_opts'        => nil,
         'port'            => 4502,
         'runmodes'        => [],

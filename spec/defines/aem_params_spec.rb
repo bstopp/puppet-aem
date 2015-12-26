@@ -36,7 +36,7 @@ describe 'aem::instance', :type => :defines do
         'ensure'          => 'present',
         'group'           => 'aem',
         'home'            => nil,
-        'jvm_mem_opts'    => '-Xmx1024m -XX:MaxPermSize=256M',
+        'jvm_mem_opts'    => '-Xmx1024m',
         'manage_group'    => true,
         'manage_home'     => true,
         'manage_user'     => true,
