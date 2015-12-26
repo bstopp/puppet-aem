@@ -7,8 +7,8 @@ ENV['PUPPET_INSTALL_VERSION'] = ENV['PUPPET_INSTALL_VERSION'] || '4.2'
 
 def server_opts
   {
-    :master => { 
-      :autosign  => true,
+    :master => {
+      :autosign => true
     }
   }
 end
@@ -39,13 +39,6 @@ def setup_puppet(host)
 
   pp = "file { '#{master.puppet['confdir']}/autosign.conf': ensure => file, content => '#{agenthostname}' }"
   apply_manifest_on(master, pp)
-
-#  step 'Clear SSL on all hosts'
-#  hosts.each do |ahost|
-#    stop_firewall_on ahost
-#    ssldir = on(ahost, puppet('agent --configprint ssldir')).stdout.chomp
-#    on(ahost, "rm -rf #{ssldir}/*")
-#  end
 
   ssldir = on(host, puppet('agent --configprint ssldir')).stdout.chomp
   on(host, "rm -Rf #{ssldir}/*")
@@ -105,9 +98,6 @@ unless ENV['BEAKER_provision'] == 'no'
 
   on master, puppet('module', 'install', 'puppetlabs-stdlib'), :acceptable_exit_codes => [0, 1]
   on master, puppet('module', 'install', 'puppetlabs-java'), :acceptable_exit_codes => [0, 1]
-
-  #manifest = "class { 'java' : }"
-  #apply_manifest_on(master, manifest)
 
   stop_firewall_on(master)
 

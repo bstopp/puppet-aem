@@ -1,3 +1,6 @@
 engines:
   rubocop:
     enabled: true
+
+  exclude_fingerprints:
+  - 1e9123a63d444ad851bcca004f70892d
