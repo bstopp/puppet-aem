@@ -141,9 +141,9 @@ describe 'aem::license', :type => :defines do
         val = params[:license_key]
 
         is_expected.to contain_file(
-        '/opt/aem/license.properties'
+          '/opt/aem/license.properties'
         ).with_content(
-        /license.downloadID=#{val}\s/
+          /license.downloadID=#{val}\s/
         )
       end
     end
@@ -172,9 +172,9 @@ describe 'aem::license', :type => :defines do
 
         it do
           is_expected.to contain_file(
-          '/opt/aem/license.properties'
+            '/opt/aem/license.properties'
           ).with_content(
-          /license.product.version=\s/
+            /license.product.version=\s/
           )
         end
 
@@ -185,9 +185,9 @@ describe 'aem::license', :type => :defines do
           val = params[:version]
 
           is_expected.to contain_file(
-          '/opt/aem/license.properties'
+            '/opt/aem/license.properties'
           ).with_content(
-          /license.product.version=#{val}\s/
+            /license.product.version=#{val}\s/
           )
         end
 

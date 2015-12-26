@@ -322,6 +322,11 @@ describe 'aem::instance' do
             puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
             :acceptable_exit_codes => [0, 2]
           )
+          on(
+            default,
+            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+            :acceptable_exit_codes => [0]
+          )
         end
       end
     end
@@ -368,14 +373,14 @@ describe 'aem::instance' do
     context 'services running in new state' do
 
       describe service('aem-author') do
+        it { should_not be_enabled }
         it { should be_running }
-        it { should be_enabled }
       end
 
     end
 
     context 'running instances' do
-      it 'should start author with correct port and context root' do
+      it 'should have restarted correct port and context root' do
 
         valid = false
         catch(:started) do
@@ -383,7 +388,7 @@ describe 'aem::instance' do
             Kernel.loop do
 
               begin
-                shell('curl -I http://localhost:4502/') do |result|
+                shell('curl -I http://localhost:4503/aem-publish/') do |result|
                   if result.stdout =~ %r{HTTP\/1.1 302 Found}
                     valid = true
                     throw :started if valid
@@ -392,7 +397,6 @@ describe 'aem::instance' do
                 end
               rescue
               end
-
               sleep 15
             end
           end
