@@ -21,13 +21,13 @@ group :system_tests do
   gem 'beaker-puppet_install_helper', '>= 0.2.1', :require => false
 end
 
-if facterversion == ENV['FACTER_GEM_VERSION']
+if facterversion = ENV['FACTER_GEM_VERSION']
   gem 'facter', facterversion, :require => false
 else
   gem 'facter', :require => false
 end
 
-if puppetversion == ENV['PUPPET_VERSION']
+if puppetversion = ENV['PUPPET_VERSION']
   gem 'puppet', puppetversion, :require => false
 else
   gem 'puppet', :require => false
