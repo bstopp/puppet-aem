@@ -175,13 +175,16 @@ describe 'aem::instance', :type => :defines do
   describe 'osgi configs' do
 
     context 'single definition' do
+      let :cfg_props do
+        {
+          'key' => 'value',
+          'key2' => 'value2'
+        }
+      end
       let :params do
         default_params.merge({
           :osgi_configs => {
-            'osgi.name' => {
-              'key' => 'value',
-              'key2' => 'value2',
-            }
+            'osgi.name' => cfg_props
           }
         })
       end
@@ -192,33 +195,40 @@ describe 'aem::instance', :type => :defines do
 
       it { is_expected.to compile.with_all_deps }
       it do
-        is_expected.to contain_file(
-          '/opt/aem/install/osgi.name.config'
+        is_expected.to contain_aem__osgi__config__file(
+          'osgi.name'
         ).with(
-          'ensure'    => 'file',
-          'content'   => /key=\"value\"\nkey2=\"value2\"/,
-          'group'     => 'aem',
-          'owner'     => 'aem'
+          'ensure'     => 'present',
+          'group'      => 'aem',
+          'home'       => '/opt/aem',
+          'properties' => cfg_props,
+          'user'      => 'aem'
         )
       end
 
     end
 
     context 'multiple definitions' do
+      let :cfg_props1 do
+        {
+          'key' => 'value',
+          'key2' => 'value2',
+        }
+      end
+      let :cfg_props2 do
+        {
+          'key3' => 'value3',
+          'key4' => 'value4',
+        }
+      end
       let :params do
         default_params.merge({
           :osgi_configs => [
             {
-              'osgi.name' => {
-                'key' => 'value',
-                'key2' => 'value2',
-              }
+              'osgi.name' => cfg_props1
             },
             {
-              'osgi2.name' => {
-                'key3' => 'value3',
-                'key4' => 'value4',
-              }
+              'osgi2.name' => cfg_props2
             }
           ]
         })
@@ -231,57 +241,27 @@ describe 'aem::instance', :type => :defines do
       it { is_expected.to compile.with_all_deps }
 
       it do
-        is_expected.to contain_file(
-          '/opt/aem/install/osgi.name.config'
+        is_expected.to contain_aem__osgi__config__file(
+          'osgi.name'
         ).with(
-          'ensure'    => 'file',
-          'content'   => /key=\"value\"\nkey2=\"value2\"/,
-          'group'     => 'aem',
-          'owner'     => 'aem'
+          'ensure'     => 'present',
+          'group'      => 'aem',
+          'home'       => '/opt/aem',
+          'properties' => cfg_props1,
+          'user'      => 'aem'
         )
       end
       it do
-        is_expected.to contain_file(
-          '/opt/aem/install/osgi2.name.config'
+        is_expected.to contain_aem__osgi__config__file(
+          'osgi2.name'
         ).with(
-          'ensure'    => 'file',
-          'content'   => /key3=\"value3\"\nkey4=\"value4\"/,
-          'group'     => 'aem',
-          'owner'     => 'aem'
+          'ensure'     => 'present',
+          'group'      => 'aem',
+          'home'       => '/opt/aem',
+          'properties' => cfg_props2,
+          'user'      => 'aem'
         )
       end
-
-    end
-
-    context 'property types' do
-      let :params do
-        default_params.merge({
-          :osgi_configs => {
-            'osgi.name' => {
-              'booltrue'  => true,
-              'boolfalse' => false,
-              'int'       => 12345,
-            }
-          }
-        })
-      end
-
-      let :facts do
-        default_facts
-      end
-
-      it { is_expected.to compile.with_all_deps }
-      it do
-        is_expected.to contain_file(
-          '/opt/aem/install/osgi.name.config'
-        ).with(
-          'ensure'    => 'file',
-          'content'   => /booltrue=B"true"\sboolfalse=B"false"\sint=L"12345"/,
-          'group'     => 'aem',
-          'owner'     => 'aem'
-        )
-      end
-
     end
   end
 

@@ -48,11 +48,13 @@ define aem::config(
     require => File["${home}/crx-quickstart/bin/start.orig"],
   }
 
+  # Create the install folder in case there are any OSGi configurations; now or in the future
+  file {"${home}/crx-quickstart/install" :
+    ensure => directory,
+    mode   => '0775',
+  }
+
   if $osgi_configs {
-    file {"${home}/crx-quickstart/install" :
-      ensure => directory,
-      mode   => '0775',
-    }
 
     if is_array($osgi_configs) {
       $_osgi_configs = $osgi_configs
@@ -62,15 +64,14 @@ define aem::config(
 
     $_osgi_configs.each | Hash $cfg | {
       $osgi_file_name = $cfg.keys[0]
-      $file_props = {
-        'properties' => $cfg[$osgi_file_name]
+      $properties = $cfg[$osgi_file_name]
+      aem::osgi::config::file { $osgi_file_name :
+        group      => $group,
+        home       => $home,
+        properties => $properties,
+        user       => $user
       }
-
-      file { "${home}/crx-quickstart/install/${osgi_file_name}.config" :
-        ensure  => file,
-        content => epp("${module_name}/osgi.config.epp", $file_props),
-        mode    => '0755',
-      }
+      
     }
   }
 }

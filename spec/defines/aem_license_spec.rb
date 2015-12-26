@@ -95,15 +95,15 @@ describe 'aem::license', :type => :defines do
     context 'product name' do
       it do
         is_expected.to contain_file(
-        '/opt/aem/license.properties'
+          '/opt/aem/license.properties'
         ).with_content(
-        /license.product.name=Adobe Experience Manager\s/
+          /license.product.name=Adobe Experience Manager\s/
         )
       end
     end
 
     context 'mode' do
-      it { is_expected.to contain_file('/opt/aem/license.properties').with_mode('0644') }
+      it { is_expected.to contain_file('/opt/aem/license.properties').with_mode('0664') }
     end
 
     context 'customer' do
