@@ -11,10 +11,6 @@
 		{
 			"name": "puppetlabs/stdlib",
 			"version_requirement": ">=4.6.0"
-		},
-		{
-			"name": "puppetlabs/apache",
-			"version_requirement": ">=1.0.0"
 		}
 	],
 	"requirements": [{
