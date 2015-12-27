@@ -15,7 +15,6 @@ PuppetLint.configuration.send('disable_80chars')
 PuppetLint.configuration.send('disable_variable_scope')
 #PuppetLint.configuration.send('disable_single_quote_string_with_variables')
 
-
 PuppetLint.configuration.ignore_paths = exclude_paths
 PuppetSyntax.exclude_paths = exclude_paths
 

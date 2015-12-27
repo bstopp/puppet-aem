@@ -195,14 +195,15 @@ describe 'aem::instance', :type => :defines do
 
       it { is_expected.to compile.with_all_deps }
       it do
-        is_expected.to contain_aem__osgi__config__file(
+        is_expected.to contain_aem__osgi__config(
           'osgi.name'
         ).with(
           'ensure'     => 'present',
           'group'      => 'aem',
           'home'       => '/opt/aem',
           'properties' => cfg_props,
-          'user'      => 'aem'
+          'type'       => 'file',
+          'user'       => 'aem'
         )
       end
 
@@ -241,25 +242,27 @@ describe 'aem::instance', :type => :defines do
       it { is_expected.to compile.with_all_deps }
 
       it do
-        is_expected.to contain_aem__osgi__config__file(
+        is_expected.to contain_aem__osgi__config(
           'osgi.name'
         ).with(
           'ensure'     => 'present',
           'group'      => 'aem',
           'home'       => '/opt/aem',
           'properties' => cfg_props1,
-          'user'      => 'aem'
+          'type'       => 'file',
+          'user'       => 'aem'
         )
       end
       it do
-        is_expected.to contain_aem__osgi__config__file(
+        is_expected.to contain_aem__osgi__config(
           'osgi2.name'
         ).with(
           'ensure'     => 'present',
           'group'      => 'aem',
           'home'       => '/opt/aem',
           'properties' => cfg_props2,
-          'user'      => 'aem'
+          'type'       => 'file',
+          'user'       => 'aem'
         )
       end
     end

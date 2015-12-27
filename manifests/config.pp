@@ -65,10 +65,11 @@ define aem::config(
     $_osgi_configs.each | Hash $cfg | {
       $osgi_file_name = $cfg.keys[0]
       $properties = $cfg[$osgi_file_name]
-      aem::osgi::config::file { $osgi_file_name :
+      aem::osgi::config { $osgi_file_name :
         group      => $group,
         home       => $home,
         properties => $properties,
+        type       => 'file',
         user       => $user
       }
       

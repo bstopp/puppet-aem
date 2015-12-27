@@ -142,7 +142,7 @@ GEM
       fog-core
       fog-json
       fog-xml
-    fog-sakuracloud (1.7.3)
+    fog-sakuracloud (1.7.5)
       fog-core
       fog-json
     fog-serverlove (0.1.2)
@@ -308,7 +308,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  beaker (~> 2.18)
+  beaker (~> 2.31)
   beaker-puppet_install_helper (>= 0.2.1)
   beaker-rspec
   codeclimate-test-reporter
@@ -318,7 +318,7 @@ DEPENDENCIES
   puppet-lint
   puppetlabs_spec_helper
   rake
-  rspec (~> 3.3)
+  rspec (~> 3.4)
   rspec-puppet
   rubocop
   serverspec
