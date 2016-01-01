@@ -38,6 +38,8 @@
 
 # aem - Adobe Experience Manager
 
+[![Join the chat at https://gitter.im/bstopp/puppet-aem](https://badges.gitter.im/bstopp/puppet-aem.svg)](https://gitter.im/bstopp/puppet-aem?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 #### Table of Contents
 
 1. [Module Description - What does the module do?][Module Description]
