@@ -176,13 +176,7 @@ PORT=#{opts[:port]}
           :post, 'http://admin:admin@localhost:4502/system/console/configMgr/OsgiConfig'
         ).with(
             :body => expected_params,
-            :headers => {
-              'Accept'=>'*/*',
-              'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-              'Content-Type'=>'application/x-www-form-urlencoded',
-              'Referer'=>'http://localhost:4502/system/console/configMgr',
-              'User-Agent'=>'Ruby'
-            }
+            :headers => { 'Referer'=>'http://localhost:4502/system/console/configMgr' }
         ).to_return(:status => 200)
 
         # Populate property hash
@@ -332,13 +326,7 @@ PORT=4502
           :post, 'http://admin:admin@localhost:4502/system/console/configMgr/OsgiConfig'
         ).with(
             :body => expected_params,
-            :headers => {
-              'Accept'=>'*/*',
-              'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-              'Content-Type'=>'application/x-www-form-urlencoded',
-              'Referer'=>'http://localhost:4502/system/console/configMgr',
-              'User-Agent'=>'Ruby'
-            }
+            :headers => { 'Referer'=>'http://localhost:4502/system/console/configMgr' }
         ).to_return(:status => 200)
 
         # Populate property hash
