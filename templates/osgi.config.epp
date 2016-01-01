@@ -1,6 +1,8 @@
 <%- | 
-  Hash $properties
+  Hash $properties,
+  String $pid
 | -%>
+service.pid="<%= $pid %>"
 <%- $properties.keys.each | String $key | { -%>
   <%- if is_array($properties[$key]) { -%>
 <%= $key -%>=["<%= $properties[$key].join('","') -%>"]

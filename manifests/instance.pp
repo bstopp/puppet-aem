@@ -100,12 +100,14 @@ define aem::instance (
     user        => $user,
   }
 
-  aem::service { $name :
-    ensure => $ensure,
-    status => $status,
-    home   => $_home,
-    user   => $user,
-    group  => $group,
+  if $status != 'unmanaged' {
+    aem::service { $name :
+      ensure => $ensure,
+      status => $status,
+      home   => $_home,
+      user   => $user,
+      group  => $group,
+    }
   }
 
   if ($ensure == 'present') {
@@ -155,11 +157,15 @@ define aem::instance (
     -> Aem::Package[$name]
     -> Aem::Config[$name]
     -> Aem_Installer[$name]
-    ~> Aem::Service[$name]
-    
-    Aem::Config[$name]
-    ~> Aem::Service[$name]
-  
+
+    if $status != 'unmanaged' {
+      Aem_Installer[$name]
+      ~> Aem::Service[$name]
+
+      Aem::Config[$name]
+      ~> Aem::Service[$name]
+    }
+
   } else {
     Anchor["aem::${name}::begin"]
     -> Aem::Service[$name]

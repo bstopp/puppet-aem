@@ -242,7 +242,7 @@ describe 'aem::instance', :type => :defines do
             },
             {
               'testb' => {
-                'key' => 'value'
+                'key1' => 'value2'
               }
             }
           ])

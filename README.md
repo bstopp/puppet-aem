@@ -301,7 +301,7 @@ This custom type manages OSGi Configurations which are of type `console`.
 This module has been tested on: 
 
 - CentOS 7, 7.2
-- Ubuntu 12.04, 14.04
+- Ubuntu 12.04*, 14.04
 - Debian 7.8*, 8.2
 
 *See [Known Issues][]*
@@ -313,6 +313,10 @@ This module has been tested with the following AEM versions:
 - 6.0
 - 6.1
 
+### Minimum Ruby Requirement
+
+Using the OSGi Configuration options require a Minimum ruby version of 1.9.x.
+
 ### Warnings
 
 It is up to the consumer to ensure that the correct version of Java is installed based on the AEM version. See [AEM Documentation][AEM Java Requirements] for compatibility.
@@ -320,6 +324,8 @@ It is up to the consumer to ensure that the correct version of Java is installed
 Defining an AEM resource as absent will remove the instance from the system, regardless of whether or not it was originally managed by puppet.
 
 ### Known Issues
+
+Ubuntu 12.04 ships with Ruby 1.8.x; therefore the OSGi configurations acceptance tests fail.
 
 There is an oddity with the `aem::service` support on Debian: even though specifying a valid status sends the correct parameters to the underlying service resource, the service is not enabled, nor do state changes occur correctly. Acceptance tests on those Virtual Machines fail for issues with service management. See [issue #36](https://github.com/bstopp/puppet-aem/issues/36).
 

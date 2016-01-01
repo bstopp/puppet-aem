@@ -38,6 +38,7 @@ end
 def setup_puppet(host)
 
   step 'Install puppet on agent'
+  on(host, '')
   configure_defaults_on host, 'foss'
   install_puppet_on host
   configure_puppet_on(host, {})
@@ -123,7 +124,8 @@ unless ENV['BEAKER_provision'] == 'no'
   stop_firewall_on(master)
 	stop_firewall_on(default)
   clear_ssl
-
+  on(default, 'puppet agent --enable')
+  
 end
 
 # Install module

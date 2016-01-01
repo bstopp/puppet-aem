@@ -65,12 +65,17 @@ describe 'aem::instance' do
 
             file { \"/opt/aem\" : ensure => directory }
 
-            \$osgi = {
+            \$osgi = [{
               \"org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService\" => {
-                \"tarmk.size" => 512,
+                \"tarmk.size\" => 512,
                 \"pauseCompaction\" => true,
+              },
+              \"org.apache.sling.security.impl.ReferrerFilter\" => {
+                \"allow.empty\"    => true,
+                \"allow.hosts\"    => [\"author.localhost.localmachine\"],
+                #\"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
               }
-            }
+            }]
 
             aem::instance { \"author\" :
               debug_port      => 30303,
@@ -189,11 +194,10 @@ describe 'aem::instance' do
                 :acceptable_exit_codes => 0)
         end
       end
-
     end
 
     context 'file osgi configs' do
-      it 'should contain osgi config file' do
+      it 'should contain osgi config file SegmentNodeStoreService' do
         shell('test -f /opt/aem/author/crx-quickstart/install/org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService.config', :acceptable_exit_codes => 0)
       end
 
@@ -204,6 +208,20 @@ describe 'aem::instance' do
 
       it 'should contain the pauseCompatction config' do
         shell('grep "pauseCompaction=B\"true\"" /opt/aem/author/crx-quickstart/install/org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService.config',
+              :acceptable_exit_codes => 0)
+      end
+
+      it 'should contain osgi config file ReferrerFilter' do
+        shell('test -f /opt/aem/author/crx-quickstart/install/org.apache.sling.security.impl.ReferrerFilter.config', :acceptable_exit_codes => 0)
+      end
+
+      it 'should contain the empty allow config' do
+        shell('grep "allow.empty=B\"true\"" /opt/aem/author/crx-quickstart/install/org.apache.sling.security.impl.ReferrerFilter.config',
+              :acceptable_exit_codes => 0)
+      end
+
+      it 'should contain the allow hosts config' do
+        shell('grep "allow.hosts=\[\"author.localhost.localmachine\"\]" /opt/aem/author/crx-quickstart/install/org.apache.sling.security.impl.ReferrerFilter.config',
               :acceptable_exit_codes => 0)
       end
     end
@@ -294,7 +312,7 @@ describe 'aem::instance' do
           default,
           puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
           :acceptable_exit_codes => [0]
-          )
+        )
       end
 
       it 'should work handle remove existing configuration' do

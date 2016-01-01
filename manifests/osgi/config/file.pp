@@ -13,7 +13,8 @@ define aem::osgi::config::file(
 ){
 
   $file_props = {
-    'properties' => $properties
+    'properties' => $properties,
+    'pid' => $name
   }
 
   file { "${home}/crx-quickstart/install/${name}.config" :

@@ -64,6 +64,16 @@ describe 'aem::osgi::config::file', :type => :defines do
       end
     end
 
+    context 'service pid' do
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install/aem.config'
+        ).with_content(
+          /service.pid="aem"\s/
+        )
+      end
+    end
+
     context 'boolean property' do
       it do
         is_expected.to contain_file(
