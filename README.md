@@ -31,14 +31,14 @@
 [AEM Installation Runmodes]: https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Installation%20Run%20Modes
 [AEM Java Requirements]: https://docs.adobe.com/docs/en/aem/6-1/deploy/technical-requirements.html#Java%20Virtual%20Machines
 
+# aem - Adobe Experience Manager
 [![Puppet Forge Version](https://img.shields.io/puppetforge/v/bstopp/aem.svg)](https://forge.puppetlabs.com/bstopp/aem)
 [![Puppet Forge Downloads](https://img.shields.io/puppetforge/dt/bstopp/aem.svg)](https://forge.puppetlabs.com/bstopp/aem)
 [![Build Status](https://travis-ci.org/bstopp/puppet-aem.svg?branch=master)](https://travis-ci.org/bstopp/puppet-aem)
 [![Dependency Status](https://gemnasium.com/bstopp/puppet-aem.svg)](https://gemnasium.com/bstopp/puppet-aem)
 [![Code Climate](https://codeclimate.com/github/bstopp/puppet-aem/badges/gpa.svg)](https://codeclimate.com/github/bstopp/puppet-aem)
 [![Test Coverage](https://codeclimate.com/github/bstopp/puppet-aem/badges/coverage.svg)](https://codeclimate.com/github/bstopp/puppet-aem/coverage)
-
-# aem - Adobe Experience Manager
+[![Join the chat at https://gitter.im/bstopp/puppet-aem](https://badges.gitter.im/bstopp/puppet-aem.svg)](https://gitter.im/bstopp/puppet-aem?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 #### Table of Contents
 
