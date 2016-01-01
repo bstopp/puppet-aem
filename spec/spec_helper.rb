@@ -6,6 +6,8 @@ require 'codeclimate-test-reporter'
 
 CodeClimate::TestReporter.start
 
+WebMock.disable_net_connect!(:allow => "codeclimate.com")
+
 RSpec.configure do |config|
 
   config.before :each do
