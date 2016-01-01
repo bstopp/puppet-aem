@@ -180,7 +180,6 @@ PORT=#{opts[:port]}
               'Accept'=>'*/*',
               'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
               'Content-Type'=>'application/x-www-form-urlencoded',
-              'Host'=>'localhost:4502',
               'Referer'=>'http://localhost:4502/system/console/configMgr',
               'User-Agent'=>'Ruby'
             }
@@ -337,7 +336,6 @@ PORT=4502
               'Accept'=>'*/*',
               'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
               'Content-Type'=>'application/x-www-form-urlencoded',
-              'Host'=>'localhost:4502',
               'Referer'=>'http://localhost:4502/system/console/configMgr',
               'User-Agent'=>'Ruby'
             }

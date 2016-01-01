@@ -73,7 +73,7 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, :parent => Puppet::Provider d
 
   def current_config
     uri = URI("#{config_mgr_uri}/#{resource[:name]}.json")
-    req = Net::HTTP::Get.new(uri)
+    req = Net::HTTP::Get.new(uri.request_uri)
     req.basic_auth resource[:username], resource[:password]
 
     Timeout.timeout(@resource[:timeout]) do
@@ -128,7 +128,7 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, :parent => Puppet::Provider d
 
     uri = URI("#{config_mgr_uri}/#{resource[:name]}")
 
-    req = Net::HTTP::Post.new(uri)
+    req = Net::HTTP::Post.new(uri.request_uri)
     req.basic_auth(resource[:username], resource[:password])
     req.form_data = build_parameters(configuration)
     req['Referer'] = config_mgr_uri

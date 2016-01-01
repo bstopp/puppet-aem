@@ -646,7 +646,7 @@ describe 'aem::instance' do
             Kernel.loop do
 
               begin
-                shell('curl -I http://localhost:4502/aem-publish/') do |result|
+                shell('curl -I http://localhost:4503/aem-publish/') do |result|
                   if result.stdout =~ %r{HTTP\/1.1 (302|401|200)}
                     valid = true
                     throw :started if valid
