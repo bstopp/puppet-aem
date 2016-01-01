@@ -89,13 +89,9 @@ describe 'aem::instance', :type => :defines do
         'aem'
       ).with(
         'ensure'        => 'present',
-        'context_root'  => nil,
-        'group'         => 'aem',
         'home'          => '/opt/aem',
-        'port'          => 4502,
         'snooze'        => 10,
-        'timeout'       => 600,
-        'user'          => 'aem'
+        'timeout'       => 600
       )
     end
 

@@ -1,22 +1,14 @@
 #!/usr/bin/env ruby
 
 require 'spec_helper'
-require 'puppet/type/aem_installer'
+require 'puppet/type/aem_osgi_config'
 
-describe Puppet::Type.type(:aem_installer) do
+describe Puppet::Type.type(:aem_osgi_config) do
 
   before do
     @provider_class = described_class.provide(:simple) { mk_resource_methods }
     @provider_class.stubs(:suitable?).returns true
     described_class.stubs(:defaultprovider).returns @provider_class
-  end
-
-  before :each, :platform => :linux do
-    expect(Puppet::Util::Platform).to receive(:windows?).and_return(false)
-  end
-
-  before :each, :platform => :windows do
-    expect(Puppet::Util::Platform).to receive(:windows?).and_return(true)
   end
 
   describe 'namevar validation' do
@@ -26,13 +18,13 @@ describe Puppet::Type.type(:aem_installer) do
   end
 
   describe 'when validating attributes' do
-    [:name, :snooze, :timeout].each do |param|
+    [:name, :handle_missing, :home, :username, :password].each do |param|
       it "should have a #{param} parameter" do
         expect(described_class.attrtype(param)).to eq(:param)
       end
     end
 
-    [:home].each do |property|
+    [:configuration].each do |property|
       it "should have a #{property} property" do
         expect(described_class.attrtype(property)).to eq(:property)
       end
@@ -43,16 +35,16 @@ describe Puppet::Type.type(:aem_installer) do
 
     describe 'ensure' do
       it 'should support present as a value for ensure' do
-        expect { described_class.new(:name => 'bar', :ensure => :present, :home => '/opt/aem') }.not_to raise_error
+        expect { described_class.new(:name => 'bar', :ensure => :present, :handle_missing => 'merge', :home => '/opt/aem') }.not_to raise_error
       end
 
       it 'should support absent as a value for ensure' do
-        expect { described_class.new(:name => 'bar', :ensure => :absent, :home => '/opt/aem') }.not_to raise_error
+        expect { described_class.new(:name => 'bar', :ensure => :absent, :handle_missing => 'merge', :home => '/opt/aem') }.not_to raise_error
       end
 
       it 'should not support other values' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :bar, :home => '/opt/aem')
+          described_class.new(:name => 'bar', :ensure => :present, :handle_missing => 'invalid', :home => '/opt/aem')
         end.to raise_error(Puppet::Error, /Invalid value/)
       end
     end
@@ -66,10 +58,21 @@ describe Puppet::Type.type(:aem_installer) do
         inst = described_class.new(:name => 'bar', :home => '/opt/aem')
         expect(inst[:name]).to eq('bar')
       end
+    end
 
-      it 'should be munged to lowercase' do
-        inst = described_class.new(:name => 'BAR', :home => '/opt/aem')
-        expect(inst[:name]).to eq('bar')
+    describe 'handle_missing' do
+      it 'should support merge as a value for handle_missing' do
+        expect { described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :merge, :home => '/opt/aem') }.not_to raise_error
+      end
+
+      it 'should support remove as a value for handle_missing' do
+        expect { described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :remove, :home => '/opt/aem') }.not_to raise_error
+      end
+
+      it 'should not support other values' do
+        expect do
+          described_class.new(:name => 'bar', :ensure => :preset, :handle_missing => :invalid, :home => '/opt/aem')
+        end.to raise_error(Puppet::Error, /Invalid value/)
       end
     end
 
@@ -105,15 +108,19 @@ describe Puppet::Type.type(:aem_installer) do
         end
       end
     end
-
-    describe 'timeout' do
-      it 'should always be a number' do
+    
+    describe 'configuration' do
+      it 'should require value to be a hash' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :absent, :home => '/opt/aem', :timeout => 'NaN')
-        end.to raise_error(Puppet::Error, /Invalid value/)
+          described_class.new(
+            :name => 'bar',
+            :ensure => :present,
+            :home => '/opt/aem',
+            :configuration => ['foo', 'bar']
+          )
+        end.to raise_error(Puppet::Error, /must be a hash/)
       end
     end
-
   end
 
 end

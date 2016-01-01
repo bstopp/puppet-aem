@@ -3,15 +3,19 @@
 # Configure osgi resource based on the specified type.
 #
 define aem::osgi::config(
-  $ensure     = 'present',
-  $group      = 'aem',
-  $home       = undef,
-  $properties = undef,
-  $type       = undef,
-  $user       = 'aem'
+  $ensure         = 'present',
+  $group          = 'aem',
+  $handle_missing = undef,
+  $home           = undef,
+  $password       = undef,
+  $properties     = undef,
+  $type           = undef,
+  $user           = 'aem',
+  $username       = undef,
 ){
 
-  validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
+  validate_re($ensure, '^(present|absent)$',
+    "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
 
   validate_absolute_path($home)
 
@@ -23,11 +27,33 @@ define aem::osgi::config(
     fail("Aem::Osgi::Config::File[${name}]: 'properties' must be a Hash of values")
   }
 
-  validate_re($type, '^(console|file)$', )
+  validate_re($type, '^(console|file)$',
+    "${type} is not supported for type. Allowed values are 'console' and 'file'.")
+
+  if $type == 'console' {
+    
+    if $username == undef {
+      fail("Username must be specified if type == 'console'")
+    }
+    if $password == undef {
+      fail("Password must be specified if type == 'console'")
+    }
+    if $ensure == 'present' {
+      validate_re($handle_missing, '^(merge|remove)$',
+        "${handle_missing} is not supported for handle_missing. Allowed values are 'merge' and 'remove'.")
+    }
+  }
 
   case $type {
     'console' : {
-      fail('Console option not supported yet.')
+      aem_osgi_config { $name :
+        ensure         => $ensure,
+        configuration  => $properties,
+        handle_missing => $handle_missing,
+        home           => $home,
+        username       => $username,
+        password       => $password,
+      }
     }
     'file' : {
       aem::osgi::config::file { $name :

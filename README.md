@@ -21,6 +21,7 @@
 [Adobe]: http://www.adobe.com
 [Adobe Experience Manager]: http://www.adobe.com/marketing-cloud/enterprise-content-management.html
 
+[Felix Configuration]: http://felix.apache.org/documentation/subprojects/apache-felix-config-admin.html
 
 [Sling launchpad]: https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html
 [Sling command-line-options]: https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html#command-line-options
@@ -30,6 +31,8 @@
 [AEM Installation Runmodes]: https://docs.adobe.com/docs/en/aem/6-1/deploy/configuring/configure-runmodes.html#Installation%20Run%20Modes
 [AEM Java Requirements]: https://docs.adobe.com/docs/en/aem/6-1/deploy/technical-requirements.html#Java%20Virtual%20Machines
 
+[![Puppet Forge Version](https://img.shields.io/puppetforge/v/bstopp/aem.svg)](https://forge.puppetlabs.com/bstopp/aem)
+[![Puppet Forge Downloads](https://img.shields.io/puppetforge/dt/bstopp/aem.svg)](https://forge.puppetlabs.com/bstopp/aem)
 [![Build Status](https://travis-ci.org/bstopp/puppet-aem.svg?branch=master)](https://travis-ci.org/bstopp/puppet-aem)
 [![Dependency Status](https://gemnasium.com/bstopp/puppet-aem.svg)](https://gemnasium.com/bstopp/puppet-aem)
 [![Code Climate](https://codeclimate.com/github/bstopp/puppet-aem/badges/gpa.svg)](https://codeclimate.com/github/bstopp/puppet-aem)
@@ -115,10 +118,10 @@ See [Beginning with AEM][] for the minimum configuration required to create an A
 Namevar. Required. Specifies the name of the AEM instance.
 
 ##### `ensure`
-Optional. Changes the state of the AEM instance. Valid values are `present` or `absent`. Default: `present`.
+Optional. Changes the state of the AEM instance. Valid options: `present` or `absent`. Default: `present`.
 
 ##### `context_root`
-Optional. Specifies the URL context root for the AEM application. [Sling documentation][Sling launchpad]. Defaults to `/`.
+Optional. Specifies the URL context root for the AEM application. [Sling documentation][Sling launchpad]. Valid options: any valid URI path. Defaults to `/`.
 
 ##### `debug_port`
 Optional. Specifies the port on which to listen for remote debugging connections. Setting this will add the following JVM options: `-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=<<port>>` Valid options: any port number.
@@ -176,7 +179,7 @@ Optional. Specifies the AEM installation type. Valid options: `author` or `publi
 Optional. Sets the user for installation. Valid options: any valid user. Default: `aem`.
 
 ##### `version`
-Optional. Sets the version of AEM. Informational only, does not affect installation or resource management. Valid options: any semantic version. 
+Optional. Sets the version of AEM. Informational only, does not affect installation or resource management. Valid options: any semantic version.
 
 #### Define: `aem::license`
 
@@ -188,16 +191,16 @@ Manages an AEM License file. Provides a convenient tool for managing the license
 Namevar. Required. Specifies the name of the AEM license.
 
 ##### `ensure`
-Optional. Changes the state of the AEM license. Valid values are `present` or `absent`. Default: `present`.
+Optional. Changes the state of the AEM license. Valid options: `present` or `absent`. Default: `present`.
 
 ##### `customer`
-Optional. Specifies the customer name for the license file.
+Optional. Specifies the customer name for the license file. Valid options: any string
 
 ##### `group`
 Optional. Sets the group for file ownership. Valid options: any valid group. Default: `aem`.
 
 ##### `home`
-Required. Sets the directory in which the license will be placed. Valid options: Any absolute path.
+Required. Sets the directory in which the license will be placed. Valid options: any absolute path.
 
 ##### `license_key`
 Required. Sets the license key for AEM. Valid options: any string.
@@ -227,7 +230,7 @@ Optional. Sets the group for file ownership. Valid options: any valid group. Def
 Required. Sets the directory in which the AEM instance exists, necessary for service configuration definition. Valid options: Any absolute system path.
 
 ##### `status`
-Optional. Changes the state of the service on the system, defining whether or not the service starts at system boot and/or is currently running. Valid values are:
+Optional. Changes the state of the service on the system, defining whether or not the service starts at system boot and/or is currently running. Valid options:
 * `enabled`: Start at boot & currently running (**Default**)
 * `disabled`: Not started at boot & not currently running.
 * `running`: Not started at boot but is currently running.
@@ -235,6 +238,42 @@ Optional. Changes the state of the service on the system, defining whether or no
 
 ##### `user`
 Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `aem`.
+
+#### Define: `aem::osgi::config`
+
+Manages an AEM OSGi Configuration; allows for saving Service/Component configurations via a file or posted to the Felix Web Console.
+
+** Parameters within `aem::osgi::console`:**
+
+##### `name`
+Namevar. Required. Specifies the name of the AEM OSGi Configuration. This should be the Service PID. [Apache Felix Documentation][Felix Configuration]
+
+##### `ensure`
+Optional. Changes the state of the AEM OSGi configuration. A value of `absent` will delete the configuration. Valid options: `present` or `absent`. Default: `present`.
+
+##### `group`
+Optional. Sets the group for file ownership. Valid options: any valid group. Default: `aem`.
+
+##### `handle_missing`
+Required if **type** == `console`. Determine how to handle properties which are configured in the console, but not provided. See [wiki][wiki] for examples. Valid options: `merge` or `remove`.
+
+##### `home`
+Required. Sets the directory in which AEM exists. Valid options: Any absolute path.
+
+##### `password`
+Required if **type** == `console`. Sets the password of the OSGI console user. Valid options: any valid password.
+
+##### `properties`
+Required. Sets the configuration properties to persist. Valid options: a hash of values.
+
+##### `type`
+Required. Sets the means by which to persist the configuration. Valid options:  `console` or `file`. `console` will use API calls to the OSGi Web Console. `file` will persist to a properties file in the *crx-quickstart/install* folder.
+
+##### `user`
+Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `aem`.
+
+##### `username`
+Required if **type** == `console`. Sets the user for accessing the OSGI console. Valid options: any valid user.
 
 ### Private Defines
 
@@ -244,10 +283,16 @@ This define unpacks the AEM Quickstart jar for prepartion to configure.
 #### Define: `aem::config`
 This define sets up the start templates to ensure the AEM instance executes with the correct state.
 
+#### Define: `aem::osgi::config::file`
+This define is used to manage OSGi Configurations which are of type `file`.
+
 ### Private Types
 
-#### Type: `aem::aem_installer`
+#### Type: `aem_installer`
 This custom type starts the AEM instance to create the base repository, monitors for it's initalization, then shuts the system down.
+
+#### Type: `aem_osgi_config`
+This custom type manages OSGi Configurations which are of type `console`.
 
 ## Limitations
 

@@ -2,10 +2,6 @@ require 'spec_helper_acceptance'
 
 describe 'aem::instance' do
 
-  before(:all) do
-    setup_puppet default
-  end
-
   describe 'aem::instance first run' do
 
     let :facts do
@@ -14,7 +10,12 @@ describe 'aem::instance' do
       }
     end
 
+    let :license do
+      ENV['AEM_LICENSE'] || 'fake-key-for-testing'
+    end
+
     context 'create' do
+
       it 'should work with no errors' do
 
         site = <<-MANIFEST
@@ -72,20 +73,21 @@ describe 'aem::instance' do
             }
 
             aem::instance { \"author\" :
-              source          => \"/tmp/aem-quickstart.jar\",
-              home            => \"/opt/aem/author\",
-              user            => \"vagrant\",
+              debug_port      => 30303,
               group           => \"vagrant\",
+              home            => \"/opt/aem/author\",
               jvm_mem_opts    => \"-Xmx2048m\",
               osgi_configs    => \$osgi,
+              source          => \"/tmp/aem-quickstart.jar\",
               timeout         => 1200,
+              user            => \"vagrant\",
             }
 
             Class[\"java\"] -> File[\"/opt/aem\"] -> Aem::Instance <| |>
 
             Aem::License {
               customer    => \"Vagrant Test\",
-              license_key => \"fake-key-for-testing\",
+              license_key => \"#{license}\",
               version     => \"6.1.0\",
             }
 
@@ -109,22 +111,21 @@ describe 'aem::instance' do
 
         apply_manifest_on(master, pp, :catch_failures => true)
 
-        with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
-          fqdn = on(master, 'facter fqdn').stdout.strip
-          fqdn = fqdn.chop if fqdn.end_with?(".")
+        restart_puppetserver
+        fqdn = on(master, 'facter fqdn').stdout.strip
+        fqdn = fqdn.chop if fqdn.end_with?(".")
 
-          on(
-            default,
-            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-            :acceptable_exit_codes => [0, 2]
-          )
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0, 2]
+        )
 
-          on(
-            default,
-            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-            :acceptable_exit_codes => [0]
-          )
-        end
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0]
+        )
       end
 
       it 'should have unpacked the standalone jar' do
@@ -179,7 +180,7 @@ describe 'aem::instance' do
         end
 
         it 'should contain licnese_key' do
-          shell('grep "license.downloadID=fake-key-for-testing" /opt/aem/author/license.properties',
+          shell("grep -- \"license.downloadID=#{license}\" /opt/aem/author/license.properties",
                 :acceptable_exit_codes => 0)
         end
 
@@ -191,16 +192,21 @@ describe 'aem::instance' do
 
     end
 
-#    context 'osgi configs' do
-#      it 'should contain osgi config file' do
-#
-#        valid = false
-#        shell('curl -I http://localhost:4502/') do |result|
-#          valid = result.stdout =~ %r{HTTP\/1.1 302 Found}
-#        end
-#        expect(valid).to eq(true)
-#      end
-#    end
+    context 'file osgi configs' do
+      it 'should contain osgi config file' do
+        shell('test -f /opt/aem/author/crx-quickstart/install/org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService.config', :acceptable_exit_codes => 0)
+      end
+
+      it 'should contain the tarmk file config' do
+        shell('grep "tarmk.size=L\"512\"" /opt/aem/author/crx-quickstart/install/org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService.config',
+              :acceptable_exit_codes => 0)
+      end
+
+      it 'should contain the pauseCompatction config' do
+        shell('grep "pauseCompaction=B\"true\"" /opt/aem/author/crx-quickstart/install/org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService.config',
+              :acceptable_exit_codes => 0)
+      end
+    end
 
     context 'services running' do
 
@@ -217,10 +223,9 @@ describe 'aem::instance' do
         catch(:started) do
           Timeout.timeout(200) do
             Kernel.loop do
-
               begin
                 shell('curl -I http://localhost:4502/') do |result|
-                  if result.stdout =~ %r{HTTP\/1.1 302 Found}
+                  if result.stdout =~ %r{HTTP\/1.1 (302|401|200)}
                     valid = true
                     throw :started if valid
                     break
@@ -228,12 +233,267 @@ describe 'aem::instance' do
                 end
               rescue
               end
-
               sleep 15
             end
           end
         end
         expect(valid).to eq(true)
+      end
+    end
+
+    context 'console osgi configs', license: false do
+
+      it 'should work with no errors' do
+
+        site = <<-MANIFEST
+          'node \"agent\" {
+
+            \$osgi = {
+              \"handler.schemes\"                     => [ \"jcrinstall\", \"launchpad\" ],
+              \"sling.jcrinstall.folder.name.regexp\" => \".*/(install|config|bundles)$\",
+              \"sling.jcrinstall.folder.max.depth\"   => 5,
+              \"sling.jcrinstall.search.path\"        => [ \"/libs:100\", \"/apps:200\", \"/doesnotexist:10\" ],
+              \"sling.jcrinstall.new.config.path\"    => \"system/config\",
+              \"sling.jcrinstall.signal.path\"        => \"/system/sling/installer/jcr/pauseInstallation\",
+              \"sling.jcrinstall.enable.writeback\"   => false
+            }
+
+            aem::osgi::config { \"org.apache.sling.installer.provider.jcr.impl.JcrInstaller\":
+              ensure         => present,
+              properties     => \$osgi,
+              handle_missing => \"remove\",
+              home           => \"/opt/aem/author\",
+              password       => \"admin\",
+              type           => \"console\",
+              username       => \"admin\",
+            }
+
+          }'
+        MANIFEST
+
+        pp = <<-MANIFEST
+          file {
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+              ensure => file,
+              content => #{site}
+          }
+        MANIFEST
+
+        apply_manifest_on(master, pp, :catch_failures => true)
+        restart_puppetserver
+        fqdn = on(master, 'facter fqdn').stdout.strip
+        fqdn = fqdn.chop if fqdn.end_with?(".")
+
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0, 2]
+        )
+
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0]
+          )
+      end
+
+      it 'should work handle remove existing configuration' do
+
+        site = <<-MANIFEST
+          'node \"agent\" {
+
+            \$osgi = {
+              \"allow.empty\"    => true,
+              \"allow.hosts\"    => [\"author.localhost.localmachine\"],
+              \"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
+            }
+            aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" :
+              ensure         => present,
+              properties     => \$osgi,
+              handle_missing => \"remove\",
+              home           => \"/opt/aem/author\",
+              password       => \"admin\",
+              type           => \"console\",
+              username       => \"admin\",
+            }
+          }'
+        MANIFEST
+
+        pp = <<-MANIFEST
+          file {
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+              ensure => file,
+              content => #{site}
+          }
+        MANIFEST
+
+        apply_manifest_on(master, pp, :catch_failures => true)
+        restart_puppetserver
+        fqdn = on(master, 'facter fqdn').stdout.strip
+        fqdn = fqdn.chop if fqdn.end_with?(".")
+
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0, 2]
+        )
+
+        site = <<-MANIFEST
+          'node \"agent\" {
+
+            \$osgi = {
+              \"allow.hosts\"    => [\"author.localhost\"],
+            }
+            aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" :
+              ensure         => present,
+              properties     => \$osgi,
+              handle_missing => \"remove\",
+              home           => \"/opt/aem/author\",
+              password       => \"admin\",
+              type           => \"console\",
+              username       => \"admin\",
+            }
+          }'
+        MANIFEST
+
+        pp = <<-MANIFEST
+          file {
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+              ensure => file,
+              content => #{site}
+          }
+        MANIFEST
+
+        apply_manifest_on(master, pp, :catch_failures => true)
+        restart_puppetserver
+        fqdn = on(master, 'facter fqdn').stdout.strip
+        fqdn = fqdn.chop if fqdn.end_with?(".")
+
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0, 2]
+        )
+
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0]
+        )
+
+        shell('curl http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json -u admin:admin') do |result|
+          jsonresult = JSON.parse(result.stdout)
+          configed_props = jsonresult[0]['properties']
+          expect(configed_props['allow.empty']['is_set']).to eq(false)
+
+          expect(configed_props['allow.hosts.regexp']['is_set']).to eq(false)
+
+          expect(configed_props['allow.hosts']['is_set']).to eq(true)
+          expect(configed_props['allow.hosts']['values']).to eq(['author.localhost'])
+
+          expect(configed_props['filter.methods']['is_set']).to eq(false)
+        end
+      end
+
+      it 'should work handle merge existing configuration' do
+
+        site = <<-MANIFEST
+          'node \"agent\" {
+
+            \$osgi = {
+              \"allow.empty\"    => true,
+              \"allow.hosts\"    => [\"author.localhost.localmachine\"],
+              \"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
+            }
+            aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" :
+              ensure         => present,
+              properties     => \$osgi,
+              handle_missing => \"remove\",
+              home           => \"/opt/aem/author\",
+              password       => \"admin\",
+              type           => \"console\",
+              username       => \"admin\",
+            }
+          }'
+        MANIFEST
+
+        pp = <<-MANIFEST
+          file {
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+              ensure => file,
+              content => #{site}
+          }
+        MANIFEST
+
+        apply_manifest_on(master, pp, :catch_failures => true)
+        restart_puppetserver
+        fqdn = on(master, 'facter fqdn').stdout.strip
+        fqdn = fqdn.chop if fqdn.end_with?(".")
+
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0, 2]
+        )
+
+        site = <<-MANIFEST
+          'node \"agent\" {
+
+            \$osgi = {
+              \"allow.hosts\"    => [\"author.localhost\"],
+            }
+            aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" :
+              ensure         => present,
+              properties     => \$osgi,
+              handle_missing => \"merge\",
+              home           => \"/opt/aem/author\",
+              password       => \"admin\",
+              type           => \"console\",
+              username       => \"admin\",
+            }
+          }'
+        MANIFEST
+
+        pp = <<-MANIFEST
+          file {
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+              ensure => file,
+              content => #{site}
+          }
+        MANIFEST
+
+        apply_manifest_on(master, pp, :catch_failures => true)
+        restart_puppetserver
+        fqdn = on(master, 'facter fqdn').stdout.strip
+        fqdn = fqdn.chop if fqdn.end_with?(".")
+
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0, 2]
+        )
+
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0]
+        )
+
+        shell('curl http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json -u admin:admin') do |result|
+          jsonresult = JSON.parse(result.stdout)
+          configed_props = jsonresult[0]['properties']
+          expect(configed_props['allow.empty']['is_set']).to eq(true)
+          expect(configed_props['allow.empty']['value']).to eq(true)
+
+          expect(configed_props['allow.hosts.regexp']['is_set']).to eq(false)
+
+          expect(configed_props['allow.hosts']['is_set']).to eq(true)
+          expect(configed_props['allow.hosts']['values']).to eq(['author.localhost'])
+
+          expect(configed_props['filter.methods']['is_set']).to eq(true)
+          expect(configed_props['filter.methods']['values']).to eq(['POST', 'PUT', 'DELETE', 'TRACE'])
+
+        end
       end
     end
   end
@@ -270,18 +530,17 @@ describe 'aem::instance' do
         MANIFEST
 
         apply_manifest_on(master, pp, :catch_failures => true)
-        with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
-          fqdn = on(master, 'facter fqdn').stdout.strip
-          on(
-            default,
-            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-            :acceptable_exit_codes => [0, 2]
-          )
-        end
+        restart_puppetserver
+        fqdn = on(master, 'facter fqdn').stdout.strip
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0, 2]
+        )
       end
     end
 
-    context 'create' do
+    context 'update resource' do
       it 'should work with no errors' do
         site = <<-MANIFEST
           'node \"agent\" {
@@ -315,19 +574,18 @@ describe 'aem::instance' do
         MANIFEST
 
         apply_manifest_on(master, pp, :catch_failures => true)
-        with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
-          fqdn = on(master, 'facter fqdn').stdout.strip
-          on(
-            default,
-            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-            :acceptable_exit_codes => [0, 2]
-          )
-          on(
-            default,
-            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-            :acceptable_exit_codes => [0]
-          )
-        end
+        restart_puppetserver
+        fqdn = on(master, 'facter fqdn').stdout.strip
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0, 2]
+        )
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0]
+        )
       end
     end
 
@@ -388,8 +646,8 @@ describe 'aem::instance' do
             Kernel.loop do
 
               begin
-                shell('curl -I http://localhost:4503/aem-publish/') do |result|
-                  if result.stdout =~ %r{HTTP\/1.1 302 Found}
+                shell('curl -I http://localhost:4502/aem-publish/') do |result|
+                  if result.stdout =~ %r{HTTP\/1.1 (302|401|200)}
                     valid = true
                     throw :started if valid
                     break
@@ -438,6 +696,7 @@ describe 'aem::instance' do
       on default, puppet('resource', 'service', 'aem-author', 'ensure=stopped')
       apply_manifest_on(master, pp, :catch_failures => true)
       fqdn = on(master, 'facter fqdn').stdout.strip
+      restart_puppetserver
       on(
         default,
         puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),

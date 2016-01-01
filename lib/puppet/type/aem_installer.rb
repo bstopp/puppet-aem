@@ -3,7 +3,7 @@ require 'pathname'
 Puppet::Type.newtype(:aem_installer) do
 
   @doc = <<-DOC
-This is a private class intended to start, monitor, and stop an AEM instance, insuring
+This is a private type intended to start, monitor, and stop an AEM instance, insuring
  the repository is created.
   DOC
 
@@ -21,17 +21,6 @@ This is a private class intended to start, monitor, and stop an AEM instance, in
     end
   end
 
-  newparam(:context_root) do
-    desc 'The context root.'
-  end
-
-  newproperty(:group) do
-    def insync?(is)
-      warning("Group cannot be modified after installation. [Existing = #{is}, New = #{should}]") unless is == should
-      true
-    end
-  end
-
   newproperty(:home) do
     desc 'The home directory of the AEM installation.'
     def insync?(is)
@@ -42,19 +31,9 @@ This is a private class intended to start, monitor, and stop an AEM instance, in
     validate do |value|
 
       unless Puppet::Util.absolute_path?(value)
-        fail Puppet::ResourceError, "AEM Home must be fully qualified, not '#{value}'"
+        fail(Puppet::ResourceError, "AEM Home must be fully qualified, not '#{value}'")
       end
 
-    end
-  end
-
-  newparam(:port) do
-    desc 'The port on which AEM will listen.'
-
-    newvalues(/^\d+$/)
-
-    munge do |value|
-      value.to_i
     end
   end
 
@@ -79,29 +58,6 @@ This is a private class intended to start, monitor, and stop an AEM instance, in
     munge do |value|
       value.to_i
     end
-  end
-
-  newproperty(:user) do
-    def insync?(is)
-      warning("User cannot be modified after installation. [Existing = #{is}, New = #{should}]") unless is == should
-      true
-    end
-  end
-
-  newproperty(:version) do
-    desc 'The version of AEM installed.'
-
-    newvalues(/^\d+\.\d+(\.\d+)?$/)
-
-    munge do |value|
-      "#{value}"
-    end
-
-    def insync?(is)
-      warning("Version cannot be modified after installation. [Existing = #{is}, New = #{should}]") unless is == should
-      true
-    end
-
   end
 
   autorequire(:file) do

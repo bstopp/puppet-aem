@@ -5,6 +5,7 @@ group :development, :tests do
   gem 'rake',                      :require => false
   gem 'metadata-json-lint',        :require => false
   gem 'rspec-puppet',              :require => false
+  gem 'webmock',                   :require => false
   gem 'puppetlabs_spec_helper',    :require => false
   gem 'codeclimate-test-reporter', :require => false
 end

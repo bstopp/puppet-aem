@@ -15,13 +15,16 @@ describe 'aem::osgi::config', :type => :defines do
 
   let :default_params do
     {
-      :home       => '/opt/aem',
+      :home           => '/opt/aem',
+      :handle_missing => 'merge', 
       :properties => {
         'boolean' => false,
         'long'    => 123456789,
         'string'  => 'string',
         'array'   => ['an', 'array', 'of', 'values']
-      }
+      },
+      :username       => 'username',
+      :password       => 'password'
     }
   end
 
@@ -42,6 +45,32 @@ describe 'aem::osgi::config', :type => :defines do
         end
 
         it { expect { is_expected.to compile }.to raise_error(/not supported for ensure/) }
+      end
+    end
+
+    context 'handle_missing' do
+
+      context 'merge' do
+        let:params do
+          default_params.merge(:type => 'console')
+        end
+        it { is_expected.to compile }
+      end
+
+      context 'remove' do
+        let :params do
+          default_params.merge(:handle_missing => 'remove', :type => 'console')
+        end
+
+        it { is_expected.to compile }
+      end
+
+      context 'invalid' do
+        let :params do
+          default_params.merge(:handle_missing => 'invalid', :type => 'console')
+        end
+
+        it { expect { is_expected.to compile }.to raise_error(/not supported for handle_missing/) }
       end
     end
 
@@ -82,6 +111,33 @@ describe 'aem::osgi::config', :type => :defines do
         it { expect { is_expected.to compile }.to raise_error(/must be a Hash of values/) }
       end
     end
+
+    context 'console type' do 
+      context 'username' do
+        context 'not specified' do
+          let :params do
+            tmp = default_params.clone
+            tmp[:type] = 'console'
+            tmp.delete(:username)
+            tmp
+          end
+          it { expect { is_expected.to compile }.to raise_error(/Username must be specified/) }
+        end
+      end
+
+      context 'password' do
+        context 'not specified' do
+          let :params do
+            tmp = default_params.clone
+            tmp[:type] = 'console'
+            tmp.delete(:password)
+            tmp
+          end
+          it { expect { is_expected.to compile }.to raise_error(/Password must be specified/) }
+        end
+      end
+
+    end
   end
 
 
@@ -115,6 +171,47 @@ describe 'aem::osgi::config', :type => :defines do
       end
 
     end
+
+    context 'console type' do
+      let :params do
+        default_params.merge(:type => 'console')
+      end
+
+      context 'default params' do
+        it { is_expected.to compile }
+        it do
+          is_expected.to contain_aem_osgi_config(
+            'aem'
+          ).with(
+            'ensure'        => 'present',
+            'configuration' => params[:properties],
+            'home'          => '/opt/aem',
+            'password'      => 'password',
+            'username'      => 'username'
+          )
+        end
+      end
+
+      context 'ensure absent' do
+        let :params do
+          default_params.merge(:ensure => 'absent', :type => 'console')
+        end
+        it { is_expected.to compile }
+        it do
+          is_expected.to contain_aem_osgi_config(
+            'aem'
+          ).with(
+            'ensure'        => 'absent',
+            'configuration' => params[:properties],
+            'home'          => '/opt/aem',
+            'password'      => 'password',
+            'username'      => 'username'
+          )
+        end
+      end
+
+    end
+
 
     context 'invalid type' do
       let :params do

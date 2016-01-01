@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rspec/mocks'
+require 'webmock/rspec'
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'codeclimate-test-reporter'
 

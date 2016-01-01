@@ -126,14 +126,10 @@ define aem::instance (
     }
 
     aem_installer { $name:
-      ensure       => $ensure,
-      context_root => $context_root,
-      group        => $group,
-      home         => $_home,
-      port         => $port,
-      snooze       => $snooze,
-      timeout      => $timeout,
-      user         => $user,
+      ensure  => $ensure,
+      home    => $_home,
+      snooze  => $snooze,
+      timeout => $timeout,
     }
 
     # Is there no way to do this better?
