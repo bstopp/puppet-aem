@@ -74,6 +74,22 @@ describe 'aem::instance' do
                 \"allow.empty\"    => true,
                 \"allow.hosts\"    => [\"author.localhost.localmachine\"],
                 #\"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
+              },
+              \"com.day.commons.datasource.jdbcpool.JdbcPoolService\" => {
+                \"factory\" => true,
+                \"items\" => {
+                  \"testing" => {
+                    \"datasource.name\"     => \"test\",
+                    \"jdbc.driver.class\"   => \"com.somevendor.somedriver.Driver\",
+                    \"jdbc.connection.uri\" => \"jdbc:somedriver:someDB;param\\=value\",
+                    \"jdbc.username\"       => \"username\",
+                    \"jdbc.password\"       => \"password\",
+                    \"default.readonly\"    => false,
+                    \"default.autocommit\"  => true,
+                    \"pool.max.wait.msec\"  => 1000,
+                    \"pool.size\"           => 10,
+                  }
+                }
               }
             }]
 
