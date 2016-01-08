@@ -17,10 +17,18 @@ describe 'aem::config', :type => :defines do
 
   let :default_params do
     {
-      :group => 'aem',
-      :home  => '/opt/aem',
-      :type  => 'author',
-      :user  => 'aem'
+      :context_root   => :undef,
+      :debug_port     => :undef,
+      :group          => 'aem',
+      :home           => '/opt/aem',
+      :jvm_mem_opts   => :undef,
+      :jvm_opts       => :undef,
+      :osgi_configs   => :undef,
+      :port           => :undef,
+      :runmodes       => [],
+      :sample_content => true,
+      :type           => 'author',
+      :user           => 'aem'
     }
   end
 
@@ -248,10 +256,10 @@ describe 'aem::config', :type => :defines do
       default_params.merge({
         :osgi_configs => [
           {
-            'osgi.name' => { 'properties' => cfg_props1 }
+            'osgi.name' => cfg_props1
           },
           {
-            'osgi2.name' => { 'factory_pid' => 'factoryname', 'properties' => cfg_props2 }
+            'osgi2.name' => cfg_props2 
           }
         ]
       })
@@ -262,7 +270,6 @@ describe 'aem::config', :type => :defines do
         is_expected.to contain_aem__osgi__config(
           'osgi.name'
         ).with(
-          :factory_pid => nil,
           :group       => 'aem',
           :home        => '/opt/aem',
           :properties  => cfg_props1,
@@ -276,7 +283,6 @@ describe 'aem::config', :type => :defines do
         is_expected.to contain_aem__osgi__config(
           'osgi2.name'
         ).with(
-          :factory_pid => 'factoryname',
           :group       => 'aem',
           :home        => '/opt/aem',
           :properties  => cfg_props2,

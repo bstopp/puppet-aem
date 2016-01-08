@@ -205,46 +205,6 @@ describe 'aem::instance', :type => :defines do
       end
     end
 
-    context 'factory definition' do
-      let :cfg_props do
-        {
-          'key' => 'value',
-          'key2' => 'value2'
-        }
-      end
-      let :params do
-        default_params.merge({
-          :osgi_configs => {
-            'osgi.name' => { 'factory_pid' => 'FactoryName', 'properties' => cfg_props }
-          }
-        })
-      end
-
-      let :facts do
-        default_facts
-      end
-
-      it { is_expected.to compile.with_all_deps }
-      it do
-        is_expected.to contain_aem__config(
-          'aem'
-        ).with(
-          :context_root   => nil,
-          :debug_port     => nil,
-          :group          => 'aem',
-          :home           => '/opt/aem',
-          :jvm_mem_opts   => '-Xmx1024m',
-          :jvm_opts       => nil,
-          :osgi_configs   => { 'osgi.name' => { 'factory_pid' => 'FactoryName', 'properties' => cfg_props }},
-          :port           => 4502,
-          :runmodes       => [],
-          :sample_content => true,
-          :type           => 'author',
-          :user           => 'aem'
-        )
-      end
-
-    end
   end
 
   context 'default remove' do

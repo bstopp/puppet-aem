@@ -63,6 +63,7 @@ define aem::config(
     }
 
     $_osgi_configs.each | Hash $cfg | {
+
       $cfg.each | $key, $value | {
 
         aem::osgi::config { $key :
