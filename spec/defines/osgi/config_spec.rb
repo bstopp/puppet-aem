@@ -16,7 +16,7 @@ describe 'aem::osgi::config', :type => :defines do
   let :default_params do
     {
       :home           => '/opt/aem',
-      :handle_missing => 'merge', 
+      :handle_missing => 'merge',
       :properties => {
         'boolean' => false,
         'long'    => 123456789,
@@ -153,11 +153,11 @@ describe 'aem::osgi::config', :type => :defines do
           is_expected.to contain_aem__osgi__config__file(
             'aem'
           ).with(
-            'ensure'     => 'present',
-            'group'      => 'aem',
-            'home'       => '/opt/aem',
-            'properties' => params[:properties],
-            'user'       => 'aem'
+            :ensure     => 'present',
+            :group      => 'aem',
+            :home       => '/opt/aem',
+            :properties => params[:properties],
+            :user       => 'aem'
           )
         end
       end
@@ -166,8 +166,18 @@ describe 'aem::osgi::config', :type => :defines do
         let :params do
           default_params.merge(:ensure => 'absent', :type => 'file')
         end
-        it { is_expected.to compile }
-        it { is_expected.to contain_file('/opt/aem/crx-quickstart/install/aem.config').with('ensure' => 'absent') }
+
+        it do
+          is_expected.to contain_aem__osgi__config__file(
+            'aem'
+          ).with(
+            :ensure     => 'absent',
+            :group      => 'aem',
+            :home       => '/opt/aem',
+            :properties => params[:properties],
+            :user       => 'aem'
+          )
+        end
       end
 
     end
@@ -183,11 +193,11 @@ describe 'aem::osgi::config', :type => :defines do
           is_expected.to contain_aem_osgi_config(
             'aem'
           ).with(
-            'ensure'        => 'present',
-            'configuration' => params[:properties],
-            'home'          => '/opt/aem',
-            'password'      => 'password',
-            'username'      => 'username'
+            :ensure        => 'present',
+            :configuration => params[:properties],
+            :home          => '/opt/aem',
+            :password      => 'password',
+            :username      => 'username'
           )
         end
       end
@@ -201,11 +211,11 @@ describe 'aem::osgi::config', :type => :defines do
           is_expected.to contain_aem_osgi_config(
             'aem'
           ).with(
-            'ensure'        => 'absent',
-            'configuration' => params[:properties],
-            'home'          => '/opt/aem',
-            'password'      => 'password',
-            'username'      => 'username'
+            :ensure        => 'absent',
+            :configuration => params[:properties],
+            :home          => '/opt/aem',
+            :password      => 'password',
+            :username      => 'username'
           )
         end
       end

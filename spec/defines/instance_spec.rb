@@ -34,8 +34,8 @@ describe 'aem::instance', :type => :defines do
 
     it do
       is_expected.to contain_user('aem').with(
-        'ensure' => 'present',
-        'gid' => 'aem'
+        :ensure => 'present',
+        :gid    => 'aem'
       )
     end
 
@@ -47,22 +47,22 @@ describe 'aem::instance', :type => :defines do
       is_expected.to contain_aem__package(
         'aem'
       ).with(
-        'ensure'        => 'present',
-        'group'         => 'aem',
-        'home'          => '/opt/aem',
-        'manage_home'   => true,
-        'source'        => '/tmp/aem-quickstart.jar',
-        'user'          => 'aem'
+        :ensure      => 'present',
+        :group       => 'aem',
+        :home        => '/opt/aem',
+        :manage_home => true,
+        :source      => '/tmp/aem-quickstart.jar',
+        :user        => 'aem'
       )
     end
 
     it do
       is_expected.to contain_aem__service('aem').with(
-        'ensure' => 'present',
-        'status' => 'enabled',
-        'home'   => '/opt/aem',
-        'user'   => 'aem',
-        'group'  => 'aem'
+        :ensure => 'present',
+        :status => 'enabled',
+        :home   => '/opt/aem',
+        :user   => 'aem',
+        :group  => 'aem'
       )
     end
 
@@ -70,17 +70,18 @@ describe 'aem::instance', :type => :defines do
       is_expected.to contain_aem__config(
         'aem'
       ).with(
-        'context_root'    => nil,
-        'debug_port'      => nil,
-        'group'           => 'aem',
-        'home'            => '/opt/aem',
-        'jvm_mem_opts'    => '-Xmx1024m',
-        'jvm_opts'        => nil,
-        'port'            => 4502,
-        'runmodes'        => [],
-        'sample_content'  => true,
-        'type'            => 'author',
-        'user'            => 'aem'
+        :context_root   => nil,
+        :debug_port     => nil,
+        :group          => 'aem',
+        :home           => '/opt/aem',
+        :jvm_mem_opts   => '-Xmx1024m',
+        :jvm_opts       => nil,
+        :osgi_configs   => nil,
+        :port           => 4502,
+        :runmodes       => [],
+        :sample_content => true,
+        :type           => 'author',
+        :user           => 'aem'
       )
     end
 
@@ -88,10 +89,10 @@ describe 'aem::instance', :type => :defines do
       is_expected.to contain_aem_installer(
         'aem'
       ).with(
-        'ensure'        => 'present',
-        'home'          => '/opt/aem',
-        'snooze'        => 10,
-        'timeout'       => 600
+        :ensure  => 'present',
+        :home    => '/opt/aem',
+        :snooze  => 10,
+        :timeout => 600
       )
     end
 
@@ -107,65 +108,6 @@ describe 'aem::instance', :type => :defines do
 
     it { is_expected.to contain_aem__package('aem').that_requires('Anchor[aem::aem::begin]') }
 
-    it do
-      is_expected.to contain_file(
-        '/opt/aem'
-      ).with(
-        'ensure'  => 'directory',
-        'group'   => 'aem',
-        'owner'   => 'aem'
-      )
-    end
-
-    it do
-      is_expected.to contain_exec(
-        'aem unpack'
-      ).with(
-        'command'     => 'java -jar /tmp/aem-quickstart.jar -b /opt/aem -unpack',
-        'creates'     => '/opt/aem/crx-quickstart',
-        'group'       => 'aem',
-        'onlyif'      => ['which java', 'test -f /tmp/aem-quickstart.jar'],
-        'user'        => 'aem'
-      )
-    end
-
-    it { is_expected.to contain_exec('aem unpack').that_requires('File[/opt/aem]') }
-
-    it do
-      is_expected.to contain_file(
-        '/opt/aem/crx-quickstart/bin/start-env'
-      ).with(
-        'ensure'      => 'file',
-        'content'     => /.*/,
-        'group'       => 'aem',
-        'owner'       => 'aem'
-      )
-    end
-
-    it do
-      is_expected.to contain_file(
-        '/opt/aem/crx-quickstart/bin/start.orig'
-      ).with(
-        'ensure'      => 'file',
-        'group'       => 'aem',
-        'source'      => '/opt/aem/crx-quickstart/bin/start',
-        'owner'       => 'aem'
-      )
-    end
-
-    it do
-      is_expected.to contain_file(
-        '/opt/aem/crx-quickstart/bin/start'
-      ).with(
-        'ensure'      => 'file',
-        'content'     => /.*/,
-        'group'       => 'aem',
-        'owner'       => 'aem'
-      ).that_requires(
-        'File[/opt/aem/crx-quickstart/bin/start.orig]'
-      )
-    end
-
   end
 
   describe 'osgi configs' do
@@ -173,14 +115,14 @@ describe 'aem::instance', :type => :defines do
     context 'single definition' do
       let :cfg_props do
         {
-          'key' => 'value',
+          'key'  => 'value',
           'key2' => 'value2'
         }
       end
       let :params do
         default_params.merge({
           :osgi_configs => {
-            'osgi.name' => cfg_props
+            'osgi.name' => { 'properties' => cfg_props }
           }
         })
       end
@@ -191,15 +133,21 @@ describe 'aem::instance', :type => :defines do
 
       it { is_expected.to compile.with_all_deps }
       it do
-        is_expected.to contain_aem__osgi__config(
-          'osgi.name'
+        is_expected.to contain_aem__config(
+          'aem'
         ).with(
-          'ensure'     => 'present',
-          'group'      => 'aem',
-          'home'       => '/opt/aem',
-          'properties' => cfg_props,
-          'type'       => 'file',
-          'user'       => 'aem'
+          :context_root   => nil,
+          :debug_port     => nil,
+          :group          => 'aem',
+          :home           => '/opt/aem',
+          :jvm_mem_opts   => '-Xmx1024m',
+          :jvm_opts       => nil,
+          :osgi_configs   => { 'osgi.name' => { 'properties' => cfg_props } },
+          :port           => 4502,
+          :runmodes       => [],
+          :sample_content => true,
+          :type           => 'author',
+          :user           => 'aem'
         )
       end
 
@@ -222,10 +170,10 @@ describe 'aem::instance', :type => :defines do
         default_params.merge({
           :osgi_configs => [
             {
-              'osgi.name' => cfg_props1
+              'osgi.name' =>  { 'properties' => cfg_props1 }
             },
             {
-              'osgi2.name' => cfg_props2
+              'osgi2.name' => { 'properties' => cfg_props2 }
             }
           ]
         })
@@ -238,29 +186,64 @@ describe 'aem::instance', :type => :defines do
       it { is_expected.to compile.with_all_deps }
 
       it do
-        is_expected.to contain_aem__osgi__config(
-          'osgi.name'
+        is_expected.to contain_aem__config(
+          'aem'
         ).with(
-          'ensure'     => 'present',
-          'group'      => 'aem',
-          'home'       => '/opt/aem',
-          'properties' => cfg_props1,
-          'type'       => 'file',
-          'user'       => 'aem'
+          :context_root   => nil,
+          :debug_port     => nil,
+          :group          => 'aem',
+          :home           => '/opt/aem',
+          :jvm_mem_opts   => '-Xmx1024m',
+          :jvm_opts       => nil,
+          :osgi_configs   => [{ 'osgi.name' => { 'properties' => cfg_props1 }}, { 'osgi2.name' => { 'properties' => cfg_props2 } }],
+          :port           => 4502,
+          :runmodes       => [],
+          :sample_content => true,
+          :type           => 'author',
+          :user           => 'aem'
         )
       end
+    end
+
+    context 'factory definition' do
+      let :cfg_props do
+        {
+          'key' => 'value',
+          'key2' => 'value2'
+        }
+      end
+      let :params do
+        default_params.merge({
+          :osgi_configs => {
+            'osgi.name' => { 'factory_pid' => 'FactoryName', 'properties' => cfg_props }
+          }
+        })
+      end
+
+      let :facts do
+        default_facts
+      end
+
+      it { is_expected.to compile.with_all_deps }
       it do
-        is_expected.to contain_aem__osgi__config(
-          'osgi2.name'
+        is_expected.to contain_aem__config(
+          'aem'
         ).with(
-          'ensure'     => 'present',
-          'group'      => 'aem',
-          'home'       => '/opt/aem',
-          'properties' => cfg_props2,
-          'type'       => 'file',
-          'user'       => 'aem'
+          :context_root   => nil,
+          :debug_port     => nil,
+          :group          => 'aem',
+          :home           => '/opt/aem',
+          :jvm_mem_opts   => '-Xmx1024m',
+          :jvm_opts       => nil,
+          :osgi_configs   => { 'osgi.name' => { 'factory_pid' => 'FactoryName', 'properties' => cfg_props }},
+          :port           => 4502,
+          :runmodes       => [],
+          :sample_content => true,
+          :type           => 'author',
+          :user           => 'aem'
         )
       end
+
     end
   end
 

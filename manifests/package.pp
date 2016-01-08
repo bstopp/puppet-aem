@@ -30,7 +30,9 @@ define aem::package (
         ensure => directory,
         mode   => '0775',
       }
+    }
 
+    if defined(File[$home]) {
       File[$home]
       -> Exec["${name} unpack"]
     }
@@ -52,7 +54,9 @@ define aem::package (
         ensure => absent,
         force  => true,
       }
+    }
 
+    if defined(File[$home]) {
       File["${home}/crx-quickstart"]
       -> File[$home]
     }
