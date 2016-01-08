@@ -7,10 +7,17 @@ ENV['PUPPET_INSTALL_VERSION'] = ENV['PUPPET_INSTALL_VERSION'] || '4.2'
 
 def server_opts
   {
-    :master => {
-      :autosign => true
-    }
+    :master => { :autosign => true }
   }
+end
+
+def clear_ssl
+  step 'Clear SSL on all hosts'
+  hosts.each do |ahost|
+    stop_firewall_on ahost
+    ssldir = on(ahost, puppet('agent --configprint ssldir')).stdout.chomp
+    on(ahost, "rm -rf #{ssldir}/*")
+  end
 end
 
 def stop_firewall_on(host)
@@ -18,11 +25,11 @@ def stop_firewall_on(host)
   when /debian/
     on host, 'iptables -F'
   when /fedora|el-7/
-    on host, puppet('resource', 'service', 'firewalld', 'ensure=stopped')
+    on host, puppet('resource', 'service', 'firewalld', 'ensure=stopped', 'enable=false')
   when /el|centos/
-    on host, puppet('resource', 'service', 'iptables', 'ensure=stopped')
+    on host, puppet('resource', 'service', 'iptables', 'ensure=stopped', 'enable=false')
   when /ubuntu/
-    on host, puppet('resource', 'service', 'ufw', 'ensure=stopped')
+    on host, puppet('resource', 'service', 'ufw', 'ensure=stopped', 'enable=false')
   else
     logger.notify("Not sure how to clear firewall on #{host['platform']}")
   end
@@ -31,6 +38,7 @@ end
 def setup_puppet(host)
 
   step 'Install puppet on agent'
+  on(host, '')
   configure_defaults_on host, 'foss'
   install_puppet_on host
   configure_puppet_on(host, {})
@@ -40,9 +48,6 @@ def setup_puppet(host)
   pp = "file { '#{master.puppet['confdir']}/autosign.conf': ensure => file, content => '#{agenthostname}' }"
   apply_manifest_on(master, pp)
 
-  ssldir = on(host, puppet('agent --configprint ssldir')).stdout.chomp
-  on(host, "rm -Rf #{ssldir}/*")
-  on(host, 'puppet agent --enable')
 end
 
 def teardown_puppet(host)
@@ -68,17 +73,31 @@ package { ['puppet-agent', 'puppet']: ensure => purged }
   apply_manifest_on(host, pp)
 end
 
+def restart_puppetserver
+  on master, puppet('resource', 'service', 'puppetserver', 'ensure=stopped')
+  on master, puppet('resource', 'service', 'puppetserver', 'ensure=running')
+end
+
+def aem_license(module_root)
+  File.foreach(File.join(module_root, 'spec', 'files', 'license.properties')) do |line|
+    if match = line.match(/license.downloadID=(\S+)/)
+      ENV['AEM_LICENSE'] = match.captures[0]
+    end
+  end
+end
+
 module_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+aem_license(module_root)
 
 unless ENV['BEAKER_provision'] == 'no'
 
   aem_installer = File.expand_path(File.join(module_root, 'spec', 'files', 'aem-quickstart.jar'))
-  scp_to(hosts, aem_installer, '/tmp/aem-quickstart.jar')
-  on hosts, 'chmod 775 /tmp/aem-quickstart.jar'
+  scp_to(default, aem_installer, '/tmp/aem-quickstart.jar')
+  on default, 'chmod 775 /tmp/aem-quickstart.jar'
   start_env = File.expand_path(File.join(module_root, 'spec', 'files', 'faux-start-env'))
 
-  scp_to(hosts, start_env, '/tmp/faux-start-env')
-  on hosts, 'chmod 775 /tmp/faux-start-env'
+  scp_to(default, start_env, '/tmp/faux-start-env')
+  on default, 'chmod 775 /tmp/faux-start-env'
 
   # Credit to Puppetlabs Puppet Agent project,
   # This was the only place i could find that had an example that
@@ -97,10 +116,16 @@ unless ENV['BEAKER_provision'] == 'no'
   master['use-service'] = true
 
   on master, puppet('module', 'install', 'puppetlabs-stdlib'), :acceptable_exit_codes => [0, 1]
+  on master, puppet('module', 'install', 'puppetlabs-concat'), :acceptable_exit_codes => [0, 1]
+  on master, puppet('module', 'install', 'puppetlabs-apache'), :acceptable_exit_codes => [0, 1]
   on master, puppet('module', 'install', 'puppetlabs-java'), :acceptable_exit_codes => [0, 1]
 
+  setup_puppet default
   stop_firewall_on(master)
-
+	stop_firewall_on(default)
+  clear_ssl
+  on(default, 'puppet agent --enable')
+  
 end
 
 # Install module
@@ -108,5 +133,8 @@ configure_defaults_on master, 'aio'
 install_dev_puppet_module_on(master, :source => module_root, :module_name => 'aem')
 
 RSpec.configure do |c|
+  if !ENV['AEM_LICENSE']
+    c.filter_run_excluding license: false
+  end
   c.formatter = :documentation
 end

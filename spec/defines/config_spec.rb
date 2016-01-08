@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::instance', :type => :defines do
+describe 'aem::config', :type => :defines do
 
   let :default_facts do
     {
@@ -17,7 +17,18 @@ describe 'aem::instance', :type => :defines do
 
   let :default_params do
     {
-      :source => '/tmp/aem-quickstart.jar'
+      :context_root   => :undef,
+      :debug_port     => :undef,
+      :group          => 'aem',
+      :home           => '/opt/aem',
+      :jvm_mem_opts   => :undef,
+      :jvm_opts       => :undef,
+      :osgi_configs   => :undef,
+      :port           => :undef,
+      :runmodes       => [],
+      :sample_content => true,
+      :type           => 'author',
+      :user           => 'aem'
     }
   end
 
@@ -143,6 +154,141 @@ describe 'aem::instance', :type => :defines do
           default_params.merge(:type => 'publish')
         end
         it { is_expected.to contain_file('/opt/aem/crx-quickstart/bin/start-env').with('content' => /TYPE='publish'/) }
+      end
+    end
+
+  end
+
+  describe 'file defintions' do
+    let :facts do
+      default_facts
+    end
+    let :params do
+      default_params
+    end
+
+    context 'group' do
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/bin/start-env'
+        ).with(
+          :group => 'aem'
+        )
+      end
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/bin/start.orig'
+        ).with(
+          :group => 'aem'
+        )
+      end
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/bin/start'
+        ).with(
+          :group => 'aem'
+        )
+      end
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install'
+        ).with(
+          :group => 'aem'
+        )
+      end
+    end
+
+    context 'user' do
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/bin/start-env'
+        ).with(
+          :owner => 'aem',
+          :mode => '0775'
+        )
+      end
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/bin/start.orig'
+        ).with(
+          :owner => 'aem'
+        )
+      end
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/bin/start'
+        ).with(
+          :owner => 'aem'
+        )
+      end
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install'
+        ).with(
+          :ensure => :directory,
+          :owner => 'aem'
+        )
+      end
+    end
+  end
+
+  describe 'osgi configurations' do
+    let :facts do
+      default_facts
+    end
+    let :params do
+      default_params
+    end
+
+    let :cfg_props1 do
+      {
+        'key' => 'value',
+        'key2' => 'value2',
+      }
+    end
+    let :cfg_props2 do
+      {
+        'key3' => 'value3',
+        'key4' => 'value4',
+      }
+    end
+    let :params do
+      default_params.merge({
+        :osgi_configs => [
+          {
+            'osgi.name' => cfg_props1
+          },
+          {
+            'osgi2.name' => cfg_props2 
+          }
+        ]
+      })
+    end
+    
+    context 'defines first config resource' do
+      it do
+        is_expected.to contain_aem__osgi__config(
+          'osgi.name'
+        ).with(
+          :group       => 'aem',
+          :home        => '/opt/aem',
+          :properties  => cfg_props1,
+          :type        => 'file',
+          :user        => 'aem'
+        )
+      end
+    end
+    context 'defines second config resource' do
+      it do
+        is_expected.to contain_aem__osgi__config(
+          'osgi2.name'
+        ).with(
+          :group       => 'aem',
+          :home        => '/opt/aem',
+          :properties  => cfg_props2,
+          :type        => 'file',
+          :user        => 'aem'
+        )
       end
     end
   end

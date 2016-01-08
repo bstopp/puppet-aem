@@ -213,6 +213,46 @@ describe 'aem::instance', :type => :defines do
       end
     end
 
+    context 'osgi_configs' do
+      context 'not a map' do
+        let :params do
+          default_params.merge(:osgi_configs => 'not a map')
+        end
+        it { expect { is_expected.to compile }.to raise_error(/Hash or an Array of Hashes/) }
+      end
+
+      context 'hash' do
+        let :params do
+          default_params.merge(:osgi_configs => {
+            'test' => {
+              'properties' => {
+                'key' => 'value'
+              }
+            }
+          })
+        end
+        it { is_expected.to compile }
+      end
+
+      context 'array of hashes' do
+        let :params do
+          default_params.merge(:osgi_configs => [
+            {
+              'testa' => {
+                'key' => 'value'
+              }
+            },
+            {
+              'testb' => {
+                'key1' => 'value2'
+              }
+            }
+          ])
+        end
+        it { is_expected.to compile }
+      end
+    end
+
     context 'port' do
       context 'NaN' do
         let :params do

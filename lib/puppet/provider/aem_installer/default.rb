@@ -4,68 +4,36 @@ require 'net/http'
 
 Puppet::Type.type(:aem_installer).provide :default, :parent => Puppet::Provider do
 
-  self::START_FILE = 'start'
-  self::STOP_FILE = 'stop'
-  self::LAUNCHPAD_NAME  = 'cq-quickstart-*-standalone*.jar'
-  self::INSTALL_FIELDS  = [:home, :version]
-  self::INSTALL_REGEX   = %r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar$}
-
   commands :find => 'find'
   commands :java => 'java'
 
   mk_resource_methods
 
-  def self.instances
-    installs = []
-
-    begin
-      cmd = ["#{command(:find)}", '/', "-name \"#{self::LAUNCHPAD_NAME}\"", '-type f']
-      execpipe(cmd) do |process|
-        process.each_line do |line|
-          hash = found_to_hash(line)
-          installs << new(hash) unless hash.empty?
-        end
-      end
-    rescue Puppet::ExecutionFailure
-      raise Puppet::Error, 'Failed to find AEM instances.', $ERROR_INFO.backtrace
-    end
-
-    installs
-  end
-
-  def self.prefetch(resources)
-
-    found = instances
-
-    resources.keys.each do |name|
-      if (provider = found.find { |prov| prov.get(:home) == resources[name][:home] })
-        resources[name].provider = provider
-      end
-    end
-  end
-
   def initialize(resource = nil)
-
     super(resource)
     @exec_options = {
       :failonfail => true,
       :combine => true,
       :custom_environment => {}
     }
+    @start_file = 'start'
+    @start_env_file = 'start-env'
+    @stop_file = 'stop'
+    @launchpad_name = 'cq-quickstart-*-standalone*.jar'
+    @repository_dir = 'repository'
+    @quickstart_fields  = [:home, :version]
+    @quickstart_regex = %r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar$}
+    @port_regex = /^PORT=(\S+)/
+    @context_root_regex = /^CONTEXT_ROOT='(\S+)'/
 
-  end
-
-  def properties
-    @property_hash[:ensure] = :absent if @property_hash.empty?
-    @property_hash.dup
   end
 
   def exists?
+    find_instance
     @property_hash[:ensure] == :present
   end
 
   def create
-
     update_exec_opts
     call_start_script
     monitor_site
@@ -75,27 +43,38 @@ Puppet::Type.type(:aem_installer).provide :default, :parent => Puppet::Provider 
   end
 
   def destroy
-
-    path = File.join(@resource[:home], 'crx-quickstart/repository')
+    path = File.join(@resource[:home], 'crx-quickstart', @repository_dir)
     FileUtils.remove_entry_secure(path)
     @property_hash.clear
   end
 
-  def flush
-    @property_hash = @resource.to_hash
-  end
-
   protected
 
-  def self.found_to_hash(line)
-    line.strip!
+  def find_instance
     hash = {}
+    begin
 
-    if (match = self::INSTALL_REGEX.match(line))
-      self::INSTALL_FIELDS.zip(match.captures) { |f, v| hash[f] = v }
-      hash[:name] = hash[:home]
-      hash[:ensure] = File.exist?("#{hash[:home]}/crx-quickstart/repository") ? :present : :absent
+      cmd = ["#{command(:find)}", @resource[:home], "-name \"#{@launchpad_name}\"", '-type f']
+      execpipe(cmd) do |process|
+        process.each_line do |line|
+          hash = found_to_hash(line)
+        end
+      end
+    rescue Puppet::ExecutionFailure
+      raise Puppet::Error, "Failed to find AEM instance in '#{@resource[:home]}'.", $ERROR_INFO.backtrace
+    end
 
+    @property_hash = hash.dup
+    hash
+  end
+
+  def found_to_hash(line)
+    line.strip!
+    hash = @resource.to_hash.dup
+
+    if (match = @quickstart_regex.match(line))
+      @quickstart_fields.zip(match.captures) { |f, v| hash[f] = v }
+      hash[:ensure] = File.exist?(File.join(@resource[:home], 'crx-quickstart', @repository_dir)) ? :present : :absent
       stat = File.stat(line)
 
       hash[:user] = Etc.getpwuid(stat.uid).name
@@ -105,61 +84,74 @@ Puppet::Type.type(:aem_installer).provide :default, :parent => Puppet::Provider 
       Puppet.debug("Failed to match install line #{line}")
     end
 
+    read_env(hash)
     hash
   end
 
-  def update_exec_opts
+  def read_env(hash)
 
-    unless @resource[:user].nil? || @resource[:user].empty?
-      user = Etc.getpwnam(@resource[:user])
-      @exec_options[:uid] = user.uid
+    File.foreach(File.join(build_bin_dir, @start_env_file)) do |line|
+
+      match = line.match(@port_regex) || nil
+      hash[:port] = match.captures[0] if match
+
+      match = line.match(@context_root_regex) || nil
+      hash[:context_root] = match.captures[0] if match
+
     end
-
-    return if @resource[:group].nil? || @resource[:group].empty?
-
-    grp = Etc.getgrnam(@resource[:group])
-    @exec_options[:gid] = grp.gid
-
   end
 
   def build_bin_dir
     File.join(@resource[:home], 'crx-quickstart', 'bin')
   end
 
+  # These methods should have a fully populated @property_hash
+  def update_exec_opts
+
+    user = Etc.getpwnam(@property_hash[:user])
+    @exec_options[:uid] = user.uid
+
+    grp = Etc.getgrnam(@property_hash[:group])
+    @exec_options[:gid] = grp.gid
+
+  end
+
   def call_start_script
-    cmd = File.join(build_bin_dir, self.class::START_FILE)
+    cmd = File.join(build_bin_dir, @start_file)
     execute(cmd, @exec_options)
   end
 
   # Checks the system to for a state, loops until it reaches that state
   def monitor_site(desired_state = :on)
-
     # If context root is not blank, need to ensure URI has a trailing slash,
     # otherwise the system redirects, thus shutting down before installation is complete.
-    uri_s = "http://localhost:#{@resource[:port]}/"
-    uri_s = "#{uri_s}#{@resource[:context_root]}/" if @resource[:context_root]
+    uri_s = "http://localhost:#{@property_hash[:port]}/"
+    uri_s = "#{uri_s}#{@property_hash[:context_root]}/" if @property_hash[:context_root]
 
     uri = URI.parse(uri_s)
 
-    Timeout.timeout(@resource[:timeout]) do
+    Timeout.timeout(@property_hash[:timeout]) do
 
       Kernel.loop do
         begin
           response = Net::HTTP.get_response(uri)
-          issuccess = response.is_a?(Net::HTTPSuccess)
-          isredirect = response.is_a?(Net::HTTPRedirection) unless issuccess
-          return if (issuccess || isredirect) && desired_state == :on
+
+          case response
+          when Net::HTTPSuccess, Net::HTTPRedirection, Net::HTTPUnauthorized
+            return if desired_state == :on
+          end
+
         rescue
           return if desired_state == :off
         end
-        sleep @resource[:snooze]
+        sleep @property_hash[:snooze]
       end
     end
 
   end
 
   def call_stop_script
-    cmd = File.join(build_bin_dir, self.class::STOP_FILE)
+    cmd = File.join(build_bin_dir, @stop_file)
     execute(cmd, @exec_options)
   end
 

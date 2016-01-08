@@ -7,9 +7,10 @@
 	"source": "https://github.com/bstopp/puppet-aem",
 	"project_page": "https://github.com/bstopp/puppet-aem",
 	"issues_url": "https://github.com/bstopp/puppet-aem/issues",
-	"dependencies": [{
+	"dependencies": [
+		{
 			"name": "puppetlabs/stdlib",
-			"version_requirement": "4.x"
+			"version_requirement": ">=4.6.0"
 		}
 	],
 	"requirements": [{

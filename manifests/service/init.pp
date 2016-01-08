@@ -72,6 +72,7 @@ define aem::service::init (
 
       File["/etc/init.d/aem-${name}"]
       ~> Service["aem-${name}"]
+
     } else {
 
       Service["aem-${name}"]

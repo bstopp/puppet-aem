@@ -92,7 +92,6 @@ describe 'aem::license', :type => :defines do
       default_params
     end
 
-
     context 'product name' do
       it do
         is_expected.to contain_file(
@@ -104,19 +103,18 @@ describe 'aem::license', :type => :defines do
     end
 
     context 'mode' do
-      it { is_expected.to contain_file('/opt/aem/license.properties').with_mode('0644') }
+      it { is_expected.to contain_file('/opt/aem/license.properties').with_mode('0664') }
     end
 
     context 'customer' do
 
       it do
         val = params[:customer]
-
-          is_expected.to contain_file(
-            '/opt/aem/license.properties'
-          ).with_content(
-            /license.customer.name=#{val}\s/
-          )
+        is_expected.to contain_file(
+          '/opt/aem/license.properties'
+        ).with_content(
+          /license.customer.name=#{val}\s/
+        )
       end
     end
 
@@ -194,6 +192,19 @@ describe 'aem::license', :type => :defines do
         end
 
       end
+    end
+
+  end
+
+  describe 'requires home directory' do
+    let(:pre_condition) { 'file { "/opt/aem" : }' }
+
+    let :params do
+      default_params
+    end
+
+    context 'default' do
+      it { is_expected.to contain_file('/opt/aem/license.properties').that_requires('File[/opt/aem]') }
     end
 
   end

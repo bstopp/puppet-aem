@@ -11,6 +11,7 @@ define aem::config(
   $home,
   $jvm_mem_opts,
   $jvm_opts,
+  $osgi_configs,
   $port,
   $runmodes,
   $sample_content,
@@ -28,7 +29,7 @@ define aem::config(
   file { "${home}/crx-quickstart/bin/start-env":
     ensure  => file,
     content => template("${module_name}/start-env.erb"),
-    mode    => '0755',
+    mode    => '0775',
   }
 
   # Rename the original start script.
@@ -36,14 +37,43 @@ define aem::config(
     ensure  => file,
     replace => false,
     source  => "${home}/crx-quickstart/bin/start",
+    mode    => '0775',
   }
 
   # Create the start script
   file { "${home}/crx-quickstart/bin/start":
     ensure  => file,
     content => template("${module_name}/start.erb"),
-    mode    => '0755',
+    mode    => '0775',
     require => File["${home}/crx-quickstart/bin/start.orig"],
   }
 
+  # Create the install folder in case there are any OSGi configurations; now or in the future
+  file {"${home}/crx-quickstart/install" :
+    ensure => directory,
+    mode   => '0775',
+  }
+
+  if $osgi_configs {
+
+    if is_array($osgi_configs) {
+      $_osgi_configs = $osgi_configs
+    } else {
+      $_osgi_configs = [$osgi_configs]
+    }
+
+    $_osgi_configs.each | Hash $cfg | {
+
+      $cfg.each | $key, $value | {
+
+        aem::osgi::config { $key :
+          group      => $group,
+          home       => $home,
+          properties => $value,
+          type       => 'file',
+          user       => $user
+        }
+      }
+    }
+  }
 }

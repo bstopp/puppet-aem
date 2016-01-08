@@ -57,6 +57,8 @@ GEM
     builder (3.2.2)
     codeclimate-test-reporter (0.4.8)
       simplecov (>= 0.7.1, < 1.0.0)
+    crack (0.4.3)
+      safe_yaml (~> 1.0.0)
     diff-lcs (1.2.5)
     docile (1.1.5)
     docker-api (1.24.1)
@@ -142,7 +144,7 @@ GEM
       fog-core
       fog-json
       fog-xml
-    fog-sakuracloud (1.7.3)
+    fog-sakuracloud (1.7.5)
       fog-core
       fog-json
     fog-serverlove (0.1.2)
@@ -185,6 +187,7 @@ GEM
       memoist (~> 0.12)
       multi_json (~> 1.11)
       signet (~> 0.7)
+    hashdiff (0.2.3)
     hiera (3.0.5)
       json_pure
     hocon (0.9.3)
@@ -271,6 +274,7 @@ GEM
       ruby-progressbar (~> 1.7)
       tins (<= 1.6.0)
     ruby-progressbar (1.7.5)
+    safe_yaml (1.0.4)
     serverspec (2.25.0)
       multi_json
       rspec (~> 3.0)
@@ -303,12 +307,16 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.1)
+    webmock (1.22.3)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+      hashdiff
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  beaker (~> 2.18)
+  beaker (~> 2.31)
   beaker-puppet_install_helper (>= 0.2.1)
   beaker-rspec
   codeclimate-test-reporter
@@ -318,10 +326,11 @@ DEPENDENCIES
   puppet-lint
   puppetlabs_spec_helper
   rake
-  rspec (~> 3.3)
+  rspec (~> 3.4)
   rspec-puppet
   rubocop
   serverspec
+  webmock
 
 BUNDLED WITH
    1.11.2

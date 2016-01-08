@@ -29,8 +29,13 @@ define aem::license (
     ensure  => $ensure,
     content => template("${module_name}/license.properties.erb"),
     group   => $group,
-    mode    => '0644',
+    mode    => '0664',
     owner   => $user,
+  }
+
+  if defined(File[$home]) {
+    File[$home]
+    -> File["${home}/license.properties"]
   }
 
 }
