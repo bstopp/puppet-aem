@@ -94,7 +94,8 @@ For more options and detailed explanations, please see the [Puppet AEM Wiki][wik
   - [Define: aem::package](#define-aempackage)
   - [Define: aem::config](#define-aemconfig)
 - **[Private Types][]**
-  - [Type: aem::Aem_Installer](#type-aemaem_installer)
+  - [Type: Aem_Installer](#type-aem_installer)
+  - [Type: Aem_Osgi_Config](#type-aem_osgi_config)
 
 ### Public Defines
 
@@ -146,6 +147,9 @@ Optional. Sets whether or not this instance will manage the defined home directo
 
 ##### `manage_user`
 Optional. Sets whether or not this instance will manage the defined user. Valid options: `true` or `false`. Default: `true`.
+
+##### `osgi_configs`
+Optional. Creates *file* type definitions of `aem::osgi::config` which will be applied prior to inital AEM start. Valid options: Hash or Array of Hash configurations.
 
 ##### `port`
 Optional. Specifies the port on which AEM will listen. Valid options: any valid port. Default: 4502. [Sling documentation][Sling command-line-options]
@@ -243,7 +247,7 @@ Optional. Sets the user for for file ownership. Valid options: any valid user. D
 
 Manages an AEM OSGi Configuration; allows for saving Service/Component configurations via a file or posted to the Felix Web Console.
 
-** Parameters within `aem::osgi::console`:**
+** Parameters within `aem::osgi::config`:**
 
 ##### `name`
 Namevar. Required. Specifies the name of the AEM OSGi Configuration. This should be the Service PID. [Apache Felix Documentation][Felix Configuration]
