@@ -1,2 +1,4 @@
-aem-quickstart*.jar
-license.properties
+*
+
+!.gitignore
+!faux-start-env

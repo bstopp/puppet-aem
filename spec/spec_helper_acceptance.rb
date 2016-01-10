@@ -91,6 +91,10 @@ aem_license(module_root)
 
 unless ENV['BEAKER_provision'] == 'no'
 
+  # Install module
+  dsipatcher_mod = File.expand_path(File.join(module_root, 'spec', 'files', default.host_hash[:dispatcher_file]))
+  scp_to(default, dsipatcher_mod, '/tmp/dispatcher-apache-module.so')
+
   aem_installer = File.expand_path(File.join(module_root, 'spec', 'files', 'aem-quickstart.jar'))
   scp_to(default, aem_installer, '/tmp/aem-quickstart.jar')
   on default, 'chmod 775 /tmp/aem-quickstart.jar'

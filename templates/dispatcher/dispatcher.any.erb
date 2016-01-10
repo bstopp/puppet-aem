@@ -1,0 +1,195 @@
+# ************************************
+# Managed by Puppet AEM Module
+# ************************************
+
+/<%= @name -%> {
+
+  /clientheaders {
+  <%- @_client_headers.each do |header| -%>
+    "<%= header -%>"
+  <%- end -%>
+  }
+
+  /virtualhosts {
+  <%- @_virtualhosts.each do |vhost| -%>
+    "<%= vhost -%>"
+  <%- end -%>
+  }
+
+  <%- if @session_management -%>
+  /sessionmanagement {
+    /directory "<%= @session_management['directory'] -%>"
+    <%- if @session_management['encode'] -%>
+    /encode "<%= @session_management['encode'] -%>"
+    <%- end -%>
+    <%- if @session_management['header'] -%>
+    /header "<%= @session_management['header'] -%>"
+    <%- end -%>
+    <%- if @session_management['timeout'] -%>
+    /timeout "<%= @session_management['timeout'] -%>"
+    <%- end -%>
+  }
+  <%-end -%>
+
+  /renders {
+  <%- @_renders.each_with_index do |renderer, idx| -%>
+    /renderer<%= idx -%> { 
+      /hostname "<%= renderer['hostname'] -%>"
+      /port "<%= renderer['port'] -%>"
+      <%- if renderer['timeout'] -%>
+      /timeout "<%= renderer['timeout'] -%>"
+      <%- end -%>
+      <%- if renderer['receiveTimeout'] -%>
+      /receiveTimeout "<%= renderer['receiveTimeout'] -%>"
+      <%- end -%>
+      <%- if renderer['ipv4'] -%>
+      /ipv4 "<%= renderer['ipv4'] -%>"
+      <%- end -%>
+    }
+  <%- end -%>
+  }
+
+  /filter {
+  <%- @_filters.sort_by { |entry| entry['rank'] || -1 }.each_with_index do |filter, idx| -%>
+    <%- if filter['glob'] -%>
+    /<%= idx -%> { /type "<%= filter['type'] -%>" /glob "<%= filter['glob'] -%>" }
+    <%- else -%>
+    /<%= idx -%> {
+      /type "<%= filter['type'] -%>"
+      <%- if filter['method'] -%>
+      /method "<%= filter['method'] -%>"
+      <%- end -%>
+      <%- if filter['url'] -%>
+      /url "<%= filter['url'] -%>"
+      <%- end -%>
+      <%- if filter['query'] -%>
+      /query "<%= filter['query'] -%>"
+      <%- end -%>
+      <%- if filter['protocol'] -%>
+      /protocol "<%= filter['protocol'] -%>"
+      <%- end -%>
+    }
+    <%- end -%>
+  <%- end -%>
+  }
+
+  <%- if @vanity_urls -%>
+  /vanity_urls {
+    /url "/libs/granite/dispatcher/content/vanityUrls.html"
+    /file "<%= @vanity_urls['file'] -%>"
+    /delay "<%= @vanity_urls['delay'] -%>"
+  }
+  <%- end -%>
+
+  <%- if @propagate_synd_post -%>
+  /propagateSyndPost "<%= @propagate_synd_post -%>"
+  <%- end -%>
+
+  /cache {
+
+    /docroot "<%= @docroot-%>"
+
+    <%- if @stat_file -%>
+    /statfile "<%= @stat_file -%>"
+    <%- end -%>
+    <%- if @serve_stale -%>
+    /serveStaleOnError "<%= @serve_stale -%>"
+    <%- end -%>
+    <%- if @allow_authorized -%>
+    /allowAuthorized "<%= @allow_authorized-%>"
+    <%- end -%>
+
+    /rules {
+    <%- @_cache_rules.sort_by { |entry| entry['rank'] || -1 }.each_with_index do |rule, idx| -%>
+      /<%= idx -%> { /type "<%= rule['type'] -%>" /glob "<%= rule['glob'] -%>" }
+    <%- end -%>
+    }
+
+    <%- if @stat_files_level -%>
+    /statfileslevel "<%= @stat_files_level -%>"
+    <%- end -%>
+
+    /invalidate {
+    <%- @_invalidate.sort_by { |entry| entry['rank'] || -1 }.each_with_index do |inval, idx| -%>
+      /<%= idx -%> { /type "<%= inval['type'] -%>" /glob "<%= inval['glob'] -%>" }
+    <%- end -%>
+    }
+
+    <%- if @invalidate_handler-%>
+    /invalidateHandler "<%= @invalidate_handler-%>"
+    <%- end -%>
+
+    /allowedClients {
+    <%- @_allowed_clients.sort_by { |entry| entry['rank'] || -1 }.each_with_index do |allowed, idx| -%>
+      /<%= idx -%> { /type "<%= allowed['type'] -%>" /glob "<%= allowed['glob'] -%>" }
+    <%- end -%>
+    }
+
+    <%- if @_ignore_parameters -%>
+    /ignoreUrlParams {
+      <%- @_ignore_parameters.sort_by { |entry| entry['rank'] || -1 }.each_with_index do |ignored, idx| -%>
+      /<%= idx -%> { /type "<%= ignored['type'] -%>" /glob "<%= ignored['glob'] -%>" }
+      <%- end -%>
+    }
+    <%- end -%>
+
+    <%- if @_cache_headers -%>
+    /headers {
+      <%- @_cache_headers.each do |header| -%>
+      "<%= header -%>"
+      <%- end -%>
+    }
+    <%- end -%>
+
+    <%- if @grace_period -%>
+    /gracePeriod "<%= @grace_period-%>"
+    <%- end -%>
+    <%- if @cache_ttl -%>
+    /enableTTL "<%= @cache_ttl-%>"
+    <%- end -%>
+  }
+
+  <%- if @_statistics -%>
+  /statistics {
+    /categories {
+      <%- @_statistics.sort_by { |entry| entry['rank'] || -1 }.each do |stat| -%>
+      /<%= stat['category']-%> { /glob "<%= stat['glob']-%>" }
+      <%- end -%>
+    }
+  }
+  <%- end -%>
+
+  <%- if @sticky_connections -%>
+    <%- if scope.function_is_array([@sticky_connections]) -%>
+  /stickyConnections {
+    /paths {
+      <%- @sticky_connections.each do |path| -%>
+      "<%= path-%>"
+      <%- end -%>
+    }
+  }
+    <%- else -%>
+  /stickyConnectionsFor "<%= @sticky_connections-%>"
+    <%- end -%>
+  <%- end -%>
+
+  <%- if @health_check_url -%>
+  /health_check { /url "<%= @health_check_url-%>" }
+  <%- end -%>
+
+  <%- if @retry_delay -%>
+  /retryDelay "<%= @retry_delay-%>"
+  <%- end -%>
+
+  <%- if @retries -%>
+  /numberOfRetries "<%= @retries-%>"
+  <%- end -%>
+
+  <%- if @failover -%>
+  /failover "<%= @failover-%>"
+  <%- end -%>
+
+  <%- if @unavailable_penalty -%>
+  /unavailablePenalty "<%= @unavailable_penalty-%>"
+  <%- end -%>
+}
