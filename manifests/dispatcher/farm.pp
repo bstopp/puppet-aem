@@ -5,7 +5,7 @@ define aem::dispatcher::farm(
   $ensure              = 'present',
   $allow_authorized    = undef,
   $allowed_clients     = $::aem::dispatcher::params::allowed_clients,
-  $cache_headers       = $::aem::dispatcher::params::cache_headers,
+  $cache_headers       = undef,
   $cache_rules         = $::aem::dispatcher::params::cache_rules,
   $cache_ttl           = undef,
   $client_headers      = $::aem::dispatcher::params::client_headers,
@@ -15,7 +15,7 @@ define aem::dispatcher::farm(
   $grace_period        = undef,
   $health_check_url    = undef,
   $ignore_parameters   = undef,
-  $invalidate          = $::aem::dispatcher::params::invalidate,
+  $invalidate          = undef,
   $invalidate_handler  = undef,
   $propagate_synd_post = undef,
   $renders             = $::aem::dispatcher::params::renders,
@@ -109,16 +109,23 @@ define aem::dispatcher::farm(
     }
   }
 
-  if is_array($invalidate) {
-    validate_hash($invalidate[0])
-    $_invalidate = $invalidate
-  } else {
-    validate_hash($invalidate)
-    $_invalidate = [$invalidate]
+  if $invalidate and $invalidate_handler {
+    fail('Both invalidate and invalidate_handler can not be set.')
   }
 
   if $invalidate_handler {
     validate_absolute_path($invalidate_handler)
+  } elsif $invalidate == undef {
+    $_invalidate = $::aem::dispatcher::params::invalidate
+  } else {
+
+    if is_array($invalidate) {
+      validate_hash($invalidate[0])
+      $_invalidate = $invalidate
+    } else {
+      validate_hash($invalidate)
+      $_invalidate = [$invalidate]
+    }
   }
 
   if $propagate_synd_post {

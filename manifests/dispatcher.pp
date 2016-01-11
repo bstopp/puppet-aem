@@ -59,7 +59,7 @@ class aem::dispatcher (
 
   if ($ensure == 'present') {
     apache::mod { 'dispatcher' :
-      lib            => 'mod_dispatcher.so',
+      lib => 'mod_dispatcher.so',
     }
 
     file { "${::aem::dispatcher::params::mod_path}/${_mod_filename}" :

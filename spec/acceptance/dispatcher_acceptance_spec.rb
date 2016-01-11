@@ -169,7 +169,6 @@ describe 'dispatcher acceptance' do
               health_check_url    => "/path/to/healthcheck",
               ignore_parameters   => [ { \"glob\" => \"*\", \"type\" => \"deny\" }, { \"glob\" => \"param=*\", \"type\" => \"allow\" } ],
               invalidate          => [ { \"glob\" => \"*\", \"type\" => \"deny\" }, { \"glob\" => \"*.html\", \"type\" => \"allow\" } ],
-              invalidate_handler  => "/path/to/handler",
               propagate_synd_post => "1",
               retries             => "5",
               retry_delay         => "30",
@@ -293,11 +292,6 @@ describe 'dispatcher acceptance' do
       it 'should include invalidate' do
         shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/invalidate {\\s*\\/0 { \\/type \"deny\" \\/glob \"\\*\" }\\s*\\/1 { \\/type \"allow\" \\/glob \"\\*.html\" }\\s*}/ p'") do |result|
           expect(result.stdout).to match(%r{/invalidate})
-        end
-      end
-      it 'should include invalidate_handler' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/invalidateHandler \"\\/path\\/to\\/handler\"/ p'") do |result|
-          expect(result.stdout).to match(%r{/invalidateHandler})
         end
       end
       it 'should include propagate_synd_post' do
@@ -487,7 +481,9 @@ describe 'dispatcher acceptance' do
               module_file => \"/tmp/dispatcher-apache-module.so\",
             }
             aem::dispatcher::farm { \"site\" :
-              docroot => \"/var/www\",
+              docroot            => \"/var/www\",
+              invalidate_handler => \"/path/to/handler\",
+              sticky_connections => [\"/path/to/content\", \"/another/path/to/content\"],
             }
             aem::dispatcher::farm { \"anothersite\" :
               docroot => \"/var/www\",
@@ -552,6 +548,16 @@ describe 'dispatcher acceptance' do
       end
       it 'should use name for root node' do
         shell("grep -- '/site' #{conf_dir}/dispatcher.site.any", :acceptable_exit_codes => 0)
+      end
+      it 'should include invalidate_handler' do
+        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/invalidateHandler \"\\/path\\/to\\/handler\"/ p'") do |result|
+          expect(result.stdout).to match(%r{/invalidateHandler})
+        end
+      end
+      it 'should include stickyConnections' do
+        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/stickyConnections {\\s*\\/paths {\\s*\"\\/path\\/to\\/content\"\\s*\"\\/another\\/path\\/to\\/content\"/ p'") do |result|
+          expect(result.stdout).to match(%r{/stickyConnections})
+        end
       end
     end
     context 'dispatcher any - anothersite' do

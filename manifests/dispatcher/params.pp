@@ -43,10 +43,12 @@ class aem::dispatcher::params {
 
   $group = $::apache::root_group
 
-  $invalidate = {
-    'type' => 'allow',
-    'glob' => '*',
-  }
+  $invalidate = [
+    {
+      'type' => 'allow',
+      'glob' => '*',
+    }
+  ]
 
   $log_file = "${::apache::logroot}/dispatcher.log"
 

@@ -109,11 +109,13 @@
     /statfileslevel "<%= @stat_files_level -%>"
     <%- end -%>
 
+    <%- if @_invalidate -%>
     /invalidate {
     <%- @_invalidate.sort_by { |entry| entry['rank'] || -1 }.each_with_index do |inval, idx| -%>
       /<%= idx -%> { /type "<%= inval['type'] -%>" /glob "<%= inval['glob'] -%>" }
     <%- end -%>
     }
+    <%- end -%>
 
     <%- if @invalidate_handler-%>
     /invalidateHandler "<%= @invalidate_handler-%>"

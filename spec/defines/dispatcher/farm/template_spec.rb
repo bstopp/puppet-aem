@@ -399,7 +399,10 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'invalidate_handler' do
       let :params do
-        default_params.merge(:invalidate_handler  => '/path/to/script')
+        default_params.merge(
+          :invalidate         => :undef,
+          :invalidate_handler => '/path/to/script'
+        )
       end
       it { is_expected.to compile }
       it do
@@ -407,6 +410,8 @@ describe 'aem::dispatcher::farm', :type => :define do
           '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
         ).with_content(
             /\/invalidateHandler "\/path\/to\/script"/
+        ).without_content(
+          /\/invalidate /
         )
       end
     end
