@@ -1,6 +1,6 @@
 require 'spec_helper_acceptance'
 
-describe 'aem::instance' do
+describe 'aem::instance acceptance' do
 
   describe 'aem::instance first run' do
 

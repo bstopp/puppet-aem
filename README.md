@@ -6,6 +6,7 @@
 [Beginning with AEM]: #beginning-with-aem
 
 [Reference]: #reference
+[Public Classes]: #public-classes
 [Public Defines]: #public-defines
 [Private Defines]: #private-defines
 [Private Types]: #private-types
@@ -47,6 +48,7 @@
   * [Setup Requirements][]
   * [Beginning with AEM][]
 1. [Reference - AEM Module type and providers][Reference]
+  * [Public Classes][]
   * [Public Defines][]
   * [Private Defines][]
   * [Private Types][]
@@ -86,22 +88,185 @@ For more options and detailed explanations, please see the [Puppet AEM Wiki][wik
 
 ## Reference
 
+- **[Public CLasses][]
+  - [Class: aem::dispatcher](#class-aemdispatcher)
 - **[Public Defines][]**
+  - [Define: aem::dispatcher::farm](#define-aemdispatcherfarm)
   - [Define: aem::instance](#define-aeminstance)
   - [Define: aem::license](#define-aemlicense)
+  - [Define: aem::osgi::config](#define-aemosgiconfig)
   - [Define: aem::service](#define-aemservice)
 - **[Private Defines][]**
-  - [Define: aem::package](#define-aempackage)
   - [Define: aem::config](#define-aemconfig)
+  - [Define: aem::osgi::config::file](#define-aemosgiconfigfile)
+  - [Define: aem::package](#define-aempackage)
 - **[Private Types][]**
   - [Type: Aem_Installer](#type-aem_installer)
   - [Type: Aem_Osgi_Config](#type-aem_osgi_config)
 
+### Public Classes
+
+#### Class: `aem::dispatcher`
+
+Installs and configures a specified AEM Dispatcher module. For more details and examples see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20Dispatcher)
+
+**Note:** Currently only Apache HTTP is supported by this module.
+
+#### `ensure`
+Optional. Adds or removes the dispatcher configuration. Valid options: `present` or `absent`. Default: `present`.
+
+#### `decline_root`
+Optional. Sets the *DispatcherDelcineRoot* value for the dispatcher configuration. Valid options: `0`, `1`, `off` or `on`. Default: `off`.
+
+#### `dispatcher_name`
+Optional. Sets the *name* of the dispatcher in the root dispatcher farm file. Valid options: any string.
+
+##### `group`
+Optional. Sets the group for file ownership. Valid options: any valid group. Default: Apache's root group.
+
+##### `log_file`
+Optional. Sets the name and location of the dispatcher log file. Valid options: any fully qualified file name. Default: *<apache log root>/dispatcher.log*.
+
+##### `log_level`
+Optional. Sets the log level for dispatcher logging. Valid options: `0`, `1`, `2`, `3`, `error`, `warn`, `info`, `debug`. Default: `warn`.
+
+#### `module_file`
+Required. Specifies which dispatcher module will be loaded. Valid options: any absolute path to file.
+
+#### `no_server_header`
+Optional. Sets the *DispatcherNoServerHeader* value for the dispatcher configuration. Valid options: `0`, `1`, `off` or `on`. Default: `off`.
+
+#### `pass_error`
+Optional. Sets the *DispatcherPassError* value for the dispatcher configuration. Valid options: any string. Default: `0`.
+
+#### `use_processed_url`
+Optional. Sets the *DispatcherUseProcessedURL* value for the dispatcher configuration. Valid options: `0`, `1`, `off` or `on`. Default: `off`.
+
+##### `user`
+Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `root`.
+
 ### Public Defines
+
+#### Define: `aem::dispatcher::farm`
+
+Configures a single farm instance within the Dispatcher. For more details and examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20Dispatcher%20Farm)
+
+##### `ensure`
+Optional. Adds or removes the dispatcher farm configuration. Valid options: `present` or `absent`. Default: `present`.
+
+##### `allow_authorized`
+Optional. Sets the cache */allowAuthorized* rule. Valid options: `0` or `1`.
+
+##### `allowed_clients`
+Optional. Sets the cache */allowedClients* section. Valid options: Hash, or Array of Hashes. Default:
+~~~ puppet
+{
+  'type' => 'allow',
+  'glob' => '*',
+}
+~~~
+
+##### `cache_headers`
+Optional. Sets the cache */headers* section. Valid options: String or Array of Strings.
+
+##### `cache_rules`
+Optional. Sets the cache */rules* section. Valid options: Hash, or Array of Hashes. Default:
+~~~ puppet
+{
+  'type' => 'deny',
+  'glob' => '*',
+}
+~~~
+
+##### `cache_ttl`
+Optional. Sets the cache */enableTTL* rule. Valid options: `0` or `1`.
+
+##### `client_headers`
+Optional. Sets the */clientheaders* rule. Valid options: String or Array of Strings. Default: `*`
+
+##### `docroot`
+Required. Sets the cache */docroot* rule. Valid options: any absolute path.
+
+##### `failover`
+Optional. Sets the */failover* rule. Valid options: `0` or `1`.
+
+##### `filters`
+Optional. Sets the */fiters* section. Valid options: Hash, or Array of Hashes. Default:
+~~~ puppet
+{
+  'type' => 'allow',
+  'glob' => '*',
+}
+~~~
+
+##### `grace_period`
+Optional. Sets the cache */grace* rule. Valid options: any positive integer.
+
+##### `ignore_parameters`
+Optional. Sets the cache */ignoreUrlParams* section. Valid options: Hash, or Array of Hashes.
+
+##### `invalidate`
+Optional. Sets the cache */invalidate* section. Valid options: Hash, or Array of Hashes. Default:
+~~~ puppet
+[
+  {
+    'type' => 'allow',
+    'glob' => '*',
+  }
+]
+~~~
+
+##### `invalidate_handler`
+Optional. Sets the cache */invalidateHandler* rule. Valid options: any absolute path to file.
+
+##### `propagate_synd_post`
+Optional. Sets the */propagateSyndPost* rule. Valid options: `0` or `1`.
+
+##### `renders`
+Optional. Sets the */renders* section. Valid options: Hash, or Array of Hashes. Default:
+~~~ puppet
+{
+  'hostname' => 'localhost',
+  'port'     => 4503,
+}
+~~~
+
+##### `retries`
+Optional. Sets the */numberOfRetries* rule. Valid options: any positive integer.
+
+##### `retry_delay`
+Optional. Sets the */retryDelay* rule. Valid options: any positive integer.
+
+##### `serve_stale`
+Optional. Sets the cache */serveStaleOnError* rule. Valid options: `0` or `1`.
+
+##### `session_management`
+Optional. Sets the */sessionmanagement* section. Valid options: Hash of values.
+
+##### `stat_file`
+Optional. Sets the cache */statfile* rule. Valid options: any absolute path to file.
+
+##### `stat_files_level`
+Optional. Sets the cache */statfileslevel* rule. Valid options: any integer >= 0.
+
+##### `statistics`
+Optional. Sets the */statistics* section. Valid options: Hash of values.
+
+##### `sticky_connections`
+Optional. Sets the */stickyConnectionsFor* rule or */stickyConnectionsFor* section based on value.. Valid options: String or Array of Strings.
+
+##### `unavailable_penalty`
+Optional. Sets the */unavailablePenalty* rule. Valid options: any positive integer.
+
+##### `vanity_urls`
+Optional. Sets the */vanity_urls* section. Valid options: Hash of values.
+
+##### `virtualhosts`
+Optional. Sets the */virtualhosts* section. Valid options: String or Array of Strings. Default: `*`.
 
 #### Define: `aem::instance`
 
-Installs an AEM instance into your system.
+Installs an AEM instance into your system. For more details and examples see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20Instance)
 
 When this type is declared with the default options, Puppet:
 
@@ -131,7 +296,7 @@ Optional. Specifies the port on which to listen for remote debugging connections
 Optional. Sets the group for installation. Valid options: any valid group. Default: `aem`.
 
 ##### `home`
-Optional. Sets the directory in which AEM will be installed. Valid options: Any absolute system path. Default: `/opt/aem`.
+Optional. Sets the directory in which AEM will be installed. Valid options: any absolute path. Default: `/opt/aem`.
 
 ##### `jvm_mem_opts`
 Optional. Specifies options for the JVM memory. This is separated from the JVM opts to simplify configurations. Valid options: any valid JVM parameter string. Default: `-Xmx1024m`.
@@ -167,7 +332,7 @@ Optional. Sets the wait period between checks for installation completion. When 
 Required. Sets the source jar file to use, provided by user. Valid options: any absolute path to file.
 
 ##### `status`
-Optional. Changes the state of the service on the system, defining whether or not the service starts at system boot and/or is currently running. Valid values are:
+Optional. Changes the state of the service on the system, defining whether or not the service starts at system boot and/or is currently running. Valid options:
 * `enabled`: Start at boot & currently running (**Default**)
 * `disabled`: Not started at boot & not currently running.
 * `running`: Not started at boot but is currently running.
@@ -187,7 +352,7 @@ Optional. Sets the version of AEM. Informational only, does not affect installat
 
 #### Define: `aem::license`
 
-Manages an AEM License file. Provides a convenient tool for managing the license file contents without needing ot know the structure.
+Manages an AEM License file. Provides a convenient tool for managing the license file contents without needing ot know the structure. For examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20License)
 
 ** Parameters within `aem::license`:**
 
@@ -215,37 +380,9 @@ Optional. Sets the user for for file ownership. Valid options: any valid user. D
 ##### `version`
 Optional. Sets the version of AEM for the license file contents. Valid options: any string.
 
-#### Define: `aem::service`
-
-Manages the AEM daemon. Creating a defintion for this is not necesary unless the `aem::instance`'s *manage_service* is **false**.
-
-** Parameters within `aem::service`:**
-
-##### `name`
-Namevar. Required. Specifies the name of the AEM Service.
-
-##### `ensure`
-Optional. Changes the state of the AEM Service within puppet. Valid values are `present` or `absent`. Default: `present`.
-
-##### `group`
-Optional. Sets the group for file ownership. Valid options: any valid group. Default: `aem`.
-
-##### `home`
-Required. Sets the directory in which the AEM instance exists, necessary for service configuration definition. Valid options: Any absolute system path.
-
-##### `status`
-Optional. Changes the state of the service on the system, defining whether or not the service starts at system boot and/or is currently running. Valid options:
-* `enabled`: Start at boot & currently running (**Default**)
-* `disabled`: Not started at boot & not currently running.
-* `running`: Not started at boot but is currently running.
-* `unmanaged`: Don't manage it with service manager, running state is arbitrary.
-
-##### `user`
-Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `aem`.
-
 #### Define: `aem::osgi::config`
 
-Manages an AEM OSGi Configuration; allows for saving Service/Component configurations via a file or posted to the Felix Web Console.
+Manages an AEM OSGi Configuration; allows for saving Service/Component configurations via a file or posted to the Felix Web Console. For examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20OSGi%20Config)
 
 ** Parameters within `aem::osgi::config`:**
 
@@ -262,7 +399,7 @@ Optional. Sets the group for file ownership. Valid options: any valid group. Def
 Required if **type** == `console`. Determine how to handle properties which are configured in the console, but not provided. See [wiki][wiki] for examples. Valid options: `merge` or `remove`.
 
 ##### `home`
-Required. Sets the directory in which AEM exists. Valid options: Any absolute path.
+Required. Sets the directory in which AEM exists. Valid options: any absolute path.
 
 ##### `password`
 Required if **type** == `console`. Sets the password of the OSGI console user. Valid options: any valid password.
@@ -278,6 +415,34 @@ Optional. Sets the user for for file ownership. Valid options: any valid user. D
 
 ##### `username`
 Required if **type** == `console`. Sets the user for accessing the OSGI console. Valid options: any valid user.
+
+#### Define: `aem::service`
+
+Manages the AEM daemon. Creating a defintion for this is not necesary unless the `aem::instance`'s *manage_service* is **false**. For examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20Service)
+
+** Parameters within `aem::service`:**
+
+##### `name`
+Namevar. Required. Specifies the name of the AEM Service.
+
+##### `ensure`
+Optional. Changes the state of the AEM Service within puppet. Valid options: `present` or `absent`. Default: `present`.
+
+##### `group`
+Optional. Sets the group for file ownership. Valid options: any valid group. Default: `aem`.
+
+##### `home`
+Required. Sets the directory in which the AEM instance exists, necessary for service configuration definition. Valid options: any absolute path.
+
+##### `status`
+Optional. Changes the state of the service on the system, defining whether or not the service starts at system boot and/or is currently running. Valid options:
+* `enabled`: Start at boot & currently running (**Default**)
+* `disabled`: Not started at boot & not currently running.
+* `running`: Not started at boot but is currently running.
+* `unmanaged`: Don't manage it with service manager, running state is arbitrary.
+
+##### `user`
+Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `aem`.
 
 ### Private Defines
 
@@ -299,6 +464,10 @@ This custom type starts the AEM instance to create the base repository, monitors
 This custom type manages OSGi Configurations which are of type `console`.
 
 ## Limitations
+
+### Dependencies
+
+The `aem::dispatcher` class requires the Puppet Apache module; however since the use of this class is optional, this dependency is not delcared explicitly.
 
 ### OS Compatibility
 
