@@ -88,7 +88,7 @@ For more options and detailed explanations, please see the [Puppet AEM Wiki][wik
 
 ## Reference
 
-- **[Public CLasses][]
+- **[Public Classes][]**
   - [Class: aem::dispatcher](#class-aemdispatcher)
 - **[Public Defines][]**
   - [Define: aem::dispatcher::farm](#define-aemdispatcherfarm)
