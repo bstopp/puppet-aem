@@ -1,9 +1,11 @@
 .vagrant/
+.git/
 coverage/
-files/
 junit/
 log/
 pkg/
+spec/files/
+spec/fixtures/
 .brackets.json
 .codeclimate.yml
 .fixtures.yml
@@ -12,5 +14,6 @@ pkg/
 .rubocop.yml
 .sync.yml
 .travis.yml
+beaker.log
 cw.sh
 Gemfile.lock

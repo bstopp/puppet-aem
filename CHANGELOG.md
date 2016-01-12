@@ -1,6 +1,15 @@
+## 2016-01-12 - Release 2.2.0
+### Summary
+Added support for Dispatcher module, Dispatcher Farms, and OSGi configurations. Significant testing updates. Also significant updates to documentation and examples.
+
+#### Features:
+* New `aem::dispatcher` Class for managing Dispatcher module
+* New `aem::dispatcher::farm` defines for defining a Dispatcher farm instance
+* New `aem::osgi::config` defines for creating and managing OSGi Configurations
+
 ## 2015-10-01 - Release 2.1.0
 ### Summary
-Adding service support; AEM instances are now automatically service enabled and started. All license types are included in resource lifecycle. 
+Adding service support; AEM instances are now automatically service enabled and started. All license types are included in resource lifecycle.
 
 #### Features:
 * New `aem::instance` property: *status*.
