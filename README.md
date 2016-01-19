@@ -354,7 +354,7 @@ Optional. Sets the version of AEM. Informational only, does not affect installat
 
 Manages an AEM License file. Provides a convenient tool for managing the license file contents without needing ot know the structure. For examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20License)
 
-** Parameters within `aem::license`:**
+**Parameters within `aem::license`:**
 
 ##### `name`
 Namevar. Required. Specifies the name of the AEM license.
@@ -384,7 +384,7 @@ Optional. Sets the version of AEM for the license file contents. Valid options: 
 
 Manages an AEM OSGi Configuration; allows for saving Service/Component configurations via a file or posted to the Felix Web Console. For examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20OSGi%20Config)
 
-** Parameters within `aem::osgi::config`:**
+**Parameters within `aem::osgi::config`:**
 
 ##### `name`
 Namevar. Required. Specifies the name of the AEM OSGi Configuration. This should be the Service PID. [Apache Felix Documentation][Felix Configuration]
@@ -420,7 +420,7 @@ Required if **type** == `console`. Sets the user for accessing the OSGI console.
 
 Manages the AEM daemon. Creating a defintion for this is not necesary unless the `aem::instance`'s *manage_service* is **false**. For examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20Service)
 
-** Parameters within `aem::service`:**
+**Parameters within `aem::service`:**
 
 ##### `name`
 Namevar. Required. Specifies the name of the AEM Service.
