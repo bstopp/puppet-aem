@@ -256,10 +256,10 @@ describe 'aem::config', :type => :defines do
       default_params.merge({
         :osgi_configs => [
           {
-            'osgi.name' => cfg_props1
+            'osgi.name' => { 'properties' => cfg_props1 }
           },
           {
-            'osgi2.name' => cfg_props2 
+            'osgi2.name' => { 'properties' => cfg_props2 }
           }
         ]
       })
@@ -285,6 +285,75 @@ describe 'aem::config', :type => :defines do
         ).with(
           :group       => 'aem',
           :home        => '/opt/aem',
+          :properties  => cfg_props2,
+          :type        => 'file',
+          :user        => 'aem'
+        )
+      end
+    end
+  end
+
+  describe 'osgi configurations with pid' do
+    let :facts do
+      default_facts
+    end
+    let :params do
+      default_params
+    end
+
+    let :cfg_props1 do
+      {
+        'key' => 'value',
+        'key2' => 'value2',
+      }
+    end
+    let :cfg_props2 do
+      {
+        'key3' => 'value3',
+        'key4' => 'value4',
+      }
+    end
+    let :params do
+      default_params.merge({
+        :osgi_configs => [
+          {
+            'osgi.name' => {
+              'pid'        => 'aem.config1',
+              'properties' => cfg_props1
+            }
+          },
+          {
+            'osgi2.name' => {
+              'pid'        => 'aem.config2',
+              'properties' => cfg_props2
+            }
+          }
+        ]
+      })
+    end
+    
+    context 'defines first config resource' do
+      it do
+        is_expected.to contain_aem__osgi__config(
+          'osgi.name'
+        ).with(
+          :group       => 'aem',
+          :home        => '/opt/aem',
+          :pid         => 'aem.config1',
+          :properties  => cfg_props1,
+          :type        => 'file',
+          :user        => 'aem'
+        )
+      end
+    end
+    context 'defines second config resource' do
+      it do
+        is_expected.to contain_aem__osgi__config(
+          'osgi2.name'
+        ).with(
+          :group       => 'aem',
+          :home        => '/opt/aem',
+          :pid         => 'aem.config2',
           :properties  => cfg_props2,
           :type        => 'file',
           :user        => 'aem'

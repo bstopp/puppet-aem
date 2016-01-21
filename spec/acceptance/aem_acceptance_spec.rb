@@ -66,14 +66,20 @@ describe 'aem::instance acceptance' do
             file { \"/opt/aem\" : ensure => directory }
 
             \$osgi = [{
-              \"org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService\" => {
-                \"tarmk.size\" => 512,
-                \"pauseCompaction\" => true,
+              \"SegmentNodeStore\" => {
+                \"pid\"        => \"org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService\",
+                \"properties\" => {
+                  \"tarmk.size\" => 512,
+                  \"pauseCompaction\" => true,
+                }
               },
-              \"org.apache.sling.security.impl.ReferrerFilter\" => {
-                \"allow.empty\"    => true,
-                \"allow.hosts\"    => [\"author.localhost.localmachine\"],
-                #\"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
+              \"ReferrerFilter\" => {
+                \"pid\"        => \"org.apache.sling.security.impl.ReferrerFilter\",
+                \"properties\" => {
+                  \"allow.empty\"    => true,
+                  \"allow.hosts\"    => [\"author.localhost.localmachine\"],
+                  #\"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
+                }
               }
             }]
 
@@ -276,8 +282,9 @@ describe 'aem::instance acceptance' do
               \"sling.jcrinstall.enable.writeback\"   => false
             }
 
-            aem::osgi::config { \"org.apache.sling.installer.provider.jcr.impl.JcrInstaller\":
+            aem::osgi::config { \"JCRInstaller\" :
               ensure         => present,
+              pid            => \"org.apache.sling.installer.provider.jcr.impl.JcrInstaller\",
               properties     => \$osgi,
               handle_missing => \"remove\",
               home           => \"/opt/aem/author\",
@@ -362,8 +369,9 @@ describe 'aem::instance acceptance' do
             \$osgi = {
               \"allow.hosts\"    => [\"author.localhost\"],
             }
-            aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" :
+            aem::osgi::config { \"ReferrerFilter\" :
               ensure         => present,
+              pid            => \"org.apache.sling.security.impl.ReferrerFilter\",
               properties     => \$osgi,
               handle_missing => \"remove\",
               home           => \"/opt/aem/author\",

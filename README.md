@@ -314,7 +314,7 @@ Optional. Sets whether or not this instance will manage the defined home directo
 Optional. Sets whether or not this instance will manage the defined user. Valid options: `true` or `false`. Default: `true`.
 
 ##### `osgi_configs`
-Optional. Creates *file* type definitions of `aem::osgi::config` which will be applied prior to inital AEM start. Valid options: Hash or Array of Hash configurations.
+Optional. Creates *file* type definitions of `aem::osgi::config` which will be applied prior to inital AEM start. The only necessary attributse of the Hashes are *properties* and *pid* (optional). Valid options: Hash or Array of Hash configurations.
 
 ##### `port`
 Optional. Specifies the port on which AEM will listen. Valid options: any valid port. Default: 4502. [Sling documentation][Sling command-line-options]

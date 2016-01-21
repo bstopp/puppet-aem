@@ -8,6 +8,7 @@ define aem::osgi::config(
   $handle_missing = undef,
   $home           = undef,
   $password       = undef,
+  $pid            = undef,
   $properties     = undef,
   $type           = undef,
   $user           = 'aem',
@@ -51,8 +52,9 @@ define aem::osgi::config(
         configuration  => $properties,
         handle_missing => $handle_missing,
         home           => $home,
-        username       => $username,
+        pid            => $pid,
         password       => $password,
+        username       => $username,
       }
     }
     'file' : {
@@ -60,6 +62,7 @@ define aem::osgi::config(
         ensure     => $ensure,
         group      => $group,
         home       => $home,
+        pid        => $pid,
         properties => $properties,
         user       => $user,
       }

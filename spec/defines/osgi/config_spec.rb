@@ -17,7 +17,8 @@ describe 'aem::osgi::config', :type => :defines do
     {
       :home           => '/opt/aem',
       :handle_missing => 'merge',
-      :properties => {
+      :pid            => 'osgi.pid',
+      :properties     => {
         'boolean' => false,
         'long'    => 123456789,
         'string'  => 'string',
@@ -156,6 +157,7 @@ describe 'aem::osgi::config', :type => :defines do
             :ensure     => 'present',
             :group      => 'aem',
             :home       => '/opt/aem',
+            :pid        => 'osgi.pid',
             :properties => params[:properties],
             :user       => 'aem'
           )
@@ -174,6 +176,7 @@ describe 'aem::osgi::config', :type => :defines do
             :ensure     => 'absent',
             :group      => 'aem',
             :home       => '/opt/aem',
+            :pid        => 'osgi.pid',
             :properties => params[:properties],
             :user       => 'aem'
           )
@@ -196,6 +199,7 @@ describe 'aem::osgi::config', :type => :defines do
             :ensure        => 'present',
             :configuration => params[:properties],
             :home          => '/opt/aem',
+            :pid           => 'osgi.pid',
             :password      => 'password',
             :username      => 'username'
           )
@@ -214,6 +218,7 @@ describe 'aem::osgi::config', :type => :defines do
             :ensure        => 'absent',
             :configuration => params[:properties],
             :home          => '/opt/aem',
+            :pid           => 'osgi.pid',
             :password      => 'password',
             :username      => 'username'
           )

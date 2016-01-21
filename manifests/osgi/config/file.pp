@@ -8,16 +8,23 @@ define aem::osgi::config::file(
   $ensure,
   $group,
   $home,
+  $pid,
   $properties,
   $user
 ){
 
-  $file_props = {
-    'properties' => $properties,
-    'pid' => $name
+  if $pid == undef {
+    $_pid = $name
+  } else {
+    $_pid = $pid
   }
 
-  file { "${home}/crx-quickstart/install/${name}.config" :
+  $file_props = {
+    'properties' => $properties,
+    'pid' => $_pid
+  }
+
+  file { "${home}/crx-quickstart/install/${_pid}.config" :
     ensure  => $ensure,
     group   => $group,
     content => epp("${module_name}/osgi.config.epp", $file_props),
@@ -27,6 +34,6 @@ define aem::osgi::config::file(
 
   if defined(File[$home]) {
     File[$home]
-    -> File["${home}/crx-quickstart/install/${name}.config"]
+    -> File["${home}/crx-quickstart/install/${_pid}.config"]
   }
 }
