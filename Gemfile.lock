@@ -260,7 +260,7 @@ GEM
     rspec-mocks (3.4.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.4.0)
-    rspec-puppet (2.3.0)
+    rspec-puppet (2.3.2)
       rspec
     rspec-support (3.4.1)
     rsync (1.0.9)
@@ -324,7 +324,7 @@ DEPENDENCIES
   puppetlabs_spec_helper
   rake
   rspec (~> 3.4)
-  rspec-puppet (= 2.3.0)
+  rspec-puppet
   rubocop
   serverspec
   webmock
