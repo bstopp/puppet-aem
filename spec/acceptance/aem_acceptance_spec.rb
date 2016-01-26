@@ -66,20 +66,17 @@ describe 'aem::instance acceptance' do
             file { \"/opt/aem\" : ensure => directory }
 
             \$osgi = [{
-              \"SegmentNodeStore\" => {
+              \"SegmentNodeStore-Author\" => {
                 \"pid\"        => \"org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService\",
                 \"properties\" => {
                   \"tarmk.size\" => 512,
                   \"pauseCompaction\" => true,
                 }
               },
-              \"ReferrerFilter\" => {
-                \"pid\"        => \"org.apache.sling.security.impl.ReferrerFilter\",
-                \"properties\" => {
-                  \"allow.empty\"    => true,
-                  \"allow.hosts\"    => [\"author.localhost.localmachine\"],
-                  #\"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
-                }
+              \"org.apache.sling.security.impl.ReferrerFilter\" => {
+                \"allow.empty\"    => true,
+                \"allow.hosts\"    => [\"author.localhost.localmachine\"],
+                #\"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
               }
             }]
 

@@ -256,10 +256,10 @@ describe 'aem::config', :type => :defines do
       default_params.merge({
         :osgi_configs => [
           {
-            'osgi.name' => { 'properties' => cfg_props1 }
+            'osgi.name' => cfg_props1
           },
           {
-            'osgi2.name' => { 'properties' => cfg_props2 }
+            'osgi2.name' => cfg_props2
           }
         ]
       })

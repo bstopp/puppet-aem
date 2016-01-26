@@ -66,11 +66,18 @@ define aem::config(
 
       $cfg.each | $key, $values | {
 
+        if $values['properties'] {
+          $_props = $values['properties']
+          $_pid = $values['pid']
+        } else {
+          $_props = $values
+        }
+
         aem::osgi::config { $key :
           group      => $group,
           home       => $home,
-          pid        => $values['pid'],
-          properties => $values['properties'],
+          pid        => $_pid,
+          properties => $_props,
           type       => 'file',
           user       => $user
         }

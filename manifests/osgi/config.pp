@@ -25,7 +25,7 @@ define aem::osgi::config(
   }
 
   if !is_hash($properties) {
-    fail("Aem::Osgi::Config::File[${name}]: 'properties' must be a Hash of values")
+    fail("Aem::Osgi::Config[${name}]: 'properties' must be a Hash of values")
   }
 
   validate_re($type, '^(console|file)$',

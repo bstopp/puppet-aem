@@ -79,11 +79,12 @@ def restart_puppetserver
 end
 
 def aem_license(module_root)
-  File.foreach(File.join(module_root, 'spec', 'files', 'license.properties')) do |line|
+  license_file = File.join(module_root, 'spec', 'files', 'license.properties')
+   File.foreach(license_file) do |line|
     if match = line.match(/license.downloadID=(\S+)/)
       ENV['AEM_LICENSE'] = match.captures[0]
     end
-  end
+  end if File.exist?(license_file)
 end
 
 module_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
