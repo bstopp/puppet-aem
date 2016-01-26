@@ -1,3 +1,7 @@
+## 2016-01-26 - Release 2.2.1
+### Summary
+Added ability to specify PID when configuring OSGi items. This allows multiple definitions, when more than one AEM instance exists on a server.
+
 ## 2016-01-12 - Release 2.2.0
 ### Summary
 Added support for Dispatcher module, Dispatcher Farms, and OSGi configurations. Significant testing updates. Also significant updates to documentation and examples.
