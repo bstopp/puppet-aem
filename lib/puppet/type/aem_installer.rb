@@ -17,7 +17,7 @@ This is a private type intended to start, monitor, and stop an AEM instance, ins
     end
 
     def insync?(is)
-      is.downcase == should.downcase
+      is.casecmp(should) == 0
     end
   end
 
