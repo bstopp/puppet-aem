@@ -239,12 +239,12 @@ describe 'aem::instance', :type => :defines do
           default_params.merge(:osgi_configs => [
             {
               'testa' => {
-                'key' => 'value'
+                'properties' => { 'key' => 'value' }
               }
             },
             {
               'testb' => {
-                'key1' => 'value2'
+                'properties' => { 'key' => 'value' }
               }
             }
           ])

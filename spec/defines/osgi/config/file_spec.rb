@@ -18,6 +18,7 @@ describe 'aem::osgi::config::file', :type => :defines do
       :ensure     => 'present',
       :group      => 'aem',
       :home       => '/opt/aem',
+      :pid        => :undef,
       :properties => {
         'boolean' => false,
         'long'    => 123456789,
@@ -128,6 +129,19 @@ describe 'aem::osgi::config::file', :type => :defines do
 
     context 'default' do
       it { is_expected.to contain_file('/opt/aem/crx-quickstart/install/aem.config').that_requires('File[/opt/aem]') }
+    end
+
+  end
+
+  describe 'uses pid for file name' do
+    let(:pre_condition) { 'file { "/opt/aem" : }' }
+
+    let :params do
+      default_params.merge(:pid => 'aem.osgi')
+    end
+
+    context 'default' do
+      it { is_expected.to contain_file('/opt/aem/crx-quickstart/install/aem.osgi.config').that_requires('File[/opt/aem]') }
     end
 
   end

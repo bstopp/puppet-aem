@@ -72,7 +72,10 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, :parent => Puppet::Provider d
   end
 
   def current_config
-    uri = URI("#{config_mgr_uri}/#{resource[:name]}.json")
+
+    pid = resource[:pid] || resource[:name]
+
+    uri = URI("#{config_mgr_uri}/#{pid}.json")
     req = Net::HTTP::Get.new(uri.request_uri)
     req.basic_auth resource[:username], resource[:password]
 
@@ -126,7 +129,9 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, :parent => Puppet::Provider d
 
   def post_to_cfgmgr(configuration)
 
-    uri = URI("#{config_mgr_uri}/#{resource[:name]}")
+    pid = resource[:pid] || resource[:name]
+
+    uri = URI("#{config_mgr_uri}/#{pid}")
 
     req = Net::HTTP::Post.new(uri.request_uri)
     req.basic_auth(resource[:username], resource[:password])

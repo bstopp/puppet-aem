@@ -61,6 +61,10 @@ This is a private type used to manage OSGi co=nfigurations via API calls.
     desc 'Password used to log into AEM.'
   end
 
+  newparam(:pid) do
+    desc 'The Service PID for the OSGi Configuration.'
+  end
+
   newparam(:timeout) do
     desc 'Timeout for a successful AEM start. Default = 60 seconds'
 

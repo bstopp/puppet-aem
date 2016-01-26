@@ -64,12 +64,20 @@ define aem::config(
 
     $_osgi_configs.each | Hash $cfg | {
 
-      $cfg.each | $key, $value | {
+      $cfg.each | $key, $values | {
+
+        if $values['properties'] {
+          $_props = $values['properties']
+          $_pid = $values['pid']
+        } else {
+          $_props = $values
+        }
 
         aem::osgi::config { $key :
           group      => $group,
           home       => $home,
-          properties => $value,
+          pid        => $_pid,
+          properties => $_props,
           type       => 'file',
           user       => $user
         }
