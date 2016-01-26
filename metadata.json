@@ -1,6 +1,6 @@
 {
 	"name": "bstopp-aem",
-	"version": "2.2.0",
+	"version": "2.2.1",
 	"author": "Bryan Stopp (bryan.stopp@gmail.com)",
 	"license": "Apache-2.0",
 	"summary": "Install and configure Adobe Experience Manager instances.",
@@ -25,8 +25,8 @@
 			]
 		},{
 			"operatingsystem": "Ubuntu",
-			"operatingsystemrelease": [ "10.04",
-				"12.04"
+			"operatingsystemrelease": [ "12.04",
+				"14.04"
 			]
 		},{
 			"operatingsystem": "Debian",
