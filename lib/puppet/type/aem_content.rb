@@ -1,13 +1,13 @@
-Puppet::Type.newtype(:aem_wcmcommand) do
+Puppet::Type.newtype(:aem_content) do
 
   @doc = <<-DOC
-This is a type used to perform wcmcommands
+This is a type used to perform sling api calls
   DOC
 
   ensurable
 
   newparam(:name, :namevar => true) do
-    desc 'The name of the resource'
+    desc 'The name of the content node'
   end
 
   newparam(:home) do
@@ -27,12 +27,12 @@ This is a type used to perform wcmcommands
     desc 'Password used to log into AEM.'
   end
 
-  newproperty(:configuration) do
-    desc 'Properties for the OSGi configuration.'
+  newproperty(:properties) do
+    desc 'Properties for the node.'
 
     validate do |value|
       unless value.is_a?(Hash)
-        fail(Puppet::ResourceError, 'Config properties must be a hash of values.')
+        fail(Puppet::ResourceError, 'Properties must be a hash of values.')
       end
     end
   end

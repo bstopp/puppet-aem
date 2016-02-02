@@ -34,27 +34,37 @@ define aem::agent::config(
     $agent_enabled = false
   }
 
-  aem_wcmcommand { "wcmcmd-${name}" :
-    ensure          => $ensure,
-    home            => $home,
-    username        => $username,
-    password        => $password,
-    configuration   => {
-      'cmd'         => 'createPage',
-      '_charset_'   => 'utf-8',
-      ':status'     => 'browser',
-      'parentPath'  => "/etc/replication/agents.${on}",
-      'title'       => $description,
-      'label'       => $name,
-      'template'    => '/libs/cq/replication/templates/agent'
-    }
+  aem_content { "/etc/replication/agents.author/${name}" :
+    ensure     => $ensure,
+    home       => $home,
+    username   => $username,
+    password   => $password,
+    properties => {
+      'jcr:primaryType' => 'cq:Page',
+    },
+    before => Aem_content["/etc/replication/agents.author/${name}/jcr:content"],
   }
 
-  # TODO, something like this:
-  #aem_configure_page { "page-${name}" :
-  #  home            => $home,
-  #  username        => $username,
-  #  password        => $password,
-  #  configuration   => {}
-  #}
+  aem_content { "/etc/replication/agents.author/${name}/jcr:content" :
+    ensure     => $ensure,
+    home       => $home,
+    username   => $username,
+    password   => $password,
+    properties => {
+      'cq:template'        => '/libs/cq/replication/templates/agent',
+      '_charset_'          => 'utf-8',
+      ':status'            => 'browser',
+      'enabled'            => $status,
+      'jcr:description'    => $description,
+      'jcr:title'          => $description,
+      'logLevel'           => 'info',
+      'retryDelay'         => '6000',
+      'serializationType'  => 'durbo',
+      'sling:resourceType' => 'cq/replication/components/agent',
+      'transportPassword'  => 'password',
+      'transportUri'       => 'http://host:port/bin/receive?sling:authRequestLogin=1',
+      'transportUser'      => 'replication-receiver',
+      'userId'             => 'your_replication_user',
+    },
+  }
 }
