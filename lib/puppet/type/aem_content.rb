@@ -7,7 +7,7 @@ This is a type used to perform sling api calls
   ensurable
 
   newparam(:name, :namevar => true) do
-    desc 'The name of the content node'
+    desc 'The full path of the content node'
   end
 
   newparam(:home) do
