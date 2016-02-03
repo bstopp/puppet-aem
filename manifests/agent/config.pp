@@ -2,13 +2,23 @@
 #
 # Configure a Replication Agent
 define aem::agent::config(
-  $ensure       = 'present',
-  $status       = 'enabled',
-  $description  = 'Replication Agent',
-  $on           = 'author',
-  $username     = 'admin',
-  $password     = 'admin',
-  $home         = undef,
+  $ensure            = 'present',
+  $status            = 'enabled',
+  $description       = 'Replication Agent',
+  $on                = 'author',
+  $username          = 'admin',
+  $password          = 'admin',
+  $home              = undef,
+  $charset           = 'utf-8',
+  $loglevel          = 'info',
+  $retrydelay        = '6000',
+  $serializationtype = 'durbo',
+  $template          = '/libs/cq/replication/templates/agent',
+  $resourcetype      = 'cq/replication/components/agent',
+  $transportpassword = 'password',
+  $transporturi      = 'http://host:port/bin/receive?sling:authRequestLogin=1',
+  $transportuser     = 'replication-receiver',
+  $replicationuser   = 'your_replication_user',
 ) {
   validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
 
@@ -34,7 +44,8 @@ define aem::agent::config(
     $agent_enabled = false
   }
 
-  aem_content { "/etc/replication/agents.author/${name}" :
+  aem_content { "${name}-node" :
+    name       => "/etc/replication/agents.author/${name}",
     ensure     => $ensure,
     home       => $home,
     username   => $username,
@@ -42,29 +53,30 @@ define aem::agent::config(
     properties => {
       'jcr:primaryType' => 'cq:Page',
     },
-    before => Aem_content["/etc/replication/agents.author/${name}/jcr:content"],
+    before     => Aem_content["${name}-node-content"],
   }
 
-  aem_content { "/etc/replication/agents.author/${name}/jcr:content" :
+  aem_content { "${name}-node-content" :
+    name       => "/etc/replication/agents.author/${name}/jcr:content",
     ensure     => $ensure,
     home       => $home,
     username   => $username,
     password   => $password,
     properties => {
-      'cq:template'        => '/libs/cq/replication/templates/agent',
-      '_charset_'          => 'utf-8',
+      'cq:template'        => $template,
+      '_charset_'          => $charset,
       ':status'            => 'browser',
-      'enabled'            => $status,
+      'enabled'            => $agent_enabled,
       'jcr:description'    => $description,
       'jcr:title'          => $description,
-      'logLevel'           => 'info',
-      'retryDelay'         => '6000',
-      'serializationType'  => 'durbo',
-      'sling:resourceType' => 'cq/replication/components/agent',
-      'transportPassword'  => 'password',
-      'transportUri'       => 'http://host:port/bin/receive?sling:authRequestLogin=1',
-      'transportUser'      => 'replication-receiver',
-      'userId'             => 'your_replication_user',
+      'logLevel'           => $loglevel,
+      'retryDelay'         => $retrydelay,
+      'serializationType'  => $serializationtype,
+      'sling:resourceType' => $resourcetype,
+      'transportPassword'  => $transportpassword,
+      'transportUri'       => $transporturi,
+      'transportUser'      => $transportuser,
+      'userId'             => $replicationuser,
     },
   }
 }
