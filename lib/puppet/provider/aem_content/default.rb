@@ -25,7 +25,7 @@ Puppet::Type.type(:aem_content).provide :ruby, :parent => Puppet::Provider do
 
   def flush
     if @property_flush[:ensure] == :absent
-      submit(resource[:name], { ':operation' => 'delete' } )
+      submit(resource[:name], ':operation' => 'delete')
       return
     end
     submit(resource[:name], resource[:properties])
@@ -47,10 +47,10 @@ Puppet::Type.type(:aem_content).provide :ruby, :parent => Puppet::Provider do
     end
 
     case res
-      when Net::HTTPCreated, Net::HTTPOK
-        # OK
-      else
-        res.value
+    when Net::HTTPCreated, Net::HTTPOK
+      # OK
+    else
+      res.value
     end
   end
 
@@ -65,10 +65,10 @@ Puppet::Type.type(:aem_content).provide :ruby, :parent => Puppet::Provider do
     end
 
     case res
-      when Net::HTTPFound
-        @property_hash[:ensure] = :present
-      else
-        @property_hash[:ensure] = :absent
+    when Net::HTTPFound
+      @property_hash[:ensure] = :present
+    else
+      @property_hash[:ensure] = :absent
     end
   end
 
@@ -87,6 +87,7 @@ Puppet::Type.type(:aem_content).provide :ruby, :parent => Puppet::Provider do
     uri = "http://localhost:#{port}"
     uri = "#{uri}/#{context_root}" if context_root
     uri = "#{uri}#{node}"
-    URI("#{uri}")
+    uri = URI("#{uri}")
+    uri
   end
 end

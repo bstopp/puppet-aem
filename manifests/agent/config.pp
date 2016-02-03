@@ -29,6 +29,7 @@ define aem::agent::config(
   validate_string($status)
   validate_string($description)
   validate_string($on)
+  validate_re($on, '^(author|publish)$', "${on} is not supported. Allowed values are 'author' and 'publish'.")
   validate_string($username)
   validate_string($password)
   validate_absolute_path($home)
@@ -45,7 +46,7 @@ define aem::agent::config(
 
   if $ensure == 'present' {
     validate_re($status, '^(enabled|disabled)$', "${status} is not supported for status. Allowed values are 'enabled' and 'disabled'.")
-    
+
     case $status {
       'enabled': {
         $agent_enabled = true
@@ -63,7 +64,7 @@ define aem::agent::config(
 
   aem_content { "${name}-node" :
     ensure     => $ensure,
-    name       => "/etc/replication/agents.author/${name}",
+    name       => "/etc/replication/agents.$on/${name}",
     home       => $home,
     username   => $username,
     password   => $password,
@@ -75,7 +76,7 @@ define aem::agent::config(
 
   aem_content { "${name}-node-content" :
     ensure     => $ensure,
-    name       => "/etc/replication/agents.author/${name}/jcr:content",
+    name       => "/etc/replication/agents.$on/${name}/jcr:content",
     home       => $home,
     username   => $username,
     password   => $password,
