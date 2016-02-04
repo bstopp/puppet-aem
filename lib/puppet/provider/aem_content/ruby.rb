@@ -15,7 +15,7 @@ Puppet::Type.type(:aem_content).provide :ruby, :parent => Puppet::Provider do
   end
 
   def exists?
-    check_exists(resource[:name])
+    check_exists
     @property_hash[:ensure] == :present
   end
 
@@ -25,18 +25,18 @@ Puppet::Type.type(:aem_content).provide :ruby, :parent => Puppet::Provider do
 
   def flush
     if @property_flush[:ensure] == :absent
-      submit(resource[:name], ':operation' => 'delete')
+      submit(':operation' => 'delete')
       return
     end
-    submit(resource[:name], resource[:properties])
-    check_exists(resource[:name])
+    submit(resource[:properties])
+    check_exists
     @property_flush.clear
   end
 
   protected
 
-  def submit(node, properties)
-    uri = get_node_uri(node)
+  def submit(properties)
+    uri = node_uri
     req = Net::HTTP::Post.new(uri.request_uri)
     req.basic_auth(resource[:username], resource[:password])
     req.form_data = properties
@@ -54,27 +54,40 @@ Puppet::Type.type(:aem_content).provide :ruby, :parent => Puppet::Provider do
     end
   end
 
-  def check_exists?(node)
-    uri = get_node_uri(node)
+  def check_exists
+    uri = node_uri
     req = Net::HTTP::Head.new(uri.request_uri)
     req.basic_auth(resource[:username], resource[:password])
     req['Referer'] = uri
 
-    res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-      http.request(req)
-    end
-
-    case res
-    when Net::HTTPFound
-      @property_hash[:ensure] = :present
-      true
-    else
-      @property_hash[:ensure] = :absent
-      false
+    Timeout.timeout(@resource[:timeout]) do
+      Kernel.loop do
+        begin
+          res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+            http.request(req)
+          end
+          return resouce_found?(res) if res.is_a?(Net::HTTPFound || Net::HTTPNotFound)
+        rescue
+          Puppet.debug('Unable to get configurations, waiting for AEM to start...')
+          sleep 10
+        end
+      end
     end
   end
 
-  def get_node_uri(node)
+  def resouce_found?(res)
+    case res
+    when Net::HTTPFound
+      @property_hash[:ensure] = :present
+      return true
+    when Net::HTTPNotFound
+      @property_hash[:ensure] = :absent
+      return false
+    end
+  end
+
+  def node_uri
+    node = resource[:name]
     port = nil
     context_root = nil
 

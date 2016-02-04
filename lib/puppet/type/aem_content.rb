@@ -37,6 +37,18 @@ This is a type used to perform sling api calls
     end
   end
 
+  newparam(:timeout) do
+    desc 'Timeout for a successful AEM start. Default = 60 seconds'
+
+    newvalues(/^\d+$/)
+
+    defaultto 60
+
+    munge do |value|
+      value.to_i
+    end
+  end
+
   validate do
     fail('AEM Home must be specified.') if self[:home].nil? || !self[:home]
   end
