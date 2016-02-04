@@ -28,7 +28,7 @@ define aem::agent::config(
 
   validate_string($status)
   validate_string($description)
-  validate_re($on, '^(author|publish)$', "${on} is not supported. Allowed values are 'author' and 'publish'.")
+  validate_string($on)
   validate_string($username)
   validate_string($password)
   validate_absolute_path($home)
@@ -36,7 +36,7 @@ define aem::agent::config(
   validate_string($loglevel)
   validate_string($retrydelay)
   validate_string($serializationtype)
-  validate_absolute_path($template)
+  validate_re($template, '^\/.*$', "${template} should be a absolute path starting with /.")
   validate_string($resourcetype)
   validate_string($transportpassword)
   validate_string($transporturi)
