@@ -1,4 +1,5 @@
-Puppet::Type.newtype(:aem_content) do
+
+Puppet::Type.newtype(:aem_sling_resource) do
 
   @doc = <<-DOC
 This is a type used to perform sling api calls
@@ -8,6 +9,11 @@ This is a type used to perform sling api calls
 
   newparam(:name, :namevar => true) do
     desc 'The full path of the content node'
+  end
+
+  newparam(:handle_missing) do
+    desc 'How to handle missing configurations which exist in AEM.'
+    newvalues(:ignore, :merge, :remove)
   end
 
   newparam(:home) do
@@ -23,6 +29,10 @@ This is a type used to perform sling api calls
     desc 'Username used to log into AEM.'
   end
 
+  newparam(:path) do
+    desc 'Path to the resource in the repository.'
+  end
+
   newparam(:password) do
     desc 'Password used to log into AEM.'
   end
@@ -34,6 +44,34 @@ This is a type used to perform sling api calls
       unless value.is_a?(Hash)
         fail(Puppet::ResourceError, 'Properties must be a hash of values.')
       end
+    end
+
+    def insync?(is)
+
+      depth_comp = lambda do |should_hsh, is_hsh|
+        match = true
+        should_hsh.each do |k, v|
+          if v.is_a?(Hash) && is_hsh[k].is_a?(Hash)
+
+            match = depth_comp.call(v, is_hsh[k])
+            return match unless match
+          else
+
+            return false unless v == is_hsh[k]
+          end
+        end
+        match
+      end
+
+      case resource[:handle_missing]
+      when :ignore, :merge
+        return depth_comp.call(resource[:properties], is)
+      when :remove
+        return is == should
+      else
+        fail(Puppet::ResourceError, "Invalid value for :handle_missing: #{resource[:handle_missing]}")
+      end
+
     end
   end
 

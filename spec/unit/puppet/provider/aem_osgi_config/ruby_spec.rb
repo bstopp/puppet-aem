@@ -28,12 +28,6 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
     provider
   end
 
-  let(:mock_response) do
-    class MockResponse
-    end
-    MockResponse.new
-  end
-
   let(:config_data) do
     data = <<-JSON
       [
@@ -108,10 +102,10 @@ PORT=#{opts[:port]}
 
         get_stub = stub_request(
           :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
-        ).to_return(:status => status,:body => config_data)
+        ).to_return(:status => status, :body => config_data)
 
         expect(provider.exists?).to eq(opts[:present])
-        #expect(get_stub).to have_been_requested
+        expect(get_stub).to have_been_requested
 
         if opts[:present]
           configuration = provider.configuration
