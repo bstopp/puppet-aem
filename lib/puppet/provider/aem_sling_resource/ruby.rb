@@ -27,10 +27,10 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
 
   def flush
     if @property_flush[:ensure] == :absent
-      submit(':operation' => 'delete')
+      submit
       return
     end
-    submit(resource[:properties])
+    submit
     read_content
     @property_flush.clear
   end
@@ -107,25 +107,32 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
     depth_func.call(data, 0)
   end
 
-  def build_parameters(_initial)
-    case resource[:handle_missing]
-    when :ignore
+  def build_parameters
+    params = {}
+    if @property_flush[:ensure] == :present
+      case resource[:handle_missing]
+      when :ignore
 
-    when :merge
+      when :merge
 
-    when :remove
+      when :remove
+      else
+        fail(Puppet::ResourceError, "Invalid handle_missing value: #{resource[:handle_missing]}")
+      end
     else
-      fail(Puppet::ResourceError, "Invalid handle_missing value: #{resource[:handle_missing]}")
+      params = { ':operation' => 'delete' }
     end
+    params
   end
 
-  def submit(_properties)
+  def submit
+
     uri = URI(content_uri)
 
     req = Net::HTTP::Post.new(uri.request_uri)
     req.basic_auth(resource[:username], resource[:password])
     req.form_data = build_parameters
-    req['Referer'] = uri
+    req['Referer'] = uri.to_s
 
     res = Net::HTTP.start(uri.hostname, uri.port) do |http|
       http.request(req)

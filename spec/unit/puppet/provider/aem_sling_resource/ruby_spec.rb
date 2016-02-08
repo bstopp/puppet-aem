@@ -127,87 +127,192 @@ PORT=4502
     end
   end
 
-#  describe 'flush' do
-#    shared_examples 'flush_posts' do |opts|
-#      it do
-#        WebMock.reset!
-#
-#        opts ||= {}
-#        opts[:port] ||= 4502
-#        opts[:name] ||= resource[:name]
-#
-#        crline = "CONTEXT_ROOT='#{opts[:context_root]}'" if opts[:context_root]
-#        envdata = <<-EOF
-#PORT=#{opts[:port]}
-##{crline}
-#        EOF
-#
-#        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
-#
-#        if opts[:context_root]
-#          uri_s = "http://localhost:#{opts[:port]}/#{opts[:context_root]}"
-#        else
-#          uri_s = "http://localhost:#{opts[:port]}"
-#        end
-#        uri_s = "#{uri_s}#{opts[:name]}"
-#        uri = URI(uri_s)
-#
-#        status = opts[:present] ? 302 : 404
-#
-#        head_stub = stub_request(
-#          :head, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
-#        ).to_return(:status => status)
-#
-#        expected_params = opts[:post_params]
-#        #expected_params = {"text"=>"string", "title"=>"string"}
-#        #expected_params = 'title=string&text=string'
-#
-#        post_stub = stub_request(
-#          :post, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
-#        ).with(
-#          :body => expected_params,
-#          :headers => {'Accept'=>'*/*', 'Content-Type'=>'application/x-www-form-urlencoded', 'Referer'=>"#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}", 'User-Agent'=>'Ruby'}
-#        ).to_return(:status => 200, :body => "", :headers => {})
-#
-#        # Populate property hash
-#        provider.exists?
-#
-#        if opts[:destroy]
-#          provider.destroy
-#          times = 1
-#        else
-#          provider.create
-#          times = 2
-#        end
-#
-#        expect{ provider.flush }.to_not raise_error
-#        expect(head_stub).to have_been_requested.times(times)
-#        expect(post_stub).to have_been_requested
-#      end
-#    end
-#
-#    describe 'create' do
-#      let(:resource) do
-#        Puppet::Type.type(:aem_sling_resource).new(
-#          :name       => '/etc/testcontent/nodename',
-#          :ensure     => :present,
-#          :properties => {
-#            'title' => 'string',
-#            'text'  => 'string',
-#          },
-#          :home       => '/opt/aem',
-#          :password   => 'admin',
-#          :username   => 'admin'
-#        )
-#      end
-#
-#      it_should_behave_like 'flush_posts',
-#        :present => false,
-#        :post_params => {
-#          'title' => 'string',
-#          'text'  => 'string',
-#        }
-#    end
-#  end
+  describe 'flush' do
+    shared_examples 'flush_posts' do |opts|
+      it do
+
+        WebMock.reset!
+
+        opts ||= {}
+        opts[:port] ||= 4502
+        opts[:path] ||= resource[:name]
+        opts[:depth] ||= 0
+
+        crline = "CONTEXT_ROOT='#{opts[:context_root]}'" if opts[:context_root]
+        envdata = <<-EOF
+PORT=#{opts[:port]}
+#{crline}
+        EOF
+
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+
+        if opts[:context_root]
+          uri_s = "http://localhost:#{opts[:port]}/#{opts[:context_root]}"
+        else
+          uri_s = "http://localhost:#{opts[:port]}"
+        end
+        uri_s = "#{uri_s}#{opts[:path]}"
+        uri = URI(uri_s)
+
+        status = opts[:present] ? 200 : 404
+
+        get_stub = stub_request(
+          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}.#{opts[:depth]}.json"
+        ).to_return(:status => status, :body => content_data)
+
+        expected_params = opts[:form_params]
+
+        post_stub = stub_request(
+          :post, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
+        ).with(
+          :body => expected_params,
+          :headers => { 'Referer' => "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}" }
+        ).to_return(:status => 200)
+
+        # Populate property hash
+        provider.exists?
+
+        if opts[:destroy]
+          provider.destroy
+          times = 1
+        else
+          provider.create
+          times = 2
+        end
+
+        expect{ provider.flush }.to_not raise_error
+        expect(get_stub).to have_been_requested.times(times)
+        expect(post_stub).to have_been_requested
+      end
+    end
+
+    describe 'create' do
+      
+    end
+
+    describe 'create with path' do
+      
+    end
+
+    describe 'destroy' do
+      let(:resource) do
+        Puppet::Type.type(:aem_sling_resource).new(
+          :name           => '/etc/testcontent/nodename',
+          :ensure         => :absent,
+          :home           => '/opt/aem',
+          :password       => 'admin',
+          :username       => 'admin',
+          :properties     => {
+            'title' => 'string',
+            'text'  => 'string',
+          }
+        )
+      end
+      
+      it_should_behave_like 'flush_posts',
+        :present => false,
+        :destroy => true,
+        :form_params => { ':operation' => 'delete' }
+    end
+
+    describe 'destroy with path' do
+      
+    end
+
+    describe 'update with remove' do
+      
+    end
+
+    describe 'update with remove with nested hash' do
+      
+    end
+
+    describe 'update with remove using path' do
+      
+    end
+
+    describe 'update with merge' do
+      
+    end
+
+    describe 'update with merge with nested hash' do
+      
+    end
+
+    describe 'update with merge using path' do
+      
+    end
+
+    describe 'update with ignore' do
+      
+    end
+
+    describe 'update with ignore with nested hash' do
+      
+    end
+
+    describe 'update with ignore using path' do
+      
+    end
+
+    describe 'create with array because webmock has issues matching array in a hash for parameters' do
+      
+    end
+
+    describe 'flush post errors' do
+      it 'should generate an error' do
+        WebMock.reset!
+
+        envdata = <<-EOF
+PORT=4502
+        EOF
+
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+
+        uri_s = 'http://localhost:4502/etc/testcontent/nodename.0.json'
+        uri = URI(uri_s)
+
+        get_stub = stub_request(
+          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
+        ).to_return(:status => 200, :body => content_data)
+
+        post_stub = stub_request(
+          :post, 'http://admin:admin@localhost:4502/etc/testcontent/nodename'
+        ).with(
+            :body =>  { ':operation' => 'delete' }
+        ).to_return(:status => 500)
+
+        # Populate property hash
+        provider.exists?
+        provider.destroy
+        expect{ provider.flush }.to raise_error(/500/)
+        expect(get_stub).to have_been_requested
+        expect(post_stub).to have_been_requested
+      end
+    end
+
+    describe 'aem not running' do
+      it 'should generate an error' do
+        WebMock.reset!
+
+        envdata = <<-EOF
+PORT=4502
+        EOF
+
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+
+        uri_s = 'http://localhost:4502/etc/testcontent/nodename.0.json'
+        uri = URI(uri_s)
+
+        get_stub = stub_request(
+          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
+        ).to_timeout
+
+        # Populate property hash
+        expect{ provider.exists? }.to raise_error(/expired/)
+        expect(get_stub).to have_been_requested.at_least_times(1)
+      end
+    end
+  end
 
 end
