@@ -19,6 +19,7 @@ define aem::agent::config(
   $transporturi      = 'http://host:port/bin/receive?sling:authRequestLogin=1',
   $transportuser     = 'replication-receiver',
   $replicationuser   = 'your_replication_user',
+  $handlemissing     = 'ignore',
 ) {
   validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
 
@@ -42,6 +43,7 @@ define aem::agent::config(
   validate_string($transporturi)
   validate_string($transportuser)
   validate_string($replicationuser)
+  validate_string($handlemissing)
 
   if $ensure == 'present' {
     validate_re($status, '^(enabled|disabled)$', "${status} is not supported for status. Allowed values are 'enabled' and 'disabled'.")
@@ -61,25 +63,28 @@ define aem::agent::config(
     $agent_enabled = false
   }
 
-  aem_content { "${name}-node" :
-    ensure     => $ensure,
-    name       => "/etc/replication/agents.${on}/${name}",
-    home       => $home,
-    username   => $username,
-    password   => $password,
-    properties => {
+  aem_sling_resource { "${name}-node" :
+    path           => "/etc/replication/agents.${on}/${name}",
+    ensure         => $ensure,
+    handle_missing => $handlemissing,
+    home           => $home,
+    username       => $username,
+    password       => $password,
+    properties     => {
       'jcr:primaryType' => 'cq:Page',
     },
-    before     => Aem_content["${name}-node-content"],
+    before         => Aem_sling_resource["${name}-node-content"],
   }
 
-  aem_content { "${name}-node-content" :
-    ensure     => $ensure,
-    name       => "/etc/replication/agents.${on}/${name}/jcr:content",
-    home       => $home,
-    username   => $username,
-    password   => $password,
-    properties => {
+  aem_sling_resource { "${name}-node-content" :
+    ensure         => $ensure,
+    name           => "/etc/replication/agents.${on}/${name}/jcr:content",
+    handle_missing => $handlemissing,
+    home           => $home,
+    username       => $username,
+    password       => $password,
+    properties     => {
+      'jcr:primaryType'    => 'nt:unstructured',
       'cq:template'        => $template,
       '_charset_'          => $charset,
       ':status'            => 'browser',

@@ -10,6 +10,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
     @content_uri = nil
     @content_depth = 0
     @property_flush = {}
+    @protected_properties = ['jcr:created', 'jcr:createdBy', 'jcr:primaryType']
   end
 
   def create
@@ -109,13 +110,24 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
 
   def build_parameters
     params = {}
-    if @property_flush[:ensure] == :present
+    if @property_flush[:ensure] != :absent
       case resource[:handle_missing]
       when :ignore
-
+        params = resource[:properties]
       when :merge
-
+        params = resource[:properties]
+        if @property_flush[:existing_props]
+          params = params.merge(@property_flush[:existing_props])
+        end
       when :remove
+        params = resource[:properties]
+        if @property_flush[:existing_props]
+          @property_flush[:existing_props].each do |_k, v|
+            unless params.has_key?(_k) || @protected_properties.include?(_k)
+              params["#{_k}@Delete"] = v
+            end
+          end
+        end
       else
         fail(Puppet::ResourceError, "Invalid handle_missing value: #{resource[:handle_missing]}")
       end
