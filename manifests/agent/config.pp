@@ -64,8 +64,8 @@ define aem::agent::config(
   }
 
   aem_sling_resource { "${name}-node" :
-    path           => "/etc/replication/agents.${on}/${name}",
     ensure         => $ensure,
+    path           => "/etc/replication/agents.${on}/${name}",
     handle_missing => $handlemissing,
     home           => $home,
     username       => $username,
