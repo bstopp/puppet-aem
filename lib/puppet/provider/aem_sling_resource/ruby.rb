@@ -11,7 +11,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
     @content_uri = nil
     @content_depth = 0
     @property_flush = {}
-#    @ignored_properties = ['jcr:created', 'jcr:createdBy']
+    @ignored_properties = ['jcr:created', 'jcr:createdBy']
     @protected_properties = ['jcr:primaryType']
   end
 
@@ -113,7 +113,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
   def build_parameters
     params = {}
     if @property_flush[:ensure] == :present
-      params  = { :multipart => true }
+      params = { :multipart => true }
       case resource[:handle_missing]
       when :ignore
         params = params.merge(build_ignore_params)
@@ -136,15 +136,15 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
 
   def build_merge_params
     params = @property_flush[:existing_props] if @property_flush[:existing_props]
-    params = params.merge(resource[:properties])
+    params.merge(resource[:properties])
   end
 
   def build_remove_params
     params = resource[:properties]
     if @property_flush[:existing_props]
-      @property_flush[:existing_props].each do |_k, v|
-        unless params.has_key?(_k) || @protected_properties.include?(_k)
-          params["#{_k}@Delete"] = v
+      @property_flush[:existing_props].each do |k, v|
+        unless params.key?(_k) || @protected_properties.include?(k)
+          params["#{k}@Delete"] = v
         end
       end
     end
@@ -160,28 +160,26 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
 
   def submit
 
-    begin
-      restclient = RestClient::Resource.new(content_uri, :user => resource[:username], :password => resource[:password])
-      restclient.post(build_parameters, build_headers)
-    rescue => e
-      e.code
-    end
-#    uri = URI(content_uri)
-#
-#    req = Net::HTTP::Post.new(uri.request_uri)
-#    req.basic_auth(resource[:username], resource[:password])
-#    req.body = build_parameters
-#    req.content_type = 'multipart/form-data'
-#    req['Referer'] = uri.to_s
-#
-#    res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-#      http.request(req)
-#    end
-#    case res
-#    when Net::HTTPCreated, Net::HTTPOK
-#      # OK
-#    else
-#      res.value
-#    end
+    restclient = RestClient::Resource.new(content_uri, :user => resource[:username], :password => resource[:password])
+    restclient.post(build_parameters, build_headers)
+  rescue => e
+    e.code
+
+    # This is probably all useless now.
+    # uri = URI(content_uri)
+    # req = Net::HTTP::Post.new(uri.request_uri)
+    # req.basic_auth(resource[:username], resource[:password])
+    # req.body = build_parameters
+    # req.content_type = 'multipart/form-data'
+    # req['Referer'] = uri.to_s
+    # res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+    # http.request(req)
+    # end
+    # case res
+    # when Net::HTTPCreated, Net::HTTPOK
+    #  # OK
+    # else
+    #  res.value
+    # end
   end
 end

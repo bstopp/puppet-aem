@@ -209,7 +209,25 @@ PORT=#{opts[:port]}
     end
 
     describe 'create with path' do
-      
+      let(:resource) do
+        Puppet::Type.type(:aem_sling_resource).new(
+          :name           => 'A resource name',
+          :ensure         => :present,
+          :home           => '/opt/aem',
+          :path           => '/path/to/resource',
+          :password       => 'admin',
+          :username       => 'admin',
+          :properties     => {
+            'title' => 'title string',
+            'text'  => 'text string',
+          }
+        )
+      end
+
+      it_should_behave_like 'flush_posts',
+        :path => '/path/to/resource',
+        :present => false,
+        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*/m
     end
 
     describe 'create with nested hash' do
