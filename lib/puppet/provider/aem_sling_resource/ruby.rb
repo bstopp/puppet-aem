@@ -1,5 +1,6 @@
 require 'json'
 require 'net/http'
+require 'rest-client'
 
 Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provider do
 
@@ -10,7 +11,8 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
     @content_uri = nil
     @content_depth = 0
     @property_flush = {}
-    @protected_properties = ['jcr:created', 'jcr:createdBy', 'jcr:primaryType']
+#    @ignored_properties = ['jcr:created', 'jcr:createdBy']
+    @protected_properties = ['jcr:primaryType']
   end
 
   def create
@@ -110,51 +112,76 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
 
   def build_parameters
     params = {}
-    if @property_flush[:ensure] != :absent
+    if @property_flush[:ensure] == :present
+      params  = { :multipart => true }
       case resource[:handle_missing]
       when :ignore
-        params = resource[:properties]
+        params = params.merge(build_ignore_params)
       when :merge
-        params = resource[:properties]
-        if @property_flush[:existing_props]
-          params = params.merge(@property_flush[:existing_props])
-        end
+        params = params.merge(build_merge_params)
       when :remove
-        params = resource[:properties]
-        if @property_flush[:existing_props]
-          @property_flush[:existing_props].each do |_k, v|
-            unless params.has_key?(_k) || @protected_properties.include?(_k)
-              params["#{_k}@Delete"] = v
-            end
-          end
-        end
+        params = params.merge(build_remove_params)
       else
         fail(Puppet::ResourceError, "Invalid handle_missing value: #{resource[:handle_missing]}")
       end
     else
-      params = { ':operation' => 'delete' }
+      params = params.merge(':operation' => 'delete')
     end
     params
   end
 
+  def build_ignore_params
+    resource[:properties]
+  end
+
+  def build_merge_params
+    params = @property_flush[:existing_props] if @property_flush[:existing_props]
+    params = params.merge(resource[:properties])
+  end
+
+  def build_remove_params
+    params = resource[:properties]
+    if @property_flush[:existing_props]
+      @property_flush[:existing_props].each do |_k, v|
+        unless params.has_key?(_k) || @protected_properties.include?(_k)
+          params["#{_k}@Delete"] = v
+        end
+      end
+    end
+  end
+
+  def build_headers
+    headers = { 'Referer' => content_uri }
+    if @property_flush[:ensure] == :present
+      headers.merge(:content_type => 'multipart/form-data')
+    end
+    headers
+  end
+
   def submit
 
-    uri = URI(content_uri)
-
-    req = Net::HTTP::Post.new(uri.request_uri)
-    req.basic_auth(resource[:username], resource[:password])
-    req.form_data = build_parameters
-    req['Referer'] = uri.to_s
-
-    res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-      http.request(req)
+    begin
+      restclient = RestClient::Resource.new(content_uri, :user => resource[:username], :password => resource[:password])
+      restclient.post(build_parameters, build_headers)
+    rescue => e
+      e.code
     end
-
-    case res
-    when Net::HTTPCreated, Net::HTTPOK
-      # OK
-    else
-      res.value
-    end
+#    uri = URI(content_uri)
+#
+#    req = Net::HTTP::Post.new(uri.request_uri)
+#    req.basic_auth(resource[:username], resource[:password])
+#    req.body = build_parameters
+#    req.content_type = 'multipart/form-data'
+#    req['Referer'] = uri.to_s
+#
+#    res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+#      http.request(req)
+#    end
+#    case res
+#    when Net::HTTPCreated, Net::HTTPOK
+#      # OK
+#    else
+#      res.value
+#    end
   end
 end

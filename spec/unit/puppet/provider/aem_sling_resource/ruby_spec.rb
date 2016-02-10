@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'rest-client'
 
 describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
 
@@ -134,6 +135,7 @@ PORT=4502
         WebMock.reset!
 
         opts ||= {}
+        opts[:present] ||= true
         opts[:port] ||= 4502
         opts[:path] ||= resource[:name]
         opts[:depth] ||= 0
@@ -187,10 +189,34 @@ PORT=#{opts[:port]}
     end
 
     describe 'create' do
-      
+      let(:resource) do
+        Puppet::Type.type(:aem_sling_resource).new(
+          :name           => '/etc/testcontent/nodename',
+          :ensure         => :present,
+          :home           => '/opt/aem',
+          :password       => 'admin',
+          :username       => 'admin',
+          :properties     => {
+            'title' => 'title string',
+            'text'  => 'text string',
+          }
+        )
+      end
+
+      it_should_behave_like 'flush_posts',
+        :present => false,
+        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*/m
     end
 
     describe 'create with path' do
+      
+    end
+
+    describe 'create with nested hash' do
+      
+    end
+
+    describe 'create with tiered nested hash' do
       
     end
 
@@ -208,15 +234,32 @@ PORT=#{opts[:port]}
           }
         )
       end
-      
+
       it_should_behave_like 'flush_posts',
-        :present => false,
         :destroy => true,
         :form_params => { ':operation' => 'delete' }
     end
 
     describe 'destroy with path' do
-      
+      let(:resource) do
+        Puppet::Type.type(:aem_sling_resource).new(
+          :name           => 'This is a node name',
+          :ensure         => :absent,
+          :home           => '/opt/aem',
+          :password       => 'admin',
+          :path           => '/new/path/to/node',
+          :username       => 'admin',
+          :properties     => {
+            'title' => 'string',
+            'text'  => 'string',
+          }
+        )
+      end
+
+      it_should_behave_like 'flush_posts',
+        :destroy => true,
+        :form_params => { ':operation' => 'delete' },
+        :path => '/new/path/to/node'
     end
 
     describe 'update with remove' do
@@ -247,7 +290,15 @@ PORT=#{opts[:port]}
       
     end
 
+    describe 'update with ignore with protected/ignored properties' do
+      
+    end
+
     describe 'update with ignore with nested hash' do
+      
+    end
+
+    describe 'update with ignore with nested hash and protected/ignored properties' do
       
     end
 
@@ -279,7 +330,7 @@ PORT=4502
         post_stub = stub_request(
           :post, 'http://admin:admin@localhost:4502/etc/testcontent/nodename'
         ).with(
-            :body =>  { ':operation' => 'delete' }
+        :body => { ':operation' => 'delete' }
         ).to_return(:status => 500)
 
         # Populate property hash

@@ -15,7 +15,7 @@
 	],
 	"requirements": [{
 			"name": "puppet",
-			"version_requirement": ">= 3.8.1"
+			"version_requirement": ">= 4.0.0"
 		}
 	],
 	"operatingsystem_support": [{
