@@ -127,11 +127,12 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
     else
       params = params.merge(':operation' => 'delete')
     end
+
     params
   end
 
   def build_ignore_params
-    resource[:properties]
+    flatten_params(resource[:properties])
   end
 
   def build_merge_params
@@ -156,6 +157,20 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
       headers.merge(:content_type => 'multipart/form-data')
     end
     headers
+  end
+
+  def flatten_params(orig, flattened = {}, old_path = [])
+    orig.each do |key, value|
+      current_path = old_path + [key]
+
+      if !value.respond_to?(:keys)
+        flattened[current_path.join('/')] = value
+      else
+        flatten_params(value, flattened, current_path)
+      end
+    end
+
+    flattened
   end
 
   def submit

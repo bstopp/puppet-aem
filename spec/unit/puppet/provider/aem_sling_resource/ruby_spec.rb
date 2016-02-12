@@ -231,11 +231,58 @@ PORT=#{opts[:port]}
     end
 
     describe 'create with nested hash' do
-      
-    end
+      let(:resource) do
+        Puppet::Type.type(:aem_sling_resource).new(
+          :name           => 'A resource name',
+          :ensure         => :present,
+          :home           => '/opt/aem',
+          :path           => '/path/to/resource',
+          :password       => 'admin',
+          :username       => 'admin',
+          :properties     => {
+            'title' => 'title string',
+            'text'  => 'text string',
+            'subnode' => {
+              'property' => 'value'
+            }
+          }
+        )
+      end
+
+      it_should_behave_like 'flush_posts',
+        :depth => 1,
+        :path => '/path/to/resource',
+        :present => false,
+        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*name="subnode\/property"\s+value.*$/m
+     end
 
     describe 'create with tiered nested hash' do
-      
+      let(:resource) do
+        Puppet::Type.type(:aem_sling_resource).new(
+          :name           => 'A resource name',
+          :ensure         => :present,
+          :home           => '/opt/aem',
+          :path           => '/path/to/resource',
+          :password       => 'admin',
+          :username       => 'admin',
+          :properties     => {
+            'title' => 'title string',
+            'text'  => 'text string',
+            'child' => {
+              'property' => 'value',
+              'grandchild' => {
+                'child attrib' => 'another value'
+              }
+            }
+          }
+        )
+      end
+
+      it_should_behave_like 'flush_posts',
+        :depth => 2,
+        :path => '/path/to/resource',
+        :present => false,
+        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*name="child\/property"\s+value.*name="child\/grandchild\/child attrib"\s+another value.*$/m
     end
 
     describe 'destroy' do
