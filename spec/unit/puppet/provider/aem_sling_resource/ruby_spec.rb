@@ -191,12 +191,12 @@ PORT=#{opts[:port]}
     describe 'create' do
       let(:resource) do
         Puppet::Type.type(:aem_sling_resource).new(
-          :name           => '/etc/testcontent/nodename',
-          :ensure         => :present,
-          :home           => '/opt/aem',
-          :password       => 'admin',
-          :username       => 'admin',
-          :properties     => {
+          :name       => '/etc/testcontent/nodename',
+          :ensure     => :present,
+          :home       => '/opt/aem',
+          :password   => 'admin',
+          :username   => 'admin',
+          :properties => {
             'title' => 'title string',
             'text'  => 'text string',
           }
@@ -205,19 +205,19 @@ PORT=#{opts[:port]}
 
       it_should_behave_like 'flush_posts',
         :present => false,
-        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*/m
+        :form_params => /.*name="title"\s+title string.*name="text"\s+text string\s+-.*/m
     end
 
     describe 'create with path' do
       let(:resource) do
         Puppet::Type.type(:aem_sling_resource).new(
-          :name           => 'A resource name',
-          :ensure         => :present,
-          :home           => '/opt/aem',
-          :path           => '/path/to/resource',
-          :password       => 'admin',
-          :username       => 'admin',
-          :properties     => {
+          :name       => 'A resource name',
+          :ensure     => :present,
+          :home       => '/opt/aem',
+          :path       => '/path/to/resource',
+          :password   => 'admin',
+          :username   => 'admin',
+          :properties => {
             'title' => 'title string',
             'text'  => 'text string',
           }
@@ -227,19 +227,41 @@ PORT=#{opts[:port]}
       it_should_behave_like 'flush_posts',
         :path => '/path/to/resource',
         :present => false,
-        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*/m
+        :form_params => /.*name="title"\s+title string.*name="text"\s+text string\s+-.*/m
+    end
+
+    describe 'create with array property' do
+      let(:resource) do
+        Puppet::Type.type(:aem_sling_resource).new(
+          :name       => 'A resource name',
+          :ensure     => :present,
+          :home       => '/opt/aem',
+          :path       => '/path/to/resource',
+          :password   => 'admin',
+          :username   => 'admin',
+          :properties => {
+            'title' => 'title string',
+            'text'  => 'text string',
+            'array' => ['this', 'is', 'an', 'array']
+          }
+        )
+      end
+
+      it_should_behave_like 'flush_posts',
+        :path => '/path/to/resource',
+        :present => false,
+        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*name="array"\s+this.*name="array"\s+is.*name="array"\s+an.*name="array"\s+array.*/m
     end
 
     describe 'create with nested hash' do
       let(:resource) do
         Puppet::Type.type(:aem_sling_resource).new(
-          :name           => 'A resource name',
-          :ensure         => :present,
-          :home           => '/opt/aem',
-          :path           => '/path/to/resource',
-          :password       => 'admin',
-          :username       => 'admin',
-          :properties     => {
+          :name       => '/path/to/resource',
+          :ensure     => :present,
+          :home       => '/opt/aem',
+          :password   => 'admin',
+          :username   => 'admin',
+          :properties => {
             'title' => 'title string',
             'text'  => 'text string',
             'subnode' => {
@@ -253,19 +275,18 @@ PORT=#{opts[:port]}
         :depth => 1,
         :path => '/path/to/resource',
         :present => false,
-        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*name="subnode\/property"\s+value.*$/m
-     end
+        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*name="subnode\/property"\s+value\s+-.*$/m
+    end
 
     describe 'create with tiered nested hash' do
       let(:resource) do
         Puppet::Type.type(:aem_sling_resource).new(
-          :name           => 'A resource name',
-          :ensure         => :present,
-          :home           => '/opt/aem',
-          :path           => '/path/to/resource',
-          :password       => 'admin',
-          :username       => 'admin',
-          :properties     => {
+          :name       => '/path/to/resource',
+          :ensure     => :present,
+          :home       => '/opt/aem',
+          :password   => 'admin',
+          :username   => 'admin',
+          :properties => {
             'title' => 'title string',
             'text'  => 'text string',
             'child' => {
@@ -276,24 +297,24 @@ PORT=#{opts[:port]}
             }
           }
         )
-      end
+        end
 
       it_should_behave_like 'flush_posts',
         :depth => 2,
         :path => '/path/to/resource',
         :present => false,
-        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*name="child\/property"\s+value.*name="child\/grandchild\/child attrib"\s+another value.*$/m
+        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*name="child\/property"\s+value.*name="child\/grandchild\/child attrib"\s+another value\s+-.*$/m
     end
 
     describe 'destroy' do
       let(:resource) do
         Puppet::Type.type(:aem_sling_resource).new(
-          :name           => '/etc/testcontent/nodename',
-          :ensure         => :absent,
-          :home           => '/opt/aem',
-          :password       => 'admin',
-          :username       => 'admin',
-          :properties     => {
+          :name       => '/etc/testcontent/nodename',
+          :ensure     => :absent,
+          :home       => '/opt/aem',
+          :password   => 'admin',
+          :username   => 'admin',
+          :properties => {
             'title' => 'string',
             'text'  => 'string',
           }
@@ -308,13 +329,13 @@ PORT=#{opts[:port]}
     describe 'destroy with path' do
       let(:resource) do
         Puppet::Type.type(:aem_sling_resource).new(
-          :name           => 'This is a node name',
-          :ensure         => :absent,
-          :home           => '/opt/aem',
-          :password       => 'admin',
-          :path           => '/new/path/to/node',
-          :username       => 'admin',
-          :properties     => {
+          :name       => 'This is a node name',
+          :ensure     => :absent,
+          :home       => '/opt/aem',
+          :password   => 'admin',
+          :path       => '/new/path/to/node',
+          :username   => 'admin',
+          :properties => {
             'title' => 'string',
             'text'  => 'string',
           }

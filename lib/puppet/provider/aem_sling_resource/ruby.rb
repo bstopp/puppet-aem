@@ -2,6 +2,30 @@ require 'json'
 require 'net/http'
 require 'rest-client'
 
+# This is only here to remove the [] that RestClient puts in. 
+# Whenever this is fixed permanently, will remove. 
+# https://github.com/rest-client/rest-client/issues/59
+# https://github.com/rest-client/rest-client/pull/437
+module RestClient
+  module Payload
+    class Base
+      def flatten_params_array value, calculated_key
+        result = []
+        value.each do |elem|
+          if elem.is_a? Hash
+            result += flatten_params(elem, calculated_key)
+          elsif elem.is_a? Array
+            result += flatten_params_array(elem, calculated_key)
+          else
+            result << ["#{calculated_key}", elem]
+          end
+        end
+        result
+      end
+    end
+  end
+end
+
 Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provider do
 
   mk_resource_methods
@@ -177,6 +201,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
 
     restclient = RestClient::Resource.new(content_uri, :user => resource[:username], :password => resource[:password])
     restclient.post(build_parameters, build_headers)
+    
   rescue => e
     e.code
 
