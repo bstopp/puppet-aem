@@ -292,7 +292,8 @@ PORT=#{opts[:port]}
             'child' => {
               'property' => 'value',
               'grandchild' => {
-                'child attrib' => 'another value'
+                'child attrib' => 'another value',
+                'array' => ['this', 'is', 'an', 'array']
               }
             }
           }
@@ -303,7 +304,7 @@ PORT=#{opts[:port]}
         :depth => 2,
         :path => '/path/to/resource',
         :present => false,
-        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*name="child\/property"\s+value.*name="child\/grandchild\/child attrib"\s+another value\s+-.*$/m
+        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*name="child\/property"\s+value.*name="child\/grandchild\/child attrib"\s+another value.*name="child\/grandchild\/array"\s+this.*name="child\/grandchild\/array"\s+is.*name="child\/grandchild\/array"\s+an.*name="child\/grandchild\/array"\s+array.*.*$/m
     end
 
     describe 'destroy' do
