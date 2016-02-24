@@ -446,11 +446,12 @@ PORT=4502
         uri_s = "http://localhost:4502/system/console/configMgr/#{resource[:name]}.json"
         uri = URI(uri_s)
 
-        expected_params = 'boolean=false&long=123456789&string=string&array=this&array=is&array=an&array=array'
-        expected_params += '&propertylist=boolean%2Clong%2Cstring%2Carray&apply=true'
         get_stub = stub_request(
           :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
         ).to_return(:status => 500, :body => config_data)
+
+        expected_params = 'boolean=false&long=123456789&string=string&array=this&array=is&array=an&array=array'
+        expected_params += '&propertylist=boolean%2Clong%2Cstring%2Carray&apply=true'
 
         post_stub = stub_request(
           :post, 'http://admin:admin@localhost:4502/system/console/configMgr/OsgiConfig'

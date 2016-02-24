@@ -23,7 +23,7 @@ group :system_tests do
   gem 'beaker-puppet_install_helper', '>= 0.2.1', :require => false
 end
 
-gem 'rest-client',  '>= 1.6.0', :require => false
+gem 'httpclient', '~> 2.7', '>= 2.7.1'
 
 if facterversion = ENV['FACTER_GEM_VERSION']
   gem 'facter', facterversion, :require => false

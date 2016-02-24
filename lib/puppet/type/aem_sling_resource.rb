@@ -13,7 +13,7 @@ This is a type used to perform sling api calls
 
   newparam(:handle_missing) do
     desc 'How to handle missing configurations which exist in AEM.'
-    newvalues(:ignore, :merge, :remove)
+    newvalues(:ignore, :remove)
     defaultto :ignore
   end
 

@@ -1,30 +1,6 @@
 require 'json'
 require 'net/http'
-require 'rest-client'
-
-# This is only here to remove the [] that RestClient puts in. 
-# Whenever this is fixed permanently, will remove. 
-# https://github.com/rest-client/rest-client/issues/59
-# https://github.com/rest-client/rest-client/pull/437
-module RestClient
-  module Payload
-    class Base
-      def flatten_params_array value, calculated_key
-        result = []
-        value.each do |elem|
-          if elem.is_a? Hash
-            result += flatten_params(elem, calculated_key)
-          elsif elem.is_a? Array
-            result += flatten_params_array(elem, calculated_key)
-          else
-            result << ["#{calculated_key}", elem]
-          end
-        end
-        result
-      end
-    end
-  end
-end
+require 'httpclient'
 
 Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provider do
 
@@ -137,16 +113,13 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
   def build_parameters
     params = {}
     if @property_flush[:ensure] == :present
-      params = { :multipart => true }
       case resource[:handle_missing]
       when :ignore
         params = params.merge(build_ignore_params)
-      when :merge
-        params = params.merge(build_merge_params)
       when :remove
         params = params.merge(build_remove_params)
       else
-        fail(Puppet::ResourceError, "Invalid handle_missing value: #{resource[:handle_missing]}")
+        raise(Puppet::ResourceError, "Invalid handle_missing value: #{resource[:handle_missing]}")
       end
     else
       params = params.merge(':operation' => 'delete')
@@ -156,70 +129,67 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
   end
 
   def build_ignore_params
-    flatten_params(resource[:properties])
-  end
-
-  def build_merge_params
-    params = @property_flush[:existing_props] if @property_flush[:existing_props]
-    params.merge(resource[:properties])
+    flatten_params(resource[:properties], @property_flush[:existing_props])
   end
 
   def build_remove_params
-    params = resource[:properties]
+    params = {}
     if @property_flush[:existing_props]
       @property_flush[:existing_props].each do |k, v|
-        unless params.key?(_k) || @protected_properties.include?(k)
+        unless params.key?(k) || @protected_properties.include?(k) || @ignored_properties.include?(k)
           params["#{k}@Delete"] = v
         end
       end
     end
+
+    params.merge(resource[:properties])
   end
 
   def build_headers
-    headers = { 'Referer' => content_uri }
-    if @property_flush[:ensure] == :present
-      headers.merge(:content_type => 'multipart/form-data')
-    end
-    headers
+    { 'Referer' => content_uri }
   end
 
-  def flatten_params(orig, flattened = {}, old_path = [])
+  def flatten_params(orig, current, flattened = {}, old_path = [])
     orig.each do |key, value|
+
+      next if @ignored_properties.include?(key)
+      next if @protected_properties.include?(key) && current.key?(key) && value != current[key]
+
       current_path = old_path + [key]
 
-      if !value.respond_to?(:keys)
-        flattened[current_path.join('/')] = value
+      if value.respond_to?(:keys)
+        flatten_params(value, current[key] || {}, flattened, current_path)
       else
-        flatten_params(value, flattened, current_path)
+        flattened[current_path.join('/')] = value
       end
     end
-
     flattened
+  end
+
+  def remove_protected_properties(parameters)
+    parameters.each do |key, value|
+      
+      if @protected_properties.contains(key.split('/').last)
+        
+      end
+    end
   end
 
   def submit
 
-    restclient = RestClient::Resource.new(content_uri, :user => resource[:username], :password => resource[:password])
-    restclient.post(build_parameters, build_headers)
-    
-  rescue => e
-    e.code
-
-    # This is probably all useless now.
-    # uri = URI(content_uri)
-    # req = Net::HTTP::Post.new(uri.request_uri)
-    # req.basic_auth(resource[:username], resource[:password])
-    # req.body = build_parameters
-    # req.content_type = 'multipart/form-data'
-    # req['Referer'] = uri.to_s
-    # res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-    # http.request(req)
-    # end
-    # case res
-    # when Net::HTTPCreated, Net::HTTPOK
-    #  # OK
-    # else
-    #  res.value
-    # end
+    uri = URI(content_uri)
+    req = Net::HTTP::Post.new(uri.request_uri)
+    req.basic_auth(resource[:username], resource[:password])
+    req.form_data = build_parameters
+    req['Referer'] = uri.to_s
+    res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+      http.request(req)
+    end
+    case res
+    when Net::HTTPCreated, Net::HTTPOK
+      # OK
+    else
+      res.value
+    end
   end
 end

@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'rest-client'
 
 describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
 
@@ -27,20 +26,14 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
     data = <<-JSON
       {
         "jcr:primaryType" : "cq:Page",
+        "title" : "Page Title",
         "jcr:content": {
           "jcr:primaryType": "nt:unstructured",
           "jcr:title": "Default Agent",
-          "enabled": "false",
-          "transportUri": "http://host:port/bin/receive?sling:authRequestLogin=1",
-          "transportUser": "replication-receiver",
-          "cq:template": "/libs/cq/replication/templates/agent",
-          "serializationType": "durbo",
-          "retryDelay": "60000",
-          "userId": "your_replication_user",
-          "jcr:description": "Agent that replicates to the default publish instance.",
-          "sling:resourceType": "cq/replication/components/agent",
-          "transportPassword": "",
-          "logLevel": "info"
+          "par" : {
+            "jcr:primaryType" : "nt:unstructured",
+            "property" : "prop value"
+          }
         }
       }
     JSON
@@ -205,7 +198,7 @@ PORT=#{opts[:port]}
 
       it_should_behave_like 'flush_posts',
         :present => false,
-        :form_params => /.*name="title"\s+title string.*name="text"\s+text string\s+-.*/m
+        :form_params => 'title=title+string&text=text+string'
     end
 
     describe 'create with path' do
@@ -227,7 +220,7 @@ PORT=#{opts[:port]}
       it_should_behave_like 'flush_posts',
         :path => '/path/to/resource',
         :present => false,
-        :form_params => /.*name="title"\s+title string.*name="text"\s+text string\s+-.*/m
+        :form_params => 'title=title+string&text=text+string'
     end
 
     describe 'create with array property' do
@@ -250,7 +243,7 @@ PORT=#{opts[:port]}
       it_should_behave_like 'flush_posts',
         :path => '/path/to/resource',
         :present => false,
-        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*name="array"\s+this.*name="array"\s+is.*name="array"\s+an.*name="array"\s+array.*/m
+        :form_params => 'title=title+string&text=text+string&array=this&array=is&array=an&array=array'
     end
 
     describe 'create with nested hash' do
@@ -275,7 +268,7 @@ PORT=#{opts[:port]}
         :depth => 1,
         :path => '/path/to/resource',
         :present => false,
-        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*name="subnode\/property"\s+value\s+-.*$/m
+        :form_params => 'title=title+string&text=text+string&subnode%2Fproperty=value'
     end
 
     describe 'create with tiered nested hash' do
@@ -304,7 +297,7 @@ PORT=#{opts[:port]}
         :depth => 2,
         :path => '/path/to/resource',
         :present => false,
-        :form_params => /.*name="title"\s+title string.*name="text"\s+text string.*name="child\/property"\s+value.*name="child\/grandchild\/child attrib"\s+another value.*name="child\/grandchild\/array"\s+this.*name="child\/grandchild\/array"\s+is.*name="child\/grandchild\/array"\s+an.*name="child\/grandchild\/array"\s+array.*.*$/m
+        :form_params => 'title=title+string&text=text+string&child%2Fproperty=value&child%2Fgrandchild%2Fchild+attrib=another+value&child%2Fgrandchild%2Farray=this&child%2Fgrandchild%2Farray=is&child%2Fgrandchild%2Farray=an&child%2Fgrandchild%2Farray=array'
     end
 
     describe 'destroy' do
@@ -350,10 +343,47 @@ PORT=#{opts[:port]}
     end
 
     describe 'update with remove' do
-      
+      let(:resource) do
+        Puppet::Type.type(:aem_sling_resource).new(
+          :name       => '/path/to/resource',
+          :ensure     => :present,
+          :home       => '/opt/aem',
+          :password   => 'admin',
+          :username   => 'admin',
+          :properties => {
+              "jcr:primaryType" => "nt:unstructured",
+              "jcr:content" => {
+                "jcr:primaryType" => "nt:unstructured",
+                "jcr:title" => "Default Agent",
+                "par" => {
+                  "jcr:primaryType" => "nt:unstructured",
+                  "property" => "prop value"
+                }
+              }
+            }
+        )
+      end
+
+#      it_should_behave_like 'flush_posts',
+#        :depth => 2,
+#        :path => '/path/to/resource',
+#        :present => false,
+#        :form_params => ''
     end
 
     describe 'update with remove with nested hash' do
+      
+    end
+
+    describe 'update with remove with tiered nested hash' do
+      
+    end
+
+    describe 'update with remove with a property replacing a node' do
+      
+    end
+
+    describe 'update with remove with node replacing a property' do
       
     end
 
@@ -361,20 +391,26 @@ PORT=#{opts[:port]}
       
     end
 
-    describe 'update with merge' do
-      
-    end
-
-    describe 'update with merge with nested hash' do
-      
-    end
-
-    describe 'update with merge using path' do
-      
-    end
-
     describe 'update with ignore' do
-      
+      let(:resource) do
+        Puppet::Type.type(:aem_sling_resource).new(
+          :name       => '/path/to/resource',
+          :ensure     => :present,
+          :home       => '/opt/aem',
+          :password   => 'admin',
+          :username   => 'admin',
+          :properties => {
+              'jcr:primaryType' => 'nt:unstructured',
+              'jcr:title' => 'new title',
+              'jcr:createdBy' => 'admin'
+          }
+        )
+      end
+
+      it_should_behave_like 'flush_posts',
+        :path => '/path/to/resource',
+        :present => false,
+        :form_params => 'jcr%3Atitle=new+title'
     end
 
     describe 'update with ignore with protected/ignored properties' do
