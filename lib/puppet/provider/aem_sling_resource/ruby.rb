@@ -9,10 +9,10 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
   def initialize(resource = nil)
     super(resource)
     @content_uri = nil
-    @content_depth = 0
+    @content_depth = 1
     @property_flush = {}
-    @ignored_properties = ['jcr:created', 'jcr:createdBy']
-    @protected_properties = ['jcr:primaryType']
+    @ignored_properties = ['jcr:created', 'jcr:createdBy'].freeze
+    @protected_properties = ['jcr:primaryType'].freeze
   end
 
   def create
@@ -99,7 +99,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
   end
 
   def get_depth(data)
-    max_depth = 0
+    max_depth = 1
     depth_func = lambda do |hsh, cur_depth|
       max_depth = cur_depth if cur_depth > max_depth
       hsh.each do |_k, v|
@@ -107,7 +107,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
       end
       max_depth
     end
-    depth_func.call(data, 0)
+    depth_func.call(data, 1)
   end
 
   def build_parameters
@@ -129,50 +129,77 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
   end
 
   def build_ignore_params
-    flatten_params(resource[:properties], @property_flush[:existing_props])
+    hsh = remove_invalid(@property_flush[:existing_props], resource[:properties])
+    flatten_hash(hsh)
   end
 
   def build_remove_params
-    params = {}
-    if @property_flush[:existing_props]
-      @property_flush[:existing_props].each do |k, v|
-        unless params.key?(k) || @protected_properties.include?(k) || @ignored_properties.include?(k)
-          params["#{k}@Delete"] = v
-        end
+    processed = remove_invalid(@property_flush[:existing_props], resource[:properties])
+    to_delete = build_delete(@property_flush[:existing_props], processed)
+
+    hsh = deep_merge_hash(to_delete, processed)
+
+    flatten_hash(hsh)
+  end
+
+  def deep_merge_hash(to, from)
+    # Pulled straight from Stack Overflow; don't ask me to to explain it.
+    # http://stackoverflow.com/questions/9381553/ruby-merge-nested-hash
+    merger = lambda do |_key, v1, v2|
+      if v1.is_a?(Hash) && v2.is_a?(Hash)
+        v1.merge(v2, &merger)
+      elsif v1.is_a?(Array) && v2.is_a?(Array)
+        v1 | v2
+      elsif [:undefined, nil, :nil].include?(v2)
+        v1
+      else
+        v2
+      end
+    end
+    to.merge(from.to_h, &merger)
+  end
+
+  def build_delete(is, should)
+
+    to_delete = {}
+    is.each do |key, value|
+      next if @ignored_properties.include?(key) || @protected_properties.include?(key)
+
+      if !should.key?(key)
+        to_delete["#{key}@Delete"] = ''
+      elsif value.respond_to?(:keys) && should[key].respond_to?(:keys)
+        to_delete[key] = build_delete(value, should[key])
+      elsif (value.respond_to?(:keys) && !should[key].respond_to?(:keys)) ||
+            (!value.respond_to?(:keys) && should[key].respond_to?(:keys))
+        to_delete["#{key}@Delete"] = ''
       end
     end
 
-    params.merge(resource[:properties])
+    to_delete
   end
 
-  def build_headers
-    { 'Referer' => content_uri }
+  def remove_invalid(is, should)
+    should.delete_if do |key, value|
+      remove_invalid(is[key] || {}, value) if value.respond_to?(:keys)
+
+      del = @ignored_properties.include?(key)
+      del ||= @protected_properties.include?(key) && is[key] && is[key] != value
+      del
+    end
   end
 
-  def flatten_params(orig, current, flattened = {}, old_path = [])
+  def flatten_hash(orig, flattened = {}, old_path = [])
     orig.each do |key, value|
-
-      next if @ignored_properties.include?(key)
-      next if @protected_properties.include?(key) && current.key?(key) && value != current[key]
 
       current_path = old_path + [key]
 
       if value.respond_to?(:keys)
-        flatten_params(value, current[key] || {}, flattened, current_path)
+        flatten_hash(value, flattened, current_path)
       else
         flattened[current_path.join('/')] = value
       end
     end
     flattened
-  end
-
-  def remove_protected_properties(parameters)
-    parameters.each do |key, value|
-      
-      if @protected_properties.contains(key.split('/').last)
-        
-      end
-    end
   end
 
   def submit

@@ -3,17 +3,17 @@ require 'spec_helper'
 # Tests for the env script management based on parameters
 describe 'aem::service', :type => :defines do
 
-  let :title do
+  let(:title) do
     'aem'
   end
 
-  let :default_facts do
+  let(:default_facts) do
     {
       :kernel => 'Linux'
     }
   end
 
-  let :default_params do
+  let(:default_params) do
     {
       :home => '/opt/aem'
     }
@@ -22,7 +22,7 @@ describe 'aem::service', :type => :defines do
   describe 'parameter validation' do
     context 'home' do
       context 'not specified' do
-        let :params do
+        let(:params) do
           tmp = default_params.clone
           tmp.delete(:home)
           tmp
@@ -31,7 +31,7 @@ describe 'aem::service', :type => :defines do
       end
 
       context 'not absolute' do
-        let :params do
+        let(:params) do
           default_params.merge(:home => 'not/absolute/path')
         end
         it { expect { is_expected.to compile }.to raise_error(/is not an absolute path/) }
@@ -39,15 +39,15 @@ describe 'aem::service', :type => :defines do
     end
   end
 
-  ['CentOS', 'Fedora', 'RedHat'].each do |os|
+  %w(CentOS Fedora RedHat).each do |os|
     describe os do
       context 'version >= 7' do
 
-        let :facts do
+        let(:facts) do
           default_facts.merge(:operatingsystem => os, :operatingsystemmajrelease => '7')
         end
 
-        let :params do
+        let(:params) do
           default_params
         end
 
@@ -63,11 +63,11 @@ describe 'aem::service', :type => :defines do
       end
 
       context 'version < 7' do
-        let :facts do
+        let(:facts) do
           default_facts.merge(:operatingsystem => os, :operatingsystemmajrelease => '6')
         end
 
-        let :params do
+        let(:params) do
           default_params
         end
 
@@ -88,11 +88,11 @@ describe 'aem::service', :type => :defines do
   describe 'Debian' do
     context 'version >= 8' do
 
-      let :facts do
+      let(:facts) do
         default_facts.merge(:operatingsystem => 'Debian', :operatingsystemmajrelease => '8')
       end
 
-      let :params do
+      let(:params) do
         default_params
       end
 
@@ -108,11 +108,11 @@ describe 'aem::service', :type => :defines do
     end
 
     context 'version < 7' do
-      let :facts do
+      let(:facts) do
         default_facts.merge(:operatingsystem => 'Debian', :operatingsystemmajrelease => '7')
       end
 
-      let :params do
+      let(:params) do
         default_params
       end
 
@@ -132,11 +132,11 @@ describe 'aem::service', :type => :defines do
   describe 'Ubuntu' do
     context 'version >= 15' do
 
-      let :facts do
+      let(:facts) do
         default_facts.merge(:operatingsystem => 'Ubuntu', :operatingsystemmajrelease => '15')
       end
 
-      let :params do
+      let(:params) do
         default_params
       end
 
@@ -152,11 +152,11 @@ describe 'aem::service', :type => :defines do
     end
 
     context 'version < 7' do
-      let :facts do
+      let(:facts) do
         default_facts.merge(:operatingsystem => 'Ubuntu', :operatingsystemmajrelease => '14')
       end
 
-      let :params do
+      let(:params) do
         default_params
       end
 

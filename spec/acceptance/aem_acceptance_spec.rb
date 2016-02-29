@@ -4,13 +4,13 @@ describe 'aem::instance acceptance' do
 
   describe 'aem::instance first run' do
 
-    let :facts do
+    let(:facts) do
       {
         :environment => :root
       }
     end
 
-    let :license do
+    let(:license) do
       ENV['AEM_LICENSE'] || 'fake-key-for-testing'
     end
 
@@ -121,7 +121,7 @@ describe 'aem::instance acceptance' do
 
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
-        fqdn = fqdn.chop if fqdn.end_with?(".")
+        fqdn = fqdn.chop if fqdn.end_with?('.')
 
         on(
           default,
@@ -138,7 +138,7 @@ describe 'aem::instance acceptance' do
 
       it 'should have unpacked the standalone jar' do
         shell('find /opt/aem/author/crx-quickstart -name "cq-quickstart-*-standalone*.jar" -type f') do |result|
-          expect(result.stdout).to match(%r{^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar})
+          expect(result.stdout).to match(%r|^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar|)
         end
       end
 
@@ -201,31 +201,40 @@ describe 'aem::instance acceptance' do
 
     context 'file osgi configs' do
       it 'should contain osgi config file SegmentNodeStoreService' do
-        shell('test -f /opt/aem/author/crx-quickstart/install/org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService.config', :acceptable_exit_codes => 0)
+        cmd = 'test -f /opt/aem/author/crx-quickstart/install/'
+        cmd += 'org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService.config'
+        shell(cmd, :acceptable_exit_codes => 0)
       end
 
       it 'should contain the tarmk file config' do
-        shell('grep "tarmk.size=L\"512\"" /opt/aem/author/crx-quickstart/install/org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService.config',
-              :acceptable_exit_codes => 0)
+        cmd = 'grep "tarmk.size=L\"512\"" '
+        cmd += '/opt/aem/author/crx-quickstart/install/'
+        cmd += 'org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService.config'
+        shell(cmd, :acceptable_exit_codes => 0)
       end
 
       it 'should contain the pauseCompatction config' do
-        shell('grep "pauseCompaction=B\"true\"" /opt/aem/author/crx-quickstart/install/org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService.config',
-              :acceptable_exit_codes => 0)
+        cmd = 'grep "pauseCompaction=B\"true\"" '
+        cmd += '/opt/aem/author/crx-quickstart/install/'
+        cmd += 'org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService.config'
+        shell(cmd, :acceptable_exit_codes => 0)
       end
 
       it 'should contain osgi config file ReferrerFilter' do
-        shell('test -f /opt/aem/author/crx-quickstart/install/org.apache.sling.security.impl.ReferrerFilter.config', :acceptable_exit_codes => 0)
+        cmd = 'test -f /opt/aem/author/crx-quickstart/install/org.apache.sling.security.impl.ReferrerFilter.config'
+        shell(cmd, :acceptable_exit_codes => 0)
       end
 
       it 'should contain the empty allow config' do
-        shell('grep "allow.empty=B\"true\"" /opt/aem/author/crx-quickstart/install/org.apache.sling.security.impl.ReferrerFilter.config',
-              :acceptable_exit_codes => 0)
+        cmd = 'grep "allow.empty=B\"true\"" '
+        cmd += '/opt/aem/author/crx-quickstart/install/org.apache.sling.security.impl.ReferrerFilter.config'
+        shell(cmd, :acceptable_exit_codes => 0)
       end
 
       it 'should contain the allow hosts config' do
-        shell('grep "allow.hosts=\[\"author.localhost.localmachine\"\]" /opt/aem/author/crx-quickstart/install/org.apache.sling.security.impl.ReferrerFilter.config',
-              :acceptable_exit_codes => 0)
+        cmd = 'grep "allow.hosts=\[\"author.localhost.localmachine\"\]" '
+        cmd += '/opt/aem/author/crx-quickstart/install/org.apache.sling.security.impl.ReferrerFilter.config'
+        shell(cmd, :acceptable_exit_codes => 0)
       end
     end
 
@@ -253,6 +262,7 @@ describe 'aem::instance acceptance' do
                   end
                 end
               rescue
+                valid = false
               end
               sleep 15
             end
@@ -262,7 +272,7 @@ describe 'aem::instance acceptance' do
       end
     end
 
-    context 'console osgi configs', license: false do
+    context 'console osgi configs', :license => false do
 
       it 'should work with no errors' do
 
@@ -304,7 +314,7 @@ describe 'aem::instance acceptance' do
         apply_manifest_on(master, pp, :catch_failures => true)
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
-        fqdn = fqdn.chop if fqdn.end_with?(".")
+        fqdn = fqdn.chop if fqdn.end_with?('.')
 
         on(
           default,
@@ -352,7 +362,7 @@ describe 'aem::instance acceptance' do
         apply_manifest_on(master, pp, :catch_failures => true)
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
-        fqdn = fqdn.chop if fqdn.end_with?(".")
+        fqdn = fqdn.chop if fqdn.end_with?('.')
 
         on(
           default,
@@ -390,7 +400,7 @@ describe 'aem::instance acceptance' do
         apply_manifest_on(master, pp, :catch_failures => true)
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
-        fqdn = fqdn.chop if fqdn.end_with?(".")
+        fqdn = fqdn.chop if fqdn.end_with?('.')
 
         on(
           default,
@@ -404,7 +414,9 @@ describe 'aem::instance acceptance' do
           :acceptable_exit_codes => [0]
         )
 
-        shell('curl http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json -u admin:admin') do |result|
+        cmd = 'curl http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json '
+        cmd += '-u admin:admin'
+        shell(cmd) do |result|
           jsonresult = JSON.parse(result.stdout)
           configed_props = jsonresult[0]['properties']
           expect(configed_props['allow.empty']['is_set']).to eq(false)
@@ -451,7 +463,7 @@ describe 'aem::instance acceptance' do
         apply_manifest_on(master, pp, :catch_failures => true)
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
-        fqdn = fqdn.chop if fqdn.end_with?(".")
+        fqdn = fqdn.chop if fqdn.end_with?('.')
 
         on(
           default,
@@ -488,7 +500,7 @@ describe 'aem::instance acceptance' do
         apply_manifest_on(master, pp, :catch_failures => true)
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
-        fqdn = fqdn.chop if fqdn.end_with?(".")
+        fqdn = fqdn.chop if fqdn.end_with?('.')
 
         on(
           default,
@@ -502,7 +514,9 @@ describe 'aem::instance acceptance' do
           :acceptable_exit_codes => [0]
         )
 
-        shell('curl http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json -u admin:admin') do |result|
+        cmd = 'curl http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json '
+        cmd += '-u admin:admin'
+        shell(cmd) do |result|
           jsonresult = JSON.parse(result.stdout)
           configed_props = jsonresult[0]['properties']
           expect(configed_props['allow.empty']['is_set']).to eq(true)
@@ -523,7 +537,7 @@ describe 'aem::instance acceptance' do
 
   describe 'aem::instance updated' do
 
-    let :facts do
+    let(:facts) do
       {
         :environment => :root
       }
@@ -677,6 +691,7 @@ describe 'aem::instance acceptance' do
                   end
                 end
               rescue
+                valid = false
               end
               sleep 15
             end

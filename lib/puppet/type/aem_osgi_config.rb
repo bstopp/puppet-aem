@@ -16,20 +16,17 @@ This is a private type used to manage OSGi co=nfigurations via API calls.
 
     validate do |value|
       unless value.is_a?(Hash)
-        fail(Puppet::ResourceError, 'Config properties must be a hash of values.')
+        raise(Puppet::ResourceError, 'Config properties must be a hash of values.')
       end
     end
 
     def insync?(is)
       if resource[:handle_missing] == :merge
         should.each do |k, v|
-          if !is.key?(k)
-            # Desired state has a configuration value that doesn't exist
-            return false
-          elsif is[k] != v
-            # Desired state's value is different than current state
-            return false
-          end
+          # Desired state has a configuration value that doesn't exist
+          return false unless is.key?(k)
+          # Desired state's value is different than current state
+          return false if is[k] != v
         end
         return true
       end
@@ -48,7 +45,7 @@ This is a private type used to manage OSGi co=nfigurations via API calls.
     desc 'The home directory of the AEM installation.'
     validate do |value|
       unless Puppet::Util.absolute_path?(value)
-        fail(Puppet::ResourceError, "AEM Home must be fully qualified, not '#{value}'")
+        raise(Puppet::ResourceError, "AEM Home must be fully qualified, not '#{value}'")
       end
     end
   end
@@ -78,6 +75,6 @@ This is a private type used to manage OSGi co=nfigurations via API calls.
   end
 
   validate do
-    fail('AEM Home must be specified.') if self[:home].nil? || !self[:home]
+    raise(Puppet::ResourceError, 'AEM Home must be specified.') if self[:home].nil? || !self[:home]
   end
 end

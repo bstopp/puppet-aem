@@ -3,7 +3,7 @@ require 'spec_helper'
 # Tests for the env script management based on parameters
 describe 'aem::service::systemd', :type => :defines do
 
-  let :facts do
+  let(:facts) do
     {
       :kernel                    => 'Linux',
       :operatingsystem           => 'CentOS',
@@ -12,11 +12,11 @@ describe 'aem::service::systemd', :type => :defines do
     }
   end
 
-  let :title do
+  let(:title) do
     'aem'
   end
 
-  let :default_params do
+  let(:default_params) do
     {
       :ensure => 'present',
       :status => 'enabled',
@@ -27,7 +27,7 @@ describe 'aem::service::systemd', :type => :defines do
   end
 
   context 'Setup service' do
-    let :params do
+    let(:params) do
       default_params
     end
     it { should contain_aem__service__systemd('aem') }
@@ -37,7 +37,7 @@ describe 'aem::service::systemd', :type => :defines do
   end
 
   context 'Remove service' do
-    let :params do
+    let(:params) do
       default_params
     end
     it { should contain_aem__service__systemd('aem') }

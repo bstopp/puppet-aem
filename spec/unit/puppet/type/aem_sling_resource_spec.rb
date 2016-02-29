@@ -60,15 +60,18 @@ describe Puppet::Type.type(:aem_sling_resource) do
       end
     end
 
-
     describe 'handle_missing' do
 
       it 'should support remove as a value for handle_missing' do
-        expect { described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :remove, :home => '/opt/aem') }.not_to raise_error
+        expect do
+          described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :remove, :home => '/opt/aem')
+        end.not_to raise_error
       end
 
       it 'should support ignore as a value for handle_missing' do
-        expect { described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :ignore, :home => '/opt/aem') }.not_to raise_error
+        expect do
+          described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :ignore, :home => '/opt/aem')
+        end.not_to raise_error
       end
 
       it 'should not support other values' do
@@ -118,7 +121,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
             :name => 'bar',
             :ensure => :present,
             :home => '/opt/aem',
-            :properties => ['foo', 'bar']
+            :properties => %w('foo', 'bar')
           )
         end.to raise_error(Puppet::Error, /must be a hash/)
       end
@@ -136,10 +139,10 @@ describe Puppet::Type.type(:aem_sling_resource) do
               :ensure => :present,
               :handle_missing => :remove,
               :home => '/opt/aem',
-              :properties => {'foo' => 'bar'}
+              :properties => { 'foo' => 'bar' }
             )
             prop = existing.property(:properties)
-            is = {'foo' => 'bar'}
+            is = { 'foo' => 'bar' }
 
             expect(prop.insync?(is)).to be_truthy
           end
@@ -150,10 +153,10 @@ describe Puppet::Type.type(:aem_sling_resource) do
               :ensure => :present,
               :handle_missing => :remove,
               :home => '/opt/aem',
-              :properties => {'foo' => 'baz'}
+              :properties => { 'foo' => 'baz' }
             )
             prop = existing.property(:properties)
-            is = {'foo' => 'bar'}
+            is = { 'foo' => 'bar' }
 
             expect(prop.insync?(is)).to be_falsey
           end
@@ -164,10 +167,10 @@ describe Puppet::Type.type(:aem_sling_resource) do
               :ensure => :present,
               :handle_missing => :remove,
               :home => '/opt/aem',
-              :properties => {'bar' => 'foo'}
+              :properties => { 'bar' => 'foo' }
             )
             prop = existing.property(:properties)
-            is = {'foo' => 'bar'}
+            is = { 'foo' => 'bar' }
 
             expect(prop.insync?(is)).to be_falsey
           end
@@ -178,10 +181,10 @@ describe Puppet::Type.type(:aem_sling_resource) do
               :ensure => :present,
               :handle_missing => :remove,
               :home => '/opt/aem',
-              :properties => {'bar' => 'foo'}
+              :properties => { 'bar' => 'foo' }
             )
             prop = existing.property(:properties)
-            is = {'foo' => 'bar', 'bar' => 'foo' }
+            is = { 'foo' => 'bar', 'bar' => 'foo' }
 
             expect(prop.insync?(is)).to be_falsey
           end
@@ -196,10 +199,10 @@ describe Puppet::Type.type(:aem_sling_resource) do
               :ensure => :present,
               :handle_missing => :ignore,
               :home => '/opt/aem',
-              :properties => {'foo' => 'bar'}
+              :properties => { 'foo' => 'bar' }
             )
             prop = existing.property(:properties)
-            is = {'foo' => 'bar'}
+            is = { 'foo' => 'bar' }
 
             expect(prop.insync?(is)).to be_truthy
           end
@@ -210,10 +213,10 @@ describe Puppet::Type.type(:aem_sling_resource) do
               :ensure => :present,
               :handle_missing => :ignore,
               :home => '/opt/aem',
-              :properties => {'foo' => 'baz'}
+              :properties => { 'foo' => 'baz' }
             )
             prop = existing.property(:properties)
-            is = {'foo' => 'bar'}
+            is = { 'foo' => 'bar' }
 
             expect(prop.insync?(is)).to be_falsey
           end
@@ -224,10 +227,10 @@ describe Puppet::Type.type(:aem_sling_resource) do
               :ensure => :present,
               :handle_missing => :ignore,
               :home => '/opt/aem',
-              :properties => {'bar' => 'foo'}
+              :properties => { 'bar' => 'foo' }
             )
             prop = existing.property(:properties)
-            is = {'foo' => 'bar'}
+            is = { 'foo' => 'bar' }
 
             expect(prop.insync?(is)).to be_falsey
           end
@@ -238,7 +241,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
               :ensure => :present,
               :handle_missing => :ignore,
               :home => '/opt/aem',
-              :properties => {'bar' => 'foo', 'foo' => 'bar' }
+              :properties => { 'bar' => 'foo', 'foo' => 'bar' }
             )
             prop = existing.property(:properties)
             is = { 'foo' => 'bar' }
@@ -266,7 +269,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
               :ensure => :present,
               :handle_missing => :ignore,
               :home => '/opt/aem',
-              :properties => { 'bar' => 'foo' , 'baz' => { 'a' => 'b' } }
+              :properties => { 'bar' => 'foo', 'baz' => { 'a' => 'b' } }
             )
             prop = existing.property(:properties)
             is = { 'bar' => 'foo' }
@@ -280,7 +283,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
               :ensure => :present,
               :handle_missing => :ignore,
               :home => '/opt/aem',
-            :properties => { 'bar' => 'foo' , 'baz' => { 'a' => 'b' } }
+              :properties => { 'bar' => 'foo', 'baz' => { 'a' => 'b' } }
             )
             prop = existing.property(:properties)
             is = { 'bar' => 'foo', 'baz' => 'not hash' }

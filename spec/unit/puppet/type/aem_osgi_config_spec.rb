@@ -35,11 +35,15 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
     describe 'ensure' do
       it 'should support present as a value for ensure' do
-        expect { described_class.new(:name => 'bar', :ensure => :present, :handle_missing => 'merge', :home => '/opt/aem') }.not_to raise_error
+        expect do
+          described_class.new(:name => 'bar', :ensure => :present, :handle_missing => 'merge', :home => '/opt/aem')
+        end.not_to raise_error
       end
 
       it 'should support absent as a value for ensure' do
-        expect { described_class.new(:name => 'bar', :ensure => :absent, :handle_missing => 'merge', :home => '/opt/aem') }.not_to raise_error
+        expect do
+          described_class.new(:name => 'bar', :ensure => :absent, :handle_missing => 'merge', :home => '/opt/aem')
+        end.not_to raise_error
       end
 
       it 'should not support other values' do
@@ -51,7 +55,9 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
     describe 'name' do
       it 'should be required' do
-        expect { described_class.new({}) }.to raise_error(Puppet::Error, 'Title or name must be provided')
+        expect do
+          described_class.new({})
+        end.to raise_error(Puppet::Error, 'Title or name must be provided')
       end
 
       it 'should accept a name' do
@@ -62,11 +68,15 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
     describe 'handle_missing' do
       it 'should support merge as a value for handle_missing' do
-        expect { described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :merge, :home => '/opt/aem') }.not_to raise_error
+        expect do
+          described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :merge, :home => '/opt/aem')
+        end.not_to raise_error
       end
 
       it 'should support remove as a value for handle_missing' do
-        expect { described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :remove, :home => '/opt/aem') }.not_to raise_error
+        expect do
+          described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :remove, :home => '/opt/aem')
+        end.not_to raise_error
       end
 
       it 'should not support other values' do
@@ -116,7 +126,7 @@ describe Puppet::Type.type(:aem_osgi_config) do
             :name => 'bar',
             :ensure => :present,
             :home => '/opt/aem',
-            :configuration => ['foo', 'bar']
+            :configuration => %w('foo', 'bar')
           )
         end.to raise_error(Puppet::Error, /must be a hash/)
       end
@@ -133,10 +143,10 @@ describe Puppet::Type.type(:aem_osgi_config) do
               :name => 'bar',
               :ensure => :present,
               :home => '/opt/aem',
-              :configuration => {'foo' => 'bar'}
+              :configuration => { 'foo' => 'bar' }
             )
             prop = existing.property(:configuration)
-            is = {'foo' => 'bar'}
+            is = { 'foo' => 'bar' }
 
             expect(prop.insync?(is)).to be_truthy
           end
@@ -146,10 +156,10 @@ describe Puppet::Type.type(:aem_osgi_config) do
               :name => 'bar',
               :ensure => :present,
               :home => '/opt/aem',
-              :configuration => {'foo' => 'baz'}
+              :configuration => { 'foo' => 'baz' }
             )
             prop = existing.property(:configuration)
-            is = {'foo' => 'bar'}
+            is = { 'foo' => 'bar' }
 
             expect(prop.insync?(is)).to be_falsey
           end
@@ -159,10 +169,10 @@ describe Puppet::Type.type(:aem_osgi_config) do
               :name => 'bar',
               :ensure => :present,
               :home => '/opt/aem',
-              :configuration => {'bar' => 'foo'}
+              :configuration => { 'bar' => 'foo' }
             )
             prop = existing.property(:configuration)
-            is = {'foo' => 'bar'}
+            is = { 'foo' => 'bar' }
 
             expect(prop.insync?(is)).to be_falsey
           end
@@ -172,10 +182,10 @@ describe Puppet::Type.type(:aem_osgi_config) do
               :name => 'bar',
               :ensure => :present,
               :home => '/opt/aem',
-              :configuration => {'bar' => 'foo'}
+              :configuration => { 'bar' => 'foo' }
             )
             prop = existing.property(:configuration)
-            is = {'foo' => 'bar', 'bar' => 'foo' }
+            is = { 'foo' => 'bar', 'bar' => 'foo' }
 
             expect(prop.insync?(is)).to be_falsey
           end
@@ -190,10 +200,10 @@ describe Puppet::Type.type(:aem_osgi_config) do
               :ensure => :present,
               :home => '/opt/aem',
               :handle_missing => :merge,
-              :configuration => {'foo' => 'bar'}
+              :configuration => { 'foo' => 'bar' }
             )
             prop = existing.property(:configuration)
-            is = {'foo' => 'bar'}
+            is = { 'foo' => 'bar' }
 
             expect(prop.insync?(is)).to be_truthy
           end
@@ -204,10 +214,10 @@ describe Puppet::Type.type(:aem_osgi_config) do
               :ensure => :present,
               :home => '/opt/aem',
               :handle_missing => :merge,
-              :configuration => {'foo' => 'baz'}
+              :configuration => { 'foo' => 'baz' }
             )
             prop = existing.property(:configuration)
-            is = {'foo' => 'bar'}
+            is = { 'foo' => 'bar' }
 
             expect(prop.insync?(is)).to be_falsey
           end
@@ -218,10 +228,10 @@ describe Puppet::Type.type(:aem_osgi_config) do
               :ensure => :present,
               :handle_missing => :merge,
               :home => '/opt/aem',
-              :configuration => {'bar' => 'foo'}
+              :configuration => { 'bar' => 'foo' }
             )
             prop = existing.property(:configuration)
-            is = {'foo' => 'bar'}
+            is = { 'foo' => 'bar' }
 
             expect(prop.insync?(is)).to be_falsey
           end
@@ -232,7 +242,7 @@ describe Puppet::Type.type(:aem_osgi_config) do
               :ensure => :present,
               :handle_missing => :merge,
               :home => '/opt/aem',
-              :configuration => {'bar' => 'foo', 'foo' => 'bar' }
+              :configuration => { 'bar' => 'foo', 'foo' => 'bar' }
             )
             prop = existing.property(:configuration)
             is = { 'foo' => 'bar' }

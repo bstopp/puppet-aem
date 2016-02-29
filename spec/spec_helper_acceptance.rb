@@ -2,7 +2,7 @@ require 'beaker'
 require 'beaker-rspec'
 require 'beaker/puppet_install_helper'
 
-UNSUPPORTED_PLATFORMS = %w(Suse windows AIX Solaris)
+UNSUPPORTED_PLATFORMS = %w(Suse windows AIX Solaris).freeze
 ENV['PUPPET_INSTALL_VERSION'] = ENV['PUPPET_INSTALL_VERSION'] || '4.2'
 
 def server_opts
@@ -80,10 +80,9 @@ end
 
 def aem_license(module_root)
   license_file = File.join(module_root, 'spec', 'files', 'license.properties')
-   File.foreach(license_file) do |line|
-    if match = line.match(/license.downloadID=(\S+)/)
-      ENV['AEM_LICENSE'] = match.captures[0]
-    end
+  File.foreach(license_file) do |line|
+    match = line.match(/license.downloadID=(\S+)/)
+    ENV['AEM_LICENSE'] = match.captures[0] if match
   end if File.exist?(license_file)
 end
 
@@ -127,10 +126,10 @@ unless ENV['BEAKER_provision'] == 'no'
 
   setup_puppet default
   stop_firewall_on(master)
-	stop_firewall_on(default)
+  stop_firewall_on(default)
   clear_ssl
   on(default, 'puppet agent --enable')
-  
+
 end
 
 # Install module
@@ -138,8 +137,7 @@ configure_defaults_on master, 'aio'
 install_dev_puppet_module_on(master, :source => module_root, :module_name => 'aem')
 
 RSpec.configure do |c|
-  if !ENV['AEM_LICENSE']
-    c.filter_run_excluding license: false
-  end
+
+  c.filter_run_excluding(:license => false) unless ENV['AEM_LICENSE']
   c.formatter = :documentation
 end

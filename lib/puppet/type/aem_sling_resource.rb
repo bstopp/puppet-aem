@@ -21,7 +21,7 @@ This is a type used to perform sling api calls
     desc 'The home directory of the AEM installation.'
     validate do |value|
       unless Puppet::Util.absolute_path?(value)
-        fail(Puppet::ResourceError, "AEM Home must be fully qualified, not '#{value}'")
+        raise(Puppet::ResourceError, "AEM Home must be fully qualified, not '#{value}'")
       end
     end
   end
@@ -43,7 +43,7 @@ This is a type used to perform sling api calls
 
     validate do |value|
       unless value.is_a?(Hash)
-        fail(Puppet::ResourceError, 'Properties must be a hash of values.')
+        raise(Puppet::ResourceError, 'Properties must be a hash of values.')
       end
     end
 
@@ -70,7 +70,7 @@ This is a type used to perform sling api calls
       when :remove
         return is == should
       else
-        fail(Puppet::ResourceError, "Invalid value for :handle_missing: #{resource[:handle_missing]}")
+        raise(Puppet::ResourceError, "Invalid value for :handle_missing: #{resource[:handle_missing]}")
       end
 
     end
@@ -89,6 +89,6 @@ This is a type used to perform sling api calls
   end
 
   validate do
-    fail('AEM Home must be specified.') if self[:home].nil? || !self[:home]
+    raise(Puppet::ResourceError, 'AEM Home must be specified.') if self[:home].nil? || !self[:home]
   end
 end
