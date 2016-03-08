@@ -20,6 +20,7 @@ HOSTS:
     dispatcher_file: dispatcher-apache2.4-4.1.11.so
 
 CONFIG:
+#  log_level: verbose
   type: foss
   vagrant_memsize : 4096
   vagrant_cpus : 1

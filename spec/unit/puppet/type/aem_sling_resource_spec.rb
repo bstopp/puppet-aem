@@ -189,6 +189,67 @@ describe Puppet::Type.type(:aem_sling_resource) do
             expect(prop.insync?(is)).to be_falsey
           end
 
+          it 'should ignore protected properties in is' do
+            existing = described_class.new(
+              :name => 'bar',
+              :ensure => :present,
+              :handle_missing => :remove,
+              :home => '/opt/aem',
+              :properties => {
+                'bar' => 'foo',
+                'baz' => {
+                  'a' => {
+                    'b' => 'c'
+                  }
+                }
+              }
+            )
+            prop = existing.property(:properties)
+            is = {
+              'baz' => {
+                'jcr:createdBy' => 'not admin',
+                'a' => {
+                  'b' => 'c',
+                  'jcr:primaryType' => 'oak:unstructured'
+                }
+              },
+              'bar' => 'foo',
+              'jcr:created' => 'original value'
+            }
+
+            expect(prop.insync?(is)).to be_truthy
+          end
+
+          it 'should ignore protected properties in should' do
+            existing = described_class.new(
+              :name => 'bar',
+              :ensure => :present,
+              :handle_missing => :remove,
+              :home => '/opt/aem',
+              :properties => {
+                'bar' => 'foo',
+                'jcr:created' => 'a value',
+                'baz' => {
+                  'jcr:createdBy' => 'admin',
+                  'a' => {
+                    'b' => 'c',
+                    'jcr:primaryType' => 'nt:unstructured'
+                  }
+                }
+              }
+            )
+            prop = existing.property(:properties)
+            is = {
+              'baz' => {
+                'a' => {
+                  'b' => 'c'
+                }
+              },
+              'bar' => 'foo'
+            }
+
+            expect(prop.insync?(is)).to be_truthy
+          end
         end
 
         describe 'handle hash with :handle_missing == ignore' do
@@ -359,6 +420,40 @@ describe Puppet::Type.type(:aem_sling_resource) do
             is = { 'bar' => 'foo', 'baz' => { 'a' => { 'b' => 'd' } } }
 
             expect(prop.insync?(is)).to be_falsey
+          end
+
+          it 'should ignore protected properties in should' do
+            existing = described_class.new(
+              :name => 'bar',
+              :ensure => :present,
+              :handle_missing => :ignore,
+              :home => '/opt/aem',
+              :properties => {
+                'bar' => 'foo',
+                'jcr:created' => 'a value',
+                'baz' => {
+                  'jcr:createdBy' => 'admin',
+                  'a' => {
+                    'b' => 'c',
+                    'jcr:primaryType' => 'nt:unstructured'
+                  }
+                }
+              }
+            )
+            prop = existing.property(:properties)
+            is = {
+              'bar' => 'foo',
+              'jcr:created' => 'original value',
+              'baz' => {
+                'jcr:createdBy' => 'not admin',
+                'a' => {
+                  'b' => 'c',
+                  'jcr:primaryType' => 'oak:unstructured'
+                }
+              }
+            }
+
+            expect(prop.insync?(is)).to be_truthy
           end
         end
       end

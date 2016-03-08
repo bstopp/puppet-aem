@@ -49,26 +49,48 @@ This is a type used to perform sling api calls
 
     def insync?(is)
 
-      depth_comp = lambda do |should_hsh, is_hsh|
+      ignored_properties = ['jcr:created', 'jcr:createdBy'].freeze
+      protected_properties = ['jcr:primaryType'].freeze
+
+      ignore_comp = lambda do |should_hsh, is_hsh|
         match = true
         should_hsh.each do |k, v|
+
           if v.is_a?(Hash) && is_hsh[k].is_a?(Hash)
 
-            match = depth_comp.call(v, is_hsh[k])
+            match = ignore_comp.call(v, is_hsh[k])
             return match unless match
           else
-
+            next if ignored_properties.include?(k) || (protected_properties.include?(k) && is_hsh[k])
             return false unless v == is_hsh[k]
           end
         end
         match
       end
 
+      remove_comp = lambda do |should_hsh, is_hsh|
+        should_keys = should_hsh.keys - protected_properties - ignored_properties
+        is_keys = is_hsh.keys - protected_properties - ignored_properties
+
+        return false unless should_keys.sort == is_keys.sort
+
+        match = true
+        should_keys.each do |k|
+          if should_hsh[k].is_a?(Hash) && is_hsh[k].is_a?(Hash)
+            match = remove_comp.call(should_hsh[k], is_hsh[k])
+            return match unless match
+          else
+            return false unless should_hsh[k] == is_hsh[k]
+          end
+        end
+
+      end
+
       case resource[:handle_missing]
-      when :ignore, :merge
-        return depth_comp.call(resource[:properties], is)
+      when :ignore
+        return ignore_comp.call(should, is)
       when :remove
-        return is == should
+        return remove_comp.call(should, is)
       else
         raise(Puppet::ResourceError, "Invalid value for :handle_missing: #{resource[:handle_missing]}")
       end

@@ -1,6 +1,5 @@
 require 'json'
 require 'net/http'
-require 'httpclient'
 
 Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provider do
 
@@ -40,15 +39,55 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
 
   protected
 
-  def read_content
-    content = current_content
-    if content
-      @property_hash[:properties] = content.clone
-      @property_flush[:existing_props] = content.clone
-      @property_hash[:ensure] = :present
-    else
-      @property_hash[:ensure] = :absent
+  def build_delete(is, should)
+
+    to_delete = {}
+    is.each do |key, value|
+      next if @ignored_properties.include?(key) || @protected_properties.include?(key)
+
+      if !should.key?(key)
+        to_delete["#{key}@Delete"] = ''
+      elsif value.respond_to?(:keys) && should[key].respond_to?(:keys)
+        to_delete[key] = build_delete(value, should[key])
+      elsif (value.respond_to?(:keys) && !should[key].respond_to?(:keys)) ||
+            (!value.respond_to?(:keys) && should[key].respond_to?(:keys))
+        to_delete["#{key}@Delete"] = ''
+      end
     end
+
+    to_delete
+  end
+
+  def build_ignore_params
+    hsh = remove_invalid(@property_flush[:existing_props], resource[:properties])
+    flatten_hash(hsh)
+  end
+
+  def build_parameters
+    params = {}
+    if @property_flush[:ensure] == :absent
+      params = params.merge(':operation' => 'delete')
+    else
+      case resource[:handle_missing]
+      when :ignore
+        params = params.merge(build_ignore_params)
+      when :remove
+        params = params.merge(build_remove_params)
+      else
+        raise(Puppet::ResourceError, "Invalid handle_missing value: #{resource[:handle_missing]}")
+      end
+    end
+
+    params
+  end
+
+  def build_remove_params
+    processed = remove_invalid(@property_flush[:existing_props], resource[:properties])
+    to_delete = build_delete(@property_flush[:existing_props], processed)
+
+    hsh = deep_merge_hash(to_delete, processed)
+
+    flatten_hash(hsh)
   end
 
   def content_uri
@@ -98,50 +137,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
     end
   end
 
-  def get_depth(data)
-    max_depth = 1
-    depth_func = lambda do |hsh, cur_depth|
-      max_depth = cur_depth if cur_depth > max_depth
-      hsh.each do |_k, v|
-        depth_func.call(v, cur_depth + 1) if v.is_a?(Hash)
-      end
-      max_depth
-    end
-    depth_func.call(data, 1)
-  end
-
-  def build_parameters
-    params = {}
-    if @property_flush[:ensure] == :present
-      case resource[:handle_missing]
-      when :ignore
-        params = params.merge(build_ignore_params)
-      when :remove
-        params = params.merge(build_remove_params)
-      else
-        raise(Puppet::ResourceError, "Invalid handle_missing value: #{resource[:handle_missing]}")
-      end
-    else
-      params = params.merge(':operation' => 'delete')
-    end
-
-    params
-  end
-
-  def build_ignore_params
-    hsh = remove_invalid(@property_flush[:existing_props], resource[:properties])
-    flatten_hash(hsh)
-  end
-
-  def build_remove_params
-    processed = remove_invalid(@property_flush[:existing_props], resource[:properties])
-    to_delete = build_delete(@property_flush[:existing_props], processed)
-
-    hsh = deep_merge_hash(to_delete, processed)
-
-    flatten_hash(hsh)
-  end
-
   def deep_merge_hash(to, from)
     # Pulled straight from Stack Overflow; don't ask me to to explain it.
     # http://stackoverflow.com/questions/9381553/ruby-merge-nested-hash
@@ -156,36 +151,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
         v2
       end
     end
-    to.merge(from.to_h, &merger)
-  end
-
-  def build_delete(is, should)
-
-    to_delete = {}
-    is.each do |key, value|
-      next if @ignored_properties.include?(key) || @protected_properties.include?(key)
-
-      if !should.key?(key)
-        to_delete["#{key}@Delete"] = ''
-      elsif value.respond_to?(:keys) && should[key].respond_to?(:keys)
-        to_delete[key] = build_delete(value, should[key])
-      elsif (value.respond_to?(:keys) && !should[key].respond_to?(:keys)) ||
-            (!value.respond_to?(:keys) && should[key].respond_to?(:keys))
-        to_delete["#{key}@Delete"] = ''
-      end
-    end
-
-    to_delete
-  end
-
-  def remove_invalid(is, should)
-    should.delete_if do |key, value|
-      remove_invalid(is[key] || {}, value) if value.respond_to?(:keys)
-
-      del = @ignored_properties.include?(key)
-      del ||= @protected_properties.include?(key) && is[key] && is[key] != value
-      del
-    end
+    to.merge(from, &merger)
   end
 
   def flatten_hash(orig, flattened = {}, old_path = [])
@@ -200,6 +166,55 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
       end
     end
     flattened
+  end
+
+  def get_depth(data)
+    max_depth = 1
+    return max_depth unless data
+
+    depth_func = lambda do |hsh, cur_depth|
+      max_depth = cur_depth if cur_depth > max_depth
+      hsh.each do |_k, v|
+        depth_func.call(v, cur_depth + 1) if v.is_a?(Hash)
+      end
+      max_depth
+    end
+    depth_func.call(data, 1)
+  end
+
+  def read_content
+    content = current_content
+
+    if content
+      remove_ignored(content)
+      @property_hash[:properties] = content.clone
+      @property_flush[:existing_props] = content.clone
+      @property_hash[:ensure] = :present
+    else
+      @property_flush[:existing_props] = {}
+      @property_hash[:ensure] = :absent
+    end
+  end
+
+  def remove_ignored(content)
+    content.delete_if do |k, v|
+      if v.is_a?(Hash)
+        remove_ignored(v)
+        return false
+      else
+        @ignored_properties.include?(k)
+      end
+    end
+  end
+
+  def remove_invalid(is, should)
+    should.delete_if do |key, value|
+      remove_invalid(is[key] || {}, value) if value.respond_to?(:keys)
+
+      del = @ignored_properties.include?(key)
+      del ||= @protected_properties.include?(key) && is[key] && is[key] != value
+      del
+    end
   end
 
   def submit
