@@ -72,7 +72,6 @@ define aem::agent::config(
         'jcr:primaryType'    => 'nt:unstructured',
         'cq:template'        => $template,
         '_charset_'          => $charset,
-        ':status'            => 'browser',
         'enabled'            => $agent_enabled,
         'jcr:description'    => $description,
         'jcr:title'          => $description,
