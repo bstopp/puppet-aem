@@ -832,6 +832,104 @@ describe 'aem::instance acceptance' do
     end
   end
 
+  descibe 'replication agent', :license => false do
+    context 'create agent' do
+      it 'should create with all properties' do
+        site = <<-MANFIEST
+          'node \"agent\" {
+            File { backup => false, owner => \"aem\", group => \"aem\" }
+
+            aem::agent::replication { \"agent1\" :
+              agent_user            => \"agentuser\",
+              batch_enabled         => true,
+              batch_max_wait        => 60,
+              batch_trigger_size    => 100,
+              context_root          => \"context_root\",
+              description           => \"Custom Description\",
+              enabled               => false,
+              home                  => \"/opt/aem\",
+              log_level             => \"debug\",
+              name                  => \"customname\",
+              password              => \"admin\",
+              protocol_close_conn   => true,
+              protocol_conn_timeout => 1000,
+              protocol_http_headers => [\"CQ-Action:{action}\", \"CQ-Handle:{path}\", \"CQ-Path:{path}\"],
+              protocol_http_method  => \"POST\",
+              protocol_interface    => \"127.0.0.1\",
+              protocol_sock_timeout => 1000,
+              protocol_version      => 1.0,
+              proxy_host            => \"proxy.domain.com\",
+              proxy_ntlm_domain     => \"proxydomain\",
+              proxy_ntlm_host       => \"proxy.ntlm.domain.com\",
+              proxy_password        => \"proxypassword\",
+              proxy_port            => 12_345,
+              proxy_user            => \"proxyuser\",
+              resource_type         => \"cq/replication/components/revagent\",
+              retry_delay           => 60,
+              reverse               => true,
+              runmode               => \"custommode\",
+              serialize_type        => \"flush\",
+              static_directory      => \"/var/path\",
+              static_definition     => \"/content/geo* ${path}.html?wcmmode=preview\",
+              template              => \"/libs/cq/replication/templates/revagent\",
+              trans_allow_exp_cert  => true,
+              trans_ntlm_domain     => \"transdomain\",
+              trans_ntlm_host       => \"trans.ntlm.domain.com\",
+              trans_password        => \"transpassword\",
+              trans_ssl             => \"relaxed\",
+              trans_uri             => \"http://localhost:4503/bin/receive?sling:authRequestLogin=1\",
+              trans_user            => \"transuser\",
+              trigger_ignore_def    => true,
+              trigger_no_status     => false,
+              trigger_no_version    => true,
+              trigger_on_dist       => true,
+              trigger_on_mod        => true,
+              trigger_on_receive    => true,
+              trigger_onoff_time    => true,
+              username              => \"admin\"
+            }
+          }'
+        MANIFEST
+
+        pp = <<-MANIFEST
+            file {
+              '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+                ensure => file,
+                content => #{site}
+            }
+          MANIFEST
+
+          apply_manifest_on(master, pp, :catch_failures => true)
+          restart_puppetserver
+          fqdn = on(master, 'facter fqdn').stdout.strip
+          fqdn = fqdn.chop if fqdn.end_with?('.')
+
+          on(
+            default,
+            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+            :acceptable_exit_codes => [0, 2]
+          )
+
+          on(
+            default,
+            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+            :acceptable_exit_codes => [0]
+          )
+          cmd = 'curl http://localhost:4502/context_root/etc/replication/agents.custommode/customname.infinity.json '
+          cmd += '-u admin:admin'
+          shell(cmd) do |result|
+            jsonresult = JSON.parse(result.stdout)
+
+            expect(jsonresult['title']).to be_nil
+            expect(jsonresult['text']).to be_nil
+            expect(jsonresult['child']['property']).to be_nil
+            expect(jsonresult['child']['grandchild']).to be_nil
+
+          end
+      end
+    end
+  end
+
   describe 'aem::instance updated' do
 
     let(:facts) do
