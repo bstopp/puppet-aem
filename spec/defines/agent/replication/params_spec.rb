@@ -345,7 +345,6 @@ describe 'aem::agent::replication', :type => :defines do
       end
     end
 
-
     context 'serialize type' do
       context 'is specified' do
         let(:params) { default_params }

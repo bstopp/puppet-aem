@@ -80,7 +80,7 @@ describe 'aem::agent::replication', :type => :defines do
               'jcr:title'          => 'Agent Title'
             }
           },
-          :username       => 'username'
+          :username => 'username'
         )
       end
     end
@@ -113,7 +113,7 @@ describe 'aem::agent::replication', :type => :defines do
               'jcr:title'          => 'Agent Title'
             }
           },
-          :username       => 'username'
+          :username => 'username'
         )
       end
     end
@@ -146,7 +146,7 @@ describe 'aem::agent::replication', :type => :defines do
               'jcr:title'          => 'Agent Title'
             }
           },
-          :username       => 'username'
+          :username => 'username'
         )
       end
     end
@@ -259,10 +259,10 @@ describe 'aem::agent::replication', :type => :defines do
               'triggerDistribute'           => true,
               'triggerModified'             => true,
               'triggerReceive'              => true,
-              'triggerOnOffTime'            => true,
+              'triggerOnOffTime'            => true
             }
           },
-          :username       => 'ausername'
+          :username => 'ausername'
         )
       end
     end
