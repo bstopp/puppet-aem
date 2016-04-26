@@ -142,7 +142,6 @@ describe 'aem::agent::config', :type => :defines do
           'jcr:primaryType'    => 'nt:unstructured',
           'cq:template'        => '/libs/cq/replication/templates/agent',
           '_charset_'          => 'utf-8',
-          ':status'            => 'browser',
           'enabled'            => true,
           'jcr:description'    => 'Replication Agent',
           'jcr:title'          => 'Replication Agent',
