@@ -76,7 +76,7 @@ define aem::agent::replication(
       validate_bool($batch_enabled)
     }
     if $batch_max_wait {
-    validate_integer($batch_max_wait)
+      validate_integer($batch_max_wait)
     }
     if $batch_trigger_size {
       validate_integer($batch_trigger_size)
