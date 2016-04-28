@@ -53,7 +53,7 @@ define aem::agent::replication(
   $username              = undef
 ) {
 
-  validate_re($name, '^[A-Za-z0-9]+$', "${name} must contain only letters and numbers.")
+  validate_re($name, '^[A-Za-z0-9-]+$', "${name} must contain only letters and numbers.")
 
   validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
 
