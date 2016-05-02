@@ -832,10 +832,15 @@ describe 'aem::instance acceptance' do
     end
   end
 
-  descibe 'replication agent', :license => false do
+  describe 'replication agent', :license => false do
     context 'create agent' do
+
+      let(:desc) do
+        '**Managed by Puppet. Any changes made will be overwritten** Custom Description'
+      end
+
       it 'should create with all properties' do
-        site = <<-MANFIEST
+        site = <<-MANIFEST
           'node \"agent\" {
             File { backup => false, owner => \"aem\", group => \"aem\" }
 
@@ -844,10 +849,9 @@ describe 'aem::instance acceptance' do
               batch_enabled         => true,
               batch_max_wait        => 60,
               batch_trigger_size    => 100,
-              context_root          => \"context_root\",
               description           => \"Custom Description\",
               enabled               => false,
-              home                  => \"/opt/aem\",
+              home                  => \"/opt/aem/author\",
               log_level             => \"debug\",
               name                  => \"customname\",
               password              => \"admin\",
@@ -862,7 +866,7 @@ describe 'aem::instance acceptance' do
               proxy_ntlm_domain     => \"proxydomain\",
               proxy_ntlm_host       => \"proxy.ntlm.domain.com\",
               proxy_password        => \"proxypassword\",
-              proxy_port            => 12_345,
+              proxy_port            => 12345,
               proxy_user            => \"proxyuser\",
               resource_type         => \"cq/replication/components/revagent\",
               retry_delay           => 60,
@@ -870,7 +874,7 @@ describe 'aem::instance acceptance' do
               runmode               => \"custommode\",
               serialize_type        => \"flush\",
               static_directory      => \"/var/path\",
-              static_definition     => \"/content/geo* ${path}.html?wcmmode=preview\",
+              static_definition     => \"/content/geo* \\${path}.html?wcmmode=preview\",
               template              => \"/libs/cq/replication/templates/revagent\",
               trans_allow_exp_cert  => true,
               trans_ntlm_domain     => \"transdomain\",
@@ -892,40 +896,84 @@ describe 'aem::instance acceptance' do
         MANIFEST
 
         pp = <<-MANIFEST
-            file {
-              '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-                ensure => file,
-                content => #{site}
-            }
-          MANIFEST
+          file {
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+              ensure => file,
+              content => #{site}
+          }
+        MANIFEST
 
-          apply_manifest_on(master, pp, :catch_failures => true)
-          restart_puppetserver
-          fqdn = on(master, 'facter fqdn').stdout.strip
-          fqdn = fqdn.chop if fqdn.end_with?('.')
+        apply_manifest_on(master, pp, :catch_failures => true)
+        restart_puppetserver
+        fqdn = on(master, 'facter fqdn').stdout.strip
+        fqdn = fqdn.chop if fqdn.end_with?('.')
 
-          on(
-            default,
-            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-            :acceptable_exit_codes => [0, 2]
-          )
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0, 2]
+        )
 
-          on(
-            default,
-            puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-            :acceptable_exit_codes => [0]
-          )
-          cmd = 'curl http://localhost:4502/context_root/etc/replication/agents.custommode/customname.infinity.json '
-          cmd += '-u admin:admin'
-          shell(cmd) do |result|
-            jsonresult = JSON.parse(result.stdout)
+        on(
+          default,
+          puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+          :acceptable_exit_codes => [0]
+        )
+        cmd = 'curl http://localhost:4502/etc/replication/agents.custommode/customname.infinity.json '
+        cmd += '-u admin:admin'
+        shell(cmd) do |result|
+          jsonresult = JSON.parse(result.stdout)
 
-            expect(jsonresult['title']).to be_nil
-            expect(jsonresult['text']).to be_nil
-            expect(jsonresult['child']['property']).to be_nil
-            expect(jsonresult['child']['grandchild']).to be_nil
+          expect(jsonresult['jcr:primaryType']).to eq('cq:Page')
+          expect(jsonresult['jcr:content']['jcr:primaryType']).to eq('nt:unstructured')
+          expect(jsonresult['jcr:content']['userId']).to eq('agentuser')
+          expect(jsonresult['jcr:content']['queueBatchMode']).to eq(true)
+          expect(jsonresult['jcr:content']['queueBatchWaitTime']).to eq(60)
+          expect(jsonresult['jcr:content']['queueBatchMaxSize']).to eq(100)
+          expect(jsonresult['jcr:content']['jcr:description']).to eq(desc)
+          expect(jsonresult['jcr:content']['enabled']).to eq(false)
+          expect(jsonresult['jcr:content']['logLevel']).to eq('debug')
+          expect(jsonresult['jcr:content']['protocolHTTPConnectionClose']).to eq(true)
+          expect(jsonresult['jcr:content']['protocolConenctTimeout']).to eq(1000)
+          expect do
+            jsonresult['jcr:content']['protocolHTTPHeaders']
+          end.to eq(['CQ-Action:{action}', 'CQ-Handle:{path}', 'CQ-Path:{path}'])
+          expect(jsonresult['jcr:content']['protocolHTTPMethod']).to eq('POST')
+          expect(jsonresult['jcr:content']['protocolInterface']).to eq('127.0.0.1')
+          expect(jsonresult['jcr:content']['protocolSocketTimeout']).to eq(1000)
+          expect(jsonresult['jcr:content']['protocolVersion']).to eq(1.0)
+          expect(jsonresult['jcr:content']['proxyHost']).to eq('proxy.domain.com')
+          expect(jsonresult['jcr:content']['proxyNTLMDomain']).to eq('proxydomain')
+          expect(jsonresult['jcr:content']['proxyNTLMHost']).to eq('proxy.ntlm.domain.com')
+          expect(jsonresult['jcr:content']['proxyPassword']).to eq('proxypassword')
+          expect(jsonresult['jcr:content']['proxyPort']).to eq(12_345)
+          expect(jsonresult['jcr:content']['proxyUser']).to eq('proxyuser')
+          expect(jsonresult['jcr:content']['sling:resourceType']).to eq('cq/replication/components/revagent')
+          expect(jsonresult['jcr:content']['retryDelay']).to eq('60')
+          expect(jsonresult['jcr:content']['reverseReplication']).to eq('true')
+          expect(jsonresult['jcr:content']['serializationType']).to eq('flush')
+          expect(jsonresult['jcr:content']['directory']).to eq('/var/path')
+          expect(jsonresult['jcr:content']['definition']).to eq('/content/geo* ${path}.html?wcmmode=preview')
+          expect(jsonresult['jcr:content']['cq:template']).to eq('/libs/cq/replication/templates/revagent')
+          expect(jsonresult['jcr:content']['jcr:title']).to eq('Agent Title')
+          expect(jsonresult['jcr:content']['proocolHTTPExpired']).to eq(true)
+          expect(jsonresult['jcr:content']['transportNTLMDomain']).to eq('transdomain')
+          expect(jsonresult['jcr:content']['transportNTLMHost']).to eq('trans.ntlm.domain.com')
+          expect(jsonresult['jcr:content']['transportPassword']).to eq('transpassword')
+          expect(jsonresult['jcr:content']['transportUri']).to eq('http://localhost:4503/bin/receive?sling:authRequestLogin=1')
+          expect(jsonresult['jcr:content']['transportUser']).to eq('transuser')
+          expect(jsonresult['jcr:content']['directory']).to eq('/var/path')
+          expect(jsonresult['jcr:content']['ssl']).to eq('relaxed')
+          expect(jsonresult['jcr:content']['triggerSpecific']).to eq(true)
+          expect(jsonresult['jcr:content']['noStatusUdpate']).to eq(false)
+          expect(jsonresult['jcr:content']['noVersioning']).to eq(true)
+          expect(jsonresult['jcr:content']['triggerDistribute']).to eq(true)
+          expect(jsonresult['jcr:content']['triggerDistribute']).to eq(true)
+          expect(jsonresult['jcr:content']['triggerModified']).to eq(true)
+          expect(jsonresult['jcr:content']['triggerReceive']).to eq(true)
+          expect(jsonresult['jcr:content']['triggerOnOffTime']).to eq(true)
 
-          end
+        end
       end
     end
   end

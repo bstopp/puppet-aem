@@ -14,6 +14,7 @@ define aem::agent::replication(
   $home                  = undef,
   $log_level             = 'info',
   $password              = undef,
+  $password_properties   = ['transportPassword', 'proxyPassword'],
   $protocol_close_conn   = undef,
   $protocol_conn_timeout = undef,
   $protocol_http_headers = undef,
@@ -162,7 +163,6 @@ define aem::agent::replication(
   }
 
   $resource_props = {
-    '_charset_'                   => 'utf-8',
     'jcr:primaryType'             => 'nt:unstructured',
     'userId'                      => $agent_user,
     'queueBatchMode'              => $batch_enabled,
@@ -173,6 +173,7 @@ define aem::agent::replication(
     'logLevel'                    => $log_level,
     'protocolHTTPConnectionClose' => $protocol_close_conn,
     'protocolConnectTimeout'      => $protocol_conn_timeout,
+    'protocolHTTPHeaders'         => $protocol_http_headers,
     'protocolHTTPMethod'          => $protocol_http_method,
     'protocolInterface'           => $protocol_interface,
     'protocolSocketTimeout'       => $protocol_sock_timeout,
@@ -218,16 +219,17 @@ define aem::agent::replication(
   }
 
   aem_sling_resource { $title :
-    ensure         => $ensure,
-    handle_missing => remove,
-    home           => $home,
-    password       => $password,
-    path           => $_path,
-    properties     => {
+    ensure              => $ensure,
+    handle_missing      => remove,
+    home                => $home,
+    password            => $password,
+    password_properties => $password_properties,
+    path                => $_path,
+    properties          => {
       'jcr:primaryType' => 'cq:Page',
       'jcr:content'     => $_resource_props,
     },
-    username       => $username,
+    username            => $username,
   }
 
 }

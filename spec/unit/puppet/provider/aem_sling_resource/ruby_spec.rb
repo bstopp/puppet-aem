@@ -27,12 +27,15 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
       {
         "jcr:primaryType" : "cq:Page",
         "title" : "Page Title",
+        "apassword" : "password",
         "jcr:content": {
           "jcr:primaryType": "nt:unstructured",
           "jcr:title": "Default Agent",
+          "anotherpassword" : "password",
           "par" : {
             "jcr:primaryType" : "nt:unstructured",
-            "property" : "prop value"
+            "property" : "prop value",
+            "onemorepassword" : "password"
           }
         }
       }
@@ -125,7 +128,6 @@ PORT=4502
         WebMock.reset!
 
         opts ||= {}
-        opts[:present] ||= true
         opts[:port] ||= 4502
         opts[:path] ||= resource[:name]
         opts[:depth] ||= 1
@@ -176,157 +178,206 @@ PORT=#{opts[:port]}
     end
 
     describe 'create' do
-      let(:resource) do
-        Puppet::Type.type(:aem_sling_resource).new(
-          :name       => '/etc/testcontent/nodename',
-          :ensure     => :present,
-          :home       => '/opt/aem',
-          :password   => 'admin',
-          :username   => 'admin',
-          :properties => {
-            'title' => 'title string',
-            'text'  => 'text string'
-          }
-        )
-      end
-
-      params = 'title=title+string'
-      params += '&text=text+string'
-
-      it_should_behave_like(
-        'flush_posts',
-        :present => false,
-        :form_params => params
-      )
-    end
-
-    describe 'create with path' do
-      let(:resource) do
-        Puppet::Type.type(:aem_sling_resource).new(
-          :name       => 'A resource name',
-          :ensure     => :present,
-          :home       => '/opt/aem',
-          :path       => '/path/to/resource',
-          :password   => 'admin',
-          :username   => 'admin',
-          :properties => {
-            'title' => 'title string',
-            'text'  => 'text string'
-          }
-        )
-      end
-
-      params = 'title=title+string'
-      params += '&text=text+string'
-
-      it_should_behave_like(
-        'flush_posts',
-        :path => '/path/to/resource',
-        :present => false,
-        :form_params => params
-      )
-    end
-
-    describe 'create with array property' do
-      let(:resource) do
-        Puppet::Type.type(:aem_sling_resource).new(
-          :name       => 'A resource name',
-          :ensure     => :present,
-          :home       => '/opt/aem',
-          :path       => '/path/to/resource',
-          :password   => 'admin',
-          :username   => 'admin',
-          :properties => {
-            'title' => 'title string',
-            'text'  => 'text string',
-            'array' => ['this', 'is', 'an', 'array']
-          }
-        )
-      end
-
-      params = 'title=title+string'
-      params += '&text=text+string'
-      params += '&array=this'
-      params += '&array=is'
-      params += '&array=an'
-      params += '&array=array'
-
-      it_should_behave_like(
-        'flush_posts',
-        :path => '/path/to/resource',
-        :present => false,
-        :form_params => params
-      )
-    end
-
-    describe 'create with nested hash' do
-      let(:resource) do
-        Puppet::Type.type(:aem_sling_resource).new(
-          :name       => '/path/to/resource',
-          :ensure     => :present,
-          :home       => '/opt/aem',
-          :password   => 'admin',
-          :username   => 'admin',
-          :properties => {
-            'title' => 'title string',
-            'text'  => 'text string',
-            'subnode' => {
-              'property' => 'value'
+      describe 'base' do
+        let(:resource) do
+          Puppet::Type.type(:aem_sling_resource).new(
+            :name       => '/etc/testcontent/nodename',
+            :ensure     => :present,
+            :home       => '/opt/aem',
+            :password   => 'admin',
+            :username   => 'admin',
+            :properties => {
+              'title' => 'title string',
+              'text'  => 'text string'
             }
-          }
+          )
+        end
+
+        params = 'title=title+string'
+        params += '&text=text+string'
+
+        it_should_behave_like(
+          'flush_posts',
+          :present => false,
+          :form_params => params
         )
       end
 
-      params = 'title=title+string'
-      params += '&text=text+string'
-      params += '&subnode%2Fproperty=value'
+      describe 'with path' do
+        let(:resource) do
+          Puppet::Type.type(:aem_sling_resource).new(
+            :name       => 'A resource name',
+            :ensure     => :present,
+            :home       => '/opt/aem',
+            :path       => '/path/to/resource',
+            :password   => 'admin',
+            :username   => 'admin',
+            :properties => {
+              'title' => 'title string',
+              'text'  => 'text string'
+            }
+          )
+        end
 
-      it_should_behave_like(
-        'flush_posts',
-        :depth => 2,
-        :path => '/path/to/resource',
-        :present => false,
-        :form_params => params
-      )
-    end
+        params = 'title=title+string'
+        params += '&text=text+string'
 
-    describe 'create with tiered nested hash' do
-      let(:resource) do
-        Puppet::Type.type(:aem_sling_resource).new(
-          :name       => '/path/to/resource',
-          :ensure     => :present,
-          :home       => '/opt/aem',
-          :password   => 'admin',
-          :username   => 'admin',
-          :properties => {
-            'title' => 'title string',
-            'text'  => 'text string',
-            'child' => {
-              'property' => 'value',
-              'grandchild' => {
-                'child attrib' => 'another value',
-                'array' => ['this', 'is', 'an', 'array']
+        it_should_behave_like(
+          'flush_posts',
+          :path => '/path/to/resource',
+          :present => false,
+          :form_params => params
+        )
+      end
+
+      describe 'with array property' do
+        let(:resource) do
+          Puppet::Type.type(:aem_sling_resource).new(
+            :name       => 'A resource name',
+            :ensure     => :present,
+            :home       => '/opt/aem',
+            :path       => '/path/to/resource',
+            :password   => 'admin',
+            :username   => 'admin',
+            :properties => {
+              'title' => 'title string',
+              'text'  => 'text string',
+              'array' => ['this', 'is', 'an', 'array']
+            }
+          )
+        end
+
+        params = 'title=title+string'
+        params += '&text=text+string'
+        params += '&array=this'
+        params += '&array=is'
+        params += '&array=an'
+        params += '&array=array'
+
+        it_should_behave_like(
+          'flush_posts',
+          :path => '/path/to/resource',
+          :present => false,
+          :form_params => params
+        )
+      end
+
+      describe 'with nested hash' do
+        let(:resource) do
+          Puppet::Type.type(:aem_sling_resource).new(
+            :name       => '/path/to/resource',
+            :ensure     => :present,
+            :home       => '/opt/aem',
+            :password   => 'admin',
+            :username   => 'admin',
+            :properties => {
+              'title' => 'title string',
+              'text'  => 'text string',
+              'subnode' => {
+                'property' => 'value'
               }
             }
-          }
+          )
+        end
+
+        params = 'title=title+string'
+        params += '&text=text+string'
+        params += '&subnode%2Fproperty=value'
+
+        it_should_behave_like(
+          'flush_posts',
+          :depth => 2,
+          :path => '/path/to/resource',
+          :present => false,
+          :form_params => params
         )
       end
 
-      params = 'title=title+string'
-      params += '&text=text+string&child%2Fproperty=value'
-      params += '&child%2Fgrandchild%2Fchild+attrib=another+value'
-      params += '&child%2Fgrandchild%2Farray=this'
-      params += '&child%2Fgrandchild%2Farray=is'
-      params += '&child%2Fgrandchild%2Farray=an'
-      params += '&child%2Fgrandchild%2Farray=array'
+      describe 'with tiered nested hash' do
+        let(:resource) do
+          Puppet::Type.type(:aem_sling_resource).new(
+            :name       => '/path/to/resource',
+            :ensure     => :present,
+            :home       => '/opt/aem',
+            :password   => 'admin',
+            :username   => 'admin',
+            :properties => {
+              'title' => 'title string',
+              'text'  => 'text string',
+              'child' => {
+                'property' => 'value',
+                'grandchild' => {
+                  'child attrib' => 'another value',
+                  'array' => ['this', 'is', 'an', 'array']
+                }
+              }
+            }
+          )
+        end
 
-      it_should_behave_like(
-        'flush_posts',
-        :depth => 3,
-        :path => '/path/to/resource',
-        :present => false,
-        :form_params => params
-      )
+        params = 'title=title+string'
+        params += '&text=text+string&child%2Fproperty=value'
+        params += '&child%2Fgrandchild%2Fchild+attrib=another+value'
+        params += '&child%2Fgrandchild%2Farray=this'
+        params += '&child%2Fgrandchild%2Farray=is'
+        params += '&child%2Fgrandchild%2Farray=an'
+        params += '&child%2Fgrandchild%2Farray=array'
+
+        it_should_behave_like(
+          'flush_posts',
+          :depth => 3,
+          :path => '/path/to/resource',
+          :present => false,
+          :form_params => params
+        )
+      end
+
+      describe 'with tiered nested hash passwords' do
+        let(:resource) do
+          Puppet::Type.type(:aem_sling_resource).new(
+            :name                => '/path/to/resource',
+            :ensure              => :present,
+            :home                => '/opt/aem',
+            :password            => 'admin',
+            :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+            :username            => 'admin',
+            :properties          => {
+              'title'     => 'title string',
+              'text'      => 'text string',
+              'apassword' => 'password',
+              'child'     => {
+                'property'        => 'value',
+                'anotherpassword' => 'password',
+                'grandchild' => {
+                  'child attrib'    => 'another value',
+                  'onemorepassword' => 'password',
+                  'array' => ['this', 'is', 'an', 'array']
+                }
+              }
+            }
+          )
+        end
+
+        params = 'title=title+string'
+        params += '&text=text+string'
+        params += '&apassword=password'
+        params += '&child%2Fproperty=value'
+        params += '&child%2Fanotherpassword=password'
+        params += '&child%2Fgrandchild%2Fchild+attrib=another+value'
+        params += '&child%2Fgrandchild%2Fonemorepassword=password'
+        params += '&child%2Fgrandchild%2Farray=this'
+        params += '&child%2Fgrandchild%2Farray=is'
+        params += '&child%2Fgrandchild%2Farray=an'
+        params += '&child%2Fgrandchild%2Farray=array'
+
+        it_should_behave_like(
+          'flush_posts',
+          :depth => 3,
+          :path => '/path/to/resource',
+          :present => false,
+          :form_params => params
+        )
+      end
     end
 
     describe 'destroy' do
@@ -379,30 +430,34 @@ PORT=#{opts[:port]}
 
     describe 'update' do
       describe 'remove' do
-        describe 'defalut' do
+        describe 'default' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name           => '/path/to/resource',
-              :ensure         => :present,
-              :handle_missing => :remove,
-              :home           => '/opt/aem',
-              :password       => 'admin',
-              :username       => 'admin',
-              :properties     => {
+              :name                => '/path/to/resource',
+              :ensure              => :present,
+              :handle_missing      => :remove,
+              :home                => '/opt/aem',
+              :password            => 'admin',
+              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+              :username            => 'admin',
+              :properties          => {
                 'jcr:primaryType' => 'nt:unstructured',
                 'jcr:title'       => 'A new title'
               }
             )
           end
 
-          params = 'title%40Delete='
-          params += '&jcr%3Acontent%40Delete='
-          params += '&jcr%3Atitle=A+new+title'
+          params = {
+            'title@Delete'       => '',
+            'jcr:primaryType'    => 'nt:unstructured',
+            'jcr:content@Delete' => '',
+            'jcr:title'          => 'A new title'
+          }
 
           it_should_behave_like(
             'flush_posts',
             :path => '/path/to/resource',
-            :present => false,
+            :present => true,
             :form_params => params
           )
         end
@@ -410,13 +465,14 @@ PORT=#{opts[:port]}
         describe 'nested hash' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name           => '/path/to/resource',
-              :ensure         => :present,
-              :handle_missing => :remove,
-              :home           => '/opt/aem',
-              :password       => 'admin',
-              :username       => 'admin',
-              :properties     => {
+              :name                => '/path/to/resource',
+              :ensure              => :present,
+              :handle_missing      => :remove,
+              :home                => '/opt/aem',
+              :password            => 'admin',
+              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+              :username            => 'admin',
+              :properties          => {
                 'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'jcr:content'     => {
@@ -426,16 +482,20 @@ PORT=#{opts[:port]}
             )
           end
 
-          params = 'jcr%3Acontent%2Fjcr%3Atitle%40Delete='
-          params += '&jcr%3Acontent%2Fpar%40Delete='
-          params += '&jcr%3Acontent%2Ftitle=new+title+property'
-          params += '&title=Page+Title'
+          params = {
+            'title'                              => 'Page Title',
+            'jcr:primaryType'                    => 'nt:unstructured',
+            'jcr:content/jcr:primaryType@Delete' => '',
+            'jcr:content/jcr:title@Delete'       => '',
+            'jcr:content/title'                  => 'new title property',
+            'jcr:content/par@Delete'             => ''
+          }
 
           it_should_behave_like(
             'flush_posts',
             :depth => 2,
             :path => '/path/to/resource',
-            :present => false,
+            :present => true,
             :form_params => params
           )
         end
@@ -443,13 +503,14 @@ PORT=#{opts[:port]}
         describe 'tiered nested hash' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name           => '/path/to/resource',
-              :ensure         => :present,
-              :handle_missing => :remove,
-              :home           => '/opt/aem',
-              :password       => 'admin',
-              :username       => 'admin',
-              :properties     => {
+              :name                => '/path/to/resource',
+              :ensure              => :present,
+              :handle_missing      => :remove,
+              :home                => '/opt/aem',
+              :password            => 'admin',
+              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+              :username            => 'admin',
+              :properties          => {
                 'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'jcr:content' => {
@@ -462,17 +523,22 @@ PORT=#{opts[:port]}
             )
           end
 
-          params = 'jcr%3Acontent%2Fjcr%3Atitle%40Delete='
-          params += '&jcr%3Acontent%2Fpar%2Fproperty%40Delete='
-          params += '&jcr%3Acontent%2Fpar%2Fnewprop=new+prop+value'
-          params += '&jcr%3Acontent%2Ftitle=new+title+property'
-          params += '&title=Page+Title'
+          params = {
+            'jcr:primaryType'                        => 'nt:unstructured',
+            'title'                                  => 'Page Title',
+            'jcr:content/jcr:primaryType@Delete'     => '',
+            'jcr:content/jcr:title@Delete'           => '',
+            'jcr:content/title'                      => 'new title property',
+            'jcr:content/par/jcr:primaryType@Delete' => '',
+            'jcr:content/par/property@Delete'        => '',
+            'jcr:content/par/newprop'                => 'new prop value'
+          }
 
           it_should_behave_like(
             'flush_posts',
             :depth => 3,
             :path => '/path/to/resource',
-            :present => false,
+            :present => true,
             :form_params => params
           )
         end
@@ -480,13 +546,14 @@ PORT=#{opts[:port]}
         describe 'property replacing a node' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name           => '/path/to/resource',
-              :ensure         => :present,
-              :handle_missing => :remove,
-              :home           => '/opt/aem',
-              :password       => 'admin',
-              :username       => 'admin',
-              :properties     => {
+              :name                => '/path/to/resource',
+              :ensure              => :present,
+              :handle_missing      => :remove,
+              :home                => '/opt/aem',
+              :password            => 'admin',
+              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+              :username            => 'admin',
+              :properties          => {
                 'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'jcr:content' => {
@@ -497,17 +564,21 @@ PORT=#{opts[:port]}
             )
           end
 
-          params = 'jcr%3Acontent%2Fjcr%3Atitle%40Delete='
-          params += '&jcr%3Acontent%2Fpar%40Delete='
-          params += '&jcr%3Acontent%2Ftitle=new+title+property'
-          params += '&jcr%3Acontent%2Fpar=new+prop+value'
-          params += '&title=Page+Title'
+          params = {
+            'jcr:primaryType'                    => 'nt:unstructured',
+            'title'                              => 'Page Title',
+            'jcr:content/jcr:primaryType@Delete' => '',
+            'jcr:content/jcr:title@Delete'       => '',
+            'jcr:content/title'                  => 'new title property',
+            'jcr:content/par@Delete'             => '',
+            'jcr:content/par'                    => 'new prop value'
+          }
 
           it_should_behave_like(
             'flush_posts',
             :depth => 2,
             :path => '/path/to/resource',
-            :present => false,
+            :present => true,
             :form_params => params
           )
         end
@@ -515,13 +586,14 @@ PORT=#{opts[:port]}
         describe 'node replacing a property' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name           => '/path/to/resource',
-              :ensure         => :present,
-              :handle_missing => :remove,
-              :home           => '/opt/aem',
-              :password       => 'admin',
-              :username       => 'admin',
-              :properties     => {
+              :name                => '/path/to/resource',
+              :ensure              => :present,
+              :handle_missing      => :remove,
+              :home                => '/opt/aem',
+              :password            => 'admin',
+              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+              :username            => 'admin',
+              :properties          => {
                 'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'jcr:content' => {
@@ -536,16 +608,158 @@ PORT=#{opts[:port]}
             )
           end
 
-          params = 'jcr%3Acontent%2Fpar%2Fproperty%40Delete='
-          params += '&jcr%3Acontent%2Fpar%2Fproperty%2Fnewnode=new+prop+value'
-          params += '&jcr%3Acontent%2Fjcr%3Atitle=Default+Agent'
-          params += '&title=Page+Title'
+          params = {
+            'jcr:primaryType'                        => 'nt:unstructured',
+            'title'                                  => 'Page Title',
+            'jcr:content/jcr:primaryType@Delete'     => '',
+            'jcr:content/jcr:title'                  => 'Default Agent',
+            'jcr:content/par/jcr:primaryType@Delete' => '',
+            'jcr:content/par/property@Delete'        => '',
+            'jcr:content/par/property/newnode'       => 'new prop value'
+          }
 
           it_should_behave_like(
             'flush_posts',
             :depth => 4,
             :path => '/path/to/resource',
-            :present => false,
+            :present => true,
+            :form_params => params
+          )
+        end
+
+        describe 'passwords not forced' do
+          let(:resource) do
+            Puppet::Type.type(:aem_sling_resource).new(
+              :name                => '/path/to/resource',
+              :ensure              => :present,
+              :handle_missing      => :remove,
+              :home                => '/opt/aem',
+              :password            => 'admin',
+              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+              :username            => 'admin',
+              :properties          => {
+                'jcr:primaryType' => 'nt:unstructured',
+                'title'           => 'Page Title',
+                'apassword'       => 'newvalue',
+                'jcr:content'     => {
+                  'jcr:title'       => 'Default Agent',
+                  'anotherpassword' => 'newvale',
+                  'par' => {
+                    'property'        => 'new prop value',
+                    'onemorepassword' => 'newvalue'
+                  }
+                }
+              }
+            )
+          end
+
+          params = {
+            'jcr:primaryType'                        => 'nt:unstructured',
+            'title'                                  => 'Page Title',
+            'jcr:content/jcr:primaryType@Delete'     => '',
+            'jcr:content/jcr:title'                  => 'Default Agent',
+            'jcr:content/par/jcr:primaryType@Delete' => '',
+            'jcr:content/par/property'               => 'new prop value'
+          }
+
+          it_should_behave_like(
+            'flush_posts',
+            :depth => 3,
+            :path => '/path/to/resource',
+            :present => true,
+            :form_params => params
+          )
+        end
+
+        describe 'passwords forced' do
+          let(:resource) do
+            Puppet::Type.type(:aem_sling_resource).new(
+              :name                => '/path/to/resource',
+              :ensure              => :present,
+              :force_passwords     => :true,
+              :handle_missing      => :remove,
+              :home                => '/opt/aem',
+              :password            => 'admin',
+              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+              :username            => 'admin',
+              :properties          => {
+                'jcr:primaryType' => 'nt:unstructured',
+                'title'           => 'Page Title',
+                'apassword'       => 'newvalue',
+                'jcr:content'     => {
+                  'jcr:title'       => 'Default Agent',
+                  'anotherpassword' => 'newvalue',
+                  'par'             => {
+                    'property'        => 'new prop value',
+                    'onemorepassword' => 'newvalue'
+                  }
+                }
+              }
+            )
+          end
+
+          params = {
+            'jcr:primaryType'                        => 'nt:unstructured',
+            'title'                                  => 'Page Title',
+            'apassword'                              => 'newvalue',
+            'jcr:content/jcr:primaryType@Delete'     => '',
+            'jcr:content/jcr:title'                  => 'Default Agent',
+            'jcr:content/anotherpassword'            => 'newvalue',
+            'jcr:content/par/jcr:primaryType@Delete' => '',
+            'jcr:content/par/property'               => 'new prop value',
+            'jcr:content/par/onemorepassword'        => 'newvalue'
+          }
+
+          it_should_behave_like(
+            'flush_posts',
+            :depth => 3,
+            :path => '/path/to/resource',
+            :present => true,
+            :form_params => params
+          )
+        end
+
+        describe 'passwords forced and removed' do
+          let(:resource) do
+            Puppet::Type.type(:aem_sling_resource).new(
+              :name                => '/path/to/resource',
+              :ensure              => :present,
+              :force_passwords     => :true,
+              :handle_missing      => :remove,
+              :home                => '/opt/aem',
+              :password            => 'admin',
+              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+              :username            => 'admin',
+              :properties          => {
+                'jcr:primaryType' => 'nt:unstructured',
+                'title'           => 'Page Title',
+                'jcr:content'     => {
+                  'jcr:title' => 'Default Agent',
+                  'par'       => {
+                    'property' => 'new prop value'
+                  }
+                }
+              }
+            )
+          end
+
+          params = {
+            'jcr:primaryType'                        => 'nt:unstructured',
+            'title'                                  => 'Page Title',
+            'apassword@Delete'                       => '',
+            'jcr:content/jcr:primaryType@Delete'     => '',
+            'jcr:content/jcr:title'                  => 'Default Agent',
+            'jcr:content/anotherpassword@Delete'     => '',
+            'jcr:content/par/jcr:primaryType@Delete' => '',
+            'jcr:content/par/property'               => 'new prop value',
+            'jcr:content/par/onemorepassword@Delete' => ''
+          }
+
+          it_should_behave_like(
+            'flush_posts',
+            :depth => 3,
+            :path => '/path/to/resource',
+            :present => true,
             :form_params => params
           )
         end
@@ -553,28 +767,31 @@ PORT=#{opts[:port]}
         describe 'using path' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name           => 'Name of Resource',
-              :ensure         => :present,
-              :handle_missing => :remove,
-              :home           => '/opt/aem',
-              :path           => '/path/to/resource',
-              :password       => 'admin',
-              :username       => 'admin',
-              :properties     => {
+              :name                => '/path/to/resource',
+              :ensure              => :present,
+              :handle_missing      => :remove,
+              :home                => '/opt/aem',
+              :password            => 'admin',
+              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+              :username            => 'admin',
+              :properties          => {
                 'jcr:primaryType' => 'nt:unstructured',
                 'jcr:title'       => 'A new title'
               }
             )
           end
 
-          params = 'title%40Delete='
-          params += '&jcr%3Acontent%40Delete='
-          params += '&jcr%3Atitle=A+new+title'
+          params = {
+            'jcr:primaryType'    => 'nt:unstructured',
+            'title@Delete'       => '',
+            'jcr:title'          => 'A new title',
+            'jcr:content@Delete' => ''
+          }
 
           it_should_behave_like(
             'flush_posts',
             :path => '/path/to/resource',
-            :present => false,
+            :present => true,
             :form_params => params
           )
         end
@@ -621,7 +838,10 @@ PORT=#{opts[:port]}
             )
           end
 
-          params = 'jcr%3Atitle=new+title'
+          params = {
+            'jcr:primaryType' => 'nt:unstructured',
+            'jcr:title'       => 'new title'
+          }
 
           it_should_behave_like(
             'flush_posts',
@@ -648,8 +868,10 @@ PORT=#{opts[:port]}
             )
           end
 
-          params = 'jcr%3Atitle=new+title'
-          params += '&jcr%3Acontent%2Ftitle=Not+Agent+Title'
+          params = {
+            'jcr:title'         => 'new title',
+            'jcr:content/title' => 'Not Agent Title'
+          }
 
           it_should_behave_like(
             'flush_posts',
@@ -680,8 +902,11 @@ PORT=#{opts[:port]}
             )
           end
 
-          params = 'jcr%3Atitle=new+title'
-          params += '&jcr%3Acontent%2Ftitle=Not+Agent+Title'
+          params = {
+            'jcr:title'                   => 'new title',
+            'jcr:content/jcr:primaryType' => 'cq:PageContent',
+            'jcr:content/title'           => 'Not Agent Title'
+          }
 
           it_should_behave_like(
             'flush_posts',
@@ -709,22 +934,152 @@ PORT=#{opts[:port]}
                   'jcr:createdBy'   => 'admin',
                   'par'             => {
                     'jcr:primaryType' => 'oak:unstructured',
-                    'newprop'         => 'new prop value'
+                    'newprop'         => 'new prop value',
+                    'jcr:created'     => 'Some date'
                   }
                 }
               }
             )
           end
 
-          params = 'jcr%3Atitle=new+title'
-          params += '&jcr%3Acontent%2Ftitle=Not+Agent+Title'
-          params += '&jcr%3Acontent%2Fpar%2Fnewprop=new+prop+value'
+          params = {
+            'jcr:title'                       => 'new title',
+            'jcr:content/jcr:primaryType'     => 'cq:PageContent',
+            'jcr:content/title'               => 'Not Agent Title',
+            'jcr:content/par/jcr:primaryType' => 'oak:unstructured',
+            'jcr:content/par/newprop'         => 'new prop value'
+          }
 
           it_should_behave_like(
             'flush_posts',
             :path => '/path/to/resource',
             :depth => 3,
             :present => false,
+            :form_params => params
+          )
+        end
+
+        describe 'passwords not forced' do
+          let(:resource) do
+            Puppet::Type.type(:aem_sling_resource).new(
+              :name                => '/path/to/resource',
+              :ensure              => :present,
+              :home                => '/opt/aem',
+              :password            => 'admin',
+              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+              :username            => 'admin',
+              :properties          => {
+                'jcr:primaryType' => 'nt:unstructured',
+                'title'           => 'Page Title',
+                'apassword'       => 'newvalue',
+                'jcr:content'     => {
+                  'jcr:title'       => 'Default Agent',
+                  'anotherpassword' => 'newvale',
+                  'par' => {
+                    'property'        => 'new prop value',
+                    'onemorepassword' => 'newvalue'
+                  }
+                }
+              }
+            )
+          end
+
+          params = {
+            'jcr:primaryType'          => 'nt:unstructured',
+            'title'                    => 'Page Title',
+            'jcr:content/jcr:title'    => 'Default Agent',
+            'jcr:content/par/property' => 'new prop value'
+          }
+
+          it_should_behave_like(
+            'flush_posts',
+            :depth => 3,
+            :path => '/path/to/resource',
+            :present => true,
+            :form_params => params
+          )
+        end
+
+        describe 'passwords forced' do
+          let(:resource) do
+            Puppet::Type.type(:aem_sling_resource).new(
+              :name                => '/path/to/resource',
+              :ensure              => :present,
+              :force_passwords     => :true,
+              :home                => '/opt/aem',
+              :password            => 'admin',
+              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+              :username            => 'admin',
+              :properties          => {
+                'jcr:primaryType' => 'nt:unstructured',
+                'title'           => 'Page Title',
+                'apassword'       => 'newvalue',
+                'jcr:content'     => {
+                  'jcr:title'       => 'Default Agent',
+                  'anotherpassword' => 'newvalue',
+                  'par' => {
+                    'property'        => 'new prop value',
+                    'onemorepassword' => 'newvalue'
+                  }
+                }
+              }
+            )
+          end
+
+          params = {
+            'jcr:primaryType'                        => 'nt:unstructured',
+            'title'                                  => 'Page Title',
+            'apassword'                              => 'newvalue',
+            'jcr:content/jcr:title'                  => 'Default Agent',
+            'jcr:content/anotherpassword'            => 'newvalue',
+            'jcr:content/par/property'               => 'new prop value',
+            'jcr:content/par/onemorepassword'        => 'newvalue'
+          }
+
+          it_should_behave_like(
+            'flush_posts',
+            :depth => 3,
+            :path => '/path/to/resource',
+            :present => true,
+            :form_params => params
+          )
+        end
+
+        describe 'passwords forced and not in "should"' do
+          let(:resource) do
+            Puppet::Type.type(:aem_sling_resource).new(
+              :name                => '/path/to/resource',
+              :ensure              => :present,
+              :force_passwords     => :true,
+              :home                => '/opt/aem',
+              :password            => 'admin',
+              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+              :username            => 'admin',
+              :properties          => {
+                'jcr:primaryType' => 'nt:unstructured',
+                'title'           => 'Page Title',
+                'jcr:content'     => {
+                  'jcr:title' => 'Default Agent',
+                  'par'       => {
+                    'property' => 'new prop value'
+                  }
+                }
+              }
+            )
+          end
+
+          params = {
+            'jcr:primaryType'          => 'nt:unstructured',
+            'title'                    => 'Page Title',
+            'jcr:content/jcr:title'    => 'Default Agent',
+            'jcr:content/par/property' => 'new prop value'
+          }
+
+          it_should_behave_like(
+            'flush_posts',
+            :depth => 3,
+            :path => '/path/to/resource',
+            :present => true,
             :form_params => params
           )
         end
@@ -780,7 +1135,9 @@ PORT=#{opts[:port]}
           end
 
           params = 'jcr%3Atitle=new+title'
+          params += '&jcr%3Acontent%2Fjcr%3AprimaryType=cq%3APageContent'
           params += '&jcr%3Acontent%2Ftitle=Not+Agent+Title'
+          params += '&jcr%3Acontent%2Fpar%2Fjcr%3AprimaryType=oak%3Aunstructured'
           params += '&jcr%3Acontent%2Fpar%2Fnewprop=new+prop+value'
           params += '&jcr%3Acontent%2Fpar%2Farray=this'
           params += '&jcr%3Acontent%2Fpar%2Farray=is'

@@ -18,7 +18,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
   end
 
   describe 'when validating attributes' do
-    [:name, :handle_missing, :home, :username, :password, :path].each do |param|
+    [:name, :force_passwords, :handle_missing, :home, :username, :password, :password_properties, :path].each do |param|
       it "should have a #{param} parameter" do
         expect(described_class.attrtype(param)).to eq(:param)
       end
@@ -89,28 +89,14 @@ describe Puppet::Type.type(:aem_sling_resource) do
         end.to raise_error(Puppet::Error, /Home must be specified/)
       end
 
-      context 'linux', :platform => :linux do
-
-        it 'should require absolute paths' do
-          expect do
-            described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :home => 'not/absolute')
-          end.to raise_error(Puppet::Error, /fully qualified/)
-        end
-      end
-
-      context 'windows', :platform => :windows do
-
-        it 'should require absolute paths' do
-          expect do
-            described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :home => 'not/absolute')
-          end.to raise_error(Puppet::Error, /fully qualified/)
-        end
+      it 'should require absolute paths' do
+        expect do
+          described_class.new(
+            :name   => 'bar',
+            :ensure => :present,
+            :home   => 'not/absolute'
+          )
+        end.to raise_error(Puppet::Error, /fully qualified/)
       end
     end
 
@@ -118,9 +104,9 @@ describe Puppet::Type.type(:aem_sling_resource) do
       it 'should require value to be a hash' do
         expect do
           described_class.new(
-            :name => 'bar',
-            :ensure => :present,
-            :home => '/opt/aem',
+            :name       => 'bar',
+            :ensure     => :present,
+            :home       => '/opt/aem',
             :properties => %w('foo', 'bar')
           )
         end.to raise_error(Puppet::Error, /must be a hash/)
@@ -135,11 +121,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle same properties' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
+              :name           => 'bar',
+              :ensure         => :present,
               :handle_missing => :remove,
-              :home => '/opt/aem',
-              :properties => { 'foo' => 'bar' }
+              :home           => '/opt/aem',
+              :properties     => { 'foo' => 'bar' }
             )
             prop = existing.property(:properties)
             is = { 'foo' => 'bar' }
@@ -210,7 +196,8 @@ describe Puppet::Type.type(:aem_sling_resource) do
                 'jcr:createdBy' => 'not admin',
                 'a' => {
                   'b' => 'c',
-                  'jcr:primaryType' => 'oak:unstructured'
+                  'cq:lastModified'   => 'a person',
+                  'cq:lastModifiedBy' => 'original value'
                 }
               },
               'bar' => 'foo',
@@ -218,6 +205,47 @@ describe Puppet::Type.type(:aem_sling_resource) do
             }
 
             expect(prop.insync?(is)).to be_truthy
+          end
+
+          context 'custom ignored properties' do
+            it 'should ignore protected properties in is' do
+              existing = described_class.new(
+                :name               => 'bar',
+                :ensure             => :present,
+                :handle_missing     => :remove,
+                :home               => '/opt/aem',
+                :ignored_properties => ['ignored', 'anotherignored'],
+                :properties         => {
+                  'jcr:created' => 'original value',
+                  'bar' => 'foo',
+                  'baz' => {
+                    'jcr:createdBy' => 'not admin',
+                    'a' => {
+                      'b' => 'c',
+                      'cq:lastModified'   => 'a person',
+                      'cq:lastModifiedBy' => 'original value'
+                    }
+                  }
+                }
+              )
+              prop = existing.property(:properties)
+              is = {
+                'baz' => {
+                  'jcr:createdBy' => 'not admin',
+                  'ignored'       => 'value',
+                  'a' => {
+                    'b' => 'c',
+                    'cq:lastModified'   => 'a person',
+                    'cq:lastModifiedBy' => 'original value',
+                    'anotherignored'    => 'vale'
+                  }
+                },
+                'bar' => 'foo',
+                'jcr:created' => 'original value'
+              }
+
+              expect(prop.insync?(is)).to be_truthy
+            end
           end
 
           it 'should ignore protected properties in should' do
@@ -233,7 +261,8 @@ describe Puppet::Type.type(:aem_sling_resource) do
                   'jcr:createdBy' => 'admin',
                   'a' => {
                     'b' => 'c',
-                    'jcr:primaryType' => 'nt:unstructured'
+                    'cq:lastModified'   => 'a person',
+                    'cq:lastModifiedBy' => 'original value'
                   }
                 }
               }
@@ -249,6 +278,149 @@ describe Puppet::Type.type(:aem_sling_resource) do
             }
 
             expect(prop.insync?(is)).to be_truthy
+          end
+
+          describe 'force_passwords == false' do
+            it 'should ignore password properties in should' do
+              existing = described_class.new(
+                :name => 'bar',
+                :ensure => :present,
+                :handle_missing => :remove,
+                :home => '/opt/aem',
+                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+                :properties => {
+                  'bar' => 'foo',
+                  'apassword' => 'a value',
+                  'baz' => {
+                    'jcr:createdBy' => 'admin',
+                    'a' => {
+                      'b' => 'c',
+                      'anotherpassword' => 'a person'
+                    },
+                    'onemorepassword' => 'original value'
+                  }
+                }
+              )
+              prop = existing.property(:properties)
+              is = {
+                'baz' => {
+                  'a' => {
+                    'b' => 'c'
+                  }
+                },
+                'bar' => 'foo'
+              }
+
+              expect(prop.insync?(is)).to be_truthy
+            end
+
+            it 'should ignore password properties in is' do
+              existing = described_class.new(
+                :name => 'bar',
+                :ensure => :present,
+                :handle_missing => :remove,
+                :home => '/opt/aem',
+                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+                :properties => {
+                  'bar' => 'foo',
+                  'baz' => {
+                    'jcr:createdBy' => 'admin',
+                    'a' => {
+                      'b' => 'c'
+                    }
+                  }
+                }
+              )
+              prop = existing.property(:properties)
+              is = {
+                'baz' => {
+                  'apassword' => 'a value',
+                  'a' => {
+                    'b' => 'c',
+                    'anotherpassword' => 'a person'
+                  }
+                },
+                'bar' => 'foo',
+                'onemorepassword' => 'original value'
+              }
+
+              expect(prop.insync?(is)).to be_truthy
+            end
+
+          end
+
+          describe 'force_passwords == true' do
+            it 'should update password properties in should' do
+              existing = described_class.new(
+                :name => 'bar',
+                :ensure => :present,
+                :force_passwords => true,
+                :handle_missing => :remove,
+                :home => '/opt/aem',
+                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+                :properties => {
+                  'bar' => 'foo',
+                  'apassword' => 'a value',
+                  'baz' => {
+                    'jcr:createdBy' => 'admin',
+                    'a' => {
+                      'b' => 'c',
+                      'anotherpassword' => 'a person'
+                    },
+                    'onemorepassword' => 'original value'
+                  }
+                }
+              )
+              prop = existing.property(:properties)
+              is = {
+                'baz' => {
+                  'a' => {
+                    'b' => 'c'
+                  }
+                },
+                'bar' => 'foo'
+              }
+
+              expect(prop.insync?(is)).to be_falsey
+            end
+
+            it 'should update password properties' do
+              existing = described_class.new(
+                :name => 'bar',
+                :ensure => :present,
+                :force_passwords => true,
+                :handle_missing => :remove,
+                :home => '/opt/aem',
+                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+                :properties => {
+                  'bar' => 'foo',
+                  'apassword' => 'a new value',
+                  'baz' => {
+                    'jcr:createdBy' => 'admin',
+                    'a' => {
+                      'b' => 'c',
+                      'anotherpassword' => 'a new person'
+                    },
+                    'onemorepassword' => 'not original value'
+                  }
+                }
+              )
+              prop = existing.property(:properties)
+              is = {
+                'baz' => {
+                  'apassword' => 'a value',
+                  'a' => {
+                    'b' => 'c',
+                    'anotherpassword' => 'a person'
+                  }
+                },
+                'bar' => 'foo',
+                'onemorepassword' => 'original value'
+              }
+
+              expect(prop.insync?(is)).to be_falsey
+            end
+
           end
         end
 
@@ -435,7 +607,8 @@ describe Puppet::Type.type(:aem_sling_resource) do
                   'jcr:createdBy' => 'admin',
                   'a' => {
                     'b' => 'c',
-                    'jcr:primaryType' => 'nt:unstructured'
+                    'cq:lastModified'   => 'a person',
+                    'cq:lastModifiedBy' => 'original value'
                   }
                 }
               }
@@ -454,6 +627,152 @@ describe Puppet::Type.type(:aem_sling_resource) do
             }
 
             expect(prop.insync?(is)).to be_truthy
+          end
+
+          describe 'force_passwords == false' do
+            it 'should ignore password properties in should' do
+              existing = described_class.new(
+                :name => 'bar',
+                :ensure => :present,
+                :handle_missing => :ignore,
+                :home => '/opt/aem',
+                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+                :properties => {
+                  'bar' => 'foo',
+                  'apassword' => 'a value',
+                  'baz' => {
+                    'jcr:createdBy' => 'admin',
+                    'a' => {
+                      'b' => 'c',
+                      'anotherpassword' => 'a person'
+                    },
+                    'onemorepassword' => 'original value'
+                  }
+                }
+              )
+              prop = existing.property(:properties)
+              is = {
+                'baz' => {
+                  'a' => {
+                    'b' => 'c'
+                  }
+                },
+                'bar' => 'foo'
+              }
+
+              expect(prop.insync?(is)).to be_truthy
+            end
+
+            it 'should ignore password properties in is' do
+              existing = described_class.new(
+                :name => 'bar',
+                :ensure => :present,
+                :handle_missing => :ignore,
+                :home => '/opt/aem',
+                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+                :properties => {
+                  'bar' => 'foo',
+                  'apassword' => 'a new value',
+                  'baz' => {
+                    'jcr:createdBy' => 'admin',
+                    'a' => {
+                      'b' => 'c',
+                      'anotherpassword' => 'a new person'
+                    },
+                    'onemorepassword' => 'not original value'
+                  }
+                }
+              )
+              prop = existing.property(:properties)
+              is = {
+                'baz' => {
+                  'apassword' => 'a value',
+                  'a' => {
+                    'b' => 'c',
+                    'anotherpassword' => 'a person'
+                  }
+                },
+                'bar' => 'foo',
+                'onemorepassword' => 'original value'
+              }
+
+              expect(prop.insync?(is)).to be_truthy
+            end
+
+          end
+
+          describe 'force_passwords == true' do
+            it 'should update password properties in should' do
+              existing = described_class.new(
+                :name => 'bar',
+                :ensure => :present,
+                :force_passwords => true,
+                :handle_missing => :ignore,
+                :home => '/opt/aem',
+                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+                :properties => {
+                  'bar' => 'foo',
+                  'apassword' => 'a value',
+                  'baz' => {
+                    'jcr:createdBy' => 'admin',
+                    'a' => {
+                      'b' => 'c',
+                      'anotherpassword' => 'a person'
+                    },
+                    'onemorepassword' => 'original value'
+                  }
+                }
+              )
+              prop = existing.property(:properties)
+              is = {
+                'baz' => {
+                  'a' => {
+                    'b' => 'c'
+                  }
+                },
+                'bar' => 'foo'
+              }
+
+              expect(prop.insync?(is)).to be_falsey
+            end
+
+            it 'should update password properties' do
+              existing = described_class.new(
+                :name => 'bar',
+                :ensure => :present,
+                :force_passwords => true,
+                :handle_missing => :ignore,
+                :home => '/opt/aem',
+                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
+                :properties => {
+                  'bar' => 'foo',
+                  'apassword' => 'a new value',
+                  'baz' => {
+                    'jcr:createdBy' => 'admin',
+                    'a' => {
+                      'b' => 'c',
+                      'anotherpassword' => 'a new person'
+                    },
+                    'onemorepassword' => 'not original value'
+                  }
+                }
+              )
+              prop = existing.property(:properties)
+              is = {
+                'baz' => {
+                  'apassword' => 'a value',
+                  'a' => {
+                    'b' => 'c',
+                    'anotherpassword' => 'a person'
+                  }
+                },
+                'bar' => 'foo',
+                'onemorepassword' => 'original value'
+              }
+
+              expect(prop.insync?(is)).to be_falsey
+            end
+
           end
         end
       end

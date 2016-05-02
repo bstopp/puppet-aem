@@ -10,8 +10,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
     @content_uri = nil
     @content_depth = 1
     @property_flush = {}
-    @ignored_properties = ['jcr:created', 'jcr:createdBy'].freeze
-    @protected_properties = ['jcr:primaryType'].freeze
   end
 
   def create
@@ -43,7 +41,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
 
     to_delete = {}
     is.each do |key, value|
-      next if @ignored_properties.include?(key) || @protected_properties.include?(key)
+      next if ignored?(key)
 
       if !should.key?(key)
         to_delete["#{key}@Delete"] = ''
@@ -186,7 +184,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
     content = current_content
 
     if content
-      remove_ignored(content)
       @property_hash[:properties] = content.clone
       @property_flush[:existing_props] = content.clone
       @property_hash[:ensure] = :present
@@ -202,7 +199,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
         remove_ignored(v)
         return false
       else
-        @ignored_properties.include?(k)
+        ignored?(k)
       end
     end
   end
@@ -210,11 +207,16 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
   def remove_invalid(is, should)
     should.delete_if do |key, value|
       remove_invalid(is[key] || {}, value) if value.respond_to?(:keys)
-
-      del = @ignored_properties.include?(key)
-      del ||= @protected_properties.include?(key) && is[key] && is[key] != value
-      del
+      ignored?(key)
     end
+  end
+
+  def ignored?(key)
+
+    resource[:ignored_properties].include?(key) ||
+      (!@property_flush[:existing_props].empty? &&
+        !resource.force_passwords? &&
+        resource[:password_properties].include?(key))
   end
 
   def submit
