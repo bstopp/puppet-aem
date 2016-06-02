@@ -88,7 +88,8 @@ describe Puppet::Type.type(:aem_installer) do
             described_class.new(
               :name => 'bar',
               :ensure => :present,
-              :home => 'not/absolute')
+              :home => 'not/absolute'
+            )
           end.to raise_error(Puppet::Error, /fully qualified/)
         end
       end
@@ -100,7 +101,8 @@ describe Puppet::Type.type(:aem_installer) do
             described_class.new(
               :name => 'bar',
               :ensure => :present,
-              :home => 'not/absolute')
+              :home => 'not/absolute'
+            )
           end.to raise_error(Puppet::Error, /fully qualified/)
         end
       end

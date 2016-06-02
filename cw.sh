@@ -5,5 +5,5 @@
 rm -Rf junit/
 rm -Rf .vagrant/
 rm -Rf log/
-
+rm -Rf spec/acceptance/logs
 

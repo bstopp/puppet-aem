@@ -11,6 +11,7 @@ define aem::agent::replication(
   $description           = undef,
   $enabled               = true,
   $ensure                = 'present',
+  $force_passwords       = undef,
   $home                  = undef,
   $log_level             = 'info',
   $password              = undef,
@@ -45,16 +46,16 @@ define aem::agent::replication(
   $trans_uri             = undef,
   $trans_user            = undef,
   $trigger_ignore_def    = undef,
+  $trigger_no_status     = undef,
+  $trigger_no_version    = undef,
   $trigger_on_dist       = undef,
   $trigger_on_mod        = undef,
   $trigger_on_receive    = undef,
   $trigger_onoff_time    = undef,
-  $trigger_no_status     = undef,
-  $trigger_no_version    = undef,
   $username              = undef
 ) {
 
-  validate_re($name, '^[A-Za-z0-9]+$', "${name} must contain only letters and numbers.")
+  validate_re($name, '^[A-Za-z0-9]+$', "Name [${name}] must contain only letters and numbers.")
 
   validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
 
@@ -220,6 +221,7 @@ define aem::agent::replication(
 
   aem_sling_resource { $title :
     ensure              => $ensure,
+    force_passwords     => $force_passwords,
     handle_missing      => remove,
     home                => $home,
     password            => $password,
@@ -229,6 +231,7 @@ define aem::agent::replication(
       'jcr:primaryType' => 'cq:Page',
       'jcr:content'     => $_resource_props,
     },
+    timeout             => $timeout,
     username            => $username,
   }
 

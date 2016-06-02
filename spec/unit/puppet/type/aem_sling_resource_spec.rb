@@ -18,7 +18,17 @@ describe Puppet::Type.type(:aem_sling_resource) do
   end
 
   describe 'when validating attributes' do
-    [:name, :force_passwords, :handle_missing, :home, :username, :password, :password_properties, :path].each do |param|
+    [
+      :name,
+      :force_passwords,
+      :handle_missing,
+      :home,
+      :username,
+      :path,
+      :password,
+      :password_properties,
+      :protected_properties
+    ].each do |param|
       it "should have a #{param} parameter" do
         expect(described_class.attrtype(param)).to eq(:param)
       end

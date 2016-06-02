@@ -32,8 +32,8 @@ This is a type used to perform sling api calls
     end
   end
 
-  newparam(:ignored_properties) do
-    desc 'The properties to ignore when checking for synchornization.'
+  newparam(:ignored_properties, :array_matching => :all) do
+    desc 'The properties to ignore when checking for synchronization.'
     defaultto ['jcr:created', 'jcr:createdBy', 'cq:lastModified', 'cq:lastModifiedBy']
   end
 
@@ -45,9 +45,14 @@ This is a type used to perform sling api calls
     desc 'Password used to log into AEM.'
   end
 
-  newparam(:password_properties) do
+  newparam(:password_properties, :array_matching => :all) do
     desc 'Properties designated as passwords, these will be ignored on sync check unless force_passwords is true.'
     defaultto []
+  end
+
+  newparam(:protected_properties, :array_matching => :all) do
+    desc 'Properties allowed when creating a node, but not during updates; ignored during synchronization.'
+    defaultto ['jcr:primaryType']
   end
 
   newparam(:username) do
@@ -73,9 +78,11 @@ This is a type used to perform sling api calls
           return match unless match
         else
           next if resource[:ignored_properties].include?(k) ||
+                  resource[:protected_properties].include?(k) ||
                   (!resource.force_passwords? &&
                     resource[:password_properties].include?(k))
-          return false unless v == is_hsh[k]
+          # Compare using Strings; response always have strings instead of boolean/number.
+          return false unless v.to_s == is_hsh[k].to_s
         end
       end
       match
@@ -83,14 +90,13 @@ This is a type used to perform sling api calls
 
     def remove_comp(should_hsh, is_hsh)
 
-      should_keys = should_hsh.keys - resource[:ignored_properties]
-      is_keys = is_hsh.keys - resource[:ignored_properties]
+      should_keys = should_hsh.keys - resource[:ignored_properties] - resource[:protected_properties]
+      is_keys = is_hsh.keys - resource[:ignored_properties] - resource[:protected_properties]
 
       unless resource.force_passwords?
         should_keys -= resource[:password_properties]
         is_keys -= resource[:password_properties]
       end
-
       return false unless should_keys.sort == is_keys.sort
 
       match = true
@@ -99,7 +105,8 @@ This is a type used to perform sling api calls
           match = remove_comp(should_hsh[k], is_hsh[k])
           return match unless match
         else
-          return false unless should_hsh[k] == is_hsh[k]
+          # Compare using Strings; response always have strings instead of boolean/number.
+          return false unless should_hsh[k].to_s == is_hsh[k].to_s
         end
       end
     end
@@ -123,7 +130,7 @@ This is a type used to perform sling api calls
 
     newvalues(/^\d+$/)
 
-    defaultto 60
+    defaultto 120
 
     munge do |value|
       value.to_i

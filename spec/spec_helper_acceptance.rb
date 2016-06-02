@@ -98,11 +98,14 @@ unless ENV['BEAKER_provision'] == 'no'
   aem_installer = File.expand_path(File.join(module_root, 'spec', 'files', 'aem-quickstart.jar'))
   scp_to(default, aem_installer, '/tmp/aem-quickstart.jar')
   on default, 'chmod 775 /tmp/aem-quickstart.jar'
-  start_env = File.expand_path(File.join(module_root, 'spec', 'files', 'faux-start-env'))
 
+  start_env = File.expand_path(File.join(module_root, 'spec', 'files', 'faux-start-env'))
   scp_to(default, start_env, '/tmp/faux-start-env')
   on default, 'chmod 775 /tmp/faux-start-env'
 
+  ensure_script = File.expand_path(File.join(module_root, 'spec', 'files', 'ensure-running.sh'))
+  scp_to(default, ensure_script, '/tmp/ensure-running.sh')
+  on default, 'chmod 775 /tmp/ensure-running.sh'
   # Credit to Puppetlabs Puppet Agent project,
   # This was the only place i could find that had an example that
   # made all of this stuff work.
@@ -135,6 +138,203 @@ end
 # Install module
 configure_defaults_on master, 'aio'
 install_dev_puppet_module_on(master, :source => module_root, :module_name => 'aem')
+
+RSpec.shared_examples 'setup aem' do
+
+  license = ENV['AEM_LICENSE'] || 'fake-key-for-testing'
+
+  site = <<-MANIFEST
+    'node \"agent\" {
+      File { backup => false, owner => \"aem\", group => \"aem\" }
+
+      group { \"aem\" : ensure => \"present\" }
+
+      user { \"aem\" : ensure => \"present\", gid =>  \"aem\" }
+
+      file { \"/opt/faux\" :
+        ensure          => \"directory\",
+      }
+
+      file { \"/opt/faux/crx-quickstart\" :
+        ensure          => \"directory\",
+      }
+      file { \"/opt/faux/crx-quickstart/bin\" :
+        ensure        => \"directory\",
+      }
+      file { \"/opt/faux/crx-quickstart/bin/start-env\" :
+        ensure        => \"file\",
+        source        => "/tmp/faux-start-env",
+        mode          => \"0755\",
+      }
+
+      file { \"/opt/faux/crx-quickstart/bin/start.orig\" :
+        ensure        => \"file\",
+        content       => \"\",
+        mode          => \"0755\",
+      }
+
+      file { \"/opt/faux/crx-quickstart/repository\" :
+        ensure        => \"directory\",
+      }
+
+      file { \"/opt/faux/crx-quickstart/app\" :
+        ensure          => \"directory\",
+      }
+
+      file { \"/opt/faux/crx-quickstart/app/cq-quickstart-6.1.0-standalone.jar\" :
+        ensure        => \"file\",
+        content       => \"\",
+      }
+
+      class { \"java\" : }
+
+      file { \"/opt/aem\" : ensure => directory }
+
+      \$osgi = [{
+        \"SegmentNodeStore-Author\" => {
+          \"pid\"        => \"org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService\",
+          \"properties\" => {
+            \"tarmk.size\" => 512,
+            \"pauseCompaction\" => true,
+          }
+        },
+        \"org.apache.sling.security.impl.ReferrerFilter\" => {
+          \"allow.empty\"    => true,
+          \"allow.hosts\"    => [\"author.localhost.localmachine\"],
+          #\"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
+        }
+      }]
+
+      aem::instance { \"author\" :
+        debug_port      => 30303,
+        group           => \"vagrant\",
+        home            => \"/opt/aem/author\",
+        jvm_mem_opts    => \"-Xmx2048m\",
+        osgi_configs    => \$osgi,
+        source          => \"/tmp/aem-quickstart.jar\",
+        timeout         => 1200,
+        user            => \"vagrant\",
+      }
+
+      Class[\"java\"] -> File[\"/opt/aem\"] -> Aem::Instance <| |>
+
+      Aem::License {
+        customer    => \"Vagrant Test\",
+        license_key => \"#{license}\",
+        version     => \"6.1.0\",
+      }
+
+      aem::license { \"author\" :
+        group   => \"vagrant\",
+        user    => \"vagrant\",
+        home    => \"/opt/aem/author\",
+      }
+
+      Aem::License[\"author\"] ~> Aem::Service[\"author\"]
+    }'
+  MANIFEST
+
+  pp = <<-MANIFEST
+    file {
+      '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+        ensure => file,
+        content => #{site}
+    }
+  MANIFEST
+
+  apply_manifest_on(master, pp, :catch_failures => true)
+
+  restart_puppetserver
+  fqdn = on(master, 'facter fqdn').stdout.strip
+  fqdn = fqdn.chop if fqdn.end_with?('.')
+
+  on(
+    default,
+    puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+    :acceptable_exit_codes => [0, 2]
+  )
+
+  on(default, '/tmp/ensure-running.sh')
+
+end
+
+RSpec.shared_examples 'update aem' do
+
+  site = <<-MANIFEST
+    'node \"agent\" {
+      File { backup => false, owner => \"aem\", group => \"aem\" }
+
+      aem::service { \"author\" :
+        home            => \"/opt/aem/author\",
+        user            => \"vagrant\",
+        group           => \"vagrant\",
+        status          => \"disabled\",
+      }
+    }'
+  MANIFEST
+
+  pp = <<-MANIFEST
+    file {
+      '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+        ensure => file,
+        content => #{site}
+    }
+  MANIFEST
+
+  apply_manifest_on(master, pp, :catch_failures => true)
+  restart_puppetserver
+  fqdn = on(master, 'facter fqdn').stdout.strip
+  on(
+    default,
+    puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+    :acceptable_exit_codes => [0, 2]
+  )
+
+  site = <<-MANIFEST
+    'node \"agent\" {
+      File { backup => false, owner => \"aem\", group => \"aem\" }
+
+      aem::instance { \"author\" :
+        source          => \"/tmp/aem-quickstart.jar\",
+        home            => \"/opt/aem/author\",
+        user            => \"vagrant\",
+        group           => \"vagrant\",
+        jvm_mem_opts    => \"-Xmx2048m -XX:MaxPermSize=512M\",
+        jvm_opts        => \"-XX:+UseParNewGC\",
+        sample_content  => false,
+        status          => \"running\",
+        type            => \"publish\",
+        timeout         => 1200,
+        port            => 4503,
+        debug_port      => 54321,
+        context_root    => \"aem-publish\",
+        runmodes    => [\"dev\", \"client\", \"server\", \"mock\"],
+      }
+    }'
+  MANIFEST
+
+  pp = <<-MANIFEST
+    file {
+      '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+        ensure => file,
+        content => #{site}
+    }
+  MANIFEST
+
+  apply_manifest_on(master, pp, :catch_failures => true)
+  restart_puppetserver
+  fqdn = on(master, 'facter fqdn').stdout.strip
+  on(
+    default,
+    puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+    :acceptable_exit_codes => [0, 2]
+  )
+  on(
+    default,
+    puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+    :acceptable_exit_codes => [0]
+  )
+end
 
 RSpec.configure do |c|
 

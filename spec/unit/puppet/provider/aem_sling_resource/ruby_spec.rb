@@ -71,7 +71,9 @@ PORT=#{opts[:port]}
         status = opts[:present] ? 200 : 404
 
         get_stub = stub_request(
-          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}.#{opts[:depth]}.json"
+          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}.#{opts[:depth]}.json"
+        ).with(
+          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_return(:status => status, :body => content_data)
 
         expect(provider.exists?).to eq(opts[:present])
@@ -112,7 +114,9 @@ PORT=4502
         uri = URI(uri_s)
 
         get_stub = stub_request(
-          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}.1.json"
+          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}.1.json"
+        ).with(
+          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_timeout
 
         expect { provider.exists? }.to raise_error(/expired/)
@@ -148,16 +152,21 @@ PORT=#{opts[:port]}
         status = opts[:present] ? 200 : 404
 
         get_stub = stub_request(
-          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}.#{opts[:depth]}.json"
+          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}.#{opts[:depth]}.json"
+        ).with(
+          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_return(:status => status, :body => content_data)
 
         expected_params = opts[:form_params]
 
         post_stub = stub_request(
-          :post, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
+          :post, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
         ).with(
           :body => expected_params,
-          :headers => { 'Referer' => "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}" }
+          :headers => {
+            'Referer' => "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}",
+            'Authorization' => 'Basic YWRtaW46YWRtaW4='
+          }
         ).to_return(:status => 200)
 
         # Populate property hash
@@ -187,14 +196,16 @@ PORT=#{opts[:port]}
             :password   => 'admin',
             :username   => 'admin',
             :properties => {
-              'title' => 'title string',
-              'text'  => 'text string'
+              'title'           => 'title string',
+              'text'            => 'text string'
             }
           )
         end
 
-        params = 'title=title+string'
-        params += '&text=text+string'
+        params = {
+          'title' => 'title string',
+          'text' => 'text string'
+        }
 
         it_should_behave_like(
           'flush_posts',
@@ -332,6 +343,52 @@ PORT=#{opts[:port]}
         )
       end
 
+      describe 'with tiered nested hash including protected properties' do
+        let(:resource) do
+          Puppet::Type.type(:aem_sling_resource).new(
+            :name       => '/path/to/resource',
+            :ensure     => :present,
+            :home       => '/opt/aem',
+            :password   => 'admin',
+            :username   => 'admin',
+            :properties => {
+              'jcr:primaryType' => 'cq:Page',
+              'title'           => 'title string',
+              'text'            => 'text string',
+              'child'           => {
+                'jcr:primaryType' => 'cq:PageContent',
+                'property'        => 'value',
+                'grandchild'      => {
+                  'jcr:primaryType' => 'nt:unstructured',
+                  'child attrib'    => 'another value',
+                  'array'           => ['this', 'is', 'an', 'array']
+                }
+              }
+            }
+          )
+        end
+
+        params = 'jcr%3AprimaryType=cq%3APage'
+        params += '&title=title+string'
+        params += '&text=text+string'
+        params += '&child%2Fjcr%3AprimaryType=cq%3APageContent'
+        params += '&child%2Fproperty=value'
+        params += '&child%2Fgrandchild%2Fjcr%3AprimaryType=nt%3Aunstructured'
+        params += '&child%2Fgrandchild%2Fchild+attrib=another+value'
+        params += '&child%2Fgrandchild%2Farray=this'
+        params += '&child%2Fgrandchild%2Farray=is'
+        params += '&child%2Fgrandchild%2Farray=an'
+        params += '&child%2Fgrandchild%2Farray=array'
+
+        it_should_behave_like(
+          'flush_posts',
+          :depth => 3,
+          :path => '/path/to/resource',
+          :present => false,
+          :form_params => params
+        )
+      end
+
       describe 'with tiered nested hash passwords' do
         let(:resource) do
           Puppet::Type.type(:aem_sling_resource).new(
@@ -449,7 +506,6 @@ PORT=#{opts[:port]}
 
           params = {
             'title@Delete'       => '',
-            'jcr:primaryType'    => 'nt:unstructured',
             'jcr:content@Delete' => '',
             'jcr:title'          => 'A new title'
           }
@@ -484,8 +540,6 @@ PORT=#{opts[:port]}
 
           params = {
             'title'                              => 'Page Title',
-            'jcr:primaryType'                    => 'nt:unstructured',
-            'jcr:content/jcr:primaryType@Delete' => '',
             'jcr:content/jcr:title@Delete'       => '',
             'jcr:content/title'                  => 'new title property',
             'jcr:content/par@Delete'             => ''
@@ -524,12 +578,9 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:primaryType'                        => 'nt:unstructured',
             'title'                                  => 'Page Title',
-            'jcr:content/jcr:primaryType@Delete'     => '',
             'jcr:content/jcr:title@Delete'           => '',
             'jcr:content/title'                      => 'new title property',
-            'jcr:content/par/jcr:primaryType@Delete' => '',
             'jcr:content/par/property@Delete'        => '',
             'jcr:content/par/newprop'                => 'new prop value'
           }
@@ -565,9 +616,7 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:primaryType'                    => 'nt:unstructured',
             'title'                              => 'Page Title',
-            'jcr:content/jcr:primaryType@Delete' => '',
             'jcr:content/jcr:title@Delete'       => '',
             'jcr:content/title'                  => 'new title property',
             'jcr:content/par@Delete'             => '',
@@ -609,11 +658,8 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:primaryType'                        => 'nt:unstructured',
             'title'                                  => 'Page Title',
-            'jcr:content/jcr:primaryType@Delete'     => '',
             'jcr:content/jcr:title'                  => 'Default Agent',
-            'jcr:content/par/jcr:primaryType@Delete' => '',
             'jcr:content/par/property@Delete'        => '',
             'jcr:content/par/property/newnode'       => 'new prop value'
           }
@@ -654,11 +700,8 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:primaryType'                        => 'nt:unstructured',
             'title'                                  => 'Page Title',
-            'jcr:content/jcr:primaryType@Delete'     => '',
             'jcr:content/jcr:title'                  => 'Default Agent',
-            'jcr:content/par/jcr:primaryType@Delete' => '',
             'jcr:content/par/property'               => 'new prop value'
           }
 
@@ -699,13 +742,10 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:primaryType'                        => 'nt:unstructured',
             'title'                                  => 'Page Title',
             'apassword'                              => 'newvalue',
-            'jcr:content/jcr:primaryType@Delete'     => '',
             'jcr:content/jcr:title'                  => 'Default Agent',
             'jcr:content/anotherpassword'            => 'newvalue',
-            'jcr:content/par/jcr:primaryType@Delete' => '',
             'jcr:content/par/property'               => 'new prop value',
             'jcr:content/par/onemorepassword'        => 'newvalue'
           }
@@ -744,13 +784,10 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:primaryType'                        => 'nt:unstructured',
             'title'                                  => 'Page Title',
             'apassword@Delete'                       => '',
-            'jcr:content/jcr:primaryType@Delete'     => '',
             'jcr:content/jcr:title'                  => 'Default Agent',
             'jcr:content/anotherpassword@Delete'     => '',
-            'jcr:content/par/jcr:primaryType@Delete' => '',
             'jcr:content/par/property'               => 'new prop value',
             'jcr:content/par/onemorepassword@Delete' => ''
           }
@@ -782,7 +819,6 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:primaryType'    => 'nt:unstructured',
             'title@Delete'       => '',
             'jcr:title'          => 'A new title',
             'jcr:content@Delete' => ''
@@ -817,7 +853,7 @@ PORT=#{opts[:port]}
           it_should_behave_like(
             'flush_posts',
             :path => '/path/to/resource',
-            :present => false,
+            :present => true,
             :form_params => params
           )
         end
@@ -839,14 +875,13 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:primaryType' => 'nt:unstructured',
-            'jcr:title'       => 'new title'
+            'jcr:title' => 'new title'
           }
 
           it_should_behave_like(
             'flush_posts',
             :path => '/path/to/resource',
-            :present => false,
+            :present => true,
             :form_params => params
           )
         end
@@ -877,7 +912,7 @@ PORT=#{opts[:port]}
             'flush_posts',
             :path => '/path/to/resource',
             :depth => 2,
-            :present => false,
+            :present => true,
             :form_params => params
           )
         end
@@ -904,7 +939,6 @@ PORT=#{opts[:port]}
 
           params = {
             'jcr:title'                   => 'new title',
-            'jcr:content/jcr:primaryType' => 'cq:PageContent',
             'jcr:content/title'           => 'Not Agent Title'
           }
 
@@ -912,7 +946,7 @@ PORT=#{opts[:port]}
             'flush_posts',
             :path => '/path/to/resource',
             :depth => 2,
-            :present => false,
+            :present => true,
             :form_params => params
           )
         end
@@ -944,9 +978,7 @@ PORT=#{opts[:port]}
 
           params = {
             'jcr:title'                       => 'new title',
-            'jcr:content/jcr:primaryType'     => 'cq:PageContent',
             'jcr:content/title'               => 'Not Agent Title',
-            'jcr:content/par/jcr:primaryType' => 'oak:unstructured',
             'jcr:content/par/newprop'         => 'new prop value'
           }
 
@@ -954,7 +986,7 @@ PORT=#{opts[:port]}
             'flush_posts',
             :path => '/path/to/resource',
             :depth => 3,
-            :present => false,
+            :present => true,
             :form_params => params
           )
         end
@@ -969,7 +1001,6 @@ PORT=#{opts[:port]}
               :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
               :username            => 'admin',
               :properties          => {
-                'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'apassword'       => 'newvalue',
                 'jcr:content'     => {
@@ -985,7 +1016,6 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:primaryType'          => 'nt:unstructured',
             'title'                    => 'Page Title',
             'jcr:content/jcr:title'    => 'Default Agent',
             'jcr:content/par/property' => 'new prop value'
@@ -1011,7 +1041,6 @@ PORT=#{opts[:port]}
               :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
               :username            => 'admin',
               :properties          => {
-                'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'apassword'       => 'newvalue',
                 'jcr:content'     => {
@@ -1027,7 +1056,6 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:primaryType'                        => 'nt:unstructured',
             'title'                                  => 'Page Title',
             'apassword'                              => 'newvalue',
             'jcr:content/jcr:title'                  => 'Default Agent',
@@ -1056,7 +1084,6 @@ PORT=#{opts[:port]}
               :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
               :username            => 'admin',
               :properties          => {
-                'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'jcr:content'     => {
                   'jcr:title' => 'Default Agent',
@@ -1069,7 +1096,6 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:primaryType'          => 'nt:unstructured',
             'title'                    => 'Page Title',
             'jcr:content/jcr:title'    => 'Default Agent',
             'jcr:content/par/property' => 'new prop value'
@@ -1104,7 +1130,7 @@ PORT=#{opts[:port]}
           it_should_behave_like(
             'flush_posts',
             :path => '/path/to/resource',
-            :present => false,
+            :present => true,
             :form_params => params
           )
         end
@@ -1121,11 +1147,11 @@ PORT=#{opts[:port]}
                 'jcr:title'     => 'new title',
                 'jcr:createdBy' => 'admin',
                 'jcr:content'   => {
-                  'jcr:primaryType' => 'cq:PageContent',
+                  'jcr:primaryType' => 'nt:unstructured',
                   'title'           => 'Not Agent Title',
                   'jcr:createdBy'   => 'admin',
                   'par'             => {
-                    'jcr:primaryType' => 'oak:unstructured',
+                    'jcr:primaryType' => 'nt:unstructured',
                     'newprop'         => 'new prop value',
                     'array'           => ['this', 'is', 'an', 'array']
                   }
@@ -1135,9 +1161,7 @@ PORT=#{opts[:port]}
           end
 
           params = 'jcr%3Atitle=new+title'
-          params += '&jcr%3Acontent%2Fjcr%3AprimaryType=cq%3APageContent'
           params += '&jcr%3Acontent%2Ftitle=Not+Agent+Title'
-          params += '&jcr%3Acontent%2Fpar%2Fjcr%3AprimaryType=oak%3Aunstructured'
           params += '&jcr%3Acontent%2Fpar%2Fnewprop=new+prop+value'
           params += '&jcr%3Acontent%2Fpar%2Farray=this'
           params += '&jcr%3Acontent%2Fpar%2Farray=is'
@@ -1148,7 +1172,7 @@ PORT=#{opts[:port]}
             'flush_posts',
             :path => '/path/to/resource',
             :depth => 3,
-            :present => false,
+            :present => true,
             :form_params => params
           )
         end
@@ -1169,12 +1193,15 @@ PORT=4502
         uri = URI(uri_s)
 
         get_stub = stub_request(
-          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
+          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+        ).with(
+          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_return(:status => 200, :body => content_data)
 
         post_stub = stub_request(
-          :post, 'http://admin:admin@localhost:4502/etc/testcontent/nodename'
+          :post, 'http://localhost:4502/etc/testcontent/nodename'
         ).with(
+          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' },
           :body => { ':operation' => 'delete' }
         ).to_return(:status => 500)
 
@@ -1201,7 +1228,9 @@ PORT=4502
         uri = URI(uri_s)
 
         get_stub = stub_request(
-          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
+          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+        ).with(
+          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_timeout
 
         # Populate property hash

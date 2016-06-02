@@ -94,7 +94,8 @@ describe 'aem::dispatcher::farm', :type => :define do
             :allowed_clients => [
               { 'glob' => '*', 'type' => 'deny' },
               { 'glob' => 'localhost', 'type' => 'allow' }
-            ])
+            ]
+          )
         end
         it { is_expected.to compile.with_all_deps }
       end
@@ -146,7 +147,8 @@ describe 'aem::dispatcher::farm', :type => :define do
             :cache_rules => [
               { 'glob' => '*', 'type' => 'deny' },
               { 'glob' => '*.html', 'type' => 'allow' }
-            ])
+            ]
+          )
         end
         it { is_expected.to compile.with_all_deps }
       end
