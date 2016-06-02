@@ -9,7 +9,7 @@ GEM
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
-    beaker (2.42.1)
+    beaker (2.43.0)
       aws-sdk (~> 1.57)
       beaker-answers (~> 0.0)
       beaker-hiera (~> 0.0)
@@ -22,6 +22,7 @@ GEM
       hocon (~> 0.1)
       inifile (~> 2.0)
       json (~> 1.8)
+      mime-types (~> 2.99)
       minitest (~> 5.4)
       net-scp (~> 1.2)
       net-ssh (~> 2.9)
@@ -36,7 +37,7 @@ GEM
       stringify-hash (~> 0.0.0)
     beaker-hiera (0.1.1)
       stringify-hash (~> 0.0.0)
-    beaker-pe (0.3.0)
+    beaker-pe (0.4.0)
       stringify-hash (~> 0.0.0)
     beaker-puppet_install_helper (0.4.4)
       beaker (~> 2.0)
@@ -198,9 +199,7 @@ GEM
     metadata-json-lint (0.0.11)
       json
       spdx-licenses (~> 1.0)
-    mime-types (3.1)
-      mime-types-data (~> 3.2015)
-    mime-types-data (3.2016.0521)
+    mime-types (2.99.2)
     mini_portile2 (2.0.0)
     minitest (5.9.0)
     mocha (1.1.0)
@@ -215,10 +214,10 @@ GEM
       mini_portile2 (~> 2.0.0.rc2)
     open_uri_redirections (0.2.1)
     os (0.9.6)
-    parser (2.3.1.0)
+    parser (2.3.1.2)
       ast (~> 2.2)
     powerpack (0.1.1)
-    puppet (4.5.0)
+    puppet (4.5.1)
       CFPropertyList (~> 2.2.6)
       facter (> 2.0, < 4)
       hiera (>= 2.0, < 4)
@@ -308,7 +307,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  beaker (= 2.42.1)
+  beaker (~> 2.31)
   beaker-puppet_install_helper (>= 0.2.1)
   beaker-rspec
   codeclimate-test-reporter
