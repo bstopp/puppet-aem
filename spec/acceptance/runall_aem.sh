@@ -5,18 +5,23 @@ rootdir=$(dirname $0)
 nodesdir="${rootdir}/nodesets"
 logdir="${rootdir}/logs"
 
-specs=(
-    'create_aem_spec'
-    'start_env_spec'
-    'license_spec'
-    'file_osgi_spec'
-    'console_osgi_spec'
-    'sling_resource_spec'
-    'replication_spec'
-    'update_aem_spec'
-    'update_env_spec'
-    'destroy_spec'
-)
+if [ "$1" = "" ];
+then
+    specs=(
+        'create_aem_spec'
+        'start_env_spec'
+        'license_spec'
+        'file_osgi_spec'
+        'console_osgi_spec'
+        'sling_resource_spec'
+        'replication_spec'
+        'update_aem_spec'
+        'update_env_spec'
+        'destroy_spec'
+    )
+else
+    specs=("$1")
+fi
 
 destroy=no
 provision=yes
@@ -46,14 +51,14 @@ do
         fi
 
         echo "Running test ${spec} for ${node}"
-        BEAKER_set=${node} BEAKER_provision=${provision} BEAKER_destroy=${destroy} bundle exec rspec spec/acceptance/aem/${spec}.rb > ${logfile} 2>>&1
+        BEAKER_set=${node} BEAKER_provision=${provision} BEAKER_destroy=${destroy} bundle exec rspec spec/acceptance/aem/${spec}.rb > ${logfile} 2>&1
         if [ $? != 0 ];
         then
             cd .vagrant/beaker_vagrant_files/${node}.yml
             vagrant destroy --force
             cd ${startdir}
             echo "Re-Running test ${spec} for ${node}"
-            BEAKER_set=${node} BEAKER_provision=yes BEAKER_destroy=${destroy} bundle exec rspec spec/acceptance/aem/${spec}.rb >> ${logfile} 2>>&1
+            BEAKER_set=${node} BEAKER_provision=yes BEAKER_destroy=${destroy} bundle exec rspec spec/acceptance/aem/${spec}.rb >> ${logfile} 2>&1
             if [ $? != 0 ];
             then
                 cd .vagrant/beaker_vagrant_files/${node}.yml
