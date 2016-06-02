@@ -2,8 +2,8 @@ language: ruby
 rvm:
  - "1.9.3"
  - "2.0.0"
- - "2.1.7"
- - "2.2.3"
+ - "2.1.8"
+ - "2.2.4"
 
 env:
  - CODECLIMATE_REPO_TOKEN="c51cdd016a53f48b9e48d81fc67fed1fd4310fcbdd35daf0f3694ff5d54637f7"
