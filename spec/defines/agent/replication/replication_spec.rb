@@ -55,10 +55,10 @@ describe 'aem::agent::replication', :type => :defines do
               'jcr:primaryType' => 'nt:unstructured',
               'enabled'         => true,
               'jcr:title'       => 'Agent Title',
-              'logLevel'        => 'info',
+              'logLevel'        => 'info'
             }
           },
-          :username            => 'username'
+          :username => 'username'
         )
       end
     end

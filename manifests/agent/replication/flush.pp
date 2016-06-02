@@ -29,11 +29,11 @@ define aem::agent::replication::flush(
   $username              = undef
 ) {
   aem::agent::replication { $title :
+    ensure                => $ensure,
     agent_user            => $agent_user,
     context_root          => $context_root,
     description           => $description,
     enabled               => $enabled,
-    ensure                => $ensure,
     home                  => $home,
     log_level             => $log_level,
     name                  => $name,
