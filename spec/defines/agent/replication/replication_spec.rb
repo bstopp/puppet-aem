@@ -41,13 +41,24 @@ describe 'aem::agent::replication', :type => :defines do
       it do
         is_expected.to contain_aem_sling_resource(
           'Agent Title'
-        ).with(
-          :ensure         => 'absent',
-          :handle_missing => :remove,
-          :home           => '/opt/aem',
-          :password       => 'password',
-          :path           => '/etc/replication/agents.custommode/agentname',
-          :username       => 'username'
+        ).only_with(
+          :ensure              => 'absent',
+          :force_passwords     => nil,
+          :handle_missing      => :remove,
+          :home                => '/opt/aem',
+          :password            => 'password',
+          :password_properties => ['transportPassword', 'proxyPassword'],
+          :path                => '/etc/replication/agents.custommode/agentname',
+          :properties          => {
+            'jcr:primaryType' => 'cq:Page',
+            'jcr:content'     => {
+              'jcr:primaryType' => 'nt:unstructured',
+              'enabled'         => true,
+              'jcr:title'       => 'Agent Title',
+              'logLevel'        => 'info',
+            }
+          },
+          :username            => 'username'
         )
       end
     end
@@ -60,8 +71,9 @@ describe 'aem::agent::replication', :type => :defines do
       it do
         is_expected.to contain_aem_sling_resource(
           'Agent Title'
-        ).with(
+        ).only_with(
           :ensure              => 'present',
+          :force_passwords     => nil,
           :handle_missing      => :remove,
           :home                => '/opt/aem',
           :password            => 'password',
@@ -93,8 +105,9 @@ describe 'aem::agent::replication', :type => :defines do
       it do
         is_expected.to contain_aem_sling_resource(
           'Agent Title'
-        ).with(
+        ).only_with(
           :ensure              => 'present',
+          :force_passwords     => nil,
           :handle_missing      => :remove,
           :home                => '/opt/aem',
           :password            => 'password',
@@ -126,8 +139,9 @@ describe 'aem::agent::replication', :type => :defines do
       it do
         is_expected.to contain_aem_sling_resource(
           'Agent Title'
-        ).with(
+        ).only_with(
           :ensure              => 'present',
+          :force_passwords     => nil,
           :handle_missing      => :remove,
           :home                => '/opt/aem',
           :password            => 'password',
@@ -207,8 +221,9 @@ describe 'aem::agent::replication', :type => :defines do
       it do
         is_expected.to contain_aem_sling_resource(
           'Agent Title'
-        ).with(
+        ).only_with(
           :ensure              => 'present',
+          :force_passwords     => nil,
           :handle_missing      => :remove,
           :home                => '/opt/aem',
           :password            => 'apassword',

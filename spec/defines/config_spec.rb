@@ -269,12 +269,14 @@ describe 'aem::config', :type => :defines do
       it do
         is_expected.to contain_aem__osgi__config(
           'osgi.name'
-        ).with(
-          :group       => 'aem',
-          :home        => '/opt/aem',
-          :properties  => cfg_props1,
-          :type        => 'file',
-          :user        => 'aem'
+        ).only_with(
+          :ensure     => 'present',
+          :group      => 'aem',
+          :home       => '/opt/aem',
+          :name       => 'osgi.name',
+          :properties => cfg_props1,
+          :type       => 'file',
+          :user       => 'aem'
         )
       end
     end
@@ -282,12 +284,14 @@ describe 'aem::config', :type => :defines do
       it do
         is_expected.to contain_aem__osgi__config(
           'osgi2.name'
-        ).with(
-          :group       => 'aem',
-          :home        => '/opt/aem',
-          :properties  => cfg_props2,
-          :type        => 'file',
-          :user        => 'aem'
+        ).only_with(
+          :ensure     => 'present',
+          :group      => 'aem',
+          :home       => '/opt/aem',
+          :name       => 'osgi2.name',
+          :properties => cfg_props2,
+          :type       => 'file',
+          :user       => 'aem'
         )
       end
     end
@@ -336,13 +340,15 @@ describe 'aem::config', :type => :defines do
       it do
         is_expected.to contain_aem__osgi__config(
           'osgi.name'
-        ).with(
-          :group       => 'aem',
-          :home        => '/opt/aem',
-          :pid         => 'aem.config1',
-          :properties  => cfg_props1,
-          :type        => 'file',
-          :user        => 'aem'
+        ).only_with(
+          :ensure     => 'present',
+          :group      => 'aem',
+          :home       => '/opt/aem',
+          :name       => 'osgi.name',
+          :pid        => 'aem.config1',
+          :properties => cfg_props1,
+          :type       => 'file',
+          :user       => 'aem'
         )
       end
     end
@@ -350,13 +356,15 @@ describe 'aem::config', :type => :defines do
       it do
         is_expected.to contain_aem__osgi__config(
           'osgi2.name'
-        ).with(
-          :group       => 'aem',
-          :home        => '/opt/aem',
-          :pid         => 'aem.config2',
-          :properties  => cfg_props2,
-          :type        => 'file',
-          :user        => 'aem'
+        ).only_with(
+          :ensure     => 'present',
+          :group      => 'aem',
+          :home       => '/opt/aem',
+          :name       => 'osgi2.name',
+          :pid        => 'aem.config2',
+          :properties => cfg_props2,
+          :type       => 'file',
+          :user       => 'aem'
         )
       end
     end

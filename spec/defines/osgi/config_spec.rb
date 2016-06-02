@@ -152,10 +152,11 @@ describe 'aem::osgi::config', :type => :defines do
         it do
           is_expected.to contain_aem__osgi__config__file(
             'aem'
-          ).with(
+          ).only_with(
             :ensure     => 'present',
             :group      => 'aem',
             :home       => '/opt/aem',
+            :name       => 'aem',
             :pid        => 'osgi.pid',
             :properties => params[:properties],
             :user       => 'aem'
@@ -171,10 +172,11 @@ describe 'aem::osgi::config', :type => :defines do
         it do
           is_expected.to contain_aem__osgi__config__file(
             'aem'
-          ).with(
+          ).only_with(
             :ensure     => 'absent',
             :group      => 'aem',
             :home       => '/opt/aem',
+            :name       => 'aem',
             :pid        => 'osgi.pid',
             :properties => params[:properties],
             :user       => 'aem'
@@ -194,13 +196,15 @@ describe 'aem::osgi::config', :type => :defines do
         it do
           is_expected.to contain_aem_osgi_config(
             'aem'
-          ).with(
-            :ensure        => 'present',
-            :configuration => params[:properties],
-            :home          => '/opt/aem',
-            :pid           => 'osgi.pid',
-            :password      => 'password',
-            :username      => 'username'
+          ).only_with(
+            :ensure         => 'present',
+            :configuration  => params[:properties],
+            :handle_missing => 'merge',
+            :home           => '/opt/aem',
+            :name           => 'aem',
+            :pid            => 'osgi.pid',
+            :password       => 'password',
+            :username       => 'username'
           )
         end
       end
@@ -213,13 +217,15 @@ describe 'aem::osgi::config', :type => :defines do
         it do
           is_expected.to contain_aem_osgi_config(
             'aem'
-          ).with(
-            :ensure        => 'absent',
-            :configuration => params[:properties],
-            :home          => '/opt/aem',
-            :pid           => 'osgi.pid',
-            :password      => 'password',
-            :username      => 'username'
+          ).only_with(
+            :ensure         => 'absent',
+            :configuration  => params[:properties],
+            :handle_missing => 'merge',
+            :home           => '/opt/aem',
+            :name           => 'aem',
+            :pid            => 'osgi.pid',
+            :password       => 'password',
+            :username       => 'username'
           )
         end
       end
