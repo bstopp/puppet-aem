@@ -52,7 +52,7 @@ describe 'aem::osgi::config', :type => :defines do
     context 'handle_missing' do
 
       context 'merge' do
-        let:params do
+        let(:params) do
           default_params.merge(:type => 'console')
         end
         it { is_expected.to compile }
