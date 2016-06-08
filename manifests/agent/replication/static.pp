@@ -3,7 +3,6 @@
 # Configure a Flush Replication Agent
 define aem::agent::replication::static(
   $agent_user   = undef,
-  $context_root = undef,
   $definition   = undef,
   $description  = undef,
   $directory    = undef,
@@ -19,7 +18,6 @@ define aem::agent::replication::static(
   aem::agent::replication { $title :
     ensure            => $ensure,
     agent_user        => $agent_user,
-    context_root      => $context_root,
     description       => $description,
     enabled           => $enabled,
     home              => $home,

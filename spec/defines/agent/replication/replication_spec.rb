@@ -97,40 +97,6 @@ describe 'aem::agent::replication', :type => :defines do
       end
     end
 
-    context 'context root' do
-      let(:params) do
-        default_params.merge(:context_root => 'context')
-      end
-      it { is_expected.to compile }
-      it do
-        is_expected.to contain_aem_sling_resource(
-          'Agent Title'
-        ).only_with(
-          :ensure              => 'present',
-          :force_passwords     => nil,
-          :handle_missing      => :remove,
-          :home                => '/opt/aem',
-          :password            => 'password',
-          :password_properties => ['transportPassword', 'proxyPassword'],
-          :path                => '/context/etc/replication/agents.author/agentname',
-          :properties          => {
-            'jcr:primaryType' => 'cq:Page',
-            'jcr:content'     => {
-              'jcr:primaryType'    => 'nt:unstructured',
-              'jcr:description'    => default_desc,
-              'enabled'            => true,
-              'logLevel'           => 'info',
-              'sling:resourceType' => 'cq/replication/components/agent',
-              'serializationType'  => 'durbo',
-              'cq:template'        => '/libs/cq/replication/templates/agent',
-              'jcr:title'          => 'Agent Title'
-            }
-          },
-          :username => 'username'
-        )
-      end
-    end
-
     context 'custom description' do
       let(:params) do
         default_params.merge(:description => 'Custom Description Addition')
@@ -172,7 +138,6 @@ describe 'aem::agent::replication', :type => :defines do
           :batch_enabled         => true,
           :batch_max_wait        => 60,
           :batch_trigger_size    => 100,
-          :context_root          => 'context_root',
           :description           => 'Custom Description',
           :enabled               => false,
           :home                  => '/opt/aem',
@@ -228,7 +193,7 @@ describe 'aem::agent::replication', :type => :defines do
           :home                => '/opt/aem',
           :password            => 'apassword',
           :password_properties => ['transportPassword', 'proxyPassword'],
-          :path                => '/context_root/etc/replication/agents.custommode/customname',
+          :path                => '/etc/replication/agents.custommode/customname',
           :properties          => {
             'jcr:primaryType' => 'cq:Page',
             'jcr:content'     => {

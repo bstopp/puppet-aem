@@ -3,10 +3,10 @@
 # Configure a Reverse Replication Agent
 define aem::agent::replication::reverse(
   $agent_user           = undef,
-  $context_root         = undef,
   $description          = undef,
   $enabled              = true,
   $ensure               = 'present',
+  $force_passwords      = undef,
   $home                 = undef,
   $log_level            = undef,
   $password             = undef,
@@ -22,9 +22,9 @@ define aem::agent::replication::reverse(
   aem::agent::replication { $title :
     ensure               => $ensure,
     agent_user           => $agent_user,
-    context_root         => $context_root,
     description          => $description,
     enabled              => $enabled,
+    force_passwords      => $force_passwords,
     home                 => $home,
     log_level            => $log_level,
     name                 => $name,

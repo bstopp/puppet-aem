@@ -36,7 +36,6 @@ describe 'aem::agent::replication::static', :type => :defines do
           :log_level           => 'info',
           :name                => 'agentname',
           :password            => 'password',
-          :password_properties => ['transportPassword', 'proxyPassword'],
           :resource_type       => 'cq/replication/components/staticagent',
           :runmode             => 'author',
           :serialize_type      => 'static',
@@ -49,7 +48,6 @@ describe 'aem::agent::replication::static', :type => :defines do
       let(:params) do
         default_params.update(
           :agent_user   => 'agentuser',
-          :context_root => 'contextroot',
           :definition   => '/content/blah/* ${path}.html?wcmmode=disabled',
           :description  => 'description',
           :directory    => '/path/to/storage',
@@ -70,7 +68,6 @@ describe 'aem::agent::replication::static', :type => :defines do
           'Agent Title'
         ).only_with(
           :agent_user          => 'agentuser',
-          :context_root        => 'contextroot',
           :description         => 'description',
           :enabled             => false,
           :ensure              => 'present',
@@ -78,7 +75,6 @@ describe 'aem::agent::replication::static', :type => :defines do
           :log_level           => 'error',
           :name                => 'agentname',
           :password            => 'password',
-          :password_properties => ['transportPassword', 'proxyPassword'],
           :resource_type       => 'cq/replication/components/staticagent',
           :retry_delay         => 30_000,
           :runmode             => 'author',
@@ -108,7 +104,6 @@ describe 'aem::agent::replication::static', :type => :defines do
           :log_level           => 'info',
           :name                => 'agentname',
           :password            => 'password',
-          :password_properties => ['transportPassword', 'proxyPassword'],
           :resource_type       => 'cq/replication/components/staticagent',
           :runmode             => 'author',
           :serialize_type      => 'static',

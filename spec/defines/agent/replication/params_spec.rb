@@ -59,6 +59,16 @@ describe 'aem::agent::replication', :type => :defines do
         let(:params) { default_params.merge(:batch_max_wait => 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
       end
+
+      context 'is negative' do
+        let(:params) { default_params.merge(:batch_max_wait => '-1') }
+        it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
+      end
+
+      context 'is 0' do
+        let(:params) { default_params.merge(:batch_max_wait => '0') }
+        it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
+      end
     end
 
     context 'batch trigger size' do
@@ -75,6 +85,16 @@ describe 'aem::agent::replication', :type => :defines do
       context 'is not an integer' do
         let(:params) { default_params.merge(:batch_trigger_size => 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
+      end
+
+      context 'is negative' do
+        let(:params) { default_params.merge(:batch_trigger_size => '-1') }
+        it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
+      end
+
+      context 'is 0' do
+        let(:params) { default_params.merge(:batch_trigger_size => '0') }
+        it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
     end
 
@@ -234,6 +254,16 @@ describe 'aem::agent::replication', :type => :defines do
         let(:params) { default_params.merge(:protocol_conn_timeout => 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
       end
+
+      context 'is negative' do
+        let(:params) { default_params.merge(:protocol_conn_timeout => '-1') }
+        it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
+      end
+
+      context 'is 0' do
+        let(:params) { default_params.merge(:protocol_conn_timeout => '0') }
+        it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
+      end
     end
 
     context 'protocol socket timeout' do
@@ -251,6 +281,16 @@ describe 'aem::agent::replication', :type => :defines do
         let(:params) { default_params.merge(:protocol_sock_timeout => 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
       end
+
+      context 'is negative' do
+        let(:params) { default_params.merge(:protocol_sock_timeout => '-1') }
+        it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
+      end
+
+      context 'is 0' do
+        let(:params) { default_params.merge(:protocol_sock_timeout => '0') }
+        it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
+      end
     end
 
     context 'proxy port' do
@@ -267,6 +307,16 @@ describe 'aem::agent::replication', :type => :defines do
       context 'is not an integer' do
         let(:params) { default_params.merge(:proxy_port => 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
+      end
+
+      context 'is negative' do
+        let(:params) { default_params.merge(:proxy_port => '-1') }
+        it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
+      end
+
+      context 'is 0' do
+        let(:params) { default_params.merge(:proxy_port => '0') }
+        it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
     end
 
@@ -361,6 +411,20 @@ describe 'aem::agent::replication', :type => :defines do
       end
     end
 
+    context 'static directory' do
+      context 'specified' do
+        let(:params) { default_params.merge(:static_directory => '/fully/absolute') }
+        it { is_expected.to compile }
+      end
+
+      context 'not absolute' do
+        let(:params) do
+          default_params.merge(:static_directory => 'not/absolute/path')
+        end
+        it { expect { is_expected.to compile }.to raise_error(/is not an absolute path/) }
+      end
+    end
+
     context 'template' do
       context 'is specified' do
         let(:params) { default_params }
@@ -391,6 +455,16 @@ describe 'aem::agent::replication', :type => :defines do
       context 'is not an integer' do
         let(:params) { default_params.merge(:timeout => 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
+      end
+
+      context 'is negative' do
+        let(:params) { default_params.merge(:timeout => '-1') }
+        it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
+      end
+
+      context 'is 0' do
+        let(:params) { default_params.merge(:timeout => '0') }
+        it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
     end
 

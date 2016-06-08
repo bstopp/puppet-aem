@@ -7,7 +7,6 @@ define aem::agent::replication(
   $batch_enabled         = undef,
   $batch_max_wait        = undef,
   $batch_trigger_size    = undef,
-  $context_root          = undef,
   $description           = undef,
   $enabled               = true,
   $ensure                = 'present',
@@ -15,7 +14,6 @@ define aem::agent::replication(
   $home                  = undef,
   $log_level             = 'info',
   $password              = undef,
-  $password_properties   = ['transportPassword', 'proxyPassword'],
   $protocol_close_conn   = undef,
   $protocol_conn_timeout = undef,
   $protocol_http_headers = undef,
@@ -78,10 +76,10 @@ define aem::agent::replication(
       validate_bool($batch_enabled)
     }
     if $batch_max_wait {
-    validate_integer($batch_max_wait)
+      validate_integer($batch_max_wait, undef, 1)
     }
     if $batch_trigger_size {
-      validate_integer($batch_trigger_size)
+      validate_integer($batch_trigger_size, undef, 1)
     }
 
     validate_bool($enabled)
@@ -93,17 +91,17 @@ define aem::agent::replication(
       validate_bool($protocol_close_conn)
     }
     if $protocol_conn_timeout {
-      validate_integer($protocol_conn_timeout)
+      validate_integer($protocol_conn_timeout, undef, 1)
     }
     if $protocol_http_headers {
       validate_array($protocol_http_headers)
     }
     if $protocol_sock_timeout {
-      validate_integer($protocol_sock_timeout)
+      validate_integer($protocol_sock_timeout, undef, 1)
     }
 
     if $proxy_port {
-      validate_integer($proxy_port)
+      validate_integer($proxy_port, undef, 1)
     }
 
     if !$resource_type {
@@ -118,12 +116,20 @@ define aem::agent::replication(
       validate_bool($reverse)
     }
 
+    if !$serialize_type {
+      fail("Parameter 'serialize_type' must be specified.")
+    }
+
+    if $static_directory {
+      validate_absolute_path($static_directory)
+    }
+
     if !$template {
       fail("Parameter 'template' must be specified.")
     }
 
     if $timeout {
-      validate_integer($timeout)
+      validate_integer($timeout, undef, 1)
     }
 
     if $trans_allow_exp_cert {
@@ -156,12 +162,12 @@ define aem::agent::replication(
       validate_bool($trigger_onoff_time)
     }
 
-    if !$serialize_type {
-      fail("Parameter 'serialize_type' must be specified.")
-    }
 
     $_description = "**Managed by Puppet. Any changes made will be overwritten** ${description}"
+
   }
+
+  $password_properties = ['transportPassword', 'proxyPassword']
 
   $resource_props = {
     'jcr:primaryType'             => 'nt:unstructured',
@@ -213,12 +219,6 @@ define aem::agent::replication(
 
   $path = "/etc/replication/agents.${runmode}/${name}"
 
-  if $context_root {
-    $_path = "/${context_root}${path}"
-  } else {
-    $_path = $path
-  }
-
   aem_sling_resource { $title :
     ensure              => $ensure,
     force_passwords     => $force_passwords,
@@ -226,7 +226,7 @@ define aem::agent::replication(
     home                => $home,
     password            => $password,
     password_properties => $password_properties,
-    path                => $_path,
+    path                => $path,
     properties          => {
       'jcr:primaryType' => 'cq:Page',
       'jcr:content'     => $_resource_props,
