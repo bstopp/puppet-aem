@@ -52,8 +52,9 @@ describe 'aem::service', :type => :defines do
         end
 
         it do
-          is_expected.to contain_aem__service__systemd('aem').with(
+          is_expected.to contain_aem__service__systemd('aem').only_with(
             :ensure => 'present',
+            :name   => 'aem',
             :status => 'enabled',
             :group  => 'aem',
             :home   => '/opt/aem',
@@ -72,8 +73,9 @@ describe 'aem::service', :type => :defines do
         end
 
         it do
-          is_expected.to contain_aem__service__init('aem').with(
+          is_expected.to contain_aem__service__init('aem').only_with(
             :ensure => 'present',
+            :name   => 'aem',
             :status => 'enabled',
             :group  => 'aem',
             :home   => '/opt/aem',
@@ -97,8 +99,9 @@ describe 'aem::service', :type => :defines do
       end
 
       it do
-        is_expected.to contain_aem__service__systemd('aem').with(
+        is_expected.to contain_aem__service__systemd('aem').only_with(
           :ensure => 'present',
+          :name   => 'aem',
           :status => 'enabled',
           :group  => 'aem',
           :home   => '/opt/aem',
@@ -117,8 +120,9 @@ describe 'aem::service', :type => :defines do
       end
 
       it do
-        is_expected.to contain_aem__service__init('aem').with(
+        is_expected.to contain_aem__service__init('aem').only_with(
           :ensure => 'present',
+          :name   => 'aem',
           :status => 'enabled',
           :group  => 'aem',
           :home   => '/opt/aem',
@@ -141,8 +145,9 @@ describe 'aem::service', :type => :defines do
       end
 
       it do
-        is_expected.to contain_aem__service__systemd('aem').with(
+        is_expected.to contain_aem__service__systemd('aem').only_with(
           :ensure => 'present',
+          :name   => 'aem',
           :status => 'enabled',
           :group  => 'aem',
           :home   => '/opt/aem',
@@ -161,8 +166,9 @@ describe 'aem::service', :type => :defines do
       end
 
       it do
-        is_expected.to contain_aem__service__init('aem').with(
+        is_expected.to contain_aem__service__init('aem').only_with(
           :ensure => 'present',
+          :name   => 'aem',
           :status => 'enabled',
           :group  => 'aem',
           :home   => '/opt/aem',

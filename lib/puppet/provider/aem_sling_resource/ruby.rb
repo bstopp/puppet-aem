@@ -10,8 +10,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
     @content_uri = nil
     @content_depth = 1
     @property_flush = {}
-    @ignored_properties = ['jcr:created', 'jcr:createdBy'].freeze
-    @protected_properties = ['jcr:primaryType'].freeze
   end
 
   def create
@@ -43,7 +41,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
 
     to_delete = {}
     is.each do |key, value|
-      next if @ignored_properties.include?(key) || @protected_properties.include?(key)
+      next if ignored?(key, is)
 
       if !should.key?(key)
         to_delete["#{key}@Delete"] = ''
@@ -110,7 +108,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
     path = resource[:path] || resource[:name]
     uri = "#{uri}#{path}"
     @content_uri = uri
-    @content_uri
   end
 
   def current_content
@@ -186,7 +183,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
     content = current_content
 
     if content
-      remove_ignored(content)
       @property_hash[:properties] = content.clone
       @property_flush[:existing_props] = content.clone
       @property_hash[:ensure] = :present
@@ -196,37 +192,41 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provide
     end
   end
 
-  def remove_ignored(content)
-    content.delete_if do |k, v|
-      if v.is_a?(Hash)
-        remove_ignored(v)
-        return false
-      else
-        @ignored_properties.include?(k)
-      end
-    end
-  end
-
   def remove_invalid(is, should)
     should.delete_if do |key, value|
       remove_invalid(is[key] || {}, value) if value.respond_to?(:keys)
-
-      del = @ignored_properties.include?(key)
-      del ||= @protected_properties.include?(key) && is[key] && is[key] != value
-      del
+      ignored?(key, is)
     end
+  end
+
+  def ignored?(key, is_hsh = nil)
+
+    ignored = resource[:ignored_properties].include?(key)
+
+    ignored ||= !@property_flush[:existing_props].empty? &&
+                !resource.force_passwords? &&
+                resource[:password_properties].include?(key)
+
+    ignored ||= resource[:protected_properties].include?(key) &&
+                !is_hsh.nil? && !is_hsh[key].nil?
+
+    ignored
   end
 
   def submit
 
     uri = URI(content_uri)
+
     req = Net::HTTP::Post.new(uri.request_uri)
     req.basic_auth(resource[:username], resource[:password])
     req.form_data = build_parameters
     req['Referer'] = uri.to_s
+
     res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+      http.read_timeout = resource[:timeout]
       http.request(req)
     end
+
     case res
     when Net::HTTPCreated, Net::HTTPOK
       # OK

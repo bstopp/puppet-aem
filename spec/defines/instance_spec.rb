@@ -91,6 +91,7 @@ describe 'aem::instance', :type => :defines do
       ).with(
         :ensure  => 'present',
         :home    => '/opt/aem',
+        :name    => 'aem',
         :snooze  => 10,
         :timeout => 600
       )
@@ -188,7 +189,7 @@ describe 'aem::instance', :type => :defines do
       it do
         is_expected.to contain_aem__config(
           'aem'
-        ).with(
+        ).only_with(
           :context_root   => nil,
           :debug_port     => nil,
           :group          => 'aem',

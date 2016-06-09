@@ -571,3 +571,17 @@ There is an oddity with the `aem::service` support on Debian: even though specif
 This module in its early stages, any updates or feature additions are welcome.
 
 _Please make sure you do not include any AEM Installer jars in PRs._
+
+#### Running Acceptance Tests
+
+I ask that prior to creating PR for a new feature, unit and acceptance tests exist to ensure it's operation. Running all of the AEM acceptance tests take time, so be prepared. To assist with acceptance testing, there are a number of Beaker configurations. For more information, see the Beaker project's documentation.
+
+To run the AEM acceptance tests, for all features against all boxes:
+```
+> spec/acceptance/runall_aem.sh
+```
+
+To run just the Dispatcher acceptance tests:
+```
+> bundle exec rspec spec/accpetance/dispatcher_acceptance_spec.rb
+```

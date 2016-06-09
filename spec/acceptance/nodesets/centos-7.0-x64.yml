@@ -18,9 +18,16 @@ HOSTS:
     box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
     hypervisor: vagrant
     dispatcher_file: dispatcher-apache2.4-4.1.11.so
+    vagrant_cpus: 2
+    forwarded_ports:
+      author:
+        from: 4502
+        to: 4502
+      debug-author:
+        from: 30303
+        to: 30303
 
 CONFIG:
 #  log_level: verbose
   type: foss
   vagrant_memsize : 4096
-  vagrant_cpus : 1

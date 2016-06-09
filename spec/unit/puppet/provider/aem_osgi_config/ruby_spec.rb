@@ -98,7 +98,9 @@ PORT=#{opts[:port]}
         status = opts[:present] ? 200 : 500
 
         get_stub = stub_request(
-          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
+          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+        ).with(
+          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_return(:status => status, :body => config_data)
 
         expect(provider.exists?).to eq(opts[:present])
@@ -176,17 +178,22 @@ PORT=#{opts[:port]}
         status = opts[:present] ? 200 : 500
 
         get_stub = stub_request(
-          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
+          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+        ).with(
+          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_return(:status => status, :body => config_data)
 
         expected_params = opts[:post_params].merge('apply' => 'true')
         expected_params['$location'] = bundle_location if opts[:present]
 
         post_stub = stub_request(
-          :post, "http://admin:admin@localhost:4502/system/console/configMgr/#{opts[:pid]}"
+          :post, "http://localhost:4502/system/console/configMgr/#{opts[:pid]}"
         ).with(
           :body => expected_params,
-          :headers => { 'Referer' => 'http://localhost:4502/system/console/configMgr' }
+          :headers => {
+            'Referer' => 'http://localhost:4502/system/console/configMgr',
+            'Authorization' => 'Basic YWRtaW46YWRtaW4='
+          }
         ).to_return(:status => 200)
 
         # Populate property hash
@@ -457,17 +464,22 @@ PORT=4502
         uri = URI(uri_s)
 
         get_stub = stub_request(
-          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
+          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+        ).with(
+          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_return(:status => 500, :body => config_data)
 
         expected_params = 'boolean=false&long=123456789&string=string&array=this&array=is&array=an&array=array'
         expected_params += '&propertylist=boolean%2Clong%2Cstring%2Carray&apply=true'
 
         post_stub = stub_request(
-          :post, 'http://admin:admin@localhost:4502/system/console/configMgr/OsgiConfig'
+          :post, 'http://localhost:4502/system/console/configMgr/OsgiConfig'
         ).with(
           :body => expected_params,
-          :headers => { 'Referer' => 'http://localhost:4502/system/console/configMgr' }
+          :headers => {
+            'Referer' => 'http://localhost:4502/system/console/configMgr',
+            'Authorization' => 'Basic YWRtaW46YWRtaW4='
+          }
         ).to_return(:status => 200)
 
         # Populate property hash
@@ -495,16 +507,17 @@ PORT=4502
         uri = URI(uri_s)
 
         get_stub = stub_request(
-          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
+          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
         ).to_return(:status => 200, :body => config_data)
 
         post_stub = stub_request(
-          :post, 'http://admin:admin@localhost:4502/system/console/configMgr/OsgiConfig'
+          :post, 'http://localhost:4502/system/console/configMgr/OsgiConfig'
         ).with(
           :body => {
             'delete' => 'true',
             'apply'  => 'true'
-          }
+          },
+          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_return(:status => 500)
 
         # Populate property hash
@@ -531,7 +544,9 @@ PORT=4502
         uri = URI(uri_s)
 
         get_stub = stub_request(
-          :get, "#{uri.scheme}://admin:admin@#{uri.host}:#{uri.port}#{uri.path}"
+          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+        ).with(
+          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_timeout
 
         # Populate property hash

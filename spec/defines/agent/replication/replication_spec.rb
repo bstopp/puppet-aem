@@ -41,13 +41,24 @@ describe 'aem::agent::replication', :type => :defines do
       it do
         is_expected.to contain_aem_sling_resource(
           'Agent Title'
-        ).with(
-          :ensure         => 'absent',
-          :handle_missing => :remove,
-          :home           => '/opt/aem',
-          :password       => 'password',
-          :path           => '/etc/replication/agents.custommode/agentname',
-          :username       => 'username'
+        ).only_with(
+          :ensure              => 'absent',
+          :force_passwords     => nil,
+          :handle_missing      => :remove,
+          :home                => '/opt/aem',
+          :password            => 'password',
+          :password_properties => ['transportPassword', 'proxyPassword'],
+          :path                => '/etc/replication/agents.custommode/agentname',
+          :properties          => {
+            'jcr:primaryType' => 'cq:Page',
+            'jcr:content'     => {
+              'jcr:primaryType' => 'nt:unstructured',
+              'enabled'         => true,
+              'jcr:title'       => 'Agent Title',
+              'logLevel'        => 'info'
+            }
+          },
+          :username => 'username'
         )
       end
     end
@@ -60,49 +71,17 @@ describe 'aem::agent::replication', :type => :defines do
       it do
         is_expected.to contain_aem_sling_resource(
           'Agent Title'
-        ).with(
-          :ensure         => 'present',
-          :handle_missing => :remove,
-          :home           => '/opt/aem',
-          :password       => 'password',
-          :path           => '/etc/replication/agents.author/agentname',
-          :properties     => {
+        ).only_with(
+          :ensure              => 'present',
+          :force_passwords     => nil,
+          :handle_missing      => :remove,
+          :home                => '/opt/aem',
+          :password            => 'password',
+          :password_properties => ['transportPassword', 'proxyPassword'],
+          :path                => '/etc/replication/agents.author/agentname',
+          :properties          => {
             'jcr:primaryType' => 'cq:Page',
             'jcr:content'     => {
-              '_charset_'          => 'utf-8',
-              'jcr:primaryType'    => 'nt:unstructured',
-              'jcr:description'    => default_desc,
-              'enabled'            => true,
-              'logLevel'           => 'info',
-              'sling:resourceType' => 'cq/replication/components/agent',
-              'serializationType'  => 'durbo',
-              'cq:template'        => '/libs/cq/replication/templates/agent',
-              'jcr:title'          => 'Agent Title'
-            }
-          },
-          :username => 'username'
-        )
-      end
-    end
-
-    context 'context root' do
-      let(:params) do
-        default_params.merge(:context_root => 'context')
-      end
-      it { is_expected.to compile }
-      it do
-        is_expected.to contain_aem_sling_resource(
-          'Agent Title'
-        ).with(
-          :ensure         => 'present',
-          :handle_missing => :remove,
-          :home           => '/opt/aem',
-          :password       => 'password',
-          :path           => '/context/etc/replication/agents.author/agentname',
-          :properties     => {
-            'jcr:primaryType' => 'cq:Page',
-            'jcr:content'     => {
-              '_charset_'          => 'utf-8',
               'jcr:primaryType'    => 'nt:unstructured',
               'jcr:description'    => default_desc,
               'enabled'            => true,
@@ -126,16 +105,17 @@ describe 'aem::agent::replication', :type => :defines do
       it do
         is_expected.to contain_aem_sling_resource(
           'Agent Title'
-        ).with(
-          :ensure         => 'present',
-          :handle_missing => :remove,
-          :home           => '/opt/aem',
-          :password       => 'password',
-          :path           => '/etc/replication/agents.author/agentname',
-          :properties     => {
+        ).only_with(
+          :ensure              => 'present',
+          :force_passwords     => nil,
+          :handle_missing      => :remove,
+          :home                => '/opt/aem',
+          :password            => 'password',
+          :password_properties => ['transportPassword', 'proxyPassword'],
+          :path                => '/etc/replication/agents.author/agentname',
+          :properties          => {
             'jcr:primaryType' => 'cq:Page',
             'jcr:content'     => {
-              '_charset_'          => 'utf-8',
               'jcr:primaryType'    => 'nt:unstructured',
               'jcr:description'    => "#{default_desc}Custom Description Addition",
               'enabled'            => true,
@@ -158,7 +138,6 @@ describe 'aem::agent::replication', :type => :defines do
           :batch_enabled         => true,
           :batch_max_wait        => 60,
           :batch_trigger_size    => 100,
-          :context_root          => 'context_root',
           :description           => 'Custom Description',
           :enabled               => false,
           :home                  => '/opt/aem',
@@ -207,16 +186,17 @@ describe 'aem::agent::replication', :type => :defines do
       it do
         is_expected.to contain_aem_sling_resource(
           'Agent Title'
-        ).with(
-          :ensure         => 'present',
-          :handle_missing => :remove,
-          :home           => '/opt/aem',
-          :password       => 'apassword',
-          :path           => '/context_root/etc/replication/agents.custommode/customname',
-          :properties     => {
+        ).only_with(
+          :ensure              => 'present',
+          :force_passwords     => nil,
+          :handle_missing      => :remove,
+          :home                => '/opt/aem',
+          :password            => 'apassword',
+          :password_properties => ['transportPassword', 'proxyPassword'],
+          :path                => '/etc/replication/agents.custommode/customname',
+          :properties          => {
             'jcr:primaryType' => 'cq:Page',
             'jcr:content'     => {
-              '_charset_'                   => 'utf-8',
               'jcr:primaryType'             => 'nt:unstructured',
               'userId'                      => 'agentuser',
               'queueBatchMode'              => true,
@@ -227,7 +207,7 @@ describe 'aem::agent::replication', :type => :defines do
               'logLevel'                    => 'debug',
               'protocolHTTPConnectionClose' => true,
               'protocolConnectTimeout'      => 1000,
-              #:protocol_http_headers => ['CQ-Action:{action}', 'CQ-Handle:{path}', 'CQ-Path:{path}'],
+              'protocolHTTPHeaders'         => ['CQ-Action:{action}', 'CQ-Handle:{path}', 'CQ-Path:{path}'],
               'protocolHTTPMethod'          => 'POST',
               'protocolInterface'           => '127.0.0.1',
               'protocolSocketTimeout'       => 1_000,
