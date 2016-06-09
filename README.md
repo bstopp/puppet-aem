@@ -69,7 +69,7 @@
 
 **Note**: This module modifies AEM installation directories and configuration files, overwriting any existing configurations. AEM configurations should be managed by Puppet, as unmanaged configuration files may cause unexpected behaviour.
 
-### Setup Requirements 
+### Setup Requirements
 
 AEM uses Ruby-based providers, so you must enable pluginsync. Java is also required to be installed on the system. Finally, due to the AEM platform being proprietary, this module does not provide the installation jar file; it must be provided by the consumer.
 
@@ -96,6 +96,7 @@ For more options and detailed explanations, please see the [Puppet AEM Wiki][wik
   - [Define: aem::license](#define-aemlicense)
   - [Define: aem::osgi::config](#define-aemosgiconfig)
   - [Define: aem::service](#define-aemservice)
+  - [Define: aem::agent::config](#define-aemagentconfig)
 - **[Private Defines][]**
   - [Define: aem::config](#define-aemconfig)
   - [Define: aem::osgi::config::file](#define-aemosgiconfigfile)
@@ -444,6 +445,69 @@ Optional. Changes the state of the service on the system, defining whether or no
 ##### `user`
 Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `aem`.
 
+#### Define: `aem::agent::config`
+
+Manages an Replication Agent Configuration.
+
+**Parameters within `aem::agent::config`:**
+
+##### `name`
+Namevar. Required. Specifies the name of the agent content node.
+
+##### `ensure`
+Optional. Changes the state of the Replication Agent Configuration within puppet. Valid options: `present` or `absent`. Default: `present`.
+
+##### `status`
+Optional. Sets the status of the replication agent. Valid options: `enabled` or `disabled`. Default: `enabled`.
+
+##### `description`
+Optional. Sets the description of the replication agent. Default: `Replication Agent`.
+
+##### `on`
+Optional. Sets the location of the replication agent. Default: `author`.
+
+##### `username`
+Optional. Sets the user for the HTTP request. Must be a user with permissions to create content. Default: `admin`.
+
+##### `password`
+Optional. Sets the password for the user for the HTTP request. Must be a valid password. Default: `admin`.
+
+##### `home`
+Required. Sets the directory in which the AEM instance exists, necessary for Replication Agent configuration definition. Valid options: any absolute path.
+
+##### `charset`
+Optional. Sets the charset of the replication agent. Default: `utf-8`.
+
+##### `loglevel`
+Optional. Sets the log level of the replication agent. Default: `info`.
+
+##### `retrydelay`
+Optional. Sets the retry delay of the replication agent. Default: `6000`.
+
+##### `serializationtype`
+Optional. Sets the serialization type of the replication agent. Default: `6000`.
+
+##### `template`
+Optional. Sets the template of the replication agent. Default: `/libs/cq/replication/templates/agent`.
+
+##### `resourcetype`
+Optional. Sets the resource type of the replication agent. Default: `cq/replication/components/agent`.
+
+##### `transportuser`
+Optional. Sets the transport user of the replication agent. Default: `replication-receiver`.
+
+##### `transportpassword`
+Optional. Sets the transport password of the replication agent. Default: `password`.
+
+##### `transporturi`
+Optional. Sets the transport uri of the replication agent. Default: `http://host:port/bin/receive?sling:authRequestLogin=1`.
+
+##### `replicationuser`
+Optional. Sets the replication user of the replication agent. Default: `your_replication_user`.
+
+##### `handle_missing`
+Optional. Sets the behaviour for missing content nodes. Valid options: `ignore` or `remove`. Default: `ignore`.
+
 ### Private Defines
 
 #### Define: `aem::package`
@@ -471,7 +535,7 @@ The `aem::dispatcher` class requires the Puppet Apache module; however since the
 
 ### OS Compatibility
 
-This module has been tested on: 
+This module has been tested on:
 
 - CentOS 7, 7.2
 - Ubuntu 12.04*, 14.04
@@ -504,6 +568,20 @@ There is an oddity with the `aem::service` support on Debian: even though specif
 
 ## Development
 
-This module in its early stages, any updates or feature additions are welcome. 
+This module in its early stages, any updates or feature additions are welcome.
 
 _Please make sure you do not include any AEM Installer jars in PRs._
+
+#### Running Acceptance Tests
+
+I ask that prior to creating PR for a new feature, unit and acceptance tests exist to ensure it's operation. Running all of the AEM acceptance tests take time, so be prepared. To assist with acceptance testing, there are a number of Beaker configurations. For more information, see the Beaker project's documentation.
+
+To run the AEM acceptance tests, for all features against all boxes:
+```
+> spec/acceptance/runall_aem.sh
+```
+
+To run just the Dispatcher acceptance tests:
+```
+> bundle exec rspec spec/accpetance/dispatcher_acceptance_spec.rb
+```

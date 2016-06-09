@@ -79,7 +79,7 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, :parent => Puppet::Provider d
     req = Net::HTTP::Get.new(uri.request_uri)
     req.basic_auth resource[:username], resource[:password]
 
-    Timeout.timeout(@resource[:timeout]) do
+    Timeout.timeout(resource[:timeout]) do
       Kernel.loop do
         begin
           res = Net::HTTP.start(uri.hostname, uri.port) do |http|
@@ -139,6 +139,7 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, :parent => Puppet::Provider d
     req['Referer'] = config_mgr_uri
 
     res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+      http.read_timeout = resource[:timeout]
       http.request(req)
     end
 

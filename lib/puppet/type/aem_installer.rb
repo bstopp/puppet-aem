@@ -31,7 +31,7 @@ This is a private type intended to start, monitor, and stop an AEM instance, ins
     validate do |value|
 
       unless Puppet::Util.absolute_path?(value)
-        fail(Puppet::ResourceError, "AEM Home must be fully qualified, not '#{value}'")
+        raise(Puppet::ResourceError, "AEM Home must be fully qualified, not '#{value}'")
       end
 
     end
@@ -76,6 +76,6 @@ This is a private type intended to start, monitor, and stop an AEM instance, ins
   end
 
   validate do
-    fail('AEM Home must be specified.') if self[:home].nil? || !self[:home]
+    raise(Puppet::ResourceError, 'AEM Home must be specified.') if self[:home].nil? || !self[:home]
   end
 end

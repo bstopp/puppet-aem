@@ -2,7 +2,7 @@ require 'spec_helper_acceptance'
 
 describe 'dispatcher acceptance' do
 
-  let :facts do
+  let(:facts) do
     {
       :environment => :root
     }
@@ -14,7 +14,7 @@ describe 'dispatcher acceptance' do
     log_root = '/var/log/httpd'
     mod_root = '/etc/httpd/modules'
     apache_root = '/etc/httpd'
-    conf_dir = '/etc/httpd/conf.d'
+    conf_dir = '/etc/httpd/conf.modules.d'
   when 'Debian'
     service_name = 'apache2'
     log_root = '/var/log/apache2'
@@ -50,7 +50,7 @@ describe 'dispatcher acceptance' do
 
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
-        fqdn = fqdn.chop if fqdn.end_with?(".")
+        fqdn = fqdn.chop if fqdn.end_with?('.')
         # Clear the logs to setup test cases.
         on(
           default,
@@ -65,16 +65,18 @@ describe 'dispatcher acceptance' do
         )
       end
       it 'should be running with no errors' do
-        shell("grep -- 'Communique/4.1.11 configured -- resuming normal operations' #{log_root}/error*",
-          :acceptable_exit_codes => 0)
+        shell(
+          "grep -- 'Communique/4.1.11 configured -- resuming normal operations' #{log_root}/error*",
+          :acceptable_exit_codes => 0
+        )
 
         found = false
         shell("find #{log_root}/ -name \"dispatcher.log\" -type f") do |result|
-          found = %r{^#{log_root}/dispatcher.log} === result.stdout
+          found = %r|^#{log_root}/dispatcher.log| =~ result.stdout
         end
         if found
           shell("cat #{log_root}/dispatcher.log") do |result|
-            expect(result.stdout).to match(%r{})
+            expect(result.stdout).to match(//)
           end
         end
       end
@@ -83,7 +85,7 @@ describe 'dispatcher acceptance' do
     context 'dispatcher modules' do
       it 'should have copied the dispatcher module file' do
         shell("find #{mod_root}/ -name \"dispatcher-apache-module.so\" -type f") do |result|
-          expect(result.stdout).to match(%r{^#{mod_root}/dispatcher-apache-module.so})
+          expect(result.stdout).to match(%r|^#{mod_root}/dispatcher-apache-module.so|)
         end
       end
 
@@ -95,7 +97,7 @@ describe 'dispatcher acceptance' do
 
       it 'should have created module file' do
         shell("find #{mod_root}/ -name \"mod_dispatcher.so\"") do |result|
-          expect(result.stdout).to match(%r{^#{mod_root}/mod_dispatcher.so})
+          expect(result.stdout).to match(%r|^#{mod_root}/mod_dispatcher.so|)
         end
       end
 
@@ -109,14 +111,20 @@ describe 'dispatcher acceptance' do
     context 'dispatcher conf' do
       it 'should exist' do
         shell("find #{apache_root}/ -name \"dispatcher.conf\"") do |result|
-          expect(result.stdout).to match(%r{^#{conf_dir}/dispatcher.conf})
+          expect(result.stdout).to match(%r|^#{conf_dir}/dispatcher.conf|)
         end
       end
       it 'should specify the Dispatcher Config' do
-        shell("grep -- 'DispatcherConfig.*#{conf_dir}/dispatcher.farms.any' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell(
+          "grep -- 'DispatcherConfig.*#{conf_dir}/dispatcher.farms.any' #{conf_dir}/dispatcher.conf",
+          :acceptable_exit_codes => 0
+        )
       end
       it 'should specify the Dispatcher Log' do
-        shell("grep -- 'DispatcherLog.*#{log_root}/dispatcher.log' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell(
+          "grep -- 'DispatcherLog.*#{log_root}/dispatcher.log' #{conf_dir}/dispatcher.conf",
+          :acceptable_exit_codes => 0
+        )
       end
       it 'should specify the Dispatcher Log Level' do
         shell("grep -- 'DispatcherLogLevel.*warn' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
@@ -138,7 +146,7 @@ describe 'dispatcher acceptance' do
     context 'dispatcher farms any' do
       it 'should exist' do
         shell("find #{apache_root}/ -name \"dispatcher.farms.any\"") do |result|
-          expect(result.stdout).to match(%r{^#{conf_dir}/dispatcher.farms.any})
+          expect(result.stdout).to match(%r|^#{conf_dir}/dispatcher.farms.any|)
         end
       end
     end
@@ -198,9 +206,9 @@ describe 'dispatcher acceptance' do
 
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
-        fqdn = fqdn.chop if fqdn.end_with?(".")
+        fqdn = fqdn.chop if fqdn.end_with?('.')
         on(default, puppet("resource service #{service_name} ensure=stopped"))
-        shell("rm #{log_root}/*",:accept_all_exit_codes => true)
+        shell("rm #{log_root}/*", :accept_all_exit_codes => true)
         on(
           default,
           puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
@@ -209,14 +217,17 @@ describe 'dispatcher acceptance' do
       end
 
       it 'should be running with no errors' do
-        shell("grep -- 'Communique/4.1.11 configured -- resuming normal operations' #{log_root}/error*", :acceptable_exit_codes => 0)
+        shell(
+          "grep -- 'Communique/4.1.11 configured -- resuming normal operations' #{log_root}/error*",
+          :acceptable_exit_codes => 0
+        )
         found = false
         shell("find #{log_root}/ -name \"dispatcher.log\" -type f") do |result|
-          found = %r{^#{log_root}/dispatcher.log} === result.stdout
+          found = %r|^#{log_root}/dispatcher.log| =~ result.stdout
         end
         if found
           shell("cat #{log_root}/dispatcher.log") do |result|
-            expect(result.stdout).to match(%r{})
+            expect(result.stdout).to match(//)
           end
         end
       end
@@ -224,14 +235,17 @@ describe 'dispatcher acceptance' do
 
     context 'dispatcher farm conf' do
       it 'should include the site file' do
-        shell("grep -- '$include \"dispatcher.site.any\"' #{conf_dir}/dispatcher.farms.any", :acceptable_exit_codes => 0)
+        shell(
+          "grep -- '$include \"dispatcher.site.any\"' #{conf_dir}/dispatcher.farms.any",
+          :acceptable_exit_codes => 0
+        )
       end
     end
 
     context 'dispatcher site any' do
       it 'should exist' do
         shell("find #{apache_root}/ -name \"dispatcher.site.any\"") do |result|
-          expect(result.stdout).to match(%r{^#{conf_dir}/dispatcher.site.any})
+          expect(result.stdout).to match(%r|^#{conf_dir}/dispatcher.site.any|)
         end
       end
       it 'should use name for root node' do
@@ -241,28 +255,38 @@ describe 'dispatcher acceptance' do
         shell("grep -- '/allowAuthorized \"0\"' #{conf_dir}/dispatcher.site.any", :acceptable_exit_codes => 0)
       end
       it 'should include allowedClients' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/allowedClients {\s*\\/0 { \\/type \"deny\" \\/glob \"\\*\" }\\s*\\/1 { \\/type \"allow\" \\/glob \"127.0.0.1\" }/ p'") do |result|
-          expect(result.stdout).to match(%r{/allowedClients})
+        cmd = "tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/allowedClients {\s*\\/0 { \\/type \"deny\" \\/glob \"\\*\" }\\s*"
+        cmd += "\\/1 { \\/type \"allow\" \\/glob \"127.0.0.1\" }/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/allowedClients|)
         end
       end
       it 'should include cache_headers' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/headers {\\s*\"A-Cache-Header\"\\s*\"Another-Cache-Header\"\\s*}/ p'") do |result|
-          expect(result.stdout).to match(%r{/headers})
+        cmd = "tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/headers {\\s*\"A-Cache-Header\"\\s*\"Another-Cache-Header\"\\s*}/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/headers|)
         end
       end
       it 'should include cache_rules' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/rules {\s*\\/0 { \\/type \"deny\" \\/glob \"\\*\" }\\s*\\/1 { \\/type \"allow\" \\/glob \"\\*.html\" }/ p'") do |result|
-          expect(result.stdout).to match(%r{/rules})
+        cmd = "tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/rules {\s*\\/0 { \\/type \"deny\" \\/glob \"\\*\" }\\s*"
+        cmd += "\\/1 { \\/type \"allow\" \\/glob \"\\*.html\" }/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/rules|)
         end
       end
       it 'should include cache_ttl' do
         shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/enableTTL \"1\"/ p'") do |result|
-          expect(result.stdout).to match(%r{/enableTTL})
+          expect(result.stdout).to match(%r|/enableTTL|)
         end
       end
       it 'should include client_headers' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/clientheaders {\\s*\"A-Client-Header\"\\s*\"Another-Client-Header\"\\s*}/ p'") do |result|
-          expect(result.stdout).to match(%r{/clientheaders})
+        cmd = "tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/clientheaders {\\s*\"A-Client-Header\"\\s*\"Another-Client-Header\"\\s*}/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/clientheaders|)
         end
       end
       it 'should include the docroot' do
@@ -272,26 +296,37 @@ describe 'dispatcher acceptance' do
         shell("grep -- '/failover \"1\"' #{conf_dir}/dispatcher.site.any", :acceptable_exit_codes => 0)
       end
       it 'should include filters' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/filter {\\s*\\/0 { \\/type \"deny\" \\/glob \"\\*\" }\\s*\\/1 { \\/type \"allow\" \\/glob \"\\*.html\" }/ p'") do |result|
-          expect(result.stdout).to match(%r{/filter})
+        cmd = "tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/filter {\\s*\\/0 { \\/type \"deny\" \\/glob \"\\*\" }\\s*"
+        cmd += "\\/1 { \\/type \"allow\" \\/glob \"\\*.html\" }/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/filter|)
         end
       end
       it 'should include grace_period' do
         shell("grep -- '/gracePeriod \"1\"' #{conf_dir}/dispatcher.site.any", :acceptable_exit_codes => 0)
       end
       it 'should include health_check_url' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/health_check { \\/url \"\\/path\\/to\\/healthcheck\" }/ p'") do |result|
-          expect(result.stdout).to match(%r{/health_check})
+        cmd = "tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/health_check { \\/url \"\\/path\\/to\\/healthcheck\" }/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/health_check|)
         end
       end
       it 'should include ignore_parameters' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/ignoreUrlParams {\\s*\\/0 { \\/type \"deny\" \\/glob \"\\*\" }\s*\\/1 { \\/type \"allow\" \\/glob \"param=\\*\" }/ p'") do |result|
-          expect(result.stdout).to match(%r{/ignoreUrlParams})
+        cmd = "tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/ignoreUrlParams {\\s*\\/0 { \\/type \"deny\" \\/glob \"\\*\" }\s*"
+        cmd += "\\/1 { \\/type \"allow\" \\/glob \"param=\\*\" }/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/ignoreUrlParams|)
         end
       end
       it 'should include invalidate' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/invalidate {\\s*\\/0 { \\/type \"deny\" \\/glob \"\\*\" }\\s*\\/1 { \\/type \"allow\" \\/glob \"\\*.html\" }\\s*}/ p'") do |result|
-          expect(result.stdout).to match(%r{/invalidate})
+        cmd = "tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/invalidate {\\s*\\/0 { \\/type \"deny\" \\/glob \"\\*\" }\\s*"
+        cmd += "\\/1 { \\/type \"allow\" \\/glob \"\\*.html\" }\\s*}/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/invalidate|)
         end
       end
       it 'should include propagate_synd_post' do
@@ -304,16 +339,23 @@ describe 'dispatcher acceptance' do
         shell("grep -- '/retryDelay \"30\"' #{conf_dir}/dispatcher.site.any", :acceptable_exit_codes => 0)
       end
       it 'should include renderers' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/renders {\\s*\\/renderer0 {\\s*\\/hostname\\s*\"publish.hostname.com\"\\s*\\/port\\s\"8080\"\\s*\\/timeout\\s*\"600\"\\s*\\/receiveTimeout\\s*\"300\"\\s*\\/ipv4\\s\"0\"\\s*}/ p'") do |result|
-          expect(result.stdout).to match(%r{/renders})
+        cmd = "tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/renders {\\s*\\/renderer0 {\\s*\\/hostname\\s*\"publish.hostname.com\"\\s*"
+        cmd += "\\/port\\s\"8080\"\\s*\\/timeout\\s*\"600\"\\s*\\/receiveTimeout\\s*\"300\"\\s*\\/ipv4\\s\"0\"\\s*}/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/renders|)
         end
       end
       it 'should include serve_stale' do
         shell("grep -- '/serveStaleOnError \"1\"' #{conf_dir}/dispatcher.site.any", :acceptable_exit_codes => 0)
       end
       it 'should include session_management' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/sessionmanagement {\\s*\\/directory\\s*\"\\/path\\/to\\/cache\"\\s*\\/encode\\s\"md5\"\\s*\\/header\\s\"HTTP:authorization\"\\s*\\/timeout\\s\"1000\"\\s*}/ p'") do |result|
-          expect(result.stdout).to match(%r{/sessionmanagement})
+        cmd = 'tr -d "\n\r" < '
+        cmd += "#{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/sessionmanagement {\\s*\\/directory\\s*\"\\/path\\/to\\/cache\"\\s*"
+        cmd += "\\/encode\\s\"md5\"\\s*\\/header\\s\"HTTP:authorization\"\\s*\\/timeout\\s\"1000\"\\s*}/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/sessionmanagement|)
         end
       end
       it 'should include statfile' do
@@ -323,24 +365,39 @@ describe 'dispatcher acceptance' do
         shell("grep -- '/statfileslevel \"3\"' #{conf_dir}/dispatcher.site.any", :acceptable_exit_codes => 0)
       end
       it 'should include statistics' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/statistics {\\s*\\/categories {\\s*\\/html { \\/glob \"\\*.html\" }\\s*\\/others { \\/glob \"\\*\" }\\s*}\\s*}/ p'") do |result|
-          expect(result.stdout).to match(%r{/statistics})
+        cmd = 'tr -d "\n\r" < '
+        cmd += "#{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/statistics {\\s*\\/categories {\\s*\\/html "
+        cmd += "{ \\/glob \"\\*.html\" }\\s*\\/others { \\/glob \"\\*\" }\\s*}\\s*}/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/statistics|)
         end
       end
       it 'should include sticky_connections' do
-        shell("grep -- '/stickyConnectionsFor \"/path/to/content\"' #{conf_dir}/dispatcher.site.any", :acceptable_exit_codes => 0)
+        shell(
+          "grep -- '/stickyConnectionsFor \"/path/to/content\"' #{conf_dir}/dispatcher.site.any",
+          :acceptable_exit_codes => 0
+        )
       end
       it 'should include unavailable_penalty' do
         shell("grep -- '/unavailablePenalty \"2\"' #{conf_dir}/dispatcher.site.any", :acceptable_exit_codes => 0)
       end
       it 'should include vanity_urls' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/vanity_urls {\\s*\\/url \"\\/libs\\/granite\\/dispatcher\\/content\\/vanityUrls.html\"\\s*\\/file \"\\/path\\/to\\/cache\"\s*\\/delay \"600\"\\s*}/ p'") do |result|
-          expect(result.stdout).to match(%r{/vanity_urls})
+        cmd = 'tr -d "\n\r" < '
+        cmd += "#{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/vanity_urls {\\s*\\/url "
+        cmd += '"\\/libs\\/granite\\/dispatcher\\/content\\/vanityUrls.html"\\s*\\/file '
+        cmd += "\"\\/path\\/to\\/cache\"\s*\\/delay \"600\"\\s*}/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/vanity_urls|)
         end
       end
       it 'should include virtualhosts' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/virtualhosts {\\s*\"www.avirtualhost.com\"\\s*\"another.virtual.com\"\\s*}/ p'") do |result|
-          expect(result.stdout).to match(%r{/virtualhosts})
+        cmd = 'tr -d "\n\r" < '
+        cmd += "#{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/virtualhosts {\\s*\"www.avirtualhost.com\"\\s*\"another.virtual.com\"\\s*}/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/virtualhosts|)
         end
       end
     end
@@ -348,7 +405,7 @@ describe 'dispatcher acceptance' do
 
   describe 'update conf' do
 
-    let :facts do
+    let(:facts) do
       {
         :environment => :root
       }
@@ -389,7 +446,7 @@ describe 'dispatcher acceptance' do
 
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
-        fqdn = fqdn.chop if fqdn.end_with?(".")
+        fqdn = fqdn.chop if fqdn.end_with?('.')
         on(default, puppet("resource service #{service_name} ensure=stopped"))
         shell("rm #{log_root}/*", :accept_all_exit_codes => true)
         on(
@@ -400,14 +457,17 @@ describe 'dispatcher acceptance' do
       end
 
       it 'should be running with no errors' do
-        shell("grep -- 'Communique/4.1.11 configured -- resuming normal operations' #{log_root}/error*", :acceptable_exit_codes => 0)
+        shell(
+          "grep -- 'Communique/4.1.11 configured -- resuming normal operations' #{log_root}/error*",
+          :acceptable_exit_codes => 0
+        )
         found = false
         shell("find #{log_root}/ -name \"dispatcher.log\" -type f") do |result|
-          found = %r{^#{log_root}/dispatcher.log} === result.stdout
+          found = %r|^#{log_root}/dispatcher.log| =~ result.stdout
         end
         if found
           shell("cat #{log_root}/dispatcher.log") do |result|
-            expect(result.stdout).to match(%r{})
+            expect(result.stdout).to match(//)
           end
         end
       end
@@ -416,15 +476,21 @@ describe 'dispatcher acceptance' do
     context 'dispatcher conf' do
       it 'should exist' do
         shell("find #{apache_root}/ -name \"dispatcher.conf\"") do |result|
-          expect(result.stdout).to match(%r{^#{conf_dir}/dispatcher.conf})
+          expect(result.stdout).to match(%r|^#{conf_dir}/dispatcher.conf|)
         end
       end
 
       it 'should specify the Dispatcher Config' do
-        shell("grep -- 'DispatcherConfig.*#{conf_dir}/dispatcher.farms.any' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell(
+          "grep -- 'DispatcherConfig.*#{conf_dir}/dispatcher.farms.any' #{conf_dir}/dispatcher.conf",
+          :acceptable_exit_codes => 0
+        )
       end
       it 'should specify the Dispatcher Log' do
-        shell("grep -- 'DispatcherLog.*#{log_root}/my-dispatcher.log' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell(
+          "grep -- 'DispatcherLog.*#{log_root}/my-dispatcher.log' #{conf_dir}/dispatcher.conf",
+          :acceptable_exit_codes => 0
+        )
       end
       it 'should specify the Dispatcher Log Level' do
         shell("grep -- 'DispatcherLogLevel.*3' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
@@ -447,12 +513,15 @@ describe 'dispatcher acceptance' do
     context 'dispatcher farms any' do
       it 'should exist' do
         shell("find #{conf_dir}/ -name \"dispatcher.farms.any\"") do |result|
-          expect(result.stdout).to match(%r{^#{conf_dir}/dispatcher.farms.any})
+          expect(result.stdout).to match(%r|^#{conf_dir}/dispatcher.farms.any|)
         end
       end
 
       it 'should update the site file' do
-        shell("grep -- 'include.*dispatcher.anothersite.any' #{conf_dir}/dispatcher.farms.any", :acceptable_exit_codes => 0)
+        shell(
+          "grep -- 'include.*dispatcher.anothersite.any' #{conf_dir}/dispatcher.farms.any",
+          :acceptable_exit_codes => 0
+        )
       end
 
       it 'should have the name' do
@@ -464,7 +533,7 @@ describe 'dispatcher acceptance' do
 
   describe 'update conf' do
 
-    let :facts do
+    let(:facts) do
       {
         :environment => :root
       }
@@ -503,7 +572,7 @@ describe 'dispatcher acceptance' do
 
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
-        fqdn = fqdn.chop if fqdn.end_with?(".")
+        fqdn = fqdn.chop if fqdn.end_with?('.')
         on(default, puppet("resource service #{service_name} ensure=stopped"))
         shell("rm #{log_root}/*", :accept_all_exit_codes => true)
         on(
@@ -514,14 +583,18 @@ describe 'dispatcher acceptance' do
       end
 
       it 'should be running with no errors' do
-        shell("grep -- 'Communique/4.1.11 configured -- resuming normal operations' #{log_root}/error*", :acceptable_exit_codes => 0)
+        shell(
+          "grep -- 'Communique/4.1.11 configured -- resuming normal operations' #{log_root}/error*",
+          :acceptable_exit_codes => 0
+        )
+
         found = false
         shell("find #{log_root}/ -name \"dispatcher.log\" -type f") do |result|
-          found = %r{^#{log_root}/dispatcher.log} === result.stdout
+          found = %r|^#{log_root}/dispatcher.log| =~ result.stdout
         end
         if found
           shell("cat #{log_root}/dispatcher.log") do |result|
-            expect(result.stdout).to match(%r{})
+            expect(result.stdout).to match(//)
           end
         end
       end
@@ -530,40 +603,50 @@ describe 'dispatcher acceptance' do
     context 'dispatcher farms any' do
       it 'should exist' do
         shell("find #{apache_root}/ -name \"dispatcher.farms.any\"") do |result|
-          expect(result.stdout).to match(%r{^#{conf_dir}/dispatcher.farms.any})
+          expect(result.stdout).to match(%r|^#{conf_dir}/dispatcher.farms.any|)
         end
       end
       it 'should include the site file' do
         shell("grep -- 'include.*dispatcher.site.any' #{conf_dir}/dispatcher.farms.any", :acceptable_exit_codes => 0)
       end
       it 'should include the second site file' do
-        shell("grep -- 'include.*dispatcher.anothersite.any' #{conf_dir}/dispatcher.farms.any", :acceptable_exit_codes => 0)
+        shell(
+          "grep -- 'include.*dispatcher.anothersite.any' #{conf_dir}/dispatcher.farms.any",
+          :acceptable_exit_codes => 0
+        )
       end
     end
     context 'dispatcher any - site' do
       it 'should exist' do
         shell("find #{apache_root}/ -name \"dispatcher.site.any\"") do |result|
-          expect(result.stdout).to match(%r{^#{conf_dir}/dispatcher.site.any})
+          expect(result.stdout).to match(%r|^#{conf_dir}/dispatcher.site.any|)
         end
       end
       it 'should use name for root node' do
         shell("grep -- '/site' #{conf_dir}/dispatcher.site.any", :acceptable_exit_codes => 0)
       end
       it 'should include invalidate_handler' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/invalidateHandler \"\\/path\\/to\\/handler\"/ p'") do |result|
-          expect(result.stdout).to match(%r{/invalidateHandler})
+        cmd = 'tr -d "\n\r" < '
+        cmd += "#{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/invalidateHandler \"\\/path\\/to\\/handler\"/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/invalidateHandler|)
         end
       end
       it 'should include stickyConnections' do
-        shell("tr -d \"\\n\\r\" < #{conf_dir}/dispatcher.site.any | sed -n '/\\/stickyConnections {\\s*\\/paths {\\s*\"\\/path\\/to\\/content\"\\s*\"\\/another\\/path\\/to\\/content\"/ p'") do |result|
-          expect(result.stdout).to match(%r{/stickyConnections})
+        cmd = 'tr -d "\n\r" < '
+        cmd += "#{conf_dir}/dispatcher.site.any | "
+        cmd += "sed -n '/\\/stickyConnections {\\s*\\/paths "
+        cmd += "{\\s*\"\\/path\\/to\\/content\"\\s*\"\\/another\\/path\\/to\\/content\"/ p'"
+        shell(cmd) do |result|
+          expect(result.stdout).to match(%r|/stickyConnections|)
         end
       end
     end
     context 'dispatcher any - anothersite' do
       it 'should exist' do
         shell("find #{apache_root}/ -name \"dispatcher.anothersite.any\"") do |result|
-          expect(result.stdout).to match(%r{^#{conf_dir}/dispatcher.anothersite.any})
+          expect(result.stdout).to match(%r|^#{conf_dir}/dispatcher.anothersite.any|)
         end
       end
       it 'should use name for root node' do
@@ -599,7 +682,7 @@ describe 'dispatcher acceptance' do
       apply_manifest_on(master, pp, :catch_failures => true)
       restart_puppetserver
       fqdn = on(master, 'facter fqdn').stdout.strip
-      fqdn = fqdn.chop if fqdn.end_with?(".")
+      fqdn = fqdn.chop if fqdn.end_with?('.')
       on(default, puppet("resource service #{service_name} ensure=stopped"))
       shell("rm #{log_root}/*", :accept_all_exit_codes => true)
       on(

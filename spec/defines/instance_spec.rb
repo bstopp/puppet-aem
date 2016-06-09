@@ -3,7 +3,7 @@ require 'spec_helper'
 # Tests for the resources created by the class.
 describe 'aem::instance', :type => :defines do
 
-  let :default_facts do
+  let(:default_facts) do
     {
       :kernel                     => 'Linux',
       :operatingsystem            => 'CentOS',
@@ -11,11 +11,11 @@ describe 'aem::instance', :type => :defines do
     }
   end
 
-  let :title do
+  let(:title) do
     'aem'
   end
 
-  let :default_params do
+  let(:default_params) do
     {
       :source => '/tmp/aem-quickstart.jar'
     }
@@ -23,10 +23,10 @@ describe 'aem::instance', :type => :defines do
 
   context 'default install' do
 
-    let :params do
+    let(:params) do
       default_params
     end
-    let :facts do
+    let(:facts) do
       default_facts
     end
 
@@ -91,6 +91,7 @@ describe 'aem::instance', :type => :defines do
       ).with(
         :ensure  => 'present',
         :home    => '/opt/aem',
+        :name    => 'aem',
         :snooze  => 10,
         :timeout => 600
       )
@@ -113,21 +114,21 @@ describe 'aem::instance', :type => :defines do
   describe 'osgi configs' do
 
     context 'single definition' do
-      let :cfg_props do
+      let(:cfg_props) do
         {
           'key'  => 'value',
           'key2' => 'value2'
         }
       end
-      let :params do
-        default_params.merge({
+      let(:params) do
+        default_params.merge(
           :osgi_configs => {
             'osgi.name' => { 'properties' => cfg_props }
           }
-        })
+        )
       end
 
-      let :facts do
+      let(:facts) do
         default_facts
       end
 
@@ -154,20 +155,20 @@ describe 'aem::instance', :type => :defines do
     end
 
     context 'multiple definitions' do
-      let :cfg_props1 do
+      let(:cfg_props1) do
         {
           'key' => 'value',
-          'key2' => 'value2',
+          'key2' => 'value2'
         }
       end
-      let :cfg_props2 do
+      let(:cfg_props2) do
         {
           'key3' => 'value3',
-          'key4' => 'value4',
+          'key4' => 'value4'
         }
       end
-      let :params do
-        default_params.merge({
+      let(:params) do
+        default_params.merge(
           :osgi_configs => [
             {
               'osgi.name' =>  { 'properties' => cfg_props1 }
@@ -176,10 +177,10 @@ describe 'aem::instance', :type => :defines do
               'osgi2.name' => { 'properties' => cfg_props2 }
             }
           ]
-        })
+        )
       end
 
-      let :facts do
+      let(:facts) do
         default_facts
       end
 
@@ -188,14 +189,25 @@ describe 'aem::instance', :type => :defines do
       it do
         is_expected.to contain_aem__config(
           'aem'
-        ).with(
+        ).only_with(
           :context_root   => nil,
           :debug_port     => nil,
           :group          => 'aem',
           :home           => '/opt/aem',
           :jvm_mem_opts   => '-Xmx1024m',
           :jvm_opts       => nil,
-          :osgi_configs   => [{ 'osgi.name' => { 'properties' => cfg_props1 }}, { 'osgi2.name' => { 'properties' => cfg_props2 } }],
+          :osgi_configs   => [
+            {
+              'osgi.name' => {
+                'properties' => cfg_props1
+              }
+            },
+            {
+              'osgi2.name' => {
+                'properties' => cfg_props2
+              }
+            }
+          ],
           :port           => 4502,
           :runmodes       => [],
           :sample_content => true,
@@ -209,10 +221,10 @@ describe 'aem::instance', :type => :defines do
 
   context 'default remove' do
 
-    let :params do
+    let(:params) do
       default_params.merge(:ensure => 'absent')
     end
-    let :facts do
+    let(:facts) do
       default_facts
     end
 

@@ -3,24 +3,24 @@ require 'spec_helper'
 # Tests for the env script management based on parameters
 describe 'aem::osgi::config', :type => :defines do
 
-  let :facts do
+  let(:facts) do
     {
       :kernel => 'Linux'
     }
   end
 
-  let :title do
+  let(:title) do
     'aem'
   end
 
-  let :default_params do
+  let(:default_params) do
     {
       :home           => '/opt/aem',
       :handle_missing => 'merge',
       :pid            => 'osgi.pid',
       :properties     => {
         'boolean' => false,
-        'long'    => 123456789,
+        'long'    => 123_456_789,
         'string'  => 'string',
         'array'   => ['an', 'array', 'of', 'values']
       },
@@ -34,14 +34,14 @@ describe 'aem::osgi::config', :type => :defines do
     context 'ensure' do
 
       context 'absent' do
-        let :params do
+        let(:params) do
           default_params.merge(:ensure => 'absent', :type => 'file')
         end
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let :params do
+        let(:params) do
           default_params.merge(:ensure => 'invalid')
         end
 
@@ -52,14 +52,14 @@ describe 'aem::osgi::config', :type => :defines do
     context 'handle_missing' do
 
       context 'merge' do
-        let:params do
+        let(:params) do
           default_params.merge(:type => 'console')
         end
         it { is_expected.to compile }
       end
 
       context 'remove' do
-        let :params do
+        let(:params) do
           default_params.merge(:handle_missing => 'remove', :type => 'console')
         end
 
@@ -67,7 +67,7 @@ describe 'aem::osgi::config', :type => :defines do
       end
 
       context 'invalid' do
-        let :params do
+        let(:params) do
           default_params.merge(:handle_missing => 'invalid', :type => 'console')
         end
 
@@ -78,7 +78,7 @@ describe 'aem::osgi::config', :type => :defines do
     context 'home' do
 
       context 'not specified' do
-        let :params do
+        let(:params) do
           tmp = default_params.clone
           tmp.delete(:home)
           tmp
@@ -87,7 +87,7 @@ describe 'aem::osgi::config', :type => :defines do
       end
 
       context 'not absolute' do
-        let :params do
+        let(:params) do
           default_params.merge(:home => 'not/absolute/path')
         end
         it { expect { is_expected.to compile }.to raise_error(/is not an absolute path/) }
@@ -97,7 +97,7 @@ describe 'aem::osgi::config', :type => :defines do
 
     context 'properties' do
       context 'not specifed' do
-        let :params do
+        let(:params) do
           tmp = default_params.clone
           tmp.delete(:properties)
           tmp
@@ -106,17 +106,17 @@ describe 'aem::osgi::config', :type => :defines do
       end
 
       context 'not a hash' do
-        let :params do
-          default_params.merge(:properties => ['this', 'is', 'not', 'a', 'hash'])
+        let(:params) do
+          default_params.merge(:properties => %w('this', 'is', 'not', 'a', 'hash'))
         end
         it { expect { is_expected.to compile }.to raise_error(/must be a Hash of values/) }
       end
     end
 
-    context 'console type' do 
+    context 'console type' do
       context 'username' do
         context 'not specified' do
-          let :params do
+          let(:params) do
             tmp = default_params.clone
             tmp[:type] = 'console'
             tmp.delete(:username)
@@ -128,7 +128,7 @@ describe 'aem::osgi::config', :type => :defines do
 
       context 'password' do
         context 'not specified' do
-          let :params do
+          let(:params) do
             tmp = default_params.clone
             tmp[:type] = 'console'
             tmp.delete(:password)
@@ -141,11 +141,10 @@ describe 'aem::osgi::config', :type => :defines do
     end
   end
 
-
   describe 'defines resource based on type' do
 
     context 'file type' do
-      let :params do
+      let(:params) do
         default_params.merge(:type => 'file')
       end
 
@@ -153,10 +152,11 @@ describe 'aem::osgi::config', :type => :defines do
         it do
           is_expected.to contain_aem__osgi__config__file(
             'aem'
-          ).with(
+          ).only_with(
             :ensure     => 'present',
             :group      => 'aem',
             :home       => '/opt/aem',
+            :name       => 'aem',
             :pid        => 'osgi.pid',
             :properties => params[:properties],
             :user       => 'aem'
@@ -165,17 +165,18 @@ describe 'aem::osgi::config', :type => :defines do
       end
 
       context 'ensure absent' do
-        let :params do
+        let(:params) do
           default_params.merge(:ensure => 'absent', :type => 'file')
         end
 
         it do
           is_expected.to contain_aem__osgi__config__file(
             'aem'
-          ).with(
+          ).only_with(
             :ensure     => 'absent',
             :group      => 'aem',
             :home       => '/opt/aem',
+            :name       => 'aem',
             :pid        => 'osgi.pid',
             :properties => params[:properties],
             :user       => 'aem'
@@ -186,7 +187,7 @@ describe 'aem::osgi::config', :type => :defines do
     end
 
     context 'console type' do
-      let :params do
+      let(:params) do
         default_params.merge(:type => 'console')
       end
 
@@ -195,41 +196,43 @@ describe 'aem::osgi::config', :type => :defines do
         it do
           is_expected.to contain_aem_osgi_config(
             'aem'
-          ).with(
-            :ensure        => 'present',
-            :configuration => params[:properties],
-            :home          => '/opt/aem',
-            :pid           => 'osgi.pid',
-            :password      => 'password',
-            :username      => 'username'
+          ).only_with(
+            :ensure         => 'present',
+            :configuration  => params[:properties],
+            :handle_missing => 'merge',
+            :home           => '/opt/aem',
+            :name           => 'aem',
+            :pid            => 'osgi.pid',
+            :password       => 'password',
+            :username       => 'username'
           )
         end
       end
 
       context 'ensure absent' do
-        let :params do
+        let(:params) do
           default_params.merge(:ensure => 'absent', :type => 'console')
         end
         it { is_expected.to compile }
         it do
           is_expected.to contain_aem_osgi_config(
             'aem'
-          ).with(
-            :ensure        => 'absent',
-            :configuration => params[:properties],
-            :home          => '/opt/aem',
-            :pid           => 'osgi.pid',
-            :password      => 'password',
-            :username      => 'username'
+          ).only_with(
+            :ensure         => 'absent',
+            :configuration  => params[:properties],
+            :handle_missing => 'merge',
+            :home           => '/opt/aem',
+            :name           => 'aem',
+            :pid            => 'osgi.pid',
+            :password       => 'password',
+            :username       => 'username'
           )
         end
       end
-
     end
 
-
     context 'invalid type' do
-      let :params do
+      let(:params) do
         default_params.merge(:type => 'invalid')
 
         it { is_expected.to raise_error(/not supported for type/) }

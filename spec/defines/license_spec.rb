@@ -3,17 +3,17 @@ require 'spec_helper'
 # Tests for the env script management based on parameters
 describe 'aem::license', :type => :defines do
 
-  let :facts do
+  let(:facts) do
     {
       :kernel => 'Linux'
     }
   end
 
-  let :title do
+  let(:title) do
     'aem'
   end
 
-  let :default_params do
+  let(:default_params) do
     {
       :customer    => 'adobe customer',
       :home        => '/opt/aem',
@@ -27,7 +27,7 @@ describe 'aem::license', :type => :defines do
     context 'ensure' do
 
       context 'absent' do
-        let :params do
+        let(:params) do
           default_params.merge(:ensure => 'absent')
         end
         it { is_expected.to compile }
@@ -35,7 +35,7 @@ describe 'aem::license', :type => :defines do
       end
 
       context 'invalid' do
-        let :params do
+        let(:params) do
           default_params.merge(:ensure => 'invalid')
         end
 
@@ -46,7 +46,7 @@ describe 'aem::license', :type => :defines do
     context 'home' do
 
       context 'not specified' do
-        let :params do
+        let(:params) do
           tmp = default_params.clone
           tmp.delete(:home)
           tmp
@@ -55,7 +55,7 @@ describe 'aem::license', :type => :defines do
       end
 
       context 'not absolute' do
-        let :params do
+        let(:params) do
           default_params.merge(:home => 'not/absolute/path')
         end
         it { expect { is_expected.to compile }.to raise_error(/is not an absolute path/) }
@@ -66,7 +66,7 @@ describe 'aem::license', :type => :defines do
     context 'license' do
 
       context 'not specified' do
-        let :params do
+        let(:params) do
           tmp = default_params.clone
           tmp.delete(:license_key)
           tmp
@@ -75,7 +75,7 @@ describe 'aem::license', :type => :defines do
       end
 
       context 'ensure absent but not specifed' do
-        let :params do
+        let(:params) do
           tmp = default_params.merge(:ensure => 'absent')
           tmp.delete(:license_key)
           tmp
@@ -88,7 +88,7 @@ describe 'aem::license', :type => :defines do
 
   describe 'creates the file' do
 
-    let :params do
+    let(:params) do
       default_params
     end
 
@@ -124,7 +124,7 @@ describe 'aem::license', :type => :defines do
       end
 
       context 'specified group' do
-        let :params do
+        let(:params) do
           default_params.merge(:group => 'vagrant')
         end
         it { is_expected.to contain_file('/opt/aem/license.properties').with_group('vagrant') }
@@ -154,7 +154,7 @@ describe 'aem::license', :type => :defines do
       end
 
       context 'specified owner' do
-        let :params do
+        let(:params) do
           default_params.merge(:user => 'vagrant')
         end
         it { is_expected.to contain_file('/opt/aem/license.properties').with_owner('vagrant') }
@@ -164,7 +164,7 @@ describe 'aem::license', :type => :defines do
     context 'version' do
 
       context 'not specified' do
-        let :params do
+        let(:params) do
           tmp = default_params.clone
           tmp.delete(:version)
           tmp
@@ -199,7 +199,7 @@ describe 'aem::license', :type => :defines do
   describe 'requires home directory' do
     let(:pre_condition) { 'file { "/opt/aem" : }' }
 
-    let :params do
+    let(:params) do
       default_params
     end
 

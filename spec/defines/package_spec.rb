@@ -3,7 +3,7 @@ require 'spec_helper'
 # Tests for the env script management based on parameters
 describe 'aem::package', :type => :defines do
 
-  let :default_facts do
+  let(:default_facts) do
     {
       :kernel                    => 'Linux',
       :operatingsystem           => 'CentOS',
@@ -11,11 +11,11 @@ describe 'aem::package', :type => :defines do
     }
   end
 
-  let :title do
+  let(:title) do
     'aem'
   end
 
-  let :default_params do
+  let(:default_params) do
     {
       :ensure      => 'present',
       :group       => 'aem',
@@ -27,10 +27,10 @@ describe 'aem::package', :type => :defines do
   end
 
   describe 'ensure present' do
-    let :facts do
+    let(:facts) do
       default_facts
     end
-    let :params do
+    let(:params) do
       default_params
     end
 
@@ -64,7 +64,7 @@ describe 'aem::package', :type => :defines do
 
     context 'manage_home == false' do
 
-      let :params do
+      let(:params) do
         default_params.merge(:manage_home => false)
       end
 
@@ -89,10 +89,10 @@ describe 'aem::package', :type => :defines do
   end
 
   describe 'ensure absent' do
-    let :facts do
+    let(:facts) do
       default_facts
     end
-    let :params do
+    let(:params) do
       default_params.merge(:ensure => 'absent')
     end
 
@@ -126,7 +126,7 @@ describe 'aem::package', :type => :defines do
       end
 
       context 'manage_home == false' do
-        let :params do
+        let(:params) do
           default_params.merge(:manage_home => false)
         end
         it { is_expected.to compile.with_all_deps }

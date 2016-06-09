@@ -3,24 +3,24 @@ require 'spec_helper'
 # Tests for parameters defaults and validation
 describe 'aem::dispatcher::farm', :type => :define do
 
-  let :pre_condition do
+  let(:pre_condition) do
     '
     class { "apache": default_vhost => false, default_mods => false, vhost_enable_dir => "/etc/apache2/sites-enabled"}
     class { aem::dispatcher : module_file => "/tmp/module.so" }
     '
   end
 
-  let :default_params do
+  let(:default_params) do
     {
       :docroot => '/path/to/docroot'
     }
   end
 
-  let :title do
+  let(:title) do
     'aem-site'
   end
 
-  let :default_facts do
+  let(:default_facts) do
     {
       :osfamily               => 'RedHat',
       :operatingsystemrelease => '7.1.1503',
@@ -28,22 +28,26 @@ describe 'aem::dispatcher::farm', :type => :define do
       :concat_basedir         => '/dne',
       :id                     => 'root',
       :kernel                 => 'Linux',
-      :path                   => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+      :path                   => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
     }
   end
 
   describe 'parameter validation' do
-    let :facts do default_facts end
+    let(:facts) { default_facts }
     context 'ensure' do
       context 'absent' do
-        let :params do
+        let(:params) do
           default_params.merge(:ensure => 'absent')
         end
         it { is_expected.to compile }
-        it { is_expected.to contain_file('/etc/httpd/conf.modules.d/dispatcher.aem-site.any').with('ensure' => 'absent') }
+        it do
+          is_expected.to contain_file(
+            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          ).with('ensure' => 'absent')
+        end
       end
       context 'invalid' do
-        let :params do
+        let(:params) do
           default_params.merge(:ensure => 'invalid')
         end
         it { expect { is_expected.to compile }.to raise_error(/not supported for ensure/) }
@@ -52,25 +56,25 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'allow_authorized' do
       context 'should accept 0' do
-        let :params do
+        let(:params) do
           default_params.merge(:allow_authorized => '0')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept 1' do
-        let :params do
+        let(:params) do
           default_params.merge(:allow_authorized => '1')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept any other positive value' do
-        let :params do
+        let(:params) do
           default_params.merge(:allow_authorized => '2')
         end
         it { expect { is_expected.to compile }.to raise_error(/smaller or equal/) }
       end
       context 'should not accept any negative value' do
-        let :params do
+        let(:params) do
           default_params.merge(:allow_authorized => '-1')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
@@ -79,35 +83,36 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'allowed_clients' do
       context 'should accept a single hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:allowed_clients => { 'glob' => '*', 'type' => 'allow' })
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept an array of hashes' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :allowed_clients => [
               { 'glob' => '*', 'type' => 'deny' },
               { 'glob' => 'localhost', 'type' => 'allow' }
-            ])
+            ]
+          )
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'require single value be a hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:allowed_clients => 'not a hash')
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'require arrays contain a hash' do
-        let :params do
-          default_params.merge(:allowed_clients  => ['not a hash', 'another non hash'])
+        let(:params) do
+          default_params.merge(:allowed_clients => ['not a hash', 'another non hash'])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'should require a value' do
-        let :params do
+        let(:params) do
           default_params.merge(:allowed_clients => nil)
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
@@ -116,14 +121,14 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'cache_headers' do
       context 'should accept a single value' do
-        let :params do
-          default_params.merge(:cache_headers => 'A-Cache-Header' )
+        let(:params) do
+          default_params.merge(:cache_headers => 'A-Cache-Header')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept an array of values' do
-        let :params do
-          default_params.merge(:cache_headers => ['A-Cache-Header', 'Another-Cache-Header'] )
+        let(:params) do
+          default_params.merge(:cache_headers => ['A-Cache-Header', 'Another-Cache-Header'])
         end
         it { is_expected.to compile.with_all_deps }
       end
@@ -131,35 +136,36 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'cache_rules' do
       context 'should accept a single hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:cache_rules => { 'glob' => '*', 'type' => 'deny' })
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept an array of hashes' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :cache_rules => [
               { 'glob' => '*', 'type' => 'deny' },
               { 'glob' => '*.html', 'type' => 'allow' }
-            ])
+            ]
+          )
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'require single value be a hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:cache_rules => 'not a hash')
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'require arrays contain a hash' do
-        let :params do
-          default_params.merge(:cache_rules  => ['not a hash', 'another non hash'])
+        let(:params) do
+          default_params.merge(:cache_rules => ['not a hash', 'another non hash'])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'should require a value' do
-        let :params do
+        let(:params) do
           default_params.merge(:cache_rules => nil)
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
@@ -168,25 +174,25 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'cache_ttl' do
       context 'should accept 0' do
-        let :params do
+        let(:params) do
           default_params.merge(:cache_ttl => '0')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept 1' do
-        let :params do
+        let(:params) do
           default_params.merge(:cache_ttl => '1')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept any other positive value' do
-        let :params do
+        let(:params) do
           default_params.merge(:cache_ttl => '2')
         end
         it { expect { is_expected.to compile }.to raise_error(/smaller or equal/) }
       end
       context 'should not accept any negative value' do
-        let :params do
+        let(:params) do
           default_params.merge(:cache_ttl => '-1')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
@@ -195,14 +201,14 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'client_headers' do
       context 'should accept a single value' do
-        let :params do
-          default_params.merge(:client_headers => 'A-Client-Header' )
+        let(:params) do
+          default_params.merge(:client_headers => 'A-Client-Header')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept an array of values' do
-        let :params do
-          default_params.merge(:client_headers => ['A-Client-Header', 'Another-Client-Header'] )
+        let(:params) do
+          default_params.merge(:client_headers => ['A-Client-Header', 'Another-Client-Header'])
         end
         it { is_expected.to compile.with_all_deps }
       end
@@ -210,7 +216,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'docroot' do
       context 'should be required' do
-        let :params do
+        let(:params) do
           tmp = default_params.clone
           tmp.delete(:docroot)
           tmp
@@ -218,7 +224,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { expect { is_expected.to compile }.to raise_error(/an absolute path/) }
       end
       context 'should be an absolute path' do
-        let :params do
+        let(:params) do
           default_params.merge(:docroot => 'not/absolute/path')
         end
         it { expect { is_expected.to compile }.to raise_error(/an absolute path/) }
@@ -227,25 +233,25 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'failover' do
       context 'should accept 0' do
-        let :params do
+        let(:params) do
           default_params.merge(:failover => '0')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept 1' do
-        let :params do
+        let(:params) do
           default_params.merge(:failover => '1')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept any other positive value' do
-        let :params do
+        let(:params) do
           default_params.merge(:failover => '2')
         end
         it { expect { is_expected.to compile }.to raise_error(/smaller or equal/) }
       end
       context 'should not accept any negative value' do
-        let :params do
+        let(:params) do
           default_params.merge(:failover => '-1')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
@@ -254,7 +260,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'filters' do
       context 'should accept a single hash' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :filters => { 'glob' => '* /content*', 'type' => 'allow' }
           )
@@ -262,7 +268,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept an array of hashes' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :filters => [
               { 'glob' => '*', 'type' => 'deny' },
@@ -273,19 +279,19 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { is_expected.to compile.with_all_deps }
       end
       context 'require single value be a hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:filters => 'not a hash')
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'require arrays contain a hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:filters => ['not a hash', 'another non hash'])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'should require a value' do
-        let :params do
+        let(:params) do
           default_params.merge(:filters => nil)
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
@@ -294,19 +300,19 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'grace_period' do
       context 'should not accept 0' do
-        let :params do
+        let(:params) do
           default_params.merge(:grace_period => '0')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
       context 'should accept positive value' do
-        let :params do
+        let(:params) do
           default_params.merge(:grace_period => '1')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept any negative value' do
-        let :params do
+        let(:params) do
           default_params.merge(:grace_period => '-1')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
@@ -315,13 +321,13 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'health_check_url' do
       context 'should accept a string' do
-        let :params do
+        let(:params) do
           default_params.merge(:health_check_url  => '/health/check/url.html')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept anything else' do
-        let :params do
+        let(:params) do
           default_params.merge(:health_check_url  => ['not', 'a', 'string'])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a string/i) }
@@ -330,7 +336,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'ignore_parameters' do
       context 'should accept a single hash' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :ignore_parameters => { 'glob' => 'param=*', 'type' => 'allow' }
           )
@@ -338,7 +344,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept an array of hashes' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :ignore_parameters => [
               { 'glob' => '*', 'type' => 'deny' },
@@ -349,19 +355,19 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { is_expected.to compile.with_all_deps }
       end
       context 'require single value be a hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:ignore_parameters => 'not a hash')
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'require arrays contain a hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:ignore_parameters => ['not a hash', 'another non hash'])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'should require a value' do
-        let :params do
+        let(:params) do
           default_params.merge(:ignore_parameters => nil)
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
@@ -370,7 +376,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'invalidate' do
       context 'should accept a single hash' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :invalidate => { 'glob' => '*.html', 'type' => 'allow' }
           )
@@ -379,7 +385,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       end
 
       context 'should accept a single hash' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :invalidate => { 'glob' => '*.html', 'type' => 'allow' }
           )
@@ -387,7 +393,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept an array of hashes' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :invalidate => [
               { 'glob' => '*', 'type' => 'deny' },
@@ -398,19 +404,19 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { is_expected.to compile.with_all_deps }
       end
       context 'require single value be a hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:invalidate => 'not a hash')
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'require arrays contain a hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:invalidate => ['not a hash', 'another non hash'])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'should require a value' do
-        let :params do
+        let(:params) do
           default_params.merge(:invalidate => nil)
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
@@ -419,7 +425,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'invalidate_handler' do
       context 'should be an absolute path' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :invalidate         => :undef,
             :invalidate_handler => 'not/absolute/path'
@@ -431,7 +437,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'invalidate and invalidate_handler' do
       context 'should not allow both' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :invalidate         => { 'glob' => '*.html', 'type' => 'allow' },
             :invalidate_handler => '/path/to/handler'
@@ -443,25 +449,25 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'propagate_synd_post' do
       context 'should accept 0' do
-        let :params do
+        let(:params) do
           default_params.merge(:propagate_synd_post => '0')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept 1' do
-        let :params do
+        let(:params) do
           default_params.merge(:propagate_synd_post => '1')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept any other positive value' do
-        let :params do
+        let(:params) do
           default_params.merge(:propagate_synd_post => '2')
         end
         it { expect { is_expected.to compile }.to raise_error(/smaller or equal/) }
       end
       context 'should not accept any negative value' do
-        let :params do
+        let(:params) do
           default_params.merge(:propagate_synd_post => '-1')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
@@ -470,7 +476,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'renders' do
       context 'should accept a single hash' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :renders => { 'hostname' => 'publish.renderer.com', 'port' => '8080' }
           )
@@ -478,7 +484,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept an array of hashes' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :renders => [
               { 'hostname' => 'publish.renderer.com', 'port' => '8080' },
@@ -489,13 +495,13 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { is_expected.to compile.with_all_deps }
       end
       context 'require single value be a hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:renders => 'not a hash')
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'require arrays contain a hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:renders => ['not a hash', 'another non hash'])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
@@ -504,19 +510,19 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'retries' do
       context 'should not accept 0' do
-        let :params do
+        let(:params) do
           default_params.merge(:retries => '0')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
       context 'should accept positive value' do
-        let :params do
+        let(:params) do
           default_params.merge(:retries => '1')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept any negative value' do
-        let :params do
+        let(:params) do
           default_params.merge(:retries => '-1')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
@@ -525,19 +531,19 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'retry_delay' do
       context 'should not accept 0' do
-        let :params do
+        let(:params) do
           default_params.merge(:retry_delay => '0')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
       context 'should accept positive value' do
-        let :params do
+        let(:params) do
           default_params.merge(:retry_delay => '1')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept any negative value' do
-        let :params do
+        let(:params) do
           default_params.merge(:retry_delay => '-1')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
@@ -546,25 +552,25 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'serve_stale' do
       context 'should accept 0' do
-        let :params do
+        let(:params) do
           default_params.merge(:serve_stale => '0')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept 1' do
-        let :params do
+        let(:params) do
           default_params.merge(:serve_stale => '1')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept any other positive value' do
-        let :params do
+        let(:params) do
           default_params.merge(:serve_stale => '2')
         end
         it { expect { is_expected.to compile }.to raise_error(/smaller or equal/) }
       end
       context 'should not accept any negative value' do
-        let :params do
+        let(:params) do
           default_params.merge(:serve_stale => '-1')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
@@ -573,25 +579,25 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'session_management' do
       context 'should accept a hash' do
-        let :params do
-          default_params.merge(:session_management => { 'directory' => '/directory/to/cache' } )
+        let(:params) do
+          default_params.merge(:session_management => { 'directory' => '/directory/to/cache' })
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept a string' do
-        let :params do
-          default_params.merge(:session_management => 'not a hash' )
+        let(:params) do
+          default_params.merge(:session_management => 'not a hash')
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'should not accept an array' do
-        let :params do
-          default_params.merge(:session_management => ['array', 'of', 'values'] )
+        let(:params) do
+          default_params.merge(:session_management => ['array', 'of', 'values'])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'mutually exclusive with allow authorized' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :session_management => ['array', 'of', 'values'],
             :allow_authorized => 1
@@ -600,7 +606,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { expect { is_expected.to compile }.to raise_error(/mutually exclusive/i) }
       end
       context 'should require directory key' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :session_management => { 'not_directory' => 'a value' }
           )
@@ -608,7 +614,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { expect { is_expected.to compile }.to raise_error(/directory is not specified/i) }
       end
       context 'should require directory key to be absolute path' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :session_management => { 'directory' => 'not/absolute/path' }
           )
@@ -616,7 +622,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { expect { is_expected.to compile }.to raise_error(/not an absolute path/i) }
       end
       context 'should accept directory with absolute path' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :session_management => { 'directory' => '/an/absolute/path' }
           )
@@ -625,7 +631,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       end
       context 'encode' do
         context 'should accept md5' do
-          let :params do
+          let(:params) do
             default_params.merge(
               :session_management => {
                 'directory' => '/path',
@@ -636,7 +642,7 @@ describe 'aem::dispatcher::farm', :type => :define do
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept hex' do
-          let :params do
+          let(:params) do
             default_params.merge(
               :session_management => {
                 'directory' => '/path',
@@ -647,7 +653,7 @@ describe 'aem::dispatcher::farm', :type => :define do
           it { is_expected.to compile.with_all_deps }
         end
         context 'should not accept any other value' do
-          let :params do
+          let(:params) do
             default_params.merge(
               :session_management => {
                 'directory' => '/path',
@@ -660,7 +666,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       end
       context 'header' do
         context 'should accept a value' do
-          let :params do
+          let(:params) do
             default_params.merge(
               :session_management => {
                 'directory' => '/path',
@@ -673,7 +679,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       end
       context 'timeout' do
         context 'should accept any integer' do
-          let :params do
+          let(:params) do
             default_params.merge(
               :session_management => {
                 'directory' => '/path',
@@ -684,7 +690,7 @@ describe 'aem::dispatcher::farm', :type => :define do
           it { is_expected.to compile.with_all_deps }
         end
         context 'should not accept any negative value' do
-          let :params do
+          let(:params) do
             default_params.merge(
               :session_management => {
                 'directory' => '/path',
@@ -695,7 +701,7 @@ describe 'aem::dispatcher::farm', :type => :define do
           it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
         end
         context 'should not accept anything else' do
-          let :params do
+          let(:params) do
             default_params.merge(
               :session_management => {
                 'directory' => '/path',
@@ -710,8 +716,8 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'stat_file' do
       context 'should be an absolute path' do
-        let :params do
-          default_params.merge(:stat_file  => 'not/absolute/path')
+        let(:params) do
+          default_params.merge(:stat_file => 'not/absolute/path')
         end
         it { expect { is_expected.to compile }.to raise_error(/an absolute path/) }
       end
@@ -719,25 +725,25 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'stat_files_level' do
       context 'should accept 0' do
-        let :params do
+        let(:params) do
           default_params.merge(:stat_files_level => 0)
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept positive' do
-        let :params do
+        let(:params) do
           default_params.merge(:stat_files_level => 4)
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept any negative value' do
-        let :params do
+        let(:params) do
           default_params.merge(:stat_files_level => -1)
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
       context 'allows blank' do
-        let :params do
+        let(:params) do
           tmp = default_params.clone
           tmp.delete(:stat_files_level)
           tmp
@@ -748,7 +754,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'statistics' do
       context 'should accept a single hash' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :statistics => { 'glob' => '*.html', 'category' => 'html' }
           )
@@ -756,7 +762,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept an array of hashes' do
-        let :params do
+        let(:params) do
           default_params.merge(
             :statistics => [
               { 'glob' => '*.html', 'category' => 'html' },
@@ -767,13 +773,13 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { is_expected.to compile.with_all_deps }
       end
       context 'require single value be a hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:statistics => 'not a hash')
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'require arrays contain a hash' do
-        let :params do
+        let(:params) do
           default_params.merge(:statistics => ['not a hash', 'another non hash'])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
@@ -782,26 +788,26 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'sticky_connections' do
       context 'should accept a single value' do
-        let :params do
-          default_params.merge(:sticky_connections => '/path/to/content' )
+        let(:params) do
+          default_params.merge(:sticky_connections => '/path/to/content')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept an array of values' do
-        let :params do
-          default_params.merge(:sticky_connections => ['/content/path', '/content/dam/path'] )
+        let(:params) do
+          default_params.merge(:sticky_connections => ['/content/path', '/content/dam/path'])
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should only be strings - single value' do
-        let :params do
-          default_params.merge(:sticky_connections => { 'not' => 'string' } )
+        let(:params) do
+          default_params.merge(:sticky_connections => { 'not' => 'string' })
         end
         it { expect { is_expected.to compile }.to raise_error(/not a string/i) }
       end
       context 'should only be strings - array value' do
-        let :params do
-          default_params.merge(:sticky_connections => [{ 'not' => 'string' }, { 'another' => 'not string' }] )
+        let(:params) do
+          default_params.merge(:sticky_connections => [{ 'not' => 'string' }, { 'another' => 'not string' }])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a string/i) }
       end
@@ -809,19 +815,19 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'unavailable_penalty' do
       context 'should not accept 0' do
-        let :params do
+        let(:params) do
           default_params.merge(:unavailable_penalty => '0')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
       context 'should accept positive value' do
-        let :params do
+        let(:params) do
           default_params.merge(:unavailable_penalty => '1')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept any negative value' do
-        let :params do
+        let(:params) do
           default_params.merge(:unavailable_penalty => '-1')
         end
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
@@ -830,26 +836,26 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'vanity urls' do
       context 'should accept a hash' do
-        let :params do
-          default_params.merge(:vanity_urls => { 'file' => '/path/to/cache', 'delay' => 600 } )
+        let(:params) do
+          default_params.merge(:vanity_urls => { 'file' => '/path/to/cache', 'delay' => 600 })
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should not accept a string' do
-        let :params do
-          default_params.merge(:vanity_urls => 'not a hash' )
+        let(:params) do
+          default_params.merge(:vanity_urls => 'not a hash')
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'should not accept an array' do
-        let :params do
-          default_params.merge(:vanity_urls => ['array', 'of', 'values'] )
+        let(:params) do
+          default_params.merge(:vanity_urls => ['array', 'of', 'values'])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'file param' do
         context 'should be require' do
-          let :params do
+          let(:params) do
             default_params.merge(
               :vanity_urls => { 'not_file' => 'a value' }
             )
@@ -857,7 +863,7 @@ describe 'aem::dispatcher::farm', :type => :define do
           it { expect { is_expected.to compile }.to raise_error(/cache file is not specified/i) }
         end
         context 'should be an absolute path' do
-          let :params do
+          let(:params) do
             default_params.merge(
               :vanity_urls => { 'file' => 'not/absolute/path' }
             )
@@ -865,7 +871,7 @@ describe 'aem::dispatcher::farm', :type => :define do
           it { expect { is_expected.to compile }.to raise_error(/not an absolute path/i) }
         end
         context 'should accept an absolute path' do
-          let :params do
+          let(:params) do
             default_params.merge(
               :vanity_urls => { 'file' => '/an/absolute/path', 'delay' => 1000 }
             )
@@ -875,14 +881,14 @@ describe 'aem::dispatcher::farm', :type => :define do
       end
       context 'delay' do
         context 'should accept any integer' do
-          let :params do
-            default_params.merge( :vanity_urls => { 'file' => '/path', 'delay' => 500 } )
+          let(:params) do
+            default_params.merge(:vanity_urls => { 'file' => '/path', 'delay' => 500 })
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should not accept any negative value' do
-          let :params do
-            default_params.merge( :vanity_urls => { 'file' => '/path', 'delay' => -1 } )
+          let(:params) do
+            default_params.merge(:vanity_urls => { 'file' => '/path', 'delay' => -1 })
           end
           it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
         end
@@ -891,14 +897,14 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'virtualhosts' do
       context 'should accept a single value' do
-        let :params do
-          default_params.merge(:virtualhosts => 'www.domainname.com' )
+        let(:params) do
+          default_params.merge(:virtualhosts => 'www.domainname.com')
         end
         it { is_expected.to compile.with_all_deps }
       end
       context 'should accept an array of values' do
-        let :params do
-          default_params.merge(:virtualhosts => ['www.domainname1.com', 'www.domainname2.com'] )
+        let(:params) do
+          default_params.merge(:virtualhosts => ['www.domainname1.com', 'www.domainname2.com'])
         end
         it { is_expected.to compile.with_all_deps }
       end
