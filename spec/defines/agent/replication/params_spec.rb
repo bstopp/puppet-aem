@@ -195,9 +195,19 @@ describe 'aem::agent::replication', :type => :defines do
     end
 
     context 'name' do
+      context 'has a hyphen' do
+        let(:params) { default_params.merge(:name => 'has-hyphen') }
+        it { is_expected.to compile }
+      end
+
+      context 'has an underscore' do
+        let(:params) { default_params.merge(:name => 'has_underscore') }
+        it { is_expected.to compile }
+      end
+
       context 'is not valid' do
         let(:params) { default_params.merge(:name => 'has a space') }
-        it { is_expected.to raise_error(/only letters and numbers/) }
+        it { is_expected.to raise_error(/letters, numbers, underscores, or hyphens/) }
       end
     end
 

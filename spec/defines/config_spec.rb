@@ -159,7 +159,7 @@ describe 'aem::config', :type => :defines do
 
   end
 
-  describe 'file defintions' do
+  describe 'file definitions' do
     let(:facts) do
       default_facts
     end

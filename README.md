@@ -8,6 +8,7 @@
 [Reference]: #reference
 [Public Classes]: #public-classes
 [Public Defines]: #public-defines
+[Public Types]: #public-types
 [Private Defines]: #private-defines
 [Private Types]: #private-types
 
@@ -16,8 +17,7 @@
 
 [Development]: #development
 
-[wiki]: https://github.com/bstopp/puppet-aem/wiki
-
+[wiki]: docs/README.md
 
 [Adobe]: http://www.adobe.com
 [Adobe Experience Manager]: http://www.adobe.com/marketing-cloud/enterprise-content-management.html
@@ -47,9 +47,10 @@
 1. [Setup - The basics of getting started with AEM module][Setup]
   * [Setup Requirements][]
   * [Beginning with AEM][]
-1. [Reference - AEM Module type and providers][Reference]
+1. [Reference - AEM Module Classes, Defines & Types][Reference]
   * [Public Classes][]
   * [Public Defines][]
+  * [Public Types][]
   * [Private Defines][]
   * [Private Types][]
 1. [Limitations - OS compatibility, etc.][Limitations]
@@ -83,19 +84,25 @@ aem::instance { 'aem' :
 }
 ~~~
 
-For more options and detailed explanations, please see the [Puppet AEM Wiki][wiki]
-
+For more options and detailed explanations, please see the [Puppet AEM Wiki][wiki].
 
 ## Reference
 
 - **[Public Classes][]**
   - [Class: aem::dispatcher](#class-aemdispatcher)
 - **[Public Defines][]**
+  - [Define: aem::agent::replication](#define-aemagentreplication)
+  - [Define: aem::agent::replication::flush](#define-aemagentreplicationflush)
+  - [Define: aem::agent::replication::publish](#define-aemagentreplicationpublish)
+  - [Define: aem::agent::replication::reverse](#define-aemagentreplicationreverse)
+  - [Define: aem::agent::replication::static](#define-aemagentreplicationstatic)
   - [Define: aem::dispatcher::farm](#define-aemdispatcherfarm)
   - [Define: aem::instance](#define-aeminstance)
   - [Define: aem::license](#define-aemlicense)
   - [Define: aem::osgi::config](#define-aemosgiconfig)
   - [Define: aem::service](#define-aemservice)
+- **[Public Types][]**
+  - [Type: Aem_Sling_Resource](#type-aem_sling_resource)
 - **[Private Defines][]**
   - [Define: aem::config](#define-aemconfig)
   - [Define: aem::osgi::config::file](#define-aemosgiconfigfile)
@@ -113,7 +120,7 @@ Installs and configures a specified AEM Dispatcher module. For more details and 
 **Note:** Currently only Apache HTTP is supported by this module.
 
 #### `ensure`
-Optional. Adds or removes the dispatcher configuration. Valid options: `present` or `absent`. Default: `present`.
+Optional. Changes the state of the dispatcher configuration. Valid options: `present` or `absent`. Default: `present`.
 
 #### `decline_root`
 Optional. Sets the *DispatcherDelcineRoot* value for the dispatcher configuration. Valid options: `0`, `1`, `off` or `on`. Default: `off`.
@@ -147,12 +154,434 @@ Optional. Sets the user for for file ownership. Valid options: any valid user. D
 
 ### Public Defines
 
+#### Define: `aem::agent::replication`
+
+ Creates a replication Agent. Provides support for all AEM Replication agent options. For more details and examples, see the [wiki]. For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
+
+##### `name`
+Namevar. Required. Specifies the name of this replication agent. The name must only contain letters and numbers. This will be the node name when it is created.
+
+##### `title`
+Required. The title of the replication agent. This can be different than the `name`.
+
+##### `ensure`
+Optional. Changes the state of the replication agent. Valid options: `present` or `absent`. Default: `present`.
+
+#### `agent_user`
+Optional. The AEM/System user which is used to perform the replication actions.
+
+##### `batch_enabled`
+Optional. Sets the replication batch enabled flag. Valid options: `true` or `false`.
+
+##### `batch_max_wait`
+Optional. Sets the replication batch wait time. Valid options: any positive integer.
+
+##### `batch_trigger_size`
+Optional. Sets the replication batch trigger size. Valid options: any positive integer.
+
+##### `description`
+Optional. Set's the description for the agent. The default value is always part of the value. Default: _\*\*Managed by Puppet. Any changes made will be overwritten**_
+
+##### `enabled`
+Optional. Sets whether or not the agent is enabled. Valid options: `true` or `false`. Default: `true`.
+
+##### `force_passwords`
+Optional. Set's whether or not to overwrite the current password values. For more details, see the Sling Resource type's _force_paswords_ parameter. Password properties for this type are `proxy_password` and `transfport_pasword` . Valid options: `true` or `false`. Default: `false`.
+
+##### `home`
+Required. Sets the directory in which AEM exists. Valid options: any absolute path.
+
+##### `log_level`
+Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Deafult: `info`.
+
+##### `password`
+Required. The password for authenticating to AEM.
+
+##### `protocol_close_conn`
+Optional. Sets the connection close flag . Valid options: `true` or `false`.
+
+##### `protocol_conn_timeout`
+Optional. Sets the connection timeout. Valid options: any positive integer.
+
+##### `protocol_http_headers`
+Optional. Sets the list of additional headers for the HTTP Request. Valid options: String or Array of Strings.
+
+##### `protocol_http_method`
+Optional. Sets the HTTP method to use for the replication request.
+
+##### `protocol_interface`
+Optional. Sets the network interface to use for the replication request.
+
+##### `protocol_sock_timeout`
+Optional. Sets the socket timeout. Valid options: any positive integer.
+
+##### `protocol_version`
+Optional. Sets the HTTP version (e.g. 1.1) to use for the replication request.
+
+##### `proxy_host`
+Optional. Sets the host for a proxy connection.
+
+##### `proxy_ntlm_domain`
+Optional. Sets the NLTM Domain for a proxy connection.
+
+##### `proxy_ntlm_host`
+Optional. Sets the NLTM host for a proxy connection.
+
+##### `proxy_password`
+Optional. Sets the password for a proxy connection.
+
+##### `proxy_port`
+Optional. Sets the port for a proxy connection. Valid options: any positive integer.
+
+##### `proxy_user`
+Optional. Sets the user for a proxy connection.
+
+##### `resource_type`
+Required. The Sling resource type for this replication agent.
+
+##### `retry_delay`
+Optional. Sets the retry delay. Valid options: any positive integer.
+
+##### `reverse`
+Optional. Sets whether or not this is a reverse replication agent. Valid options: `true` or `false`.
+
+##### `runmode`
+Required. Sets the runmode for persisting the Replication agent.
+
+##### `serialize_type`
+Required if `ensure` is _present_. Sets the serialization type.
+
+##### `static_directory`
+Optional. Sets the directory for the output of a static replication agent. Valid options: any absolute path.
+
+##### `static_definition`
+Optional. Sets the static replication agent's configuration.
+
+##### `template`
+Required if `ensure` is _present_. Sets the template resource for this replication agent.
+
+##### `timeout`
+Optional. Sets the timeout, in seconds, when waiting for a response. Valid options: any positive integer. Default: `60`.
+
+##### `trans_allow_exp_cert`
+Optional. Sets whether or not to allow expired certs on the connection. Valid options: `true` or `false`.
+
+##### `trans_ntlm_domain`
+Optional. Sets the transport NLTM domain.
+
+##### `trans_ntlm_host`
+Optional. Sets the transport NLTM host.
+
+##### `trans_password`
+Optional. Sets the password for authentication to the remote system.
+
+##### `trans_ssl`
+Optional. Sets whether or to enable SSL on the transport. Valid options: `true` or `false`.
+
+##### `trans_uri`
+Opional. Sets the URI for the remote system.
+
+##### `trans_user`
+Optional. Sets the user for authentication to the remote system.
+
+##### `trigger_ignore_def`
+Optional. Sets the _Ignore default_ flag. Valid options: `true` or `false`.
+
+##### `trigger_no_status`
+Optional. Sets the _No Status Update_ flag. Valid options: `true` or `false`.
+
+##### `trigger_no_version`
+Optional. Sets the _No Versioning_ flag. Valid options: `true` or `false`.
+
+##### `trigger_on_dist`
+Optional. Sets the _On Distribute_ flag. Valid options: `true` or `false`.
+
+##### `trigger_on_mod`
+Optional. Sets the _On Modification_ flag. Valid options: `true` or `false`.
+
+##### `trigger_on_receive`
+Optional. Sets the _On Receive_ flag. Valid options: `true` or `false`.
+
+##### `trigger_onoff_time`
+Optional. Sets the _On/Off Time reached_ flag. Valid options: `true` or `false`.
+
+##### `username`
+Required. The username for authenticating to AEM.
+
+#### Define: `aem::agent::replication::flush`
+
+ Creates a _Flush_ replication agent. This definition has a limited property set based on the parameters typically required for this type of agent. For more details and examples, see the [wiki]. For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
+
+##### `name`
+Namevar. Required. Specifies the name of this replication agent. The name must only contain letters and numbers. This will be the node name when it is created.
+
+##### `title`
+Required. The title of the replication agent. This can be different than the `name`.
+
+##### `ensure`
+Optional. Changes the state of the replication agent. Valid options: `present` or `absent`. Default: `present`.
+
+#### `agent_user`
+Optional. The AEM/System user which is used to perform the replication actions.
+
+##### `description`
+Optional. Set's the description for the agent. The default value is always part of the value. Default: _\*\*Managed by Puppet. Any changes made will be overwritten**_
+
+##### `enabled`
+Optional. Sets whether or not the agent is enabled. Valid options: `true` or `false`. Default: `true`.
+
+##### `force_passwords`
+Optional. Set's whether or not to overwrite the current password values. For more details, see the Sling Resource type's _force_paswords_ parameter. Password properties for this type are `proxy_password` and `transfport_pasword` . Valid options: `true` or `false`. Default: `false`.
+
+##### `home`
+Required. Sets the directory in which AEM exists. Valid options: any absolute path.
+
+##### `log_level`
+Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Deafult: `info`.
+
+##### `password`
+Required. The password for authenticating to AEM.
+
+##### `protocol_http_headers`
+Optional. Sets the list of additional headers for the HTTP Request. Valid options: String or Array of Strings. Default: `[ 'CQ-Action:{action}', 'CQ-Handle:{path}', 'CQ-Path: {path}' ]`.
+
+##### `protocol_http_method`
+Optional. Sets the HTTP method to use for the replication request. Default: `GET`
+
+##### `runmode`
+Required. Sets the runmode for persisting the Replication agent.
+
+##### `timeout`
+Optional. Sets the timeout, in seconds, when waiting for a response. Valid options: any positive integer. Default: `60`.
+
+##### `trans_allow_exp_cert`
+Optional. Sets whether or not to allow expired certs on the connection. Valid options: `true` or `false`.
+
+##### `trans_password`
+Optional. Sets the password for authentication to the remote system.
+
+##### `trans_ssl`
+Optional. Sets whether or to enable SSL on the transport. Valid options: `true` or `false`.
+
+##### `trans_uri`
+Opional. Sets the URI for the remote system.
+
+##### `trans_user`
+Optional. Sets the user for authentication to the remote system.
+
+##### `trigger_ignore_def`
+Optional. Sets the _Ignore default_ flag. Valid options: `true` or `false`.
+
+##### `trigger_no_status`
+Optional. Sets the _No Status Update_ flag. Valid options: `true` or `false`.
+
+##### `trigger_no_version`
+Optional. Sets the _No Versioning_ flag. Valid options: `true` or `false`.
+
+##### `trigger_on_dist`
+Optional. Sets the _On Distribute_ flag. Valid options: `true` or `false`.
+
+##### `trigger_on_mod`
+Optional. Sets the _On Modification_ flag. Valid options: `true` or `false`.
+
+##### `trigger_on_receive`
+Optional. Sets the _On Receive_ flag. Valid options: `true` or `false`.
+
+##### `trigger_onoff_time`
+Optional. Sets the _On/Off Time reached_ flag. Valid options: `true` or `false`.
+
+##### `username`
+Required. The username for authenticating to AEM.
+
+#### Define: `aem::agent::replication::publish`
+
+ Creates a _Publish_ replication agent. This definition has a limited property set based on the parameters typically required for this type of agent. For more details and examples, see the [wiki]. For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
+
+##### `name`
+Namevar. Required. Specifies the name of this replication agent. The name must only contain letters and numbers. This will be the node name when it is created.
+
+##### `title`
+Required. The title of the replication agent. This can be different than the `name`.
+
+##### `ensure`
+Optional. Changes the state of the replication agent. Valid options: `present` or `absent`. Default: `present`.
+
+#### `agent_user`
+Optional. The AEM/System user which is used to perform the replication actions.
+
+##### `description`
+Optional. Set's the description for the agent. The default value is always part of the value. Default: _\*\*Managed by Puppet. Any changes made will be overwritten**_
+
+##### `enabled`
+Optional. Sets whether or not the agent is enabled. Valid options: `true` or `false`. Default: `true`.
+
+##### `force_passwords`
+Optional. Set's whether or not to overwrite the current password values. For more details, see the Sling Resource type's _force_paswords_ parameter. Password properties for this type are `proxy_password` and `transfport_pasword` . Valid options: `true` or `false`. Default: `false`.
+
+##### `home`
+Required. Sets the directory in which AEM exists. Valid options: any absolute path.
+
+##### `log_level`
+Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Deafult: `info`.
+
+##### `password`
+Required. The password for authenticating to AEM.
+
+##### `runmode`
+Required. Sets the runmode for persisting the Replication agent.
+
+##### `timeout`
+Optional. Sets the timeout, in seconds, when waiting for a response. Valid options: any positive integer. Default: `60`.
+
+##### `trans_allow_exp_cert`
+Optional. Sets whether or not to allow expired certs on the connection. Valid options: `true` or `false`.
+
+##### `trans_password`
+Optional. Sets the password for authentication to the remote system.
+
+##### `trans_ssl`
+Optional. Sets whether or to enable SSL on the transport. Valid options: `true` or `false`.
+
+##### `trans_uri`
+Opional. Sets the URI for the remote system.
+
+##### `trans_user`
+Optional. Sets the user for authentication to the remote system.
+
+##### `trigger_ignore_def`
+Optional. Sets the _Ignore default_ flag. Valid options: `true` or `false`.
+
+##### `trigger_no_status`
+Optional. Sets the _No Status Update_ flag. Valid options: `true` or `false`.
+
+##### `trigger_no_version`
+Optional. Sets the _No Versioning_ flag. Valid options: `true` or `false`.
+
+##### `trigger_on_dist`
+Optional. Sets the _On Distribute_ flag. Valid options: `true` or `false`.
+
+##### `trigger_on_mod`
+Optional. Sets the _On Modification_ flag. Valid options: `true` or `false`.
+
+##### `trigger_on_receive`
+Optional. Sets the _On Receive_ flag. Valid options: `true` or `false`.
+
+##### `trigger_onoff_time`
+Optional. Sets the _On/Off Time reached_ flag. Valid options: `true` or `false`.
+
+##### `username`
+Required. The username for authenticating to AEM.
+
+#### Define: `aem::agent::replication::reverse`
+
+ Creates a _Reverse_ replication agent. This definition has a limited property set based on the parameters typically required for this type of agent. For more details and examples, see the [wiki]. For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
+
+##### `name`
+Namevar. Required. Specifies the name of this replication agent. The name must only contain letters and numbers. This will be the node name when it is created.
+
+##### `title`
+Required. The title of the replication agent. This can be different than the `name`.
+
+##### `ensure`
+Optional. Changes the state of the replication agent. Valid options: `present` or `absent`. Default: `present`.
+
+#### `agent_user`
+Optional. The AEM/System user which is used to perform the replication actions.
+
+##### `description`
+Optional. Set's the description for the agent. The default value is always part of the value. Default: _\*\*Managed by Puppet. Any changes made will be overwritten**_
+
+##### `enabled`
+Optional. Sets whether or not the agent is enabled. Valid options: `true` or `false`. Default: `true`.
+
+##### `force_passwords`
+Optional. Set's whether or not to overwrite the current password values. For more details, see the Sling Resource type's _force_paswords_ parameter. Password properties for this type are `proxy_password` and `transfport_pasword` . Valid options: `true` or `false`. Default: `false`.
+
+##### `home`
+Required. Sets the directory in which AEM exists. Valid options: any absolute path.
+
+##### `log_level`
+Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Deafult: `info`.
+
+##### `password`
+Required. The password for authenticating to AEM.
+
+##### `runmode`
+Required. Sets the runmode for persisting the Replication agent.
+
+##### `timeout`
+Optional. Sets the timeout, in seconds, when waiting for a response. Valid options: any positive integer. Default: `60`.
+
+##### `trans_allow_exp_cert`
+Optional. Sets whether or not to allow expired certs on the connection. Valid options: `true` or `false`.
+
+##### `trans_password`
+Optional. Sets the password for authentication to the remote system.
+
+##### `trans_ssl`
+Optional. Sets whether or to enable SSL on the transport. Valid options: `true` or `false`.
+
+##### `trans_uri`
+Opional. Sets the URI for the remote system.
+
+##### `trans_user`
+Optional. Sets the user for authentication to the remote system.
+
+##### `username`
+Required. The username for authenticating to AEM.
+
+#### Define: `aem::agent::replication::static`
+
+ Creates a _Static_ replication agent. This definition has a limited property set based on the parameters typically required for this type of agent. For more details and examples, see the [wiki]. For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
+
+##### `name`
+Namevar. Required. Specifies the name of this replication agent. The name must only contain letters and numbers. This will be the node name when it is created.
+
+##### `title`
+Required. The title of the replication agent. This can be different than the `name`.
+
+##### `ensure`
+Required. Changes the state of the replication agent. Valid options: `present` or `absent`. Default: `present`.
+
+#### `agent_user`
+Optional. The AEM/System user which is used to perform the replication actions.
+
+##### `definition`
+Optional. Sets the static replication agent's configuration.
+
+##### `description`
+Optional. Set's the description for the agent. The default value is always part of the value. Default: _\*\*Managed by Puppet. Any changes made will be overwritten**_
+
+##### `directory`
+Optional. Sets the directory for the output of a static replication agent. Valid options: any absolute path.
+
+##### `enabled`
+Optional. Sets whether or not the agent is enabled. Valid options: `true` or `false`. Default: `true`.
+
+##### `home`
+Required. Sets the directory in which AEM exists. Valid options: any absolute path.
+
+##### `log_level`
+Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Deafult: `info`.
+
+##### `password`
+Required. The password for authenticating to AEM.
+
+##### `retry_delay`
+Optional. Sets the retry delay. Valid options: any positive integer.
+
+##### `runmode`
+Required. Sets the runmode for persisting the Replication agent.
+
+##### `username`
+Required. The username for authenticating to AEM.
+
 #### Define: `aem::dispatcher::farm`
 
 Configures a single farm instance within the Dispatcher. For more details and examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20Dispatcher%20Farm)
 
 ##### `ensure`
-Optional. Adds or removes the dispatcher farm configuration. Valid options: `present` or `absent`. Default: `present`.
+Optional. Changes the state of this dispatcher farm configuration. Valid options: `present` or `absent`. Default: `present`.
 
 ##### `allow_authorized`
 Optional. Sets the cache */allowAuthorized* rule. Valid options: `0` or `1`.
@@ -418,7 +847,7 @@ Required if **type** == `console`. Sets the user for accessing the OSGI console.
 
 #### Define: `aem::service`
 
-Manages the AEM daemon. Creating a defintion for this is not necesary unless the `aem::instance`'s *manage_service* is **false**. For examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20Service)
+Manages the AEM daemon. Creating a definition for this is not necesary unless the `aem::instance`'s *manage_service* is **false**. For examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20Service)
 
 **Parameters within `aem::service`:**
 
@@ -443,6 +872,53 @@ Optional. Changes the state of the service on the system, defining whether or no
 
 ##### `user`
 Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `aem`.
+
+### Public Types
+
+#### Type: `Aem_Sling_Resource'
+
+##### `name`
+Namevar. Required. The name of this resource. A unique name or the fully qualified path to the resource in the repository.
+
+##### `ensure`
+Required. Changes the state of the Sling resource definition. Valid options: `present` or `absent`.
+
+##### `force_passwords`
+Optiona. Flag to specify whether or not to update password properties, they are submitted regardless of current state. Setting this will cause an update each time the agent runs.
+
+##### `handle_missing`
+Optional. Determine how to handle properties which are specified in the repository, but not not provided. See [wiki][wiki] for examples. Valid options: `ignore` or `remove`. Default: `ingore`.
+
+##### `home`
+Required. Sets the directory in which AEM exists. Valid options: any absolute path.
+
+##### `ignored_properties`
+Optional. Properties to ignore when comparing repository values against those provided. Valid options: Array of values. Default: `['jcr:created', 'jcr:createdBy', 'cq:lastModified', 'cq:lastModifiedBy']`
+
+##### `path`
+Optional. Specifies the fully qualified path to the resource in the repository.
+
+##### `password`
+Required. The password for authentication to AEM.
+
+##### `password_properties`
+Optional. List of resource properties which should be ignored as _passwords_ unless `force_passwords` is _true_. Valid options: Array of values.
+
+##### `protected_properties`
+Optional. List of properties which cannot be updated. They will be persisted when creating, but ignored during updates. Valid optoins: Array of values. Default: `['jcr:primaryType']`.
+
+##### `username`
+Required. The username for authentication to AEM.
+
+##### `properties`
+Optional. Hash of properties to store in the repository. Sub hashes are created as children nodes. Hashes can be nested to an arbitrary depth. See [wiki][wiki] for examples. Valid options: Hash of values.
+
+##### `timeout`
+Optional. Sets the timeout, in seconds, when waiting for a response. Valid options: any positive integer. Default: `120`.
+
+### Private Defines
+
+#### Define: `aem::package`
 
 ### Private Defines
 
@@ -485,6 +961,7 @@ This module has been tested with the following AEM versions:
 
 - 6.0
 - 6.1
+- 6.2
 
 ### Minimum Ruby Requirement
 
@@ -513,11 +990,11 @@ _Please make sure you do not include any AEM Installer jars in PRs._
 I ask that prior to creating PR for a new feature, unit and acceptance tests exist to ensure it's operation. Running all of the AEM acceptance tests take time, so be prepared. To assist with acceptance testing, there are a number of Beaker configurations. For more information, see the Beaker project's documentation.
 
 To run the AEM acceptance tests, for all features against all boxes:
-```
-> spec/acceptance/runall_aem.sh
+```shell
+$ spec/acceptance/runall_aem.sh
 ```
 
 To run just the Dispatcher acceptance tests:
-```
-> bundle exec rspec spec/accpetance/dispatcher_acceptance_spec.rb
+```shell
+$ bundle exec rspec spec/accpetance/dispatcher_acceptance_spec.rb
 ```
