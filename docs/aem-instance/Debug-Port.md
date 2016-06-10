@@ -10,6 +10,6 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following additions:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following additions:**
 
 * AEM will listen on port 30303 for remote debugging.

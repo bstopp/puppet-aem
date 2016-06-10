@@ -10,7 +10,7 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following additions:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following additions:**
 
 * Run using additional runmodes: *dev*, *server*, *mock*
 

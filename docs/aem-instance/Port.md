@@ -10,6 +10,6 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following changes:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following changes:**
 
 * Listen on port: 8080

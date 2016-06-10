@@ -16,7 +16,7 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following changes:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following changes:**
 
 * No Puppet service resource will be created, and it's running state will not be changed.
 
@@ -31,7 +31,7 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following changes:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following changes:**
 
 * A Puppet service resource will be created, but it'll be disabled and not running.
 
@@ -46,6 +46,6 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following changes:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following changes:**
 
 * A Puppet service resource will be created, but it'll be disabled (not running on boot), but currently running.

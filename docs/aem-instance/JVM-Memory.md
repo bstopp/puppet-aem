@@ -10,7 +10,7 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following changes:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following changes:**
 
 * Start with 4G of Heap
 
@@ -25,6 +25,6 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following changes:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following changes:**
 
 * Start with 4G of Heap Memory and 1G of Perm Gen space.

@@ -30,7 +30,7 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following additions:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following additions:**
 
 * Use Mongo for the Document Store
 
@@ -56,7 +56,7 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following additions:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following additions:**
 
 * Use Mongo for the Document Store
 
@@ -87,7 +87,7 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following additions:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following additions:**
 
 * Use Mongo for the Document Store
 * Use Amazon's S3 Bucket for the Blob Data Store
@@ -125,7 +125,7 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following additions:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following additions:**
 
 * Use Mongo for the Document Store
 * Use Amazon's S3 Bucket for the Blob Data Store

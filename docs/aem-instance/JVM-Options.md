@@ -10,7 +10,7 @@ aem::instance { 'aem' :
 }
 ~~~
 
-**AEM will be configured as defined in the [Minimal Example](docs/aem-instance/Minimal.md), with the following changes:**
+**AEM will be configured as defined in the [Minimal Example](/docs/aem-instance/Minimal.md), with the following changes:**
 
 * Start with the specified JVM Options above. Basically printing out Garbage collection information and dump the heap on Memory error.
 
