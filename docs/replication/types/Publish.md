@@ -6,10 +6,10 @@ The `aem::agent::replication::publish` resource allows you to create and manage 
 
 #### Examples
 
-* [Default](replication/types/publish/Default.md)
-* [Agent User](replication/types/publish/Agent-User.md)
-* [Transport User](replication/types/publish/Transport-User.md)
-* [Log Level](replication/types/publish/Log-Level.md)
-* [No Versioning](replication/types/publish/No-Version.md)
-* [No Status Update](replication/types/publish/No-Status-Update.md)
-* [Allow Relaxed SSL](replication/types/publish/Relaxed-SSL.md)
+* [Default](publish/Default.md)
+* [Agent User](publish/Agent-User.md)
+* [Transport User](publish/Transport-User.md)
+* [Log Level](publish/Log-Level.md)
+* [No Versioning](publish/No-Version.md)
+* [No Status Update](publish/No-Status-Update.md)
+* [Allow Relaxed SSL](publish/Relaxed-SSL.md)

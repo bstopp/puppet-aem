@@ -6,11 +6,11 @@ The `aem::agent::replication::flush` resource allows you to create and manage sp
 
 #### Examples
 
-* [Default](replication/types/flush/Default.md)
-# [Enabled on Publish](replication/types/flush/Enabled-on-Publish.md)
-* [Transport User](replication/types/flush/Transport-User.md)
-* [Log Level](replication/types/flush/Log-Level.md)
-* [Resource Only](replication/types/flush/Reource Only.md)
-* [No Status Update](replication/types/flush/No-Status-Update.md)
-* [Allow Relaxed SSL](replication/types/flush/Relaxed-SSL.md)
+* [Default](flush/Default.md)
+* [Enabled on Publish](flush/Enabled-on-Publish.md)
+* [Transport User](flush/Transport-User.md)
+* [Log Level](flush/Log-Level.md)
+* [Resource Only](flush/Reource Only.md)
+* [No Status Update](flush/No-Status-Update.md)
+* [Allow Relaxed SSL](flush/Relaxed-SSL.md)
 

@@ -5,7 +5,7 @@ The `aem::agent::replication::*` resources allows you to create and manage speci
 
 #### Examples
 
-* [aem::agent::replication::publish](replication/types/Publish.md)
-* [aem::agent::replication::flush](replication/types/Flush.md)
-* [aem::agent::replication::reverse](replication/types/Reverse.md)
-* [aem::agent::replication::static](replication/types/Static.md)
+* [aem::agent::replication::publish](Publish.md)
+* [aem::agent::replication::flush](Flush.md)
+* [aem::agent::replication::reverse](Reverse.md)
+* [aem::agent::replication::static](Static.md)

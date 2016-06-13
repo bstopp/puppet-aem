@@ -57,4 +57,3 @@ This definition loads the dispatcher module into the Apache and configures it wi
 * DispatcherDelcineRoot: *1*
 * DispatcherUseProcessedURL: *1*
 * DispatcherPassError: *400-404,500*
-
