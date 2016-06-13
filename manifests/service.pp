@@ -1,6 +1,6 @@
 # == Defines: aem::service
 #
-# Used to create service defintions for AEM instances.
+# Used to create service definitions for AEM instances.
 #
 # Based on Elastic Search service management.
 #

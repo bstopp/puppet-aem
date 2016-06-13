@@ -2,11 +2,19 @@ language: ruby
 rvm:
  - "1.9.3"
  - "2.0.0"
- - "2.1.7"
- - "2.2.3"
+ - "2.1.8"
+ - "2.2.4"
 
 env:
  - CODECLIMATE_REPO_TOKEN="c51cdd016a53f48b9e48d81fc67fed1fd4310fcbdd35daf0f3694ff5d54637f7"
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/75e017bb468493d1cfef
+    on_success: change  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: never     # options: [always|never|change] default: always
 
 # uncomment this line if your project needs to run something other than `rake`:
 # script: bundle exec rspec spec

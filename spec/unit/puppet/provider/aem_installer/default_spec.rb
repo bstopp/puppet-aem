@@ -75,7 +75,6 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
   GroupStat = Struct.new(:gid, :name)
   ugid = 2001
 
-
   before do
     @provider_class = described_class
     @provider_class.stubs(:suitable?).returns true
@@ -98,11 +97,8 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
         groupstat = GroupStat.new(ugid, 'aem')
 
         provider = @provider_class.new(opts[:resource])
-        if opts[:present]
-          yielddata = '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-quickstart.jar'
-        else
-          yielddata = '';
-        end
+
+        yielddata = (opts[:present] ? '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-quickstart.jar' : '')
         expect(provider).to receive(:execpipe).and_yield(yielddata)
 
         if opts[:present]
@@ -111,7 +107,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
           expect(Etc).to receive(:getpwuid).with(ugid).and_return(userstat)
           expect(Etc).to receive(:getgrgid).with(ugid).and_return(groupstat)
 
-          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield("")
+          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
         end
 
         expect(provider.exists?).to eq(opts[:present])
@@ -120,24 +116,26 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
 
     describe 'ensure is absent' do
       resource = Puppet::Type.type(:aem_installer).new(
-          :name     => 'aem',
-          :ensure   => :absent,
-          :home     => '/opt/aem',
-          :provider => 'default',
-          :snooze   => 0
-        )
-      it_should_behave_like 'exists_check', :resource => resource, :ensure => :absent, :present => false
+        :name     => 'aem',
+        :ensure   => :absent,
+        :home     => '/opt/aem',
+        :provider => 'default',
+        :snooze   => 0
+      )
+
+      it_should_behave_like('exists_check', :resource => resource, :ensure => :absent, :present => false)
     end
 
     describe 'ensure is present' do
       resource = Puppet::Type.type(:aem_installer).new(
-          :name     => 'aem',
-          :ensure   => :present,
-          :home     => '/opt/aem',
-          :provider => 'default',
-          :snooze   => 0
-        )
-      it_should_behave_like 'exists_check', :resource => resource, :ensure => :present, :present => true
+        :name     => 'aem',
+        :ensure   => :present,
+        :home     => '/opt/aem',
+        :provider => 'default',
+        :snooze   => 0
+      )
+
+      it_should_behave_like('exists_check', :resource => resource, :ensure => :present, :present => true)
     end
 
   end
@@ -158,7 +156,6 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
       it do
 
         opts ||= {}
-
         opts[:user] ||= 'root'
         opts[:group] ||= 'root'
         opts[:port] ||= 4502
@@ -189,12 +186,8 @@ PORT=#{opts[:port]}
         # Starts the system
         expect(provider).to receive(:execute).with(/start/, execute_options).and_return(0)
 
-        if opts[:context_root]
-          uri = URI.parse("http://localhost:#{opts[:port]}/#{opts[:context_root]}/")
-        else
-          uri = URI.parse("http://localhost:#{opts[:port]}/")
-        end
-
+        uri = URI.parse("http://localhost:#{opts[:port]}/")
+        uri = URI.parse("http://localhost:#{opts[:port]}/#{opts[:context_root]}/") if opts[:context_root]
 
         # Monitor System for on
         expect(Net::HTTP).to receive(:get_response).with(uri).ordered.once.and_return(mock_unavailable_resp)
@@ -217,19 +210,19 @@ PORT=#{opts[:port]}
     end
 
     describe 'creates instance as root' do
-      it_should_behave_like 'create_instance'
+      it_should_behave_like('create_instance')
     end
 
     describe 'creates instance as a user' do
-      it_should_behave_like 'create_instance', :user => 'aem'
+      it_should_behave_like('create_instance', :user => 'aem')
     end
 
     describe 'creates instance as a group' do
-      it_should_behave_like 'create_instance', :group => 'aem'
+      it_should_behave_like('create_instance', :group => 'aem')
     end
 
     describe 'creates instance as a user/group' do
-      it_should_behave_like 'create_instance', :user => 'aem', :group => 'aem'
+      it_should_behave_like('create_instance', :user => 'aem', :group => 'aem')
     end
 
     describe 'supports non default port' do
@@ -242,7 +235,7 @@ PORT=#{opts[:port]}
           :snooze       => 0
         )
       end
-      it_should_behave_like 'create_instance', :port => '8080'
+      it_should_behave_like('create_instance', :port => '8080')
     end
 
     describe 'supports using context root for URI' do
@@ -255,15 +248,15 @@ PORT=#{opts[:port]}
           :snooze       => 0
         )
       end
-      it_should_behave_like 'create_instance', :context_root => 'contextroot'
+      it_should_behave_like('create_instance', :context_root => 'contextroot')
     end
 
     describe 'creates instance with redirect for monitor' do
-      it_should_behave_like 'create_instance', :response_type => :mock_redirect_resp
+      it_should_behave_like('create_instance', :response_type => :mock_redirect_resp)
     end
 
     describe 'creates instance with unauthorized for monitor' do
-      it_should_behave_like 'create_instance', :response_type => :mock_unauthorized_resp
+      it_should_behave_like('create_instance', :response_type => :mock_unauthorized_resp)
     end
 
     describe 'monitor timeout' do
@@ -309,7 +302,7 @@ PORT=4502
         expect(provider).to receive(:execute).with(/start/, execute_options).and_return(0)
 
         # Monitor System for on
-        uri = URI("http://localhost:4502/")
+        uri = URI('http://localhost:4502/')
         expect(Net::HTTP).to receive(:get_response).with(uri).ordered.once.and_return(mock_unavailable_resp)
         expect { provider.create }.to raise_error(Timeout::Error)
       end

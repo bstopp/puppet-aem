@@ -3,7 +3,7 @@ require 'puppet-syntax/tasks/puppet-syntax'
 require 'rubocop/rake_task'
 
 exclude_paths = [
-  'spec/**/*'
+  'spec/fixtures/**/*'
 ]
 
 task :default => [:spec, :lint, :rubocop]
@@ -19,5 +19,13 @@ PuppetLint.configuration.ignore_paths = exclude_paths
 PuppetSyntax.exclude_paths = exclude_paths
 
 RuboCop::RakeTask.new(:rubocop) do |task|
-  task.patterns = ['lib/**/*.rb']
+  task.patterns = [
+    'lib/**/*.rb',
+    'spec/acceptance/**/*.rb',
+    'spec/classes/**/*.rb',
+    'spec/defines/**/*.rb',
+    'spec/files/**/*.rb',
+    'spec/unit/**/*.rb',
+    'spec/*.rb'
+  ]
 end

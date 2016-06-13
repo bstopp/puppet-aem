@@ -1,6 +1,6 @@
 # == Define: aem::service::systemd
 #
-# Manages service defintion systems which employ systemd.
+# Manages service definition systems which employ systemd.
 #
 # This defines is not intended to be used directly.
 #
