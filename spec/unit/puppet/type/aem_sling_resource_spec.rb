@@ -117,7 +117,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
             :name       => 'bar',
             :ensure     => :present,
             :home       => '/opt/aem',
-            :properties => %w('foo', 'bar')
+            :properties => %w(foo bar)
           )
         end.to raise_error(Puppet::Error, /must be a hash/)
       end

@@ -32,7 +32,7 @@ define aem::osgi::config(
     "${type} is not supported for type. Allowed values are 'console' and 'file'.")
 
   if $type == 'console' {
-    
+
     if $username == undef {
       fail("Username must be specified if type == 'console'")
     }

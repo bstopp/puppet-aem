@@ -107,7 +107,7 @@ describe 'aem::osgi::config', :type => :defines do
 
       context 'not a hash' do
         let(:params) do
-          default_params.merge(:properties => %w('this', 'is', 'not', 'a', 'hash'))
+          default_params.merge(:properties => %w(this is not a hash))
         end
         it { expect { is_expected.to compile }.to raise_error(/must be a Hash of values/) }
       end

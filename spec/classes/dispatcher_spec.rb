@@ -119,7 +119,7 @@ describe 'aem::dispatcher', :type => :class do
       is_expected.to contain_apache__mod(
         'dispatcher'
       ).that_requires(
-         'File[/etc/httpd/modules/mod_dispatcher.so]'
+        'File[/etc/httpd/modules/mod_dispatcher.so]'
       )
     end
     it do

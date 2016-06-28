@@ -29,7 +29,7 @@ define aem::service (
       }
     }
     'Debian': {
-      
+
       if versioncmp($::operatingsystemmajrelease, '8') >= 0 {
         $provider      = 'systemd'
       } else {
@@ -48,7 +48,7 @@ define aem::service (
       fail("'${module_name}' provides no service parameters for '${::operatingsystem}'")
     }
   }
-  
+
   case $provider {
     'init' : {
       aem::service::init { $name :
