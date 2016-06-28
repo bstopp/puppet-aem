@@ -6,7 +6,7 @@ aem::instance { 'aem' :
 }
 
 aem::service { 'aem' :
-  home   => '/opt/aem,
+  home => '/opt/aem',
 }
 
 Aem::Instance['aem'] ~> Aem::Service['aem']

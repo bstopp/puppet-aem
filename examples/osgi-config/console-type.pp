@@ -9,11 +9,11 @@ $cfgs = {
 aem::osgi::config { 'org.apache.sling.security.impl.ReferrerFilter' :
   ensure         => present,
   properties     => $cfgs,
-  handle_missing => "remove",
-  home           => "/opt/aem/author",
-  password       => "admin",
-  type           => "console",
-  username       => "admin",
+  handle_missing => 'remove',
+  home           => '/opt/aem/author',
+  password       => 'admin',
+  type           => 'console',
+  username       => 'admin',
 }
 
 

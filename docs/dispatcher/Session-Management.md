@@ -7,8 +7,8 @@ This example creates a Farm definition with custom session management definition
 
 ~~~ puppet
 aem::dispatcher::farm { 'site' :
-  docroot => '/var/www',
-  session_management  => {
+  docroot            => '/var/www',
+  session_management => {
     'directory' => '/path/to/cache',
     'encode'    => 'md5',
     'header'    => 'HTTP:authorization',

@@ -2,5 +2,5 @@
 
 aem::dispatcher::farm { 'site' :
   docroot => '/var/www',
-  retries => "5",
+  retries => '5',
 }
