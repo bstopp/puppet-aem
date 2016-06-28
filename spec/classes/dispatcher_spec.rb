@@ -97,13 +97,7 @@ describe 'aem::dispatcher', :type => :class do
     end
 
     it { is_expected.to contain_anchor('aem::dispatcher::begin') }
-    it do
-      is_expected.to contain_file(
-        '/etc/httpd/modules/mod_dispatcher.so'
-      ).that_requires(
-        'File[/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so]'
-      )
-    end
+    it { is_expected.to contain_anchor('aem::dispatcher::end') }
 
     it do
       is_expected.to contain_file(
@@ -115,17 +109,48 @@ describe 'aem::dispatcher', :type => :class do
 
     it do
       is_expected.to contain_file(
+        '/etc/httpd/modules/mod_dispatcher.so'
+      ).that_requires(
+        'File[/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so]'
+      )
+    end
+
+    it do
+      is_expected.to contain_apache__mod(
+        'dispatcher'
+      ).that_requires(
+         'File[/etc/httpd/modules/mod_dispatcher.so]'
+      )
+    end
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/conf.modules.d/dispatcher.farms.any'
+      ).that_requires(
+        'Apache::Mod[dispatcher]'
+      )
+    end
+
+    it do
+      is_expected.to contain_file(
         '/etc/httpd/conf.modules.d/dispatcher.conf'
       ).that_requires(
-        'Anchor[aem::dispatcher::begin]'
+        'File[/etc/httpd/conf.modules.d/dispatcher.farms.any]'
+      )
+    end
+
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/conf.modules.d/dispatcher.conf'
+      ).that_notifies(
+        'Service[httpd]'
       )
     end
 
     it do
       is_expected.to contain_file(
         '/etc/httpd/conf.modules.d/dispatcher.farms.any'
-      ).that_requires(
-        'Anchor[aem::dispatcher::begin]'
+      ).that_notifies(
+        'Service[httpd]'
       )
     end
 
@@ -439,5 +464,52 @@ describe 'aem::dispatcher', :type => :class do
       )
     end
 
+    it { is_expected.to contain_anchor('aem::dispatcher::begin') }
+    it { is_expected.to contain_anchor('aem::dispatcher::end') }
+
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/conf.modules.d/dispatcher.conf'
+      ).that_requires(
+        'Anchor[aem::dispatcher::begin]'
+      )
+    end
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/conf.modules.d/dispatcher.farms.any'
+      ).that_requires(
+        'File[/etc/httpd/conf.modules.d/dispatcher.conf]'
+      )
+    end
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so'
+      ).that_requires(
+        'File[/etc/httpd/conf.modules.d/dispatcher.farms.any]'
+      )
+    end
+
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/modules/mod_dispatcher.so'
+      ).that_requires(
+        'File[/etc/httpd/conf.modules.d/dispatcher.conf]'
+      )
+    end
+
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/conf.modules.d/dispatcher.farms.any'
+      ).that_notifies(
+        'Service[httpd]'
+      )
+    end
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/conf.modules.d/dispatcher.conf'
+      ).that_notifies(
+        'Service[httpd]'
+      )
+    end
   end
 end

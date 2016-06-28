@@ -109,6 +109,8 @@ describe 'aem::dispatcher::farm', :type => :define do
         'path'   => '/etc/httpd/conf.modules.d/dispatcher.farms.any'
       ).that_requires(
         'File[/etc/httpd/conf.modules.d/dispatcher.farms.any]'
+      ).that_notifies(
+        'Service[httpd]'
       )
     end
   end

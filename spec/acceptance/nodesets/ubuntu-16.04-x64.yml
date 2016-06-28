@@ -13,9 +13,9 @@ HOSTS:
     roles:
       - agent
       - default
-    platform: ubuntu-1404-amd64
-    box: puppetlabs/ubuntu-14.04-64-nocm
-    box_url: https://vagrantcloud.com/puppetlabs/boxes/ubuntu-14.04-64-nocm
+    platform: ubuntu-1604-amd64
+    box: puppetlabs/ubuntu-16.04-64-nocm
+    box_url: https://vagrantcloud.com/puppetlabs/boxes/ubuntu-16.04-64-nocm
     hypervisor: vagrant
     dispatcher_file: dispatcher-apache2.4-4.1.12.so
     vagrant_cpus: 2

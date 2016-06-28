@@ -10,13 +10,11 @@ describe 'dispatcher acceptance' do
 
   case fact('osfamily')
   when 'RedHat'
-    service_name = 'httpd'
     log_root = '/var/log/httpd'
     mod_root = '/etc/httpd/modules'
     apache_root = '/etc/httpd'
     conf_dir = '/etc/httpd/conf.modules.d'
   when 'Debian'
-    service_name = 'apache2'
     log_root = '/var/log/apache2'
     mod_root = '/usr/lib/apache2/modules'
     apache_root = '/etc/apache2'
@@ -66,7 +64,7 @@ describe 'dispatcher acceptance' do
       end
       it 'should be running with no errors' do
         shell(
-          "grep -- 'Communique/4.1.11 configured -- resuming normal operations' #{log_root}/error*",
+          "grep -- 'Communique/.* configured -- resuming normal operations' #{log_root}/error*",
           :acceptable_exit_codes => 0
         )
 
@@ -207,7 +205,7 @@ describe 'dispatcher acceptance' do
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
         fqdn = fqdn.chop if fqdn.end_with?('.')
-        on(default, puppet("resource service #{service_name} ensure=stopped"))
+
         shell("rm #{log_root}/*", :accept_all_exit_codes => true)
         on(
           default,
@@ -218,7 +216,7 @@ describe 'dispatcher acceptance' do
 
       it 'should be running with no errors' do
         shell(
-          "grep -- 'Communique/4.1.11 configured -- resuming normal operations' #{log_root}/error*",
+          "grep -- 'Communique/.* configured -- resuming normal operations' #{log_root}/error*",
           :acceptable_exit_codes => 0
         )
         found = false
@@ -447,7 +445,7 @@ describe 'dispatcher acceptance' do
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
         fqdn = fqdn.chop if fqdn.end_with?('.')
-        on(default, puppet("resource service #{service_name} ensure=stopped"))
+
         shell("rm #{log_root}/*", :accept_all_exit_codes => true)
         on(
           default,
@@ -458,7 +456,7 @@ describe 'dispatcher acceptance' do
 
       it 'should be running with no errors' do
         shell(
-          "grep -- 'Communique/4.1.11 configured -- resuming normal operations' #{log_root}/error*",
+          "grep -- 'Communique/.* configured -- resuming normal operations' #{log_root}/error*",
           :acceptable_exit_codes => 0
         )
         found = false
@@ -573,7 +571,7 @@ describe 'dispatcher acceptance' do
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
         fqdn = fqdn.chop if fqdn.end_with?('.')
-        on(default, puppet("resource service #{service_name} ensure=stopped"))
+
         shell("rm #{log_root}/*", :accept_all_exit_codes => true)
         on(
           default,
@@ -584,7 +582,7 @@ describe 'dispatcher acceptance' do
 
       it 'should be running with no errors' do
         shell(
-          "grep -- 'Communique/4.1.11 configured -- resuming normal operations' #{log_root}/error*",
+          "grep -- 'Communique/.* configured -- resuming normal operations' #{log_root}/error*",
           :acceptable_exit_codes => 0
         )
 
@@ -683,7 +681,7 @@ describe 'dispatcher acceptance' do
       restart_puppetserver
       fqdn = on(master, 'facter fqdn').stdout.strip
       fqdn = fqdn.chop if fqdn.end_with?('.')
-      on(default, puppet("resource service #{service_name} ensure=stopped"))
+
       shell("rm #{log_root}/*", :accept_all_exit_codes => true)
       on(
         default,

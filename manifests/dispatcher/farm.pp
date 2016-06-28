@@ -232,6 +232,7 @@ define aem::dispatcher::farm(
       match   => "${_line_start}${name}${_line_end}",
       path    => "${::aem::dispatcher::params::farm_path}/${::aem::dispatcher::config_file}",
       require => File["${::aem::dispatcher::params::farm_path}/${::aem::dispatcher::config_file}"],
+      notify  => Service[$::apache::params::service_name],
     }
 
   } else {
@@ -246,6 +247,8 @@ define aem::dispatcher::farm(
     file { "${::aem::dispatcher::params::farm_path}/dispatcher.${name}.any" :
       ensure  => $ensure,
       require => File_line["include ${name}.any"],
+      notify  => Service[$::apache::params::service_name],
     }
   }
+
 }
