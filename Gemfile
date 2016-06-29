@@ -13,7 +13,7 @@ end
 
 group :linting do
   gem 'puppet-lint',                :require => false
-  gem 'rubocop',                    :require => false
+  gem 'rubocop', '0.40.0',          :require => false
 end
 
 group :system_tests do
