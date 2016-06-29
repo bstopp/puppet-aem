@@ -534,7 +534,6 @@ describe 'aem::dispatcher', :type => :class do
         'File[/etc/httpd/conf.modules.d/dispatcher.farms.any]'
       )
     end
-    
   end
 
   context 'ensure absent' do
