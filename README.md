@@ -115,7 +115,7 @@ For more options and detailed explanations, please see the [Puppet AEM Wiki][wik
 
 #### Class: `aem::dispatcher`
 
-Installs and configures a specified AEM Dispatcher module. For more details and examples see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20Dispatcher)
+Installs and configures a specified AEM Dispatcher module. For more details and examples see the [wiki](docs/AEM-Dispatcher.md).
 
 **Note:** Currently only Apache HTTP is supported by this module.
 
@@ -156,7 +156,7 @@ Optional. Sets the user for for file ownership. Valid options: any valid user. D
 
 #### Define: `aem::agent::replication`
 
- Creates a replication Agent. Provides support for all AEM Replication agent options. For more details and examples, see the [wiki]. For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
+ Creates a replication Agent. Provides support for all AEM Replication agent options. For more details and examples, see the [wiki](docs/AEM-Replication-Agent.md). For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
 
 ##### `name`
 Namevar. Required. Specifies the name of this replication agent. The name must only contain letters and numbers. This will be the node name when it is created.
@@ -310,7 +310,7 @@ Required. The username for authenticating to AEM.
 
 #### Define: `aem::agent::replication::flush`
 
- Creates a _Flush_ replication agent. This definition has a limited property set based on the parameters typically required for this type of agent. For more details and examples, see the [wiki]. For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
+ Creates a _Flush_ replication agent. This definition has a limited property set based on the parameters typically required for this type of agent. For more details and examples, see the [wiki](docs/AEM-Replication-Agent-Types.md). For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
 
 ##### `name`
 Namevar. Required. Specifies the name of this replication agent. The name must only contain letters and numbers. This will be the node name when it is created.
@@ -395,7 +395,7 @@ Required. The username for authenticating to AEM.
 
 #### Define: `aem::agent::replication::publish`
 
- Creates a _Publish_ replication agent. This definition has a limited property set based on the parameters typically required for this type of agent. For more details and examples, see the [wiki]. For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
+ Creates a _Publish_ replication agent. This definition has a limited property set based on the parameters typically required for this type of agent. For more details and examples, see the [wiki](docs/AEM-Replication-Agent-Types.md). For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
 
 ##### `name`
 Namevar. Required. Specifies the name of this replication agent. The name must only contain letters and numbers. This will be the node name when it is created.
@@ -474,7 +474,7 @@ Required. The username for authenticating to AEM.
 
 #### Define: `aem::agent::replication::reverse`
 
- Creates a _Reverse_ replication agent. This definition has a limited property set based on the parameters typically required for this type of agent. For more details and examples, see the [wiki]. For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
+ Creates a _Reverse_ replication agent. This definition has a limited property set based on the parameters typically required for this type of agent. For more details and examples, see the [wiki](docs/AEM-Replication-Agent-Types.md). For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
 
 ##### `name`
 Namevar. Required. Specifies the name of this replication agent. The name must only contain letters and numbers. This will be the node name when it is created.
@@ -532,7 +532,7 @@ Required. The username for authenticating to AEM.
 
 #### Define: `aem::agent::replication::static`
 
- Creates a _Static_ replication agent. This definition has a limited property set based on the parameters typically required for this type of agent. For more details and examples, see the [wiki]. For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
+ Creates a _Static_ replication agent. This definition has a limited property set based on the parameters typically required for this type of agent. For more details and examples, see the [wiki](docs/AEM-Replication-Agent-Types.md). For information on AEM Replications agents, see the [documentation](https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/replication.html).
 
 ##### `name`
 Namevar. Required. Specifies the name of this replication agent. The name must only contain letters and numbers. This will be the node name when it is created.
@@ -578,7 +578,7 @@ Required. The username for authenticating to AEM.
 
 #### Define: `aem::dispatcher::farm`
 
-Configures a single farm instance within the Dispatcher. For more details and examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20Dispatcher%20Farm)
+Configures a single farm instance within the Dispatcher. For more details and examples, see the [wiki](docs/AEM-Dispatcher-Farm.md).
 
 ##### `ensure`
 Optional. Changes the state of this dispatcher farm configuration. Valid options: `present` or `absent`. Default: `present`.
@@ -695,7 +695,7 @@ Optional. Sets the */virtualhosts* section. Valid options: String or Array of St
 
 #### Define: `aem::instance`
 
-Installs an AEM instance into your system. For more details and examples see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20Instance)
+Installs an AEM instance into your system. For more details and examples see the [wiki](docs/AEM-Instance.md).
 
 When this type is declared with the default options, Puppet:
 
@@ -781,7 +781,7 @@ Optional. Sets the version of AEM. Informational only, does not affect installat
 
 #### Define: `aem::license`
 
-Manages an AEM License file. Provides a convenient tool for managing the license file contents without needing ot know the structure. For examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20License)
+Manages an AEM License file. Provides a convenient tool for managing the license file contents without needing ot know the structure. For examples, see the [wiki](docs/AEM-License.md).
 
 **Parameters within `aem::license`:**
 
@@ -811,7 +811,7 @@ Optional. Sets the version of AEM for the license file contents. Valid options: 
 
 #### Define: `aem::osgi::config`
 
-Manages an AEM OSGi Configuration; allows for saving Service/Component configurations via a file or posted to the Felix Web Console. For examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20OSGi%20Config)
+Manages an AEM OSGi Configuration; allows for saving Service/Component configurations via a file or posted to the Felix Web Console. For examples, see the [wiki](docs/AEM-OSGi-Config.md).
 
 **Parameters within `aem::osgi::config`:**
 
@@ -825,7 +825,7 @@ Optional. Changes the state of the AEM OSGi configuration. A value of `absent` w
 Optional. Sets the group for file ownership. Valid options: any valid group. Default: `aem`.
 
 ##### `handle_missing`
-Required if **type** == `console`. Determine how to handle properties which are configured in the console, but not provided. See [wiki][wiki] for examples. Valid options: `merge` or `remove`.
+Required if **type** == `console`. Determine how to handle properties which are configured in the console, but not provided. See [wiki] for examples. Valid options: `merge` or `remove`.
 
 ##### `home`
 Required. Sets the directory in which AEM exists. Valid options: any absolute path.
@@ -847,7 +847,7 @@ Required if **type** == `console`. Sets the user for accessing the OSGI console.
 
 #### Define: `aem::service`
 
-Manages the AEM daemon. Creating a definition for this is not necesary unless the `aem::instance`'s *manage_service* is **false**. For examples, see the [wiki](https://github.com/bstopp/puppet-aem/wiki/AEM%20Service)
+Manages the AEM daemon. Creating a definition for this is not necesary unless the `aem::instance`'s *manage_service* is **false**. For examples, see the [wiki](docs/AEM-Service.md)
 
 **Parameters within `aem::service`:**
 
