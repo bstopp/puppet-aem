@@ -4,7 +4,6 @@ group :development, :tests do
   gem 'rspec', '~> 3.4',           :require => false
   gem 'rake',                      :require => false
   gem 'metadata-json-lint',        :require => false
-#  gem 'rspec-puppet', '2.3.0',     :require => false
   gem 'rspec-puppet',              :require => false
   gem 'webmock',                   :require => false
   gem 'puppetlabs_spec_helper',    :require => false
@@ -13,7 +12,7 @@ end
 
 group :linting do
   gem 'puppet-lint',                :require => false
-  gem 'rubocop', '0.40.0',          :require => false
+  gem 'rubocop',                    :require => false
 end
 
 group :system_tests do
@@ -32,5 +31,5 @@ end
 if puppetversion = ENV['PUPPET_VERSION']
   gem 'puppet', puppetversion, :require => false
 else
-  gem 'puppet', :require => false
+  gem 'puppet', '4.5.1', :require => false
 end
