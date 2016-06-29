@@ -240,11 +240,15 @@ describe 'aem::dispatcher::farm', :type => :define do
           let(:params) do
             default_params.merge(
               :filters => {
-                'type'     => 'allow',
-                'method'   => 'GET',
-                'url'      => '/path/to/content',
-                'query'    => 'param=*',
-                'protocol' => 'https'
+                'type'      => 'allow',
+                'method'    => 'GET',
+                'url'       => '/path/to/content',
+                'query'     => 'param=*',
+                'protocol'  => 'https',
+                'path'      => '/different/path/to/content',
+                'selectors' => '((sys|doc)view|query|[0-9-]+)',
+                'extension' => '(css|gif|ico|js|png|swf|jpe?g)',
+                'suffix'    => '/suffix/path'
               }
             )
           end
@@ -255,11 +259,15 @@ describe 'aem::dispatcher::farm', :type => :define do
             ).with_content(
               %r|
                 /0\s{\s*
-                  /type\s*"allow"\s*
-                  /method\s*"GET"\s*
-                  /url\s*"/path/to/content"\s*
-                  /query\s*"param=\*"\s*
+                  /type\s"allow"\s*
+                  /method\s"GET"\s*
+                  /url\s"/path/to/content"\s*
+                  /query\s"param=\*"\s*
                   /protocol\s"https"\s*
+                  /path\s"/different/path/to/content"\s*
+                  /selectors\s'\(\(sys\|doc\)view\|query\|\[0-9-\]\+\)'\s*
+                  /extension\s'\(css\|gif\|ico\|js\|png\|swf\|jpe\?g\)'\s*
+                  /suffix\s\'/suffix/path\'\s*
                 }
               |x
             )
