@@ -219,7 +219,7 @@ GEM
       ast (~> 2.2)
     pkg-config (1.1.7)
     powerpack (0.1.1)
-    puppet (4.5.1)
+    puppet (4.5.2)
       CFPropertyList (~> 2.2.6)
       facter (> 2.0, < 4)
       hiera (>= 2.0, < 4)
@@ -315,7 +315,7 @@ DEPENDENCIES
   codeclimate-test-reporter
   facter
   metadata-json-lint
-  puppet (= 4.5.1)
+  puppet
   puppet-lint
   puppetlabs_spec_helper
   rake
