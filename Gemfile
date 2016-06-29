@@ -4,7 +4,6 @@ group :development, :tests do
   gem 'rspec', '~> 3.4',           :require => false
   gem 'rake',                      :require => false
   gem 'metadata-json-lint',        :require => false
-#  gem 'rspec-puppet', '2.3.0',     :require => false
   gem 'rspec-puppet',              :require => false
   gem 'webmock',                   :require => false
   gem 'puppetlabs_spec_helper',    :require => false

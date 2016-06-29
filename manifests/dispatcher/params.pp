@@ -19,7 +19,7 @@ class aem::dispatcher::params {
     fail("Class['aem::dispatcher::params']: Unsupported osfamily: ${::osfamily}")
 
   }
-  
+
   $allowed_clients = {
     'type' => 'allow',
     'glob' => '*',

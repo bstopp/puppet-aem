@@ -42,13 +42,15 @@ class aem::dispatcher (
   if is_integer($no_server_header) {
     validate_integer($no_server_header, 1, 0)
   } else {
-    validate_re($no_server_header, '^(on|off)$', "${no_server_header} is not supported for no_server_header. Allowed values are 'on' and 'off'.")
+    validate_re($no_server_header, '^(on|off)$',
+      "${no_server_header} is not supported for no_server_header. Allowed values are 'on' and 'off'.")
   }
 
   if is_integer($use_processed_url) {
     validate_integer($use_processed_url, 1, 0)
   } else {
-    validate_re($use_processed_url, '^(on|off)$', "${use_processed_url} is not supported for use_processed_url. Allowed values are 'on' and 'off'.")
+    validate_re($use_processed_url, '^(on|off)$',
+      "${use_processed_url} is not supported for use_processed_url. Allowed values are 'on' and 'off'.")
   }
 
   $config_file = $::aem::dispatcher::params::config_file
@@ -102,6 +104,18 @@ class aem::dispatcher (
     -> File["${::aem::dispatcher::params::farm_path}/dispatcher.conf"]
     -> Anchor['aem::dispatcher::end']
 
+    if defined(Service[$::apache::service_name]) {
+      Anchor['aem::dispatcher::begin']
+      -> File["${::aem::dispatcher::params::farm_path}/${config_file}"]
+      ~> Service[$::apache::params::service_name]
+      -> Anchor['aem::dispatcher::end']
+
+      Anchor['aem::dispatcher::begin']
+      -> File["${::aem::dispatcher::params::farm_path}/dispatcher.conf"]
+      ~> Service[$::apache::params::service_name]
+      -> Anchor['aem::dispatcher::end']
+    }
+
   } else {
 
     file { "${::aem::dispatcher::params::mod_path}/${_mod_filename}" :
@@ -127,6 +141,17 @@ class aem::dispatcher (
     -> File["${::aem::dispatcher::params::mod_path}/mod_dispatcher.so"]
     -> Anchor['aem::dispatcher::end']
 
+    if defined(Service[$::apache::service_name]) {
+      Anchor['aem::dispatcher::begin']
+      -> File["${::aem::dispatcher::params::farm_path}/${config_file}"]
+      ~> Service[$::apache::service_name]
+      -> Anchor['aem::dispatcher::end']
+
+      Anchor['aem::dispatcher::begin']
+      -> File["${::aem::dispatcher::params::farm_path}/dispatcher.conf"]
+      ~> Service[$::apache::service_name]
+      -> Anchor['aem::dispatcher::end']
+    }
   }
 
 }

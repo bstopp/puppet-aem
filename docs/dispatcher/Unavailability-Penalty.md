@@ -5,8 +5,8 @@
 
 ~~~ puppet
 aem::dispatcher::farm { 'site' :
-  docroot    => '/var/www',
-  statistics => [
+  docroot             => '/var/www',
+  statistics          => [
     {
       'glob'     => '*.html',
       'category' => 'html'

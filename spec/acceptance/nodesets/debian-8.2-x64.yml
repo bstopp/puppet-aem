@@ -17,7 +17,7 @@ HOSTS:
     box: puppetlabs/debian-8.2-64-nocm
     box_url: https://vagrantcloud.com/puppetlabs/boxes/debian-8.2-64-nocm
     hypervisor: vagrant
-    dispatcher_file: dispatcher-apache2.4-4.1.11.so
+    dispatcher_file: dispatcher-apache2.4-4.1.12.so
     vagrant_cpus: 2
 
 CONFIG:

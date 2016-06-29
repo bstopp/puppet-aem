@@ -7,7 +7,7 @@ This example creates a farm definition with custom Propagate Synd Post:
 
 ~~~ puppet
 aem::dispatcher::farm { 'site' :
-  docroot => '/var/www',
+  docroot             => '/var/www',
   propagate_synd_post => '1',
 }
 ~~~

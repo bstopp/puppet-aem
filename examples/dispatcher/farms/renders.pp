@@ -27,8 +27,8 @@ aem::dispatcher::farm { 'site' :
       'ipv4'           => 0,
     },
     {
-      'hostname'       => 'author.hostname.com',
-      'port'           => 9009,
+      'hostname' => 'author.hostname.com',
+      'port'     => 9009,
     }
   ]
 }

@@ -137,7 +137,8 @@ define aem::agent::replication(
     }
 
     if $trans_ssl {
-      validate_re($trans_ssl, '^(default|relaxed|clientauth)$', "${trans_ssl} is not supported for trans_ssl. Allowed values are 'default', 'relaxed', and 'clientauth'.")
+      validate_re($trans_ssl, '^(default|relaxed|clientauth)$',
+        "${trans_ssl} is not supported for trans_ssl. Allowed values are 'default', 'relaxed', and 'clientauth'.")
     }
 
     if $trigger_ignore_def {

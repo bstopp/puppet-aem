@@ -1,6 +1,6 @@
 {
   "name": "bstopp-aem",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "author": "Bryan Stopp (bryan.stopp@gmail.com)",
   "license": "Apache-2.0",
   "description": "Module for Adobe Experience Manager administration.",
@@ -31,7 +31,8 @@
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "14.04"
+        "14.04",
+        "16.04"
       ]
     },
     {

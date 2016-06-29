@@ -3,7 +3,8 @@ require 'puppet-syntax/tasks/puppet-syntax'
 require 'rubocop/rake_task'
 
 exclude_paths = [
-  'spec/fixtures/**/*'
+  'spec/fixtures/**/*',
+  'vendor/**/*'
 ]
 
 task :default => [:spec, :lint, :rubocop]

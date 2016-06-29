@@ -52,6 +52,8 @@ describe 'aem::dispatcher::farm', :type => :define do
             :path => '/etc/httpd/conf.d/dispatcher.farms.any'
           ).that_requires(
             'File[/etc/httpd/conf.d/dispatcher.farms.any]'
+          ).that_notifies(
+            'Service[httpd]'
           )
         end
       end
@@ -68,6 +70,8 @@ describe 'aem::dispatcher::farm', :type => :define do
             :ensure => 'absent'
           ).that_requires(
             'File_line[include aem-site.any]'
+          ).that_notifies(
+            'Service[httpd]'
           )
         end
         it do
@@ -77,6 +81,8 @@ describe 'aem::dispatcher::farm', :type => :define do
             :path => '/etc/httpd/conf.d/dispatcher.farms.any'
           ).that_requires(
             'File[/etc/httpd/conf.d/dispatcher.farms.any]'
+          ).that_notifies(
+            'Service[httpd]'
           )
         end
       end
@@ -114,6 +120,8 @@ describe 'aem::dispatcher::farm', :type => :define do
             :path => '/etc/httpd/conf.modules.d/dispatcher.farms.any'
           ).that_requires(
             'File[/etc/httpd/conf.modules.d/dispatcher.farms.any]'
+          ).that_notifies(
+            'Service[httpd]'
           )
         end
       end
@@ -130,6 +138,8 @@ describe 'aem::dispatcher::farm', :type => :define do
             :ensure => 'absent'
           ).that_requires(
             'File_line[include aem-site.any]'
+          ).that_notifies(
+            'Service[httpd]'
           )
         end
         it do
@@ -175,6 +185,8 @@ describe 'aem::dispatcher::farm', :type => :define do
           :path => '/etc/apache2/mods-enabled/dispatcher.farms.any'
         ).that_requires(
           'File[/etc/apache2/mods-enabled/dispatcher.farms.any]'
+        ).that_notifies(
+          'Service[httpd]'
         )
       end
     end
@@ -191,6 +203,8 @@ describe 'aem::dispatcher::farm', :type => :define do
           :ensure => 'absent'
         ).that_requires(
           'File_line[include aem-site.any]'
+        ).that_notifies(
+          'Service[httpd]'
         )
       end
       it do
@@ -235,6 +249,8 @@ describe 'aem::dispatcher::farm', :type => :define do
           :path => '/etc/apache2/mods-enabled/dispatcher.farms.any'
         ).that_requires(
           'File[/etc/apache2/mods-enabled/dispatcher.farms.any]'
+        ).that_notifies(
+          'Service[httpd]'
         )
       end
     end
@@ -251,6 +267,8 @@ describe 'aem::dispatcher::farm', :type => :define do
           :ensure => 'absent'
         ).that_requires(
           'File_line[include aem-site.any]'
+        ).that_notifies(
+          'Service[httpd]'
         )
       end
       it do

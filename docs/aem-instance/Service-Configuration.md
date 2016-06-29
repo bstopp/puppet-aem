@@ -12,7 +12,7 @@ By default a Puppet service will be created and started for AEM. You can disable
 ~~~ puppet
 aem::instance { 'aem' :
   source => '/path/to/aem-quickstart.jar',
-  service => 'unmanaged'
+  status => 'unmanaged'
 }
 ~~~
 
@@ -27,7 +27,7 @@ You can also ensure AEM Service is not running, and not enabled it on boot:
 ~~~ puppet
 aem::instance { 'aem' :
   source => '/path/to/aem-quickstart.jar',
-  service => 'disabled'
+  status => 'disabled'
 }
 ~~~
 
@@ -42,7 +42,7 @@ AEM can be running, but not enabled on boot:
 ~~~ puppet
 aem::instance { 'aem' :
   source => '/path/to/aem-quickstart.jar',
-  service => 'running'
+  status => 'running'
 }
 ~~~
 

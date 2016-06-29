@@ -4,14 +4,14 @@
 # Do not manage the service via puppet.
 aem::instance { 'aem' :
   source => '/path/to/aem-quickstart.jar',
-  service => 'unmanaged'
+  status => 'unmanaged'
 }
 
 # Disabled Service Example
 
 aem::instance { 'aem' :
   source => '/path/to/aem-quickstart.jar',
-  service => 'disabled'
+  status => 'disabled'
 }
 
 # Running Service Example
@@ -20,5 +20,5 @@ aem::instance { 'aem' :
 
 aem::instance { 'aem' :
   source => '/path/to/aem-quickstart.jar',
-  service => 'running'
+  status => 'running'
 }

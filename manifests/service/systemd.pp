@@ -13,7 +13,7 @@ define aem::service::systemd (
   $home,
   $user
 ) {
-  
+
   # Setup the system state.
   if $ensure == 'present' {
 
@@ -86,7 +86,7 @@ define aem::service::systemd (
     }
 
   }
-  
+
   exec { "reload_systemd_aem_${name}" :
     command     => '/bin/systemctl daemon-reload',
     refreshonly => true,
