@@ -40,7 +40,7 @@ def setup_puppet(host)
   step 'Install puppet on agent'
   on(host, '')
   configure_defaults_on host, 'foss'
-  install_puppet_on host
+  install_puppet_agent_on host
   configure_puppet_on(host, {})
 
   agenthostname = on(host, 'facter fqdn').stdout.strip
@@ -112,13 +112,13 @@ unless ENV['BEAKER_provision'] == 'no'
 
   # Install puppet-server on master
   step 'Setup Puppet'
-  install_puppetlabs_release_repo master
+  install_puppetlabs_release_repo master, 'pc1'
 
   options['is_puppetserver'] = true
   master['puppetservice'] = 'puppetserver'
   master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
   master['type'] = 'aio'
-  install_puppet_agent_on master, :puppet_agent_version => '1.2.2'
+  install_puppet_agent_on master
   install_package master, 'puppetserver'
   master['use-service'] = true
 

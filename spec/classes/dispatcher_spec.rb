@@ -414,7 +414,127 @@ describe 'aem::dispatcher', :type => :class do
         end
       end
     end
+  end
 
+  context 'apache not managed' do
+    let(:facts) { default_facts }
+    let(:params) do
+      default_params.merge(:ensure => 'present')
+    end
+    let(:pre_condition) do
+      'class { "apache" :
+        default_vhost    => false,
+        default_mods     => false,
+        service_manage   => false,
+        vhost_enable_dir => "/etc/apache2/sites-enabled"
+      }'
+    end
+
+    it { is_expected.to compile.with_all_deps }
+    it do
+      is_expected.to contain_class('aem::dispatcher').only_with(
+        'name'              => 'Aem::Dispatcher',
+        'ensure'            => 'present',
+        'decline_root'      => 'off',
+        'group'             => 'root',
+        'log_file'          => '/var/log/httpd/dispatcher.log',
+        'log_level'         => 'warn',
+        'module_file'       => '/tmp/dispatcher-apache2.X-4.1.X.so',
+        'no_server_header'  => 'off',
+        'pass_error'        => '0',
+        'use_processed_url' => 'off',
+        'user'              => 'root'
+      )
+    end
+
+    it do
+      is_expected.to contain_file('/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so').with(
+        'ensure'  => 'file',
+        'path'    => '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so',
+        'group'   => 'root',
+        'owner'   => 'root',
+        'replace' => 'true',
+        'source'  => '/tmp/dispatcher-apache2.X-4.1.X.so'
+      )
+    end
+
+    it do
+      is_expected.to contain_file('/etc/httpd/modules/mod_dispatcher.so').with(
+        'ensure'  => 'link',
+        'path'    => '/etc/httpd/modules/mod_dispatcher.so',
+        'group'   => 'root',
+        'owner'   => 'root',
+        'replace' => 'true',
+        'target'  => '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so'
+      )
+    end
+
+    it do
+      is_expected.to contain_file('/etc/httpd/conf.modules.d/dispatcher.conf').with(
+        'ensure'  => 'file',
+        'path'    => '/etc/httpd/conf.modules.d/dispatcher.conf',
+        'group'   => 'root',
+        'owner'   => 'root',
+        'replace' => 'true'
+      ).with_content(
+        %r|.*DispatcherConfig\s*/etc/httpd/conf.modules.d/dispatcher.farms.any|
+      ).with_content(
+        %r|.*DispatcherLog\s*/var/log/httpd/dispatcher.log|
+      ).with_content(
+        /.*DispatcherLogLevel\s*warn/
+      ).with_content(
+        /.*DispatcherNoServerHeader\s*off/
+      ).with_content(
+        /.*DispatcherDeclineRoot\s*off/
+      ).with_content(
+        /.*DispatcherUseProcessedURL\s*off/
+      ).with_content(
+        /.*DispatcherPassError\s*0/
+      )
+    end
+
+    it { is_expected.to contain_anchor('aem::dispatcher::begin') }
+    it { is_expected.to contain_anchor('aem::dispatcher::end') }
+
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so'
+      ).that_requires(
+        'Anchor[aem::dispatcher::begin]'
+      )
+    end
+
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/modules/mod_dispatcher.so'
+      ).that_requires(
+        'File[/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so]'
+      )
+    end
+
+    it do
+      is_expected.to contain_apache__mod(
+        'dispatcher'
+      ).that_requires(
+        'File[/etc/httpd/modules/mod_dispatcher.so]'
+      )
+    end
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/conf.modules.d/dispatcher.farms.any'
+      ).that_requires(
+        'Apache::Mod[dispatcher]'
+      )
+    end
+
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/conf.modules.d/dispatcher.conf'
+      ).that_requires(
+        'File[/etc/httpd/conf.modules.d/dispatcher.farms.any]'
+      )
+    end
+    
   end
 
   context 'ensure absent' do

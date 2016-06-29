@@ -104,15 +104,17 @@ class aem::dispatcher (
     -> File["${::aem::dispatcher::params::farm_path}/dispatcher.conf"]
     -> Anchor['aem::dispatcher::end']
 
-    Anchor['aem::dispatcher::begin']
-    -> File["${::aem::dispatcher::params::farm_path}/${config_file}"]
-    ~> Service[$::apache::params::service_name]
-    -> Anchor['aem::dispatcher::end']
+    if defined(Service[$::apache::service_name]) {
+      Anchor['aem::dispatcher::begin']
+      -> File["${::aem::dispatcher::params::farm_path}/${config_file}"]
+      ~> Service[$::apache::params::service_name]
+      -> Anchor['aem::dispatcher::end']
 
-    Anchor['aem::dispatcher::begin']
-    -> File["${::aem::dispatcher::params::farm_path}/dispatcher.conf"]
-    ~> Service[$::apache::params::service_name]
-    -> Anchor['aem::dispatcher::end']
+      Anchor['aem::dispatcher::begin']
+      -> File["${::aem::dispatcher::params::farm_path}/dispatcher.conf"]
+      ~> Service[$::apache::params::service_name]
+      -> Anchor['aem::dispatcher::end']
+    }
 
   } else {
 
@@ -139,16 +141,17 @@ class aem::dispatcher (
     -> File["${::aem::dispatcher::params::mod_path}/mod_dispatcher.so"]
     -> Anchor['aem::dispatcher::end']
 
-    Anchor['aem::dispatcher::begin']
-    -> File["${::aem::dispatcher::params::farm_path}/${config_file}"]
-    ~> Service[$::apache::params::service_name]
-    -> Anchor['aem::dispatcher::end']
+    if defined(Service[$::apache::service_name]) {
+      Anchor['aem::dispatcher::begin']
+      -> File["${::aem::dispatcher::params::farm_path}/${config_file}"]
+      ~> Service[$::apache::service_name]
+      -> Anchor['aem::dispatcher::end']
 
-    Anchor['aem::dispatcher::begin']
-    -> File["${::aem::dispatcher::params::farm_path}/dispatcher.conf"]
-    ~> Service[$::apache::params::service_name]
-    -> Anchor['aem::dispatcher::end']
-
+      Anchor['aem::dispatcher::begin']
+      -> File["${::aem::dispatcher::params::farm_path}/dispatcher.conf"]
+      ~> Service[$::apache::service_name]
+      -> Anchor['aem::dispatcher::end']
+    }
   }
 
 }
