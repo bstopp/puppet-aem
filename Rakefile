@@ -4,7 +4,8 @@ require 'rubocop/rake_task'
 
 exclude_paths = [
   'spec/fixtures/**/*',
-  'vendor/**/*'
+  'vendor/**/*',
+  'pkg/**/*'
 ]
 
 task :default => [:spec, :lint, :rubocop]

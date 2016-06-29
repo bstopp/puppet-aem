@@ -68,6 +68,18 @@
       <%- if filter['protocol'] -%>
       /protocol "<%= filter['protocol'] -%>"
       <%- end -%>
+      <%- if filter['path'] -%>
+      /path "<%= filter['path'] -%>"
+      <%- end -%>
+      <%- if filter['selectors'] -%>
+      /selectors '<%= filter['selectors'] -%>'
+      <%- end -%>
+      <%- if filter['extension'] -%>
+      /extension '<%= filter['extension'] -%>'
+      <%- end -%>
+      <%- if filter['suffix'] -%>
+      /suffix '<%= filter['suffix'] -%>'
+      <%- end -%>
     }
     <%- end -%>
   <%- end -%>
