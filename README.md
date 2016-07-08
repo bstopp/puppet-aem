@@ -70,7 +70,7 @@
 
 **Note**: This module modifies AEM installation directories and configuration files, overwriting any existing configurations. AEM configurations should be managed by Puppet, as unmanaged configuration files may cause unexpected behaviour.
 
-### Setup Requirements 
+### Setup Requirements
 
 AEM uses Ruby-based providers, so you must enable pluginsync. Java is also required to be installed on the system. Finally, due to the AEM platform being proprietary, this module does not provide the installation jar file; it must be provided by the consumer.
 
@@ -505,6 +505,9 @@ Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `erro
 
 ##### `password`
 Required. The password for authenticating to AEM.
+
+##### `protocol_http_method`
+Optional. Sets the HTTP method to use for the reverse replication request. Default: `GET`
 
 ##### `runmode`
 Required. Sets the runmode for persisting the Replication agent.
@@ -947,7 +950,7 @@ The `aem::dispatcher` class requires the Puppet Apache module; however since the
 
 ### OS Compatibility
 
-This module has been tested on: 
+This module has been tested on:
 
 - CentOS 7, 7.2
 - Ubuntu 12.04*, 14.04
@@ -981,7 +984,7 @@ There is an oddity with the `aem::service` support on Debian: even though specif
 
 ## Development
 
-This module in its early stages, any updates or feature additions are welcome. 
+This module in its early stages, any updates or feature additions are welcome.
 
 _Please make sure you do not include any AEM Installer jars in PRs._
 
