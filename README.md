@@ -70,7 +70,7 @@
 
 **Note**: This module modifies AEM installation directories and configuration files, overwriting any existing configurations. AEM configurations should be managed by Puppet, as unmanaged configuration files may cause unexpected behaviour.
 
-### Setup Requirements 
+### Setup Requirements
 
 AEM uses Ruby-based providers, so you must enable pluginsync. Java is also required to be installed on the system. Finally, due to the AEM platform being proprietary, this module does not provide the installation jar file; it must be provided by the consumer.
 
@@ -150,7 +150,7 @@ Optional. Sets the *DispatcherPassError* value for the dispatcher configuration.
 Optional. Sets the *DispatcherUseProcessedURL* value for the dispatcher configuration. Valid options: `0`, `1`, `off` or `on`. Default: `off`.
 
 ##### `user`
-Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `root`.
+Optional. Sets the user for file ownership. Valid options: any valid user. Default: `root`.
 
 ### Public Defines
 
@@ -192,7 +192,7 @@ Optional. Set's whether or not to overwrite the current password values. For mor
 Required. Sets the directory in which AEM exists. Valid options: any absolute path.
 
 ##### `log_level`
-Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Deafult: `info`.
+Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Default: `info`.
 
 ##### `password`
 Required. The password for authenticating to AEM.
@@ -337,7 +337,7 @@ Optional. Set's whether or not to overwrite the current password values. For mor
 Required. Sets the directory in which AEM exists. Valid options: any absolute path.
 
 ##### `log_level`
-Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Deafult: `info`.
+Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Default: `info`.
 
 ##### `password`
 Required. The password for authenticating to AEM.
@@ -422,7 +422,7 @@ Optional. Set's whether or not to overwrite the current password values. For mor
 Required. Sets the directory in which AEM exists. Valid options: any absolute path.
 
 ##### `log_level`
-Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Deafult: `info`.
+Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Default: `info`.
 
 ##### `password`
 Required. The password for authenticating to AEM.
@@ -501,7 +501,7 @@ Optional. Set's whether or not to overwrite the current password values. For mor
 Required. Sets the directory in which AEM exists. Valid options: any absolute path.
 
 ##### `log_level`
-Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Deafult: `info`.
+Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Default: `info`.
 
 ##### `password`
 Required. The password for authenticating to AEM.
@@ -562,7 +562,7 @@ Optional. Sets whether or not the agent is enabled. Valid options: `true` or `fa
 Required. Sets the directory in which AEM exists. Valid options: any absolute path.
 
 ##### `log_level`
-Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Deafult: `info`.
+Optional. Sets the log level of the agent. Valid options: `debug`, `info`, `error`. Default: `info`.
 
 ##### `password`
 Required. The password for authenticating to AEM.
@@ -743,7 +743,7 @@ Optional. Sets whether or not this instance will manage the defined home directo
 Optional. Sets whether or not this instance will manage the defined user. Valid options: `true` or `false`. Default: `true`.
 
 ##### `osgi_configs`
-Optional. Creates *file* type definitions of `aem::osgi::config` which will be applied prior to inital AEM start. The structure can either be a hash of the properties, or a Hash specifying the *pid* and the *properties*. If only properties are specified, the key is expected to be the *pid*. Valid options: Hash or Array of Hash configurations.
+Optional. Creates *file* type definitions of `aem::osgi::config` which will be applied prior to initial AEM start. The structure can either be a hash of the properties, or a Hash specifying the *pid* and the *properties*. If only properties are specified, the key is expected to be the *pid*. Valid options: Hash or Array of Hash configurations.
 
 ##### `port`
 Optional. Specifies the port on which AEM will listen. Valid options: any valid port. Default: 4502. [Sling documentation][Sling command-line-options]
@@ -781,7 +781,7 @@ Optional. Sets the version of AEM. Informational only, does not affect installat
 
 #### Define: `aem::license`
 
-Manages an AEM License file. Provides a convenient tool for managing the license file contents without needing ot know the structure. For examples, see the [wiki](docs/AEM-License.md).
+Manages an AEM License file. Provides a convenient tool for managing the license file contents without needing to know the structure. For examples, see the [wiki](docs/AEM-License.md).
 
 **Parameters within `aem::license`:**
 
@@ -804,7 +804,7 @@ Required. Sets the directory in which the license will be placed. Valid options:
 Required. Sets the license key for AEM. Valid options: any string.
 
 ##### `user`
-Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `aem`.
+Optional. Sets the user for file ownership. Valid options: any valid user. Default: `aem`.
 
 ##### `version`
 Optional. Sets the version of AEM for the license file contents. Valid options: any string.
@@ -840,14 +840,14 @@ Required. Sets the configuration properties to persist. Valid options: a hash of
 Required. Sets the means by which to persist the configuration. Valid options:  `console` or `file`. `console` will use API calls to the OSGi Web Console. `file` will persist to a properties file in the *crx-quickstart/install* folder.
 
 ##### `user`
-Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `aem`.
+Optional. Sets the user for file ownership. Valid options: any valid user. Default: `aem`.
 
 ##### `username`
 Required if **type** == `console`. Sets the user for accessing the OSGI console. Valid options: any valid user.
 
 #### Define: `aem::service`
 
-Manages the AEM daemon. Creating a definition for this is not necesary unless the `aem::instance`'s *manage_service* is **false**. For examples, see the [wiki](docs/AEM-Service.md)
+Manages the AEM daemon. Creating a definition for this is not necessary unless the `aem::instance`'s *manage_service* is **false**. For examples, see the [wiki](docs/AEM-Service.md)
 
 **Parameters within `aem::service`:**
 
@@ -871,7 +871,7 @@ Optional. Changes the state of the service on the system, defining whether or no
 * `unmanaged`: Don't manage it with service manager, running state is arbitrary.
 
 ##### `user`
-Optional. Sets the user for for file ownership. Valid options: any valid user. Default: `aem`.
+Optional. Sets the user for file ownership. Valid options: any valid user. Default: `aem`.
 
 ### Public Types
 
@@ -905,7 +905,7 @@ Required. The password for authentication to AEM.
 Optional. List of resource properties which should be ignored as _passwords_ unless `force_passwords` is _true_. Valid options: Array of values.
 
 ##### `protected_properties`
-Optional. List of properties which cannot be updated. They will be persisted when creating, but ignored during updates. Valid optoins: Array of values. Default: `['jcr:primaryType']`.
+Optional. List of properties which cannot be updated. They will be persisted when creating, but ignored during updates. Valid options: Array of values. Default: `['jcr:primaryType']`.
 
 ##### `username`
 Required. The username for authentication to AEM.
@@ -923,7 +923,7 @@ Optional. Sets the timeout, in seconds, when waiting for a response. Valid optio
 ### Private Defines
 
 #### Define: `aem::package`
-This define unpacks the AEM Quickstart jar for prepartion to configure.
+This define unpacks the AEM Quickstart jar for preparation to configure.
 
 #### Define: `aem::config`
 This define sets up the start templates to ensure the AEM instance executes with the correct state.
@@ -934,7 +934,7 @@ This define is used to manage OSGi Configurations which are of type `file`.
 ### Private Types
 
 #### Type: `aem_installer`
-This custom type starts the AEM instance to create the base repository, monitors for it's initalization, then shuts the system down.
+This custom type starts the AEM instance to create the base repository, monitors for it's initialization, then shuts the system down.
 
 #### Type: `aem_osgi_config`
 This custom type manages OSGi Configurations which are of type `console`.
@@ -943,11 +943,11 @@ This custom type manages OSGi Configurations which are of type `console`.
 
 ### Dependencies
 
-The `aem::dispatcher` class requires the Puppet Apache module; however since the use of this class is optional, this dependency is not delcared explicitly.
+The `aem::dispatcher` class requires the Puppet Apache module; however since the use of this class is optional, this dependency is not declared explicitly.
 
 ### OS Compatibility
 
-This module has been tested on: 
+This module has been tested on:
 
 - CentOS 7, 7.2
 - Ubuntu 12.04*, 14.04
@@ -981,7 +981,7 @@ There is an oddity with the `aem::service` support on Debian: even though specif
 
 ## Development
 
-This module in its early stages, any updates or feature additions are welcome. 
+This module in its early stages, any updates or feature additions are welcome.
 
 _Please make sure you do not include any AEM Installer jars in PRs._
 
