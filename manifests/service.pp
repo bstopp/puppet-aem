@@ -28,6 +28,9 @@ define aem::service (
         $provider      = 'init'
       }
     }
+    'Amazon' : {
+      $provider = 'init'
+    }
     'Debian': {
 
       if versioncmp($::operatingsystemmajrelease, '8') >= 0 {

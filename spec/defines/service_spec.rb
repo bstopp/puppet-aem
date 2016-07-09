@@ -87,6 +87,31 @@ describe 'aem::service', :type => :defines do
     end
   end
 
+  describe 'Amazon' do
+    context 'all versions' do
+
+      let(:facts) do
+        default_facts.merge(:operatingsystem => 'Amazon', :operatingsystemmajrelease => '2016')
+      end
+
+      let(:params) do
+        default_params
+      end
+
+      it do
+        is_expected.to contain_aem__service__init('aem').only_with(
+          :ensure => 'present',
+          :name   => 'aem',
+          :status => 'enabled',
+          :group  => 'aem',
+          :home   => '/opt/aem',
+          :user   => 'aem'
+        )
+      end
+    end
+
+  end
+
   describe 'Debian' do
     context 'version >= 8' do
 
