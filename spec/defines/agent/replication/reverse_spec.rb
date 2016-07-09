@@ -30,18 +30,19 @@ describe 'aem::agent::replication::reverse', :type => :defines do
         is_expected.to contain_aem__agent__replication(
           'Agent Title'
         ).only_with(
-          :enabled             => true,
-          :ensure              => 'present',
-          :home                => '/opt/aem',
-          :log_level           => 'info',
-          :name                => 'agentname',
-          :password            => 'password',
-          :resource_type       => 'cq/replication/components/revagent',
-          :reverse             => true,
-          :runmode             => 'author',
-          :serialize_type      => 'durbo',
-          :template            => '/libs/cq/replication/templates/revagent',
-          :username            => 'username'
+          :enabled              => true,
+          :ensure               => 'present',
+          :home                 => '/opt/aem',
+          :log_level            => 'info',
+          :name                 => 'agentname',
+          :password             => 'password',
+          :protocol_http_method => 'GET',
+          :resource_type        => 'cq/replication/components/revagent',
+          :reverse              => true,
+          :runmode              => 'author',
+          :serialize_type       => 'durbo',
+          :template             => '/libs/cq/replication/templates/revagent',
+          :username             => 'username'
         )
       end
     end
@@ -57,6 +58,7 @@ describe 'aem::agent::replication::reverse', :type => :defines do
           :log_level            => 'error',
           :name                 => 'agentname',
           :password             => 'password',
+          :protocol_http_method => 'GET',
           :runmode              => 'author',
           :timeout              => 2000,
           :trans_allow_exp_cert => true,
@@ -81,6 +83,7 @@ describe 'aem::agent::replication::reverse', :type => :defines do
           :log_level            => 'error',
           :name                 => 'agentname',
           :password             => 'password',
+          :protocol_http_method => 'GET',
           :resource_type        => 'cq/replication/components/revagent',
           :runmode              => 'author',
           :reverse              => true,
@@ -108,18 +111,19 @@ describe 'aem::agent::replication::reverse', :type => :defines do
         is_expected.to contain_aem__agent__replication(
           'Agent Title'
         ).only_with(
-          :enabled             => true,
-          :ensure              => 'absent',
-          :home                => '/opt/aem',
-          :log_level           => 'info',
-          :name                => 'agentname',
-          :password            => 'password',
-          :resource_type       => 'cq/replication/components/revagent',
-          :reverse             => true,
-          :runmode             => 'author',
-          :serialize_type      => 'durbo',
-          :template            => '/libs/cq/replication/templates/revagent',
-          :username            => 'username'
+          :enabled              => true,
+          :ensure               => 'absent',
+          :home                 => '/opt/aem',
+          :log_level            => 'info',
+          :name                 => 'agentname',
+          :password             => 'password',
+          :protocol_http_method => 'GET',
+          :resource_type        => 'cq/replication/components/revagent',
+          :reverse              => true,
+          :runmode              => 'author',
+          :serialize_type       => 'durbo',
+          :template             => '/libs/cq/replication/templates/revagent',
+          :username             => 'username'
         )
       end
     end
