@@ -222,7 +222,8 @@ define aem::dispatcher::farm(
       ensure  => $ensure,
       content => template("${module_name}/dispatcher/dispatcher.any.erb"),
     }
-  } else {
+  }
+  else {
     file { "${::aem::dispatcher::params::farm_path}/dispatcher.${name}.inc.any" :
       ensure => $ensure,
       notify => Service[$::apache::service_name],
