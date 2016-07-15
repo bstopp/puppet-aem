@@ -42,7 +42,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.aem-site.inc.any'
           ).with('ensure' => 'absent')
         end
       end

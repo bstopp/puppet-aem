@@ -224,8 +224,8 @@ define aem::dispatcher::farm(
     }
   } else {
     file { "${::aem::dispatcher::params::farm_path}/dispatcher.${name}.inc.any" :
-      ensure  => $ensure,
-      notify  => Service[$::apache::service_name],
+      ensure => $ensure,
+      notify => Service[$::apache::service_name],
     }
   }
 
