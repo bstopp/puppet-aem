@@ -17,6 +17,7 @@ define aem::dispatcher::farm(
   $ignore_parameters   = undef,
   $invalidate          = undef,
   $invalidate_handler  = undef,
+  $priority            = $::aem::dispatcher::params::priority,
   $propagate_synd_post = undef,
   $renders             = $::aem::dispatcher::params::renders,
   $retries             = undef,
@@ -128,6 +129,25 @@ define aem::dispatcher::farm(
     }
   }
 
+  if $priority {
+    if $priority.is_a(Integer) {
+      validate_integer($priority, 99, 0)
+      if $priority < 10 {
+        $priority_string = "0${priority}"
+      }
+      else {
+        $priority_string = $priority
+      }
+    }
+    else {
+      fail('Priority should be a valid Integer from 0 to 99')
+    }
+
+  }
+  else {
+    $priority_string = '00'
+  }
+
   if $propagate_synd_post {
     validate_integer($propagate_synd_post, 1, 0)
   }
@@ -218,13 +238,12 @@ define aem::dispatcher::farm(
   }
 
   if $ensure == 'present' {
-    file { "${::aem::dispatcher::params::farm_path}/dispatcher.${name}.inc.any" :
+    file { "${::aem::dispatcher::params::farm_path}/dispatcher.${priority_string}-${name}.inc.any" :
       ensure  => $ensure,
       content => template("${module_name}/dispatcher/dispatcher.any.erb"),
     }
-  }
-  else {
-    file { "${::aem::dispatcher::params::farm_path}/dispatcher.${name}.inc.any" :
+  } else {
+    file { "${::aem::dispatcher::params::farm_path}/dispatcher.${priority_string}-${name}.inc.any" :
       ensure => $ensure,
       notify => Service[$::apache::service_name],
     }

@@ -47,7 +47,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.inc.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/allowedClients {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "10.200.1.1" }\s*}|
         )
@@ -66,7 +66,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.inc.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/rules {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }|
         )
@@ -85,7 +85,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.inc.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/filter {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "/content\*" }|
         )
@@ -104,7 +104,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.inc.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/ignoreUrlParams {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "param=\*" }\s*}|
         )
@@ -123,7 +123,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.inc.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/invalidate {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }\s*|
         )
@@ -142,7 +142,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.inc.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/statistics {\s*/categories {\s*/html { /glob "\*.html" }\s*/others { /glob "\*" }\s*}\s*}|
         )

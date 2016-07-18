@@ -42,7 +42,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.inc.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with('ensure' => 'absent')
         end
       end
@@ -444,6 +444,57 @@ describe 'aem::dispatcher::farm', :type => :define do
           )
         end
         it { expect { is_expected.to compile }.to raise_error(/Both.*can not be set./) }
+      end
+    end
+
+    context 'priority' do
+      context 'should accept undef' do
+        let(:params) do
+          default_params.merge(:priority => :undef)
+        end
+        it { is_expected.to compile.with_all_deps }
+      end
+      context 'should accept 0' do
+        let(:params) do
+          default_params.merge(:priority => 0)
+        end
+        it { is_expected.to compile.with_all_deps }
+      end
+      context 'should accept 1' do
+        let(:params) do
+          default_params.merge(:priority => 1)
+        end
+        it { is_expected.to compile.with_all_deps }
+      end
+      context 'should accept 99' do
+        let(:params) do
+          default_params.merge(:priority => 99)
+        end
+        it { is_expected.to compile.with_all_deps }
+      end
+      context 'should not accept 100' do
+        let(:params) do
+          default_params.merge(:priority => 100)
+        end
+        it { expect { is_expected.to compile }.to raise_error(/Expected 100 to be smaller or equal to 99, got 100/) }
+      end
+      context 'should not accept 101' do
+        let(:params) do
+          default_params.merge(:priority => 101)
+        end
+        it { expect { is_expected.to compile }.to raise_error(/Expected 101 to be smaller or equal to 99, got 101/) }
+      end
+      context 'should not accept negative priorities' do
+        let(:params) do
+          default_params.merge(:priority => -1)
+        end
+        it { expect { is_expected.to compile }.to raise_error(/Expected -1 to be greater or equal to 0, got -1/) }
+      end
+      context 'should not accept strings' do
+        let(:params) do
+          default_params.merge(:priority => '0')
+        end
+        it { expect { is_expected.to compile }.to raise_error(/Priority should be a valid Integer/) }
       end
     end
 
