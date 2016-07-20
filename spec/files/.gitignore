@@ -2,3 +2,4 @@
 
 !.gitignore
 !faux-start-env
+!ensure-running.sh
