@@ -38,7 +38,7 @@ end
 def setup_puppet(host)
 
   step 'Install puppet on agent'
-  on(host, '')
+  install_puppetlabs_release_repo host, 'pc1'
   configure_defaults_on host, 'foss'
   install_puppet_agent_on host
   configure_puppet_on(host, {})
