@@ -71,6 +71,7 @@ define aem::config(
           $_pid = $values['pid']
         } else {
           $_props = $values
+          $_pid = undef
         }
 
         aem::osgi::config { $key :
