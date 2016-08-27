@@ -1,10 +1,10 @@
 require 'spec_helper_acceptance'
 
-describe 'console osgi configs', :license => false do
+describe 'console osgi configs', license: false do
 
   let(:facts) do
     {
-      :environment => :root
+      environment: :root
     }
   end
 
@@ -47,7 +47,7 @@ describe 'console osgi configs', :license => false do
       }
     MANIFEST
 
-    apply_manifest_on(master, pp, :catch_failures => true)
+    apply_manifest_on(master, pp, catch_failures: true)
     restart_puppetserver
     fqdn = on(master, 'facter fqdn').stdout.strip
     fqdn = fqdn.chop if fqdn.end_with?('.')
@@ -55,13 +55,13 @@ describe 'console osgi configs', :license => false do
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0, 2]
+      acceptable_exit_codes: [0, 2]
     )
 
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0]
+      acceptable_exit_codes: [0]
     )
   end
 
@@ -95,7 +95,7 @@ describe 'console osgi configs', :license => false do
       }
     MANIFEST
 
-    apply_manifest_on(master, pp, :catch_failures => true)
+    apply_manifest_on(master, pp, catch_failures: true)
     restart_puppetserver
     fqdn = on(master, 'facter fqdn').stdout.strip
     fqdn = fqdn.chop if fqdn.end_with?('.')
@@ -103,7 +103,7 @@ describe 'console osgi configs', :license => false do
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0, 2]
+      acceptable_exit_codes: [0, 2]
     )
 
     site = <<-MANIFEST
@@ -133,7 +133,7 @@ describe 'console osgi configs', :license => false do
       }
     MANIFEST
 
-    apply_manifest_on(master, pp, :catch_failures => true)
+    apply_manifest_on(master, pp, catch_failures: true)
     restart_puppetserver
     fqdn = on(master, 'facter fqdn').stdout.strip
     fqdn = fqdn.chop if fqdn.end_with?('.')
@@ -141,13 +141,13 @@ describe 'console osgi configs', :license => false do
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0, 2]
+      acceptable_exit_codes: [0, 2]
     )
 
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0]
+      acceptable_exit_codes: [0]
     )
 
     cmd = 'curl http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json '
@@ -196,7 +196,7 @@ describe 'console osgi configs', :license => false do
       }
     MANIFEST
 
-    apply_manifest_on(master, pp, :catch_failures => true)
+    apply_manifest_on(master, pp, catch_failures: true)
     restart_puppetserver
     fqdn = on(master, 'facter fqdn').stdout.strip
     fqdn = fqdn.chop if fqdn.end_with?('.')
@@ -204,7 +204,7 @@ describe 'console osgi configs', :license => false do
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0, 2]
+      acceptable_exit_codes: [0, 2]
     )
 
     site = <<-MANIFEST
@@ -233,7 +233,7 @@ describe 'console osgi configs', :license => false do
       }
     MANIFEST
 
-    apply_manifest_on(master, pp, :catch_failures => true)
+    apply_manifest_on(master, pp, catch_failures: true)
     restart_puppetserver
     fqdn = on(master, 'facter fqdn').stdout.strip
     fqdn = fqdn.chop if fqdn.end_with?('.')
@@ -241,13 +241,13 @@ describe 'console osgi configs', :license => false do
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0, 2]
+      acceptable_exit_codes: [0, 2]
     )
 
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0]
+      acceptable_exit_codes: [0]
     )
 
     cmd = 'curl http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json '

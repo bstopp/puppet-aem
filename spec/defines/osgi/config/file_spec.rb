@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::osgi::config::file', :type => :defines do
+describe 'aem::osgi::config::file', type: :defines do
 
   let(:facts) do
     {
-      :kernel => 'Linux'
+      kernel: 'Linux'
     }
   end
 
@@ -15,17 +15,17 @@ describe 'aem::osgi::config::file', :type => :defines do
 
   let(:default_params) do
     {
-      :ensure     => 'present',
-      :group      => 'aem',
-      :home       => '/opt/aem',
-      :pid        => :undef,
-      :properties => {
+      ensure: 'present',
+      group: 'aem',
+      home: '/opt/aem',
+      pid: :undef,
+      properties: {
         'boolean' => false,
         'long'    => 123_456_789,
         'string'  => 'string',
         'array'   => ['an', 'array', 'of', 'values']
       },
-      :user => 'aem'
+      user: 'aem'
     }
   end
 
@@ -46,7 +46,7 @@ describe 'aem::osgi::config::file', :type => :defines do
 
       context 'specified group' do
         let(:params) do
-          default_params.merge(:group => 'vagrant')
+          default_params.merge(group: 'vagrant')
         end
         it { is_expected.to contain_file('/opt/aem/crx-quickstart/install/aem.config').with_group('vagrant') }
       end
@@ -59,7 +59,7 @@ describe 'aem::osgi::config::file', :type => :defines do
 
       context 'specified owner' do
         let(:params) do
-          default_params.merge(:user => 'vagrant')
+          default_params.merge(user: 'vagrant')
         end
         it { is_expected.to contain_file('/opt/aem/crx-quickstart/install/aem.config').with_owner('vagrant') }
       end
@@ -137,7 +137,7 @@ describe 'aem::osgi::config::file', :type => :defines do
     let(:pre_condition) { 'file { "/opt/aem" : }' }
 
     let(:params) do
-      default_params.merge(:pid => 'aem.osgi')
+      default_params.merge(pid: 'aem.osgi')
     end
 
     context 'default' do

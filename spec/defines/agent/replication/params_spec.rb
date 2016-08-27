@@ -1,19 +1,19 @@
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::agent::replication', :type => :defines do
+describe 'aem::agent::replication', type: :defines do
 
   let(:default_params) do
     {
-      :ensure         => 'present',
-      :home           => '/opt/aem',
-      :name           => 'agentname',
-      :password       => 'password',
-      :resource_type  => 'cq/replication/components/agent',
-      :runmode        => 'author',
-      :serialize_type => 'durbo',
-      :template       => '/libs/cq/replication/templates/agent',
-      :username       => 'username'
+      ensure: 'present',
+      home: '/opt/aem',
+      name: 'agentname',
+      password: 'password',
+      resource_type: 'cq/replication/components/agent',
+      runmode: 'author',
+      serialize_type: 'durbo',
+      template: '/libs/cq/replication/templates/agent',
+      username: 'username'
     }
   end
 
@@ -29,24 +29,24 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'true' do
-        let(:params) { default_params.merge(:batch_enabled => true) }
+        let(:params) { default_params.merge(batch_enabled: true) }
         it { is_expected.to compile }
       end
 
       context 'false' do
-        let(:params) { default_params.merge(:batch_enabled => false) }
+        let(:params) { default_params.merge(batch_enabled: false) }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:batch_enabled => 'not boolean') }
+        let(:params) { default_params.merge(batch_enabled: 'not boolean') }
         it { is_expected.to raise_error(/is not a boolean/) }
       end
     end
 
     context 'batch max wait' do
       context 'is specified' do
-        let(:params) { default_params.merge(:batch_max_wait => 60) }
+        let(:params) { default_params.merge(batch_max_wait: 60) }
         it { is_expected.to compile }
       end
 
@@ -56,24 +56,24 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'is not an integer' do
-        let(:params) { default_params.merge(:batch_max_wait => 'not a number') }
+        let(:params) { default_params.merge(batch_max_wait: 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
       end
 
       context 'is negative' do
-        let(:params) { default_params.merge(:batch_max_wait => '-1') }
+        let(:params) { default_params.merge(batch_max_wait: '-1') }
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
 
       context 'is 0' do
-        let(:params) { default_params.merge(:batch_max_wait => '0') }
+        let(:params) { default_params.merge(batch_max_wait: '0') }
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
     end
 
     context 'batch trigger size' do
       context 'is specified' do
-        let(:params) { default_params.merge(:batch_trigger_size => 10) }
+        let(:params) { default_params.merge(batch_trigger_size: 10) }
         it { is_expected.to compile }
       end
 
@@ -83,17 +83,17 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'is not an integer' do
-        let(:params) { default_params.merge(:batch_trigger_size => 'not a number') }
+        let(:params) { default_params.merge(batch_trigger_size: 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
       end
 
       context 'is negative' do
-        let(:params) { default_params.merge(:batch_trigger_size => '-1') }
+        let(:params) { default_params.merge(batch_trigger_size: '-1') }
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
 
       context 'is 0' do
-        let(:params) { default_params.merge(:batch_trigger_size => '0') }
+        let(:params) { default_params.merge(batch_trigger_size: '0') }
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
     end
@@ -105,12 +105,12 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'absent' do
-        let(:params) { default_params.merge(:ensure => 'absent') }
+        let(:params) { default_params.merge(ensure: 'absent') }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:ensure => 'invalid') }
+        let(:params) { default_params.merge(ensure: 'invalid') }
         it { is_expected.to raise_error(/not supported for ensure/) }
       end
     end
@@ -122,12 +122,12 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'false' do
-        let(:params) { default_params.merge(:enabled => false) }
+        let(:params) { default_params.merge(enabled: false) }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:enabled => 'not boolean') }
+        let(:params) { default_params.merge(enabled: 'not boolean') }
         it { is_expected.to raise_error(/is not a boolean/) }
       end
     end
@@ -139,12 +139,12 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'an array' do
-        let(:params) { default_params.merge(:protocol_http_headers => ['header1', 'header2']) }
+        let(:params) { default_params.merge(protocol_http_headers: ['header1', 'header2']) }
         it { is_expected.to compile }
       end
 
       context 'not an array' do
-        let(:params) { default_params.merge(:protocol_http_headers => 'not an array') }
+        let(:params) { default_params.merge(protocol_http_headers: 'not an array') }
         it { is_expected.to raise_error(/not an array/) }
       end
     end
@@ -166,7 +166,7 @@ describe 'aem::agent::replication', :type => :defines do
 
       context 'not absolute' do
         let(:params) do
-          default_params.merge(:home => 'not/absolute/path')
+          default_params.merge(home: 'not/absolute/path')
         end
         it { expect { is_expected.to compile }.to raise_error(/is not an absolute path/) }
       end
@@ -174,7 +174,7 @@ describe 'aem::agent::replication', :type => :defines do
 
     context 'log level' do
       context 'debug' do
-        let(:params) { default_params.merge(:log_level => 'debug') }
+        let(:params) { default_params.merge(log_level: 'debug') }
         it { is_expected.to compile }
       end
 
@@ -184,29 +184,29 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'error' do
-        let(:params) { default_params.merge(:log_level => 'error') }
+        let(:params) { default_params.merge(log_level: 'error') }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:log_level => 'invalid') }
+        let(:params) { default_params.merge(log_level: 'invalid') }
         it { is_expected.to raise_error(/not supported for log_level/) }
       end
     end
 
     context 'name' do
       context 'has a hyphen' do
-        let(:params) { default_params.merge(:name => 'has-hyphen') }
+        let(:params) { default_params.merge(name: 'has-hyphen') }
         it { is_expected.to compile }
       end
 
       context 'has an underscore' do
-        let(:params) { default_params.merge(:name => 'has_underscore') }
+        let(:params) { default_params.merge(name: 'has_underscore') }
         it { is_expected.to compile }
       end
 
       context 'is not valid' do
-        let(:params) { default_params.merge(:name => 'has a space') }
+        let(:params) { default_params.merge(name: 'has a space') }
         it { is_expected.to raise_error(/letters, numbers, underscores, or hyphens/) }
       end
     end
@@ -234,24 +234,24 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'true' do
-        let(:params) { default_params.merge(:protocol_close_conn => true) }
+        let(:params) { default_params.merge(protocol_close_conn: true) }
         it { is_expected.to compile }
       end
 
       context 'false' do
-        let(:params) { default_params.merge(:protocol_close_conn => false) }
+        let(:params) { default_params.merge(protocol_close_conn: false) }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:protocol_close_conn => 'not boolean') }
+        let(:params) { default_params.merge(protocol_close_conn: 'not boolean') }
         it { is_expected.to raise_error(/is not a boolean/) }
       end
     end
 
     context 'protocol connection timeout' do
       context 'is specified' do
-        let(:params) { default_params.merge(:protocol_conn_timeout => 10_000) }
+        let(:params) { default_params.merge(protocol_conn_timeout: 10_000) }
         it { is_expected.to compile }
       end
 
@@ -261,24 +261,24 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'is not an integer' do
-        let(:params) { default_params.merge(:protocol_conn_timeout => 'not a number') }
+        let(:params) { default_params.merge(protocol_conn_timeout: 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
       end
 
       context 'is negative' do
-        let(:params) { default_params.merge(:protocol_conn_timeout => '-1') }
+        let(:params) { default_params.merge(protocol_conn_timeout: '-1') }
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
 
       context 'is 0' do
-        let(:params) { default_params.merge(:protocol_conn_timeout => '0') }
+        let(:params) { default_params.merge(protocol_conn_timeout: '0') }
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
     end
 
     context 'protocol socket timeout' do
       context 'is specified' do
-        let(:params) { default_params.merge(:protocol_sock_timeout => 10_000) }
+        let(:params) { default_params.merge(protocol_sock_timeout: 10_000) }
         it { is_expected.to compile }
       end
 
@@ -288,24 +288,24 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'is not an integer' do
-        let(:params) { default_params.merge(:protocol_sock_timeout => 'not a number') }
+        let(:params) { default_params.merge(protocol_sock_timeout: 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
       end
 
       context 'is negative' do
-        let(:params) { default_params.merge(:protocol_sock_timeout => '-1') }
+        let(:params) { default_params.merge(protocol_sock_timeout: '-1') }
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
 
       context 'is 0' do
-        let(:params) { default_params.merge(:protocol_sock_timeout => '0') }
+        let(:params) { default_params.merge(protocol_sock_timeout: '0') }
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
     end
 
     context 'proxy port' do
       context 'is specified' do
-        let(:params) { default_params.merge(:proxy_port => 1002) }
+        let(:params) { default_params.merge(proxy_port: 1002) }
         it { is_expected.to compile }
       end
 
@@ -315,17 +315,17 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'is not an integer' do
-        let(:params) { default_params.merge(:proxy_port => 'not a number') }
+        let(:params) { default_params.merge(proxy_port: 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
       end
 
       context 'is negative' do
-        let(:params) { default_params.merge(:proxy_port => '-1') }
+        let(:params) { default_params.merge(proxy_port: '-1') }
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
 
       context 'is 0' do
-        let(:params) { default_params.merge(:proxy_port => '0') }
+        let(:params) { default_params.merge(proxy_port: '0') }
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
     end
@@ -362,7 +362,7 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'is not an integer' do
-        let(:params) { default_params.merge(:retry_delay => 'not a number') }
+        let(:params) { default_params.merge(retry_delay: 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
       end
     end
@@ -374,17 +374,17 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'true' do
-        let(:params) { default_params.merge(:reverse => true) }
+        let(:params) { default_params.merge(reverse: true) }
         it { is_expected.to compile }
       end
 
       context 'false' do
-        let(:params) { default_params.merge(:reverse => false) }
+        let(:params) { default_params.merge(reverse: false) }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:reverse => 'not boolean') }
+        let(:params) { default_params.merge(reverse: 'not boolean') }
         it { is_expected.to raise_error(/is not a boolean/) }
       end
     end
@@ -423,13 +423,13 @@ describe 'aem::agent::replication', :type => :defines do
 
     context 'static directory' do
       context 'specified' do
-        let(:params) { default_params.merge(:static_directory => '/fully/absolute') }
+        let(:params) { default_params.merge(static_directory: '/fully/absolute') }
         it { is_expected.to compile }
       end
 
       context 'not absolute' do
         let(:params) do
-          default_params.merge(:static_directory => 'not/absolute/path')
+          default_params.merge(static_directory: 'not/absolute/path')
         end
         it { expect { is_expected.to compile }.to raise_error(/is not an absolute path/) }
       end
@@ -453,7 +453,7 @@ describe 'aem::agent::replication', :type => :defines do
 
     context 'timeout' do
       context 'is specified' do
-        let(:params) { default_params.merge(:timeout => 60) }
+        let(:params) { default_params.merge(timeout: 60) }
         it { is_expected.to compile }
       end
 
@@ -463,17 +463,17 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'is not an integer' do
-        let(:params) { default_params.merge(:timeout => 'not a number') }
+        let(:params) { default_params.merge(timeout: 'not a number') }
         it { is_expected.to raise_error(/first argument to be an Integer/) }
       end
 
       context 'is negative' do
-        let(:params) { default_params.merge(:timeout => '-1') }
+        let(:params) { default_params.merge(timeout: '-1') }
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
 
       context 'is 0' do
-        let(:params) { default_params.merge(:timeout => '0') }
+        let(:params) { default_params.merge(timeout: '0') }
         it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
       end
     end
@@ -485,17 +485,17 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'true' do
-        let(:params) { default_params.merge(:trans_allow_exp_cert => true) }
+        let(:params) { default_params.merge(trans_allow_exp_cert: true) }
         it { is_expected.to compile }
       end
 
       context 'false' do
-        let(:params) { default_params.merge(:trans_allow_exp_cert => false) }
+        let(:params) { default_params.merge(trans_allow_exp_cert: false) }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:trans_allow_exp_cert => 'not boolean') }
+        let(:params) { default_params.merge(trans_allow_exp_cert: 'not boolean') }
         it { is_expected.to raise_error(/is not a boolean/) }
       end
     end
@@ -507,22 +507,22 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'default' do
-        let(:params) { default_params.merge(:trans_ssl => 'default') }
+        let(:params) { default_params.merge(trans_ssl: 'default') }
         it { is_expected.to compile }
       end
 
       context 'relaxed' do
-        let(:params) { default_params.merge(:trans_ssl => 'relaxed') }
+        let(:params) { default_params.merge(trans_ssl: 'relaxed') }
         it { is_expected.to compile }
       end
 
       context 'clientauth' do
-        let(:params) { default_params.merge(:trans_ssl => 'clientauth') }
+        let(:params) { default_params.merge(trans_ssl: 'clientauth') }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:trans_ssl => 'invalid') }
+        let(:params) { default_params.merge(trans_ssl: 'invalid') }
         it { is_expected.to raise_error(/not supported for trans_ssl/) }
       end
     end
@@ -534,17 +534,17 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'true' do
-        let(:params) { default_params.merge(:trigger_ignore_def => true) }
+        let(:params) { default_params.merge(trigger_ignore_def: true) }
         it { is_expected.to compile }
       end
 
       context 'false' do
-        let(:params) { default_params.merge(:trigger_ignore_def => false) }
+        let(:params) { default_params.merge(trigger_ignore_def: false) }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:trigger_ignore_def => 'not boolean') }
+        let(:params) { default_params.merge(trigger_ignore_def: 'not boolean') }
         it { is_expected.to raise_error(/is not a boolean/) }
       end
     end
@@ -556,17 +556,17 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'true' do
-        let(:params) { default_params.merge(:trigger_no_status => true) }
+        let(:params) { default_params.merge(trigger_no_status: true) }
         it { is_expected.to compile }
       end
 
       context 'false' do
-        let(:params) { default_params.merge(:trigger_no_status => false) }
+        let(:params) { default_params.merge(trigger_no_status: false) }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:trigger_no_status => 'not boolean') }
+        let(:params) { default_params.merge(trigger_no_status: 'not boolean') }
         it { is_expected.to raise_error(/is not a boolean/) }
       end
     end
@@ -578,17 +578,17 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'true' do
-        let(:params) { default_params.merge(:trigger_no_version => true) }
+        let(:params) { default_params.merge(trigger_no_version: true) }
         it { is_expected.to compile }
       end
 
       context 'false' do
-        let(:params) { default_params.merge(:trigger_no_version => false) }
+        let(:params) { default_params.merge(trigger_no_version: false) }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:trigger_no_version => 'not boolean') }
+        let(:params) { default_params.merge(trigger_no_version: 'not boolean') }
         it { is_expected.to raise_error(/is not a boolean/) }
       end
     end
@@ -600,17 +600,17 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'true' do
-        let(:params) { default_params.merge(:trigger_on_dist => true) }
+        let(:params) { default_params.merge(trigger_on_dist: true) }
         it { is_expected.to compile }
       end
 
       context 'false' do
-        let(:params) { default_params.merge(:trigger_on_dist => false) }
+        let(:params) { default_params.merge(trigger_on_dist: false) }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:trigger_on_dist => 'not boolean') }
+        let(:params) { default_params.merge(trigger_on_dist: 'not boolean') }
         it { is_expected.to raise_error(/is not a boolean/) }
       end
     end
@@ -622,17 +622,17 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'true' do
-        let(:params) { default_params.merge(:trigger_on_mod => true) }
+        let(:params) { default_params.merge(trigger_on_mod: true) }
         it { is_expected.to compile }
       end
 
       context 'false' do
-        let(:params) { default_params.merge(:trigger_on_mod => false) }
+        let(:params) { default_params.merge(trigger_on_mod: false) }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:trigger_on_mod => 'not boolean') }
+        let(:params) { default_params.merge(trigger_on_mod: 'not boolean') }
         it { is_expected.to raise_error(/is not a boolean/) }
       end
     end
@@ -644,17 +644,17 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'true' do
-        let(:params) { default_params.merge(:trigger_onoff_time => true) }
+        let(:params) { default_params.merge(trigger_onoff_time: true) }
         it { is_expected.to compile }
       end
 
       context 'false' do
-        let(:params) { default_params.merge(:trigger_onoff_time => false) }
+        let(:params) { default_params.merge(trigger_onoff_time: false) }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:trigger_onoff_time => 'not boolean') }
+        let(:params) { default_params.merge(trigger_onoff_time: 'not boolean') }
         it { is_expected.to raise_error(/is not a boolean/) }
       end
     end
@@ -666,17 +666,17 @@ describe 'aem::agent::replication', :type => :defines do
       end
 
       context 'true' do
-        let(:params) { default_params.merge(:trigger_on_receive => true) }
+        let(:params) { default_params.merge(trigger_on_receive: true) }
         it { is_expected.to compile }
       end
 
       context 'false' do
-        let(:params) { default_params.merge(:trigger_on_receive => false) }
+        let(:params) { default_params.merge(trigger_on_receive: false) }
         it { is_expected.to compile }
       end
 
       context 'invalid' do
-        let(:params) { default_params.merge(:trigger_on_receive => 'not boolean') }
+        let(:params) { default_params.merge(trigger_on_receive: 'not boolean') }
         it { is_expected.to raise_error(/is not a boolean/) }
       end
     end

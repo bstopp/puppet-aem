@@ -4,16 +4,16 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
 
   let(:resource) do
     Puppet::Type.type(:aem_sling_resource).new(
-      :name       => '/etc/testcontent/nodename',
-      :ensure     => :present,
-      :properties => {
+      name: '/etc/testcontent/nodename',
+      ensure: :present,
+      properties: {
         'title' => 'string',
         'text'  => 'string with text'
       },
-      :home       => '/opt/aem',
-      :password   => 'admin',
-      :username   => 'admin',
-      :timeout    => 1
+      home: '/opt/aem',
+      password: 'admin',
+      username: 'admin',
+      timeout: 1
     )
   end
 
@@ -73,8 +73,8 @@ PORT=#{opts[:port]}
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}.#{opts[:depth]}.json"
         ).with(
-          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_return(:status => status, :body => content_data)
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: status, body: content_data)
 
         expect(provider.exists?).to eq(opts[:present])
         expect(get_stub).to have_been_requested
@@ -90,15 +90,15 @@ PORT=#{opts[:port]}
     end
 
     describe 'ensure is absent' do
-      it_should_behave_like('exists_check', :present => false)
+      it_should_behave_like('exists_check', present: false)
     end
 
     describe 'ensure is present' do
-      it_should_behave_like('exists_check', :present => true)
+      it_should_behave_like('exists_check', present: true)
     end
 
     describe 'ensure is present with context root' do
-      it_should_behave_like('exists_check', :present => true, :context_root => 'contextroot')
+      it_should_behave_like('exists_check', present: true, context_root: 'contextroot')
     end
 
     describe 'ensure check timesout' do
@@ -116,7 +116,7 @@ PORT=4502
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}.1.json"
         ).with(
-          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_timeout
 
         expect { provider.exists? }.to raise_error(/expired/)
@@ -154,20 +154,20 @@ PORT=#{opts[:port]}
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}.#{opts[:depth]}.json"
         ).with(
-          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_return(:status => status, :body => content_data)
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: status, body: content_data)
 
         expected_params = opts[:form_params]
 
         post_stub = stub_request(
           :post, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
         ).with(
-          :body => expected_params,
-          :headers => {
+          body: expected_params,
+          headers: {
             'Referer' => "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}",
             'Authorization' => 'Basic YWRtaW46YWRtaW4='
           }
-        ).to_return(:status => 200)
+        ).to_return(status: 200)
 
         # Populate property hash
         provider.exists?
@@ -190,12 +190,12 @@ PORT=#{opts[:port]}
       describe 'base' do
         let(:resource) do
           Puppet::Type.type(:aem_sling_resource).new(
-            :name       => '/etc/testcontent/nodename',
-            :ensure     => :present,
-            :home       => '/opt/aem',
-            :password   => 'admin',
-            :username   => 'admin',
-            :properties => {
+            name: '/etc/testcontent/nodename',
+            ensure: :present,
+            home: '/opt/aem',
+            password: 'admin',
+            username: 'admin',
+            properties: {
               'title'           => 'title string',
               'text'            => 'text string'
             }
@@ -209,21 +209,21 @@ PORT=#{opts[:port]}
 
         it_should_behave_like(
           'flush_posts',
-          :present => false,
-          :form_params => params
+          present: false,
+          form_params: params
         )
       end
 
       describe 'with path' do
         let(:resource) do
           Puppet::Type.type(:aem_sling_resource).new(
-            :name       => 'A resource name',
-            :ensure     => :present,
-            :home       => '/opt/aem',
-            :path       => '/path/to/resource',
-            :password   => 'admin',
-            :username   => 'admin',
-            :properties => {
+            name: 'A resource name',
+            ensure: :present,
+            home: '/opt/aem',
+            path: '/path/to/resource',
+            password: 'admin',
+            username: 'admin',
+            properties: {
               'title' => 'title string',
               'text'  => 'text string'
             }
@@ -235,22 +235,22 @@ PORT=#{opts[:port]}
 
         it_should_behave_like(
           'flush_posts',
-          :path => '/path/to/resource',
-          :present => false,
-          :form_params => params
+          path: '/path/to/resource',
+          present: false,
+          form_params: params
         )
       end
 
       describe 'with array property' do
         let(:resource) do
           Puppet::Type.type(:aem_sling_resource).new(
-            :name       => 'A resource name',
-            :ensure     => :present,
-            :home       => '/opt/aem',
-            :path       => '/path/to/resource',
-            :password   => 'admin',
-            :username   => 'admin',
-            :properties => {
+            name: 'A resource name',
+            ensure: :present,
+            home: '/opt/aem',
+            path: '/path/to/resource',
+            password: 'admin',
+            username: 'admin',
+            properties: {
               'title' => 'title string',
               'text'  => 'text string',
               'array' => ['this', 'is', 'an', 'array']
@@ -267,21 +267,21 @@ PORT=#{opts[:port]}
 
         it_should_behave_like(
           'flush_posts',
-          :path => '/path/to/resource',
-          :present => false,
-          :form_params => params
+          path: '/path/to/resource',
+          present: false,
+          form_params: params
         )
       end
 
       describe 'with nested hash' do
         let(:resource) do
           Puppet::Type.type(:aem_sling_resource).new(
-            :name       => '/path/to/resource',
-            :ensure     => :present,
-            :home       => '/opt/aem',
-            :password   => 'admin',
-            :username   => 'admin',
-            :properties => {
+            name: '/path/to/resource',
+            ensure: :present,
+            home: '/opt/aem',
+            password: 'admin',
+            username: 'admin',
+            properties: {
               'title' => 'title string',
               'text'  => 'text string',
               'subnode' => {
@@ -297,22 +297,22 @@ PORT=#{opts[:port]}
 
         it_should_behave_like(
           'flush_posts',
-          :depth => 2,
-          :path => '/path/to/resource',
-          :present => false,
-          :form_params => params
+          depth: 2,
+          path: '/path/to/resource',
+          present: false,
+          form_params: params
         )
       end
 
       describe 'with tiered nested hash' do
         let(:resource) do
           Puppet::Type.type(:aem_sling_resource).new(
-            :name       => '/path/to/resource',
-            :ensure     => :present,
-            :home       => '/opt/aem',
-            :password   => 'admin',
-            :username   => 'admin',
-            :properties => {
+            name: '/path/to/resource',
+            ensure: :present,
+            home: '/opt/aem',
+            password: 'admin',
+            username: 'admin',
+            properties: {
               'title' => 'title string',
               'text'  => 'text string',
               'child' => {
@@ -336,22 +336,22 @@ PORT=#{opts[:port]}
 
         it_should_behave_like(
           'flush_posts',
-          :depth => 3,
-          :path => '/path/to/resource',
-          :present => false,
-          :form_params => params
+          depth: 3,
+          path: '/path/to/resource',
+          present: false,
+          form_params: params
         )
       end
 
       describe 'with tiered nested hash including protected properties' do
         let(:resource) do
           Puppet::Type.type(:aem_sling_resource).new(
-            :name       => '/path/to/resource',
-            :ensure     => :present,
-            :home       => '/opt/aem',
-            :password   => 'admin',
-            :username   => 'admin',
-            :properties => {
+            name: '/path/to/resource',
+            ensure: :present,
+            home: '/opt/aem',
+            password: 'admin',
+            username: 'admin',
+            properties: {
               'jcr:primaryType' => 'cq:Page',
               'title'           => 'title string',
               'text'            => 'text string',
@@ -382,23 +382,23 @@ PORT=#{opts[:port]}
 
         it_should_behave_like(
           'flush_posts',
-          :depth => 3,
-          :path => '/path/to/resource',
-          :present => false,
-          :form_params => params
+          depth: 3,
+          path: '/path/to/resource',
+          present: false,
+          form_params: params
         )
       end
 
       describe 'with tiered nested hash passwords' do
         let(:resource) do
           Puppet::Type.type(:aem_sling_resource).new(
-            :name                => '/path/to/resource',
-            :ensure              => :present,
-            :home                => '/opt/aem',
-            :password            => 'admin',
-            :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-            :username            => 'admin',
-            :properties          => {
+            name: '/path/to/resource',
+            ensure: :present,
+            home: '/opt/aem',
+            password: 'admin',
+            password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+            username: 'admin',
+            properties: {
               'title'     => 'title string',
               'text'      => 'text string',
               'apassword' => 'password',
@@ -429,10 +429,10 @@ PORT=#{opts[:port]}
 
         it_should_behave_like(
           'flush_posts',
-          :depth => 3,
-          :path => '/path/to/resource',
-          :present => false,
-          :form_params => params
+          depth: 3,
+          path: '/path/to/resource',
+          present: false,
+          form_params: params
         )
       end
     end
@@ -441,12 +441,12 @@ PORT=#{opts[:port]}
       describe 'default' do
         let(:resource) do
           Puppet::Type.type(:aem_sling_resource).new(
-            :name       => '/etc/testcontent/nodename',
-            :ensure     => :absent,
-            :home       => '/opt/aem',
-            :password   => 'admin',
-            :username   => 'admin',
-            :properties => {
+            name: '/etc/testcontent/nodename',
+            ensure: :absent,
+            home: '/opt/aem',
+            password: 'admin',
+            username: 'admin',
+            properties: {
               'title' => 'string',
               'text'  => 'string'
             }
@@ -455,21 +455,21 @@ PORT=#{opts[:port]}
 
         it_should_behave_like(
           'flush_posts',
-          :destroy => true,
-          :form_params => { ':operation' => 'delete' }
+          destroy: true,
+          form_params: { ':operation' => 'delete' }
         )
       end
 
       describe 'with path' do
         let(:resource) do
           Puppet::Type.type(:aem_sling_resource).new(
-            :name       => 'This is a node name',
-            :ensure     => :absent,
-            :home       => '/opt/aem',
-            :password   => 'admin',
-            :path       => '/new/path/to/node',
-            :username   => 'admin',
-            :properties => {
+            name: 'This is a node name',
+            ensure: :absent,
+            home: '/opt/aem',
+            password: 'admin',
+            path: '/new/path/to/node',
+            username: 'admin',
+            properties: {
               'title' => 'string',
               'text'  => 'string'
             }
@@ -478,9 +478,9 @@ PORT=#{opts[:port]}
 
         it_should_behave_like(
           'flush_posts',
-          :destroy => true,
-          :path => '/new/path/to/node',
-          :form_params => { ':operation' => 'delete' }
+          destroy: true,
+          path: '/new/path/to/node',
+          form_params: { ':operation' => 'delete' }
         )
       end
     end
@@ -490,14 +490,14 @@ PORT=#{opts[:port]}
         describe 'default' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name                => '/path/to/resource',
-              :ensure              => :present,
-              :handle_missing      => :remove,
-              :home                => '/opt/aem',
-              :password            => 'admin',
-              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-              :username            => 'admin',
-              :properties          => {
+              name: '/path/to/resource',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              password: 'admin',
+              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              username: 'admin',
+              properties: {
                 'jcr:primaryType' => 'nt:unstructured',
                 'jcr:title'       => 'A new title'
               }
@@ -512,23 +512,23 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'nested hash' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name                => '/path/to/resource',
-              :ensure              => :present,
-              :handle_missing      => :remove,
-              :home                => '/opt/aem',
-              :password            => 'admin',
-              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-              :username            => 'admin',
-              :properties          => {
+              name: '/path/to/resource',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              password: 'admin',
+              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              username: 'admin',
+              properties: {
                 'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'jcr:content'     => {
@@ -547,24 +547,24 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :depth => 2,
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            depth: 2,
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'tiered nested hash' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name                => '/path/to/resource',
-              :ensure              => :present,
-              :handle_missing      => :remove,
-              :home                => '/opt/aem',
-              :password            => 'admin',
-              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-              :username            => 'admin',
-              :properties          => {
+              name: '/path/to/resource',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              password: 'admin',
+              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              username: 'admin',
+              properties: {
                 'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'jcr:content' => {
@@ -587,24 +587,24 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :depth => 3,
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            depth: 3,
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'property replacing a node' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name                => '/path/to/resource',
-              :ensure              => :present,
-              :handle_missing      => :remove,
-              :home                => '/opt/aem',
-              :password            => 'admin',
-              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-              :username            => 'admin',
-              :properties          => {
+              name: '/path/to/resource',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              password: 'admin',
+              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              username: 'admin',
+              properties: {
                 'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'jcr:content' => {
@@ -625,24 +625,24 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :depth => 2,
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            depth: 2,
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'node replacing a property' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name                => '/path/to/resource',
-              :ensure              => :present,
-              :handle_missing      => :remove,
-              :home                => '/opt/aem',
-              :password            => 'admin',
-              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-              :username            => 'admin',
-              :properties          => {
+              name: '/path/to/resource',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              password: 'admin',
+              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              username: 'admin',
+              properties: {
                 'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'jcr:content' => {
@@ -666,24 +666,24 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :depth => 4,
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            depth: 4,
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'passwords not forced' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name                => '/path/to/resource',
-              :ensure              => :present,
-              :handle_missing      => :remove,
-              :home                => '/opt/aem',
-              :password            => 'admin',
-              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-              :username            => 'admin',
-              :properties          => {
+              name: '/path/to/resource',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              password: 'admin',
+              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              username: 'admin',
+              properties: {
                 'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'apassword'       => 'newvalue',
@@ -707,25 +707,25 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :depth => 3,
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            depth: 3,
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'passwords forced' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name                => '/path/to/resource',
-              :ensure              => :present,
-              :force_passwords     => :true,
-              :handle_missing      => :remove,
-              :home                => '/opt/aem',
-              :password            => 'admin',
-              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-              :username            => 'admin',
-              :properties          => {
+              name: '/path/to/resource',
+              ensure: :present,
+              force_passwords: :true,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              password: 'admin',
+              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              username: 'admin',
+              properties: {
                 'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'apassword'       => 'newvalue',
@@ -752,25 +752,25 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :depth => 3,
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            depth: 3,
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'passwords forced and removed' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name                => '/path/to/resource',
-              :ensure              => :present,
-              :force_passwords     => :true,
-              :handle_missing      => :remove,
-              :home                => '/opt/aem',
-              :password            => 'admin',
-              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-              :username            => 'admin',
-              :properties          => {
+              name: '/path/to/resource',
+              ensure: :present,
+              force_passwords: :true,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              password: 'admin',
+              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              username: 'admin',
+              properties: {
                 'jcr:primaryType' => 'nt:unstructured',
                 'title'           => 'Page Title',
                 'jcr:content'     => {
@@ -794,24 +794,24 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :depth => 3,
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            depth: 3,
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'using path' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name                => '/path/to/resource',
-              :ensure              => :present,
-              :handle_missing      => :remove,
-              :home                => '/opt/aem',
-              :password            => 'admin',
-              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-              :username            => 'admin',
-              :properties          => {
+              name: '/path/to/resource',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              password: 'admin',
+              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              username: 'admin',
+              properties: {
                 'jcr:primaryType' => 'nt:unstructured',
                 'jcr:title'       => 'A new title'
               }
@@ -826,9 +826,9 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
       end
@@ -837,12 +837,12 @@ PORT=#{opts[:port]}
         describe 'default' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name       => '/path/to/resource',
-              :ensure     => :present,
-              :home       => '/opt/aem',
-              :password   => 'admin',
-              :username   => 'admin',
-              :properties => {
+              name: '/path/to/resource',
+              ensure: :present,
+              home: '/opt/aem',
+              password: 'admin',
+              username: 'admin',
+              properties: {
                 'jcr:title' => 'new title'
               }
             )
@@ -852,21 +852,21 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'protected/ignored properties' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name       => '/path/to/resource',
-              :ensure     => :present,
-              :home       => '/opt/aem',
-              :password   => 'admin',
-              :username   => 'admin',
-              :properties => {
+              name: '/path/to/resource',
+              ensure: :present,
+              home: '/opt/aem',
+              password: 'admin',
+              username: 'admin',
+              properties: {
                 'jcr:primaryType' => 'nt:unstructured',
                 'jcr:title' => 'new title',
                 'jcr:createdBy' => 'admin'
@@ -880,21 +880,21 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'nested hash' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name       => '/path/to/resource',
-              :ensure     => :present,
-              :home       => '/opt/aem',
-              :password   => 'admin',
-              :username   => 'admin',
-              :properties => {
+              name: '/path/to/resource',
+              ensure: :present,
+              home: '/opt/aem',
+              password: 'admin',
+              username: 'admin',
+              properties: {
                 'jcr:title'   => 'new title',
                 'jcr:content' => {
                   'title' => 'Not Agent Title'
@@ -910,22 +910,22 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :path => '/path/to/resource',
-            :depth => 2,
-            :present => true,
-            :form_params => params
+            path: '/path/to/resource',
+            depth: 2,
+            present: true,
+            form_params: params
           )
         end
 
         describe 'nested hash and protected/ignored properties' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name       => '/path/to/resource',
-              :ensure     => :present,
-              :home       => '/opt/aem',
-              :password   => 'admin',
-              :username   => 'admin',
-              :properties => {
+              name: '/path/to/resource',
+              ensure: :present,
+              home: '/opt/aem',
+              password: 'admin',
+              username: 'admin',
+              properties: {
                 'jcr:title'     => 'new title',
                 'jcr:createdBy' => 'admin',
                 'jcr:content'   => {
@@ -944,22 +944,22 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :path => '/path/to/resource',
-            :depth => 2,
-            :present => true,
-            :form_params => params
+            path: '/path/to/resource',
+            depth: 2,
+            present: true,
+            form_params: params
           )
         end
 
         describe 'arbitrary nested hash and protected/ignored properties' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name       => '/path/to/resource',
-              :ensure     => :present,
-              :home       => '/opt/aem',
-              :password   => 'admin',
-              :username   => 'admin',
-              :properties => {
+              name: '/path/to/resource',
+              ensure: :present,
+              home: '/opt/aem',
+              password: 'admin',
+              username: 'admin',
+              properties: {
                 'jcr:title'     => 'new title',
                 'jcr:createdBy' => 'admin',
                 'jcr:content'   => {
@@ -984,23 +984,23 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :path => '/path/to/resource',
-            :depth => 3,
-            :present => true,
-            :form_params => params
+            path: '/path/to/resource',
+            depth: 3,
+            present: true,
+            form_params: params
           )
         end
 
         describe 'passwords not forced' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name                => '/path/to/resource',
-              :ensure              => :present,
-              :home                => '/opt/aem',
-              :password            => 'admin',
-              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-              :username            => 'admin',
-              :properties          => {
+              name: '/path/to/resource',
+              ensure: :present,
+              home: '/opt/aem',
+              password: 'admin',
+              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              username: 'admin',
+              properties: {
                 'title'           => 'Page Title',
                 'apassword'       => 'newvalue',
                 'jcr:content'     => {
@@ -1023,24 +1023,24 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :depth => 3,
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            depth: 3,
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'passwords forced' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name                => '/path/to/resource',
-              :ensure              => :present,
-              :force_passwords     => :true,
-              :home                => '/opt/aem',
-              :password            => 'admin',
-              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-              :username            => 'admin',
-              :properties          => {
+              name: '/path/to/resource',
+              ensure: :present,
+              force_passwords: :true,
+              home: '/opt/aem',
+              password: 'admin',
+              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              username: 'admin',
+              properties: {
                 'title'           => 'Page Title',
                 'apassword'       => 'newvalue',
                 'jcr:content'     => {
@@ -1066,24 +1066,24 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :depth => 3,
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            depth: 3,
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'passwords forced and not in "should"' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name                => '/path/to/resource',
-              :ensure              => :present,
-              :force_passwords     => :true,
-              :home                => '/opt/aem',
-              :password            => 'admin',
-              :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-              :username            => 'admin',
-              :properties          => {
+              name: '/path/to/resource',
+              ensure: :present,
+              force_passwords: :true,
+              home: '/opt/aem',
+              password: 'admin',
+              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              username: 'admin',
+              properties: {
                 'title'           => 'Page Title',
                 'jcr:content'     => {
                   'jcr:title' => 'Default Agent',
@@ -1103,23 +1103,23 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :depth => 3,
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            depth: 3,
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'using path' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name       => 'Not A Path',
-              :path       => '/path/to/resource',
-              :ensure     => :present,
-              :home       => '/opt/aem',
-              :password   => 'admin',
-              :username   => 'admin',
-              :properties => {
+              name: 'Not A Path',
+              path: '/path/to/resource',
+              ensure: :present,
+              home: '/opt/aem',
+              password: 'admin',
+              username: 'admin',
+              properties: {
                 'jcr:title' => 'new title'
               }
             )
@@ -1129,21 +1129,21 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :path => '/path/to/resource',
-            :present => true,
-            :form_params => params
+            path: '/path/to/resource',
+            present: true,
+            form_params: params
           )
         end
 
         describe 'array because webmock has issues matching array in a hash for parameters' do
           let(:resource) do
             Puppet::Type.type(:aem_sling_resource).new(
-              :name       => '/path/to/resource',
-              :ensure     => :present,
-              :home       => '/opt/aem',
-              :password   => 'admin',
-              :username   => 'admin',
-              :properties => {
+              name: '/path/to/resource',
+              ensure: :present,
+              home: '/opt/aem',
+              password: 'admin',
+              username: 'admin',
+              properties: {
                 'jcr:title'     => 'new title',
                 'jcr:createdBy' => 'admin',
                 'jcr:content'   => {
@@ -1170,10 +1170,10 @@ PORT=#{opts[:port]}
 
           it_should_behave_like(
             'flush_posts',
-            :path => '/path/to/resource',
-            :depth => 3,
-            :present => true,
-            :form_params => params
+            path: '/path/to/resource',
+            depth: 3,
+            present: true,
+            form_params: params
           )
         end
       end
@@ -1195,15 +1195,15 @@ PORT=4502
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
         ).with(
-          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_return(:status => 200, :body => content_data)
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: content_data)
 
         post_stub = stub_request(
           :post, 'http://localhost:4502/etc/testcontent/nodename'
         ).with(
-          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' },
-          :body => { ':operation' => 'delete' }
-        ).to_return(:status => 500)
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' },
+          body: { ':operation' => 'delete' }
+        ).to_return(status: 500)
 
         # Populate property hash
         provider.exists?
@@ -1230,7 +1230,7 @@ PORT=4502
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
         ).with(
-          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_timeout
 
         # Populate property hash

@@ -7,7 +7,7 @@ ENV['PUPPET_INSTALL_VERSION'] = ENV['PUPPET_INSTALL_VERSION'] || '4.2'
 
 def server_opts
   {
-    :master => { :autosign => true }
+    master: { autosign: true }
   }
 end
 
@@ -55,7 +55,7 @@ def teardown_puppet(host)
 
   case host['platform']
   when /debian|ubuntu/
-    on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt', :acceptable_exit_codes => [0, 1]
+    on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt', acceptable_exit_codes: [0, 1]
     clean_repo = "include apt\napt::source { 'pc1_repo': ensure => absent, notify => Package['puppet-agent'] }"
   when /fedora|el|centos/
     clean_repo = "yumrepo { 'pc1_repo': ensure => absent, notify => Package['puppet-agent'] }"
@@ -122,10 +122,10 @@ unless ENV['BEAKER_provision'] == 'no'
   install_package master, 'puppetserver'
   master['use-service'] = true
 
-  on master, puppet('module', 'install', 'puppetlabs-stdlib'), :acceptable_exit_codes => [0, 1]
-  on master, puppet('module', 'install', 'puppetlabs-concat'), :acceptable_exit_codes => [0, 1]
-  on master, puppet('module', 'install', 'puppetlabs-apache'), :acceptable_exit_codes => [0, 1]
-  on master, puppet('module', 'install', 'puppetlabs-java'), :acceptable_exit_codes => [0, 1]
+  on master, puppet('module', 'install', 'puppetlabs-stdlib'), acceptable_exit_codes: [0, 1]
+  on master, puppet('module', 'install', 'puppetlabs-concat'), acceptable_exit_codes: [0, 1]
+  on master, puppet('module', 'install', 'puppetlabs-apache'), acceptable_exit_codes: [0, 1]
+  on master, puppet('module', 'install', 'puppetlabs-java'), acceptable_exit_codes: [0, 1]
 
   setup_puppet default
   stop_firewall_on(master)
@@ -137,7 +137,7 @@ end
 
 # Install module
 configure_defaults_on master, 'aio'
-install_dev_puppet_module_on(master, :source => module_root, :module_name => 'aem')
+install_dev_puppet_module_on(master, source: module_root, module_name: 'aem')
 
 RSpec.shared_examples 'setup aem' do
 
@@ -242,7 +242,7 @@ RSpec.shared_examples 'setup aem' do
     }
   MANIFEST
 
-  apply_manifest_on(master, pp, :catch_failures => true)
+  apply_manifest_on(master, pp, catch_failures: true)
 
   restart_puppetserver
   fqdn = on(master, 'facter fqdn').stdout.strip
@@ -251,7 +251,7 @@ RSpec.shared_examples 'setup aem' do
   on(
     default,
     puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-    :acceptable_exit_codes => [0, 2]
+    acceptable_exit_codes: [0, 2]
   )
 
   on(default, '/tmp/ensure-running.sh')
@@ -281,13 +281,13 @@ RSpec.shared_examples 'update aem' do
     }
   MANIFEST
 
-  apply_manifest_on(master, pp, :catch_failures => true)
+  apply_manifest_on(master, pp, catch_failures: true)
   restart_puppetserver
   fqdn = on(master, 'facter fqdn').stdout.strip
   on(
     default,
     puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-    :acceptable_exit_codes => [0, 2]
+    acceptable_exit_codes: [0, 2]
   )
 
   site = <<-MANIFEST
@@ -321,23 +321,23 @@ RSpec.shared_examples 'update aem' do
     }
   MANIFEST
 
-  apply_manifest_on(master, pp, :catch_failures => true)
+  apply_manifest_on(master, pp, catch_failures: true)
   restart_puppetserver
   fqdn = on(master, 'facter fqdn').stdout.strip
   on(
     default,
     puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-    :acceptable_exit_codes => [0, 2]
+    acceptable_exit_codes: [0, 2]
   )
   on(
     default,
     puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-    :acceptable_exit_codes => [0]
+    acceptable_exit_codes: [0]
   )
 end
 
 RSpec.configure do |c|
 
-  c.filter_run_excluding(:license => false) unless ENV['AEM_LICENSE']
+  c.filter_run_excluding(license: false) unless ENV['AEM_LICENSE']
   c.formatter = :documentation
 end

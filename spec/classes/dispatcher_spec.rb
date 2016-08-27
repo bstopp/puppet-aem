@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 # Tests for parameters defaults and validation
-describe 'aem::dispatcher', :type => :class do
+describe 'aem::dispatcher', type: :class do
 
   let(:pre_condition) do
     'class { "apache" :
@@ -13,19 +13,19 @@ describe 'aem::dispatcher', :type => :class do
 
   let(:default_params) do
     {
-      :module_file => '/tmp/dispatcher-apache2.X-4.1.X.so'
+      module_file: '/tmp/dispatcher-apache2.X-4.1.X.so'
     }
   end
 
   let(:default_facts) do
     {
-      :osfamily               => 'RedHat',
-      :operatingsystemrelease => '7.1.1503',
-      :operatingsystem        => 'CentOS',
-      :concat_basedir         => '/dne',
-      :id                     => 'root',
-      :kernel                 => 'Linux',
-      :path                   => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+      osfamily: 'RedHat',
+      operatingsystemrelease: '7.1.1503',
+      operatingsystem: 'CentOS',
+      concat_basedir: '/dne',
+      id: 'root',
+      kernel: 'Linux',
+      path: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
     }
   end
 
@@ -162,21 +162,21 @@ describe 'aem::dispatcher', :type => :class do
     context 'ensure' do
       context 'should accept present' do
         let(:params) do
-          default_params.merge(:ensure => 'present')
+          default_params.merge(ensure: 'present')
         end
         it { is_expected.to compile.with_all_deps }
       end
 
       context 'should accept absent' do
         let(:params) do
-          default_params.merge(:ensure => 'absent')
+          default_params.merge(ensure: 'absent')
         end
         it { is_expected.to compile.with_all_deps }
       end
 
       context 'should not accept any other value' do
         let(:params) do
-          default_params.merge(:ensure => 'invalid')
+          default_params.merge(ensure: 'invalid')
         end
         it { expect { is_expected.to compile }.to raise_error(/not supported for ensure/) }
       end
@@ -187,26 +187,26 @@ describe 'aem::dispatcher', :type => :class do
       context 'numeric' do
         context 'should accept 0' do
           let(:params) do
-            default_params.merge(:decline_root => '0')
+            default_params.merge(decline_root: '0')
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept 1' do
           let(:params) do
-            default_params.merge(:decline_root => '1')
+            default_params.merge(decline_root: '1')
           end
           it { is_expected.to compile.with_all_deps }
         end
 
         context 'should not accept any other positive value' do
           let(:params) do
-            default_params.merge(:decline_root => '2')
+            default_params.merge(decline_root: '2')
           end
           it { expect { is_expected.to compile }.to raise_error(/smaller or equal/) }
         end
         context 'should not accept any negative value' do
           let(:params) do
-            default_params.merge(:decline_root => '-1')
+            default_params.merge(decline_root: '-1')
           end
           it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
         end
@@ -215,20 +215,20 @@ describe 'aem::dispatcher', :type => :class do
       context 'on/off' do
         context 'should accept on' do
           let(:params) do
-            default_params.merge(:decline_root => 'on')
+            default_params.merge(decline_root: 'on')
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept off' do
           let(:params) do
-            default_params.merge(:decline_root => 'off')
+            default_params.merge(decline_root: 'off')
           end
           it { is_expected.to compile.with_all_deps }
         end
 
         context 'should not accept any other value' do
           let(:params) do
-            default_params.merge(:decline_root => 'invalid')
+            default_params.merge(decline_root: 'invalid')
           end
           it { expect { is_expected.to compile }.to raise_error(/not supported for decline_root/) }
         end
@@ -239,38 +239,38 @@ describe 'aem::dispatcher', :type => :class do
       context 'numeric' do
         context 'should accept 0' do
           let(:params) do
-            default_params.merge(:log_level => '0')
+            default_params.merge(log_level: '0')
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept 1' do
           let(:params) do
-            default_params.merge(:log_level => '1')
+            default_params.merge(log_level: '1')
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept 2' do
           let(:params) do
-            default_params.merge(:log_level => '2')
+            default_params.merge(log_level: '2')
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept 3' do
           let(:params) do
-            default_params.merge(:log_level => '3')
+            default_params.merge(log_level: '3')
           end
           it { is_expected.to compile.with_all_deps }
         end
 
         context 'should not accept any other positive value' do
           let(:params) do
-            default_params.merge(:log_level => '4')
+            default_params.merge(log_level: '4')
           end
           it { expect { is_expected.to compile }.to raise_error(/smaller or equal/) }
         end
         context 'should not accept any negative value' do
           let(:params) do
-            default_params.merge(:log_level => '-1')
+            default_params.merge(log_level: '-1')
           end
           it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
         end
@@ -279,32 +279,32 @@ describe 'aem::dispatcher', :type => :class do
       context 'named values' do
         context 'should accept error' do
           let(:params) do
-            default_params.merge(:log_level => 'error')
+            default_params.merge(log_level: 'error')
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept warn' do
           let(:params) do
-            default_params.merge(:log_level => 'warn')
+            default_params.merge(log_level: 'warn')
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept info' do
           let(:params) do
-            default_params.merge(:log_level => 'info')
+            default_params.merge(log_level: 'info')
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept debug' do
           let(:params) do
-            default_params.merge(:log_level => 'debug')
+            default_params.merge(log_level: 'debug')
           end
           it { is_expected.to compile.with_all_deps }
         end
 
         context 'should not accept any other value' do
           let(:params) do
-            default_params.merge(:log_level => 'invalid')
+            default_params.merge(log_level: 'invalid')
           end
           it { expect { is_expected.to compile }.to raise_error(/not supported for log_level/) }
         end
@@ -315,26 +315,26 @@ describe 'aem::dispatcher', :type => :class do
       context 'numeric' do
         context 'should accept 0' do
           let(:params) do
-            default_params.merge(:no_server_header => '0')
+            default_params.merge(no_server_header: '0')
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept 1' do
           let(:params) do
-            default_params.merge(:no_server_header => '1')
+            default_params.merge(no_server_header: '1')
           end
           it { is_expected.to compile.with_all_deps }
         end
 
         context 'should not accept any other positive value' do
           let(:params) do
-            default_params.merge(:no_server_header => '2')
+            default_params.merge(no_server_header: '2')
           end
           it { expect { is_expected.to compile }.to raise_error(/smaller or equal/) }
         end
         context 'should not accept any negative value' do
           let(:params) do
-            default_params.merge(:no_server_header => '-1')
+            default_params.merge(no_server_header: '-1')
           end
           it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
         end
@@ -343,20 +343,20 @@ describe 'aem::dispatcher', :type => :class do
       context 'on/off' do
         context 'should accept on' do
           let(:params) do
-            default_params.merge(:no_server_header => 'on')
+            default_params.merge(no_server_header: 'on')
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept off' do
           let(:params) do
-            default_params.merge(:no_server_header => 'off')
+            default_params.merge(no_server_header: 'off')
           end
           it { is_expected.to compile.with_all_deps }
         end
 
         context 'should not accept any other value' do
           let(:params) do
-            default_params.merge(:no_server_header => 'invalid')
+            default_params.merge(no_server_header: 'invalid')
           end
           it { expect { is_expected.to compile }.to raise_error(/not supported for no_server_header/) }
         end
@@ -367,26 +367,26 @@ describe 'aem::dispatcher', :type => :class do
       context 'numeric' do
         context 'should accept 0' do
           let(:params) do
-            default_params.merge(:use_processed_url => '0')
+            default_params.merge(use_processed_url: '0')
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept 1' do
           let(:params) do
-            default_params.merge(:use_processed_url => '1')
+            default_params.merge(use_processed_url: '1')
           end
           it { is_expected.to compile.with_all_deps }
         end
 
         context 'should not accept any other positive value' do
           let(:params) do
-            default_params.merge(:use_processed_url => '2')
+            default_params.merge(use_processed_url: '2')
           end
           it { expect { is_expected.to compile }.to raise_error(/smaller or equal/) }
         end
         context 'should not accept any negative value' do
           let(:params) do
-            default_params.merge(:use_processed_url => '-1')
+            default_params.merge(use_processed_url: '-1')
           end
           it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
         end
@@ -395,20 +395,20 @@ describe 'aem::dispatcher', :type => :class do
       context 'on/off' do
         context 'should accept on' do
           let(:params) do
-            default_params.merge(:use_processed_url => 'on')
+            default_params.merge(use_processed_url: 'on')
           end
           it { is_expected.to compile.with_all_deps }
         end
         context 'should accept off' do
           let(:params) do
-            default_params.merge(:use_processed_url => 'off')
+            default_params.merge(use_processed_url: 'off')
           end
           it { is_expected.to compile.with_all_deps }
         end
 
         context 'should not accept any other value' do
           let(:params) do
-            default_params.merge(:use_processed_url => 'invalid')
+            default_params.merge(use_processed_url: 'invalid')
           end
           it { expect { is_expected.to compile }.to raise_error(/not supported for use_processed_url/) }
         end
@@ -419,7 +419,7 @@ describe 'aem::dispatcher', :type => :class do
   context 'apache not managed' do
     let(:facts) { default_facts }
     let(:params) do
-      default_params.merge(:ensure => 'present')
+      default_params.merge(ensure: 'present')
     end
     let(:pre_condition) do
       'class { "apache" :
@@ -539,7 +539,7 @@ describe 'aem::dispatcher', :type => :class do
   context 'ensure absent' do
     let(:facts) { default_facts }
     let(:params) do
-      default_params.merge(:ensure => 'absent')
+      default_params.merge(ensure: 'absent')
     end
 
     it { is_expected.to compile.with_all_deps }
