@@ -5,8 +5,7 @@ HOSTS:
       - dashboard
       - database
     platform: el-7-x86_64
-    box: puppetlabs/centos-7.2-64-nocm
-    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.2-64-nocm
+    box: bstopp/centos-7.2-x64
     hypervisor: vagrant
 
   agent:
@@ -14,13 +13,12 @@ HOSTS:
       - agent
       - default
     platform: el-7-x86_64
-    box: puppetlabs/centos-7.2-64-nocm
-    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.2-64-nocm
+    box: bstopp/centos-7.2-x64
     hypervisor: vagrant
-    forwarded_ports:
-      author:
-          from: 4502
-          to: 4502
+#    forwarded_ports:
+#      author:
+#          from: 4502
+#          to: 4502
     dispatcher_file: dispatcher-apache2.4-4.1.12.so
     vagrant_cpus: 2
 
