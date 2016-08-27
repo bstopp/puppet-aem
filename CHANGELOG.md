@@ -1,3 +1,23 @@
+## 2016-06-12 - Release 2.3.2
+### Summary
+Update to support new features in Dispatcher v4.2.
+
+## 2016-06-12 - Release 2.3.1
+### Summary
+Update to notify the Apache Service when a change occurs in any of the dispatcher files.
+
+## 2016-06-12 - Release 2.3.0
+### Summary
+Adding support for arbitrary Sling Resource creation. Also support for Replication agents; with custom type helpers.
+
+#### Features:
+* New `aem_sling_resource` Type for managing Sling Resources.
+* New `aem::agent::replication` defines for managing Replication agents with support for all attributes.
+* New `aem::agent::replication::publish` defines for managing Publish replication agents.
+* New `aem::agent::replication::flush` defines for managing Flush replication agents.
+* New `aem::agent::replication::reverse` defines for managing Reverse replication agents.
+* New `aem::agent::replication::static` defines for managing Static replication agents.
+
 ## 2016-01-26 - Release 2.2.1
 ### Summary
 Added ability to specify PID when configuring OSGi items. This allows multiple definitions, when more than one AEM instance exists on a server.
