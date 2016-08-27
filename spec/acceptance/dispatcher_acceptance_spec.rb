@@ -424,7 +424,7 @@ describe 'dispatcher acceptance' do
               module_file       => \"/tmp/dispatcher-apache-module.so\",
               no_server_header  => \"on\",
               use_processed_url => 1,
-              pass_error        => \"400-404,500",
+              pass_error        => \"400-404",
             }
             aem::dispatcher::farm { \"anothersite\" :
               docroot => \"/var/www\",
@@ -503,7 +503,7 @@ describe 'dispatcher acceptance' do
         shell("grep -- 'DispatcherUseProcessedURL.*1' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
       end
       it 'should specify the Dispatcher Pass Error' do
-        shell("grep -- 'DispatcherPassError.*400-404,500' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell("grep -- 'DispatcherPassError.*400-404' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
       end
 
     end
