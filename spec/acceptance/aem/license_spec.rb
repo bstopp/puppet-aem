@@ -1,10 +1,10 @@
 require 'spec_helper_acceptance'
 
-describe 'create license file', :license => false do
+describe 'create license file', license: false do
 
   let(:facts) do
     {
-      :environment => :root
+      environment: :root
     }
   end
 
@@ -47,7 +47,7 @@ describe 'create license file', :license => false do
       }
     MANIFEST
 
-    apply_manifest_on(master, pp, :catch_failures => true)
+    apply_manifest_on(master, pp, catch_failures: true)
 
     restart_puppetserver
     fqdn = on(master, 'facter fqdn').stdout.strip
@@ -56,18 +56,18 @@ describe 'create license file', :license => false do
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0, 2]
+      acceptable_exit_codes: [0, 2]
     )
 
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0]
+      acceptable_exit_codes: [0]
     )
   end
 
   it 'should have license file' do
-    shell('test -f /opt/aem/author/license.properties', :acceptable_exit_codes => 0)
+    shell('test -f /opt/aem/author/license.properties', acceptable_exit_codes: 0)
   end
 
   it 'should have correct owner:group' do
@@ -78,16 +78,16 @@ describe 'create license file', :license => false do
 
   it 'should contain customer' do
     shell('grep "license.customer.name=Vagrant Test" /opt/aem/author/license.properties',
-          :acceptable_exit_codes => 0)
+          acceptable_exit_codes: 0)
   end
 
   it 'should contain licnese_key' do
     shell("grep -- \"license.downloadID=#{license}\" /opt/aem/author/license.properties",
-          :acceptable_exit_codes => 0)
+          acceptable_exit_codes: 0)
   end
 
   it 'should contain version' do
     shell('grep "license.product.version=6.1.0" /opt/aem/author/license.properties',
-          :acceptable_exit_codes => 0)
+          acceptable_exit_codes: 0)
   end
 end

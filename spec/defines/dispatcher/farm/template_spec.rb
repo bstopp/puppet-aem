@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 # Tests for parameters defaults and validation
-describe 'aem::dispatcher::farm', :type => :define do
+describe 'aem::dispatcher::farm', type: :define do
 
   let(:pre_condition) do
     '
@@ -12,7 +12,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
   let(:default_params) do
     {
-      :docroot => '/path/to/docroot'
+      docroot: '/path/to/docroot'
     }
   end
 
@@ -22,13 +22,13 @@ describe 'aem::dispatcher::farm', :type => :define do
 
   let(:default_facts) do
     {
-      :osfamily               => 'RedHat',
-      :operatingsystemrelease => '7.1.1503',
-      :operatingsystem        => 'CentOS',
-      :concat_basedir         => '/dne',
-      :id                     => 'root',
-      :kernel                 => 'Linux',
-      :path                   => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+      osfamily: 'RedHat',
+      operatingsystemrelease: '7.1.1503',
+      operatingsystem: 'CentOS',
+      concat_basedir: '/dne',
+      id: 'root',
+      kernel: 'Linux',
+      path: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
     }
   end
 
@@ -41,7 +41,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       is_expected.to contain_file(
         '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
       ).with(
-        :ensure => 'present'
+        ensure: 'present'
       ).with_content(
         %r|/aem-site {|
       ).without_content(
@@ -105,7 +105,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'allow_authorized' do
       let(:params) do
-        default_params.merge(:allow_authorized => 1)
+        default_params.merge(allow_authorized: 1)
       end
       it { is_expected.to compile }
       it do
@@ -119,7 +119,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'allowed_clients' do
       let(:params) do
-        default_params.merge(:allowed_clients => { 'glob' => '10.200.1.1', 'type' => 'allow' })
+        default_params.merge(allowed_clients: { 'glob' => '10.200.1.1', 'type' => 'allow' })
       end
       it { is_expected.to compile }
       it do
@@ -133,7 +133,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'cache_headers' do
       let(:params) do
-        default_params.merge(:cache_headers => ['New-Cache-Header', 'Another-Cache-Header'])
+        default_params.merge(cache_headers: ['New-Cache-Header', 'Another-Cache-Header'])
       end
       it { is_expected.to compile }
       it do
@@ -148,7 +148,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'cache_rules' do
       let(:params) do
         default_params.merge(
-          :cache_rules => [
+          cache_rules: [
             { 'glob' => '*', 'type' => 'deny' },
             { 'glob' => '*.html', 'type' => 'allow' }
           ]
@@ -166,7 +166,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'cache_ttl' do
       let(:params) do
-        default_params.merge(:cache_ttl => 1)
+        default_params.merge(cache_ttl: 1)
       end
       it { is_expected.to compile }
       it do
@@ -180,7 +180,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'client_headers' do
       let(:params) do
-        default_params.merge(:client_headers => ['New-Client-Header', 'Another-New-Header'])
+        default_params.merge(client_headers: ['New-Client-Header', 'Another-New-Header'])
       end
       it { is_expected.to compile }
       it do
@@ -194,7 +194,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'failover' do
       let(:params) do
-        default_params.merge(:failover => 1)
+        default_params.merge(failover: 1)
       end
       it { is_expected.to compile }
       it do
@@ -209,7 +209,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'filter' do
       context 'filter glob' do
         let(:params) do
-          default_params.merge(:filters => { 'type' => 'deny', 'glob' => '/content*' })
+          default_params.merge(filters: { 'type' => 'deny', 'glob' => '/content*' })
         end
         it { is_expected.to compile }
         it do
@@ -224,7 +224,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         context 'all request line values' do
           let(:params) do
             default_params.merge(
-              :filters => {
+              filters: {
                 'type'      => 'allow',
                 'method'    => 'GET',
                 'url'       => '/path/to/content',
@@ -262,7 +262,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         context 'method only' do
           let(:params) do
             default_params.merge(
-              :filters => {
+              filters: {
                 'type'   => 'allow',
                 'method' => 'GET'
               }
@@ -281,7 +281,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         context 'url value' do
           let(:params) do
             default_params.merge(
-              :filters => {
+              filters: {
                 'type' => 'allow',
                 'url'  => '/path/to/content'
               }
@@ -300,7 +300,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         context 'query' do
           let(:params) do
             default_params.merge(
-              :filters => {
+              filters: {
                 'type'     => 'allow',
                 'query'    => 'param=*'
               }
@@ -319,7 +319,7 @@ describe 'aem::dispatcher::farm', :type => :define do
         context 'protocol' do
           let(:params) do
             default_params.merge(
-              :filters => {
+              filters: {
                 'type'     => 'allow',
                 'protocol' => 'https'
               }
@@ -339,7 +339,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'grace_period' do
       let(:params) do
-        default_params.merge(:grace_period => 5)
+        default_params.merge(grace_period: 5)
       end
       it { is_expected.to compile }
       it do
@@ -353,7 +353,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'health_check_url' do
       let(:params) do
-        default_params.merge(:health_check_url => '/health/check/url.html')
+        default_params.merge(health_check_url: '/health/check/url.html')
       end
       it { is_expected.to compile }
       it do
@@ -368,7 +368,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'ignore_parameters' do
       let(:params) do
         default_params.merge(
-          :ignore_parameters => [
+          ignore_parameters: [
             { 'glob' => '*', 'type' => 'deny' },
             { 'glob' => 'param=*', 'type' => 'allow' }
           ]
@@ -387,7 +387,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'invalidate' do
       let(:params) do
         default_params.merge(
-          :invalidate => [
+          invalidate: [
             { 'glob' => '*', 'type' => 'deny' },
             { 'glob' => '*.html', 'type' => 'allow' }
           ]
@@ -406,8 +406,8 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'invalidate_handler' do
       let(:params) do
         default_params.merge(
-          :invalidate         => :undef,
-          :invalidate_handler => '/path/to/script'
+          invalidate: :undef,
+          invalidate_handler: '/path/to/script'
         )
       end
       it { is_expected.to compile }
@@ -425,7 +425,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'priority' do
       context 'priotity 1' do
         let(:params) do
-          default_params.merge(:priority => 1)
+          default_params.merge(priority: 1)
         end
         it { is_expected.to compile }
         it do
@@ -436,7 +436,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       end
       context 'priotity 10' do
         let(:params) do
-          default_params.merge(:priority => 10)
+          default_params.merge(priority: 10)
         end
         it { is_expected.to compile }
         it do
@@ -449,7 +449,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'propagate_synd_post' do
       let(:params) do
-        default_params.merge(:propagate_synd_post => 1)
+        default_params.merge(propagate_synd_post: 1)
       end
       it { is_expected.to compile }
       it do
@@ -463,7 +463,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'retries' do
       let(:params) do
-        default_params.merge(:retries => 5)
+        default_params.merge(retries: 5)
       end
       it { is_expected.to compile }
       it do
@@ -477,7 +477,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'retry_delay' do
       let(:params) do
-        default_params.merge(:retry_delay => 5)
+        default_params.merge(retry_delay: 5)
       end
       it { is_expected.to compile }
       it do
@@ -493,7 +493,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       context 'all params' do
         let(:params) do
           default_params.merge(
-            :renders => {
+            renders: {
               'hostname'       => 'publish.hostname.com',
               'port'           => 8080,
               'timeout'        => 600,
@@ -524,7 +524,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       context 'timeout' do
         let(:params) do
           default_params.merge(
-            :renders => {
+            renders: {
               'hostname' => 'publish.hostname.com',
               'port'     => 8080,
               'timeout'  => 600
@@ -543,7 +543,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       context 'receiveTimeout' do
         let(:params) do
           default_params.merge(
-            :renders => {
+            renders: {
               'hostname'       => 'publish.hostname.com',
               'port'           => 8080,
               'receiveTimeout' => 600
@@ -570,7 +570,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       context 'ipv4' do
         let(:params) do
           default_params.merge(
-            :renders => {
+            renders: {
               'hostname' => 'publish.hostname.com',
               'port'     => 8080,
               'ipv4'     => 0
@@ -589,7 +589,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       context 'multiple renderers' do
         let(:params) do
           default_params.merge(
-            :renders => [
+            renders: [
               {
                 'hostname' => 'publish.hostname.com',
                 'port'     => 8080,
@@ -618,7 +618,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'serve_stale' do
       let(:params) do
-        default_params.merge(:serve_stale => 1)
+        default_params.merge(serve_stale: 1)
       end
       it { is_expected.to compile }
       it do
@@ -635,7 +635,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       context 'directory only' do
         let(:params) do
           default_params.merge(
-            :session_management => {
+            session_management: {
               'directory' => '/path/to/cache'
             }
           )
@@ -653,7 +653,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       context 'encode' do
         let(:params) do
           default_params.merge(
-            :session_management => {
+            session_management: {
               'directory' => '/path/to/cache',
               'encode'    => 'md5'
             }
@@ -672,7 +672,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       context 'header' do
         let(:params) do
           default_params.merge(
-            :session_management => {
+            session_management: {
               'directory' => '/path/to/cache',
               'header'    => 'HTTP:authorization'
             }
@@ -691,7 +691,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       context 'timeout' do
         let(:params) do
           default_params.merge(
-            :session_management => {
+            session_management: {
               'directory' => '/path/to/cache',
               'timeout'   => 1000
             }
@@ -710,7 +710,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       context 'all params' do
         let(:params) do
           default_params.merge(
-            :session_management => {
+            session_management: {
               'directory' => '/path/to/cache',
               'encode'    => 'md5',
               'header'    => 'HTTP:authorization',
@@ -738,7 +738,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'stat_file' do
       let(:params) do
-        default_params.merge(:stat_file => '/path/to/statfile')
+        default_params.merge(stat_file: '/path/to/statfile')
       end
       it { is_expected.to compile }
       it do
@@ -754,7 +754,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'stat_files_level' do
       let(:params) do
-        default_params.merge(:stat_files_level => 3)
+        default_params.merge(stat_files_level: 3)
       end
       it { is_expected.to compile }
       it do
@@ -769,7 +769,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'statistics' do
       let(:params) do
         default_params.merge(
-          :statistics => [
+          statistics: [
             { 'glob' => '*.html', 'category' => 'html' },
             { 'glob' => '*', 'category' => 'others' }
           ]
@@ -795,7 +795,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'sticky_connections' do
       context 'single string' do
         let(:params) do
-          default_params.merge(:sticky_connections => '/path/to/content')
+          default_params.merge(sticky_connections: '/path/to/content')
         end
         it { is_expected.to compile }
         it do
@@ -808,7 +808,7 @@ describe 'aem::dispatcher::farm', :type => :define do
       end
       context 'list of strings' do
         let(:params) do
-          default_params.merge(:sticky_connections => ['/path/to/content', '/another/path/to/content'])
+          default_params.merge(sticky_connections: ['/path/to/content', '/another/path/to/content'])
         end
         it { is_expected.to compile }
         it do
@@ -830,7 +830,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'unavailable_penalty' do
       let(:params) do
-        default_params.merge(:unavailable_penalty => 3)
+        default_params.merge(unavailable_penalty: 3)
       end
       it { is_expected.to compile }
       it do
@@ -845,7 +845,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'vanity_urls' do
       let(:params) do
         default_params.merge(
-          :vanity_urls => {
+          vanity_urls: {
             'file' => '/path/to/cache',
             'delay' => 600
           }
@@ -869,7 +869,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
     context 'virtualhosts' do
       let(:params) do
-        default_params.merge(:virtualhosts => %w(www.avirtualhost.com another.virtual.com))
+        default_params.merge(virtualhosts: %w(www.avirtualhost.com another.virtual.com))
       end
       it { is_expected.to compile }
       it do

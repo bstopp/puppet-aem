@@ -4,7 +4,7 @@ describe 'dispatcher acceptance' do
 
   let(:facts) do
     {
-      :environment => :root
+      environment: :root
     }
   end
 
@@ -44,7 +44,7 @@ describe 'dispatcher acceptance' do
           }
         MANIFEST
 
-        apply_manifest_on(master, pp, :catch_failures => true)
+        apply_manifest_on(master, pp, catch_failures: true)
 
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
@@ -53,19 +53,19 @@ describe 'dispatcher acceptance' do
         on(
           default,
           puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-          :acceptable_exit_codes => [0, 2]
+          acceptable_exit_codes: [0, 2]
         )
 
         on(
           default,
           puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-          :acceptable_exit_codes => [0]
+          acceptable_exit_codes: [0]
         )
       end
       it 'should be running with no errors' do
         shell(
           "grep -- 'Communique/.* configured -- resuming normal operations' #{log_root}/error*",
-          :acceptable_exit_codes => 0
+          acceptable_exit_codes: 0
         )
 
         found = false
@@ -115,29 +115,29 @@ describe 'dispatcher acceptance' do
       it 'should specify the Dispatcher Config' do
         shell(
           "grep -- 'DispatcherConfig.*#{conf_dir}/dispatcher.farms.any' #{conf_dir}/dispatcher.conf",
-          :acceptable_exit_codes => 0
+          acceptable_exit_codes: 0
         )
       end
       it 'should specify the Dispatcher Log' do
         shell(
           "grep -- 'DispatcherLog.*#{log_root}/dispatcher.log' #{conf_dir}/dispatcher.conf",
-          :acceptable_exit_codes => 0
+          acceptable_exit_codes: 0
         )
       end
       it 'should specify the Dispatcher Log Level' do
-        shell("grep -- 'DispatcherLogLevel.*warn' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell("grep -- 'DispatcherLogLevel.*warn' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
       it 'should specify the Dispatcher Server Header' do
-        shell("grep -- 'DispatcherNoServerHeader.*off' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell("grep -- 'DispatcherNoServerHeader.*off' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
       it 'should specify the Dispatcher Decline Root' do
-        shell("grep -- 'DispatcherDeclineRoot.*off' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell("grep -- 'DispatcherDeclineRoot.*off' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
       it 'should specify the Dispatcher Processed URL' do
-        shell("grep -- 'DispatcherUseProcessedURL.*off' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell("grep -- 'DispatcherUseProcessedURL.*off' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
       it 'should specify the Dispatcher Pass Error' do
-        shell("grep -- 'DispatcherPassError.*0' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell("grep -- 'DispatcherPassError.*0' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
     end
 
@@ -200,24 +200,24 @@ describe 'dispatcher acceptance' do
           }
         MANIFEST
 
-        apply_manifest_on(master, pp, :catch_failures => true)
+        apply_manifest_on(master, pp, catch_failures: true)
 
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
         fqdn = fqdn.chop if fqdn.end_with?('.')
 
-        shell("rm #{log_root}/*", :accept_all_exit_codes => true)
+        shell("rm #{log_root}/*", accept_all_exit_codes: true)
         on(
           default,
           puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-          :acceptable_exit_codes => [0, 2]
+          acceptable_exit_codes: [0, 2]
         )
       end
 
       it 'should be running with no errors' do
         shell(
           "grep -- 'Communique/.* configured -- resuming normal operations' #{log_root}/error*",
-          :acceptable_exit_codes => 0
+          acceptable_exit_codes: 0
         )
         found = false
         shell("find #{log_root}/ -name \"dispatcher.log\" -type f") do |result|
@@ -357,7 +357,8 @@ describe 'dispatcher acceptance' do
         end
       end
       it 'should include statfile' do
-        shell("grep -- '/statfile \"/path/to/statfile\"' #{conf_dir}/dispatcher.00-site.inc.any", acceptable_exit_codes: 0)
+        shell("grep -- '/statfile \"/path/to/statfile\"' #{conf_dir}/dispatcher.00-site.inc.any",
+              acceptable_exit_codes: 0)
       end
       it 'should include stat_files_level' do
         shell("grep -- '/statfileslevel \"3\"' #{conf_dir}/dispatcher.00-site.inc.any", acceptable_exit_codes: 0)
@@ -405,7 +406,7 @@ describe 'dispatcher acceptance' do
 
     let(:facts) do
       {
-        :environment => :root
+        environment: :root
       }
     end
 
@@ -424,7 +425,7 @@ describe 'dispatcher acceptance' do
               module_file       => \"/tmp/dispatcher-apache-module.so\",
               no_server_header  => \"on\",
               use_processed_url => 1,
-              pass_error        => \"400-404,500",
+              pass_error        => \"400-404",
             }
             aem::dispatcher::farm { \"anothersite\" :
               docroot => \"/var/www\",
@@ -440,24 +441,24 @@ describe 'dispatcher acceptance' do
           }
         MANIFEST
 
-        apply_manifest_on(master, pp, :catch_failures => true)
+        apply_manifest_on(master, pp, catch_failures: true)
 
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
         fqdn = fqdn.chop if fqdn.end_with?('.')
 
-        shell("rm #{log_root}/*", :accept_all_exit_codes => true)
+        shell("rm #{log_root}/*", accept_all_exit_codes: true)
         on(
           default,
           puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-          :acceptable_exit_codes => [0, 2]
+          acceptable_exit_codes: [0, 2]
         )
       end
 
       it 'should be running with no errors' do
         shell(
           "grep -- 'Communique/.* configured -- resuming normal operations' #{log_root}/error*",
-          :acceptable_exit_codes => 0
+          acceptable_exit_codes: 0
         )
         found = false
         shell("find #{log_root}/ -name \"dispatcher.log\" -type f") do |result|
@@ -481,29 +482,29 @@ describe 'dispatcher acceptance' do
       it 'should specify the Dispatcher Config' do
         shell(
           "grep -- 'DispatcherConfig.*#{conf_dir}/dispatcher.farms.any' #{conf_dir}/dispatcher.conf",
-          :acceptable_exit_codes => 0
+          acceptable_exit_codes: 0
         )
       end
       it 'should specify the Dispatcher Log' do
         shell(
           "grep -- 'DispatcherLog.*#{log_root}/my-dispatcher.log' #{conf_dir}/dispatcher.conf",
-          :acceptable_exit_codes => 0
+          acceptable_exit_codes: 0
         )
       end
       it 'should specify the Dispatcher Log Level' do
-        shell("grep -- 'DispatcherLogLevel.*3' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell("grep -- 'DispatcherLogLevel.*3' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
       it 'should specify the Dispatcher Server Header' do
-        shell("grep -- 'DispatcherNoServerHeader.*on' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell("grep -- 'DispatcherNoServerHeader.*on' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
       it 'should specify the Dispatcher Decline Root' do
-        shell("grep -- 'DispatcherDeclineRoot.*1' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell("grep -- 'DispatcherDeclineRoot.*1' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
       it 'should specify the Dispatcher Processed URL' do
-        shell("grep -- 'DispatcherUseProcessedURL.*1' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell("grep -- 'DispatcherUseProcessedURL.*1' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
       it 'should specify the Dispatcher Pass Error' do
-        shell("grep -- 'DispatcherPassError.*400-404,500' #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 0)
+        shell("grep -- 'DispatcherPassError.*400-404' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
 
     end
@@ -515,7 +516,7 @@ describe 'dispatcher acceptance' do
         end
       end
       it 'should have the name' do
-        shell("grep -- 'named instance' #{conf_dir}/dispatcher.farms.any", :acceptable_exit_codes => 0)
+        shell("grep -- 'named instance' #{conf_dir}/dispatcher.farms.any", acceptable_exit_codes: 0)
       end
     end
 
@@ -525,7 +526,7 @@ describe 'dispatcher acceptance' do
 
     let(:facts) do
       {
-        :environment => :root
+        environment: :root
       }
     end
 
@@ -560,24 +561,24 @@ describe 'dispatcher acceptance' do
           }
         MANIFEST
 
-        apply_manifest_on(master, pp, :catch_failures => true)
+        apply_manifest_on(master, pp, catch_failures: true)
 
         restart_puppetserver
         fqdn = on(master, 'facter fqdn').stdout.strip
         fqdn = fqdn.chop if fqdn.end_with?('.')
 
-        shell("rm #{log_root}/*", :accept_all_exit_codes => true)
+        shell("rm #{log_root}/*", accept_all_exit_codes: true)
         on(
           default,
           puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-          :acceptable_exit_codes => [0, 2]
+          acceptable_exit_codes: [0, 2]
         )
       end
 
       it 'should be running with no errors' do
         shell(
           "grep -- 'Communique/.* configured -- resuming normal operations' #{log_root}/error*",
-          :acceptable_exit_codes => 0
+          acceptable_exit_codes: 0
         )
 
         found = false
@@ -675,29 +676,29 @@ describe 'dispatcher acceptance' do
         }
       MANIFEST
 
-      apply_manifest_on(master, pp, :catch_failures => true)
+      apply_manifest_on(master, pp, catch_failures: true)
       restart_puppetserver
       fqdn = on(master, 'facter fqdn').stdout.strip
       fqdn = fqdn.chop if fqdn.end_with?('.')
 
-      shell("rm #{log_root}/*", :accept_all_exit_codes => true)
+      shell("rm #{log_root}/*", accept_all_exit_codes: true)
       on(
         default,
         puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-        :acceptable_exit_codes => [0, 2]
+        acceptable_exit_codes: [0, 2]
       )
     end
 
     it 'should have removed sym link' do
-      shell("ls #{mod_root}/mod_dispatcher.so", :acceptable_exit_codes => 2)
+      shell("ls #{mod_root}/mod_dispatcher.so", acceptable_exit_codes: 2)
     end
 
     it 'should have removed module file' do
-      shell("ls #{mod_root}/dispatcher-apache-module.so", :acceptable_exit_codes => 2)
+      shell("ls #{mod_root}/dispatcher-apache-module.so", acceptable_exit_codes: 2)
     end
 
     it 'should have removed dispatcher.conf' do
-      shell("ls #{conf_dir}/dispatcher.conf", :acceptable_exit_codes => 2)
+      shell("ls #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 2)
     end
 
   end

@@ -1,7 +1,7 @@
 require 'json'
 require 'net/http'
 
-Puppet::Type.type(:aem_sling_resource).provide :ruby, :parent => Puppet::Provider do
+Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider do
 
   mk_resource_methods
 

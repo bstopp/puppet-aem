@@ -1,7 +1,7 @@
 require 'json'
 require 'net/http'
 
-Puppet::Type.type(:aem_osgi_config).provide :ruby, :parent => Puppet::Provider do
+Puppet::Type.type(:aem_osgi_config).provide :ruby, parent: Puppet::Provider do
 
   mk_resource_methods
 

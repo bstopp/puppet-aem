@@ -999,6 +999,7 @@ To run the AEM acceptance tests, for all features against all boxes:
 ```shell
 $ spec/acceptance/runall_aem.sh
 ```
+Use the Dispatcher w/o SSL
 
 To run just the Dispatcher acceptance tests:
 ```shell

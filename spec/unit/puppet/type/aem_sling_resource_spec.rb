@@ -45,16 +45,16 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
     describe 'ensure' do
       it 'should support present as a value for ensure' do
-        expect { described_class.new(:name => 'bar', :ensure => :present, :home => '/opt/aem') }.not_to raise_error
+        expect { described_class.new(name: 'bar', ensure: :present, home: '/opt/aem') }.not_to raise_error
       end
 
       it 'should support absent as a value for ensure' do
-        expect { described_class.new(:name => 'bar', :ensure => :absent, :home => '/opt/aem') }.not_to raise_error
+        expect { described_class.new(name: 'bar', ensure: :absent, home: '/opt/aem') }.not_to raise_error
       end
 
       it 'should not support other values' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :there, :home => '/opt/aem')
+          described_class.new(name: 'bar', ensure: :there, home: '/opt/aem')
         end.to raise_error(Puppet::Error, /Invalid value/)
       end
     end
@@ -65,7 +65,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
       end
 
       it 'should accept a name' do
-        inst = described_class.new(:name => 'bar', :home => '/opt/aem')
+        inst = described_class.new(name: 'bar', home: '/opt/aem')
         expect(inst[:name]).to eq('bar')
       end
     end
@@ -74,19 +74,19 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
       it 'should support remove as a value for handle_missing' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :remove, :home => '/opt/aem')
+          described_class.new(name: 'bar', ensure: :present, handle_missing: :remove, home: '/opt/aem')
         end.not_to raise_error
       end
 
       it 'should support ignore as a value for handle_missing' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :ignore, :home => '/opt/aem')
+          described_class.new(name: 'bar', ensure: :present, handle_missing: :ignore, home: '/opt/aem')
         end.not_to raise_error
       end
 
       it 'should not support other values' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :preset, :handle_missing => :invalid, :home => '/opt/aem')
+          described_class.new(name: 'bar', ensure: :preset, handle_missing: :invalid, home: '/opt/aem')
         end.to raise_error(Puppet::Error, /Invalid value/)
       end
     end
@@ -95,16 +95,16 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
       it 'should require a value' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :absent)
+          described_class.new(name: 'bar', ensure: :absent)
         end.to raise_error(Puppet::Error, /Home must be specified/)
       end
 
       it 'should require absolute paths' do
         expect do
           described_class.new(
-            :name   => 'bar',
-            :ensure => :present,
-            :home   => 'not/absolute'
+            name: 'bar',
+            ensure: :present,
+            home: 'not/absolute'
           )
         end.to raise_error(Puppet::Error, /fully qualified/)
       end
@@ -114,10 +114,10 @@ describe Puppet::Type.type(:aem_sling_resource) do
       it 'should require value to be a hash' do
         expect do
           described_class.new(
-            :name       => 'bar',
-            :ensure     => :present,
-            :home       => '/opt/aem',
-            :properties => %w(foo bar)
+            name: 'bar',
+            ensure: :present,
+            home: '/opt/aem',
+            properties: %w(foo bar)
           )
         end.to raise_error(Puppet::Error, /must be a hash/)
       end
@@ -131,11 +131,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle same properties' do
             existing = described_class.new(
-              :name           => 'bar',
-              :ensure         => :present,
-              :handle_missing => :remove,
-              :home           => '/opt/aem',
-              :properties     => { 'foo' => 'bar' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              properties: { 'foo' => 'bar' }
             )
             prop = existing.property(:properties)
             is = { 'foo' => 'bar' }
@@ -145,11 +145,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle different properties same key' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :remove,
-              :home => '/opt/aem',
-              :properties => { 'foo' => 'baz' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              properties: { 'foo' => 'baz' }
             )
             prop = existing.property(:properties)
             is = { 'foo' => 'bar' }
@@ -159,11 +159,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle different properties, different key' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :remove,
-              :home => '/opt/aem',
-              :properties => { 'bar' => 'foo' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              properties: { 'bar' => 'foo' }
             )
             prop = existing.property(:properties)
             is = { 'foo' => 'bar' }
@@ -173,11 +173,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle additional properties' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :remove,
-              :home => '/opt/aem',
-              :properties => { 'bar' => 'foo' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              properties: { 'bar' => 'foo' }
             )
             prop = existing.property(:properties)
             is = { 'foo' => 'bar', 'bar' => 'foo' }
@@ -187,11 +187,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should ignore protected properties in is' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :remove,
-              :home => '/opt/aem',
-              :properties => {
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              properties: {
                 'bar' => 'foo',
                 'baz' => {
                   'a' => {
@@ -220,12 +220,12 @@ describe Puppet::Type.type(:aem_sling_resource) do
           context 'custom ignored properties' do
             it 'should ignore protected properties in is' do
               existing = described_class.new(
-                :name               => 'bar',
-                :ensure             => :present,
-                :handle_missing     => :remove,
-                :home               => '/opt/aem',
-                :ignored_properties => ['ignored', 'anotherignored'],
-                :properties         => {
+                name: 'bar',
+                ensure: :present,
+                handle_missing: :remove,
+                home: '/opt/aem',
+                ignored_properties: ['ignored', 'anotherignored'],
+                properties: {
                   'jcr:created' => 'original value',
                   'bar' => 'foo',
                   'baz' => {
@@ -260,11 +260,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should ignore protected properties in should' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :remove,
-              :home => '/opt/aem',
-              :properties => {
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :remove,
+              home: '/opt/aem',
+              properties: {
                 'bar' => 'foo',
                 'jcr:created' => 'a value',
                 'baz' => {
@@ -293,12 +293,12 @@ describe Puppet::Type.type(:aem_sling_resource) do
           describe 'force_passwords == false' do
             it 'should ignore password properties in should' do
               existing = described_class.new(
-                :name => 'bar',
-                :ensure => :present,
-                :handle_missing => :remove,
-                :home => '/opt/aem',
-                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-                :properties => {
+                name: 'bar',
+                ensure: :present,
+                handle_missing: :remove,
+                home: '/opt/aem',
+                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                properties: {
                   'bar' => 'foo',
                   'apassword' => 'a value',
                   'baz' => {
@@ -326,12 +326,12 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
             it 'should ignore password properties in is' do
               existing = described_class.new(
-                :name => 'bar',
-                :ensure => :present,
-                :handle_missing => :remove,
-                :home => '/opt/aem',
-                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-                :properties => {
+                name: 'bar',
+                ensure: :present,
+                handle_missing: :remove,
+                home: '/opt/aem',
+                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                properties: {
                   'bar' => 'foo',
                   'baz' => {
                     'jcr:createdBy' => 'admin',
@@ -362,13 +362,13 @@ describe Puppet::Type.type(:aem_sling_resource) do
           describe 'force_passwords == true' do
             it 'should update password properties in should' do
               existing = described_class.new(
-                :name => 'bar',
-                :ensure => :present,
-                :force_passwords => true,
-                :handle_missing => :remove,
-                :home => '/opt/aem',
-                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-                :properties => {
+                name: 'bar',
+                ensure: :present,
+                force_passwords: true,
+                handle_missing: :remove,
+                home: '/opt/aem',
+                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                properties: {
                   'bar' => 'foo',
                   'apassword' => 'a value',
                   'baz' => {
@@ -396,13 +396,13 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
             it 'should update password properties' do
               existing = described_class.new(
-                :name => 'bar',
-                :ensure => :present,
-                :force_passwords => true,
-                :handle_missing => :remove,
-                :home => '/opt/aem',
-                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-                :properties => {
+                name: 'bar',
+                ensure: :present,
+                force_passwords: true,
+                handle_missing: :remove,
+                home: '/opt/aem',
+                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                properties: {
                   'bar' => 'foo',
                   'apassword' => 'a new value',
                   'baz' => {
@@ -438,11 +438,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle same resources' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => { 'foo' => 'bar' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: { 'foo' => 'bar' }
             )
             prop = existing.property(:properties)
             is = { 'foo' => 'bar' }
@@ -452,11 +452,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle different properties same key' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => { 'foo' => 'baz' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: { 'foo' => 'baz' }
             )
             prop = existing.property(:properties)
             is = { 'foo' => 'bar' }
@@ -466,11 +466,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle different properties different key' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => { 'bar' => 'foo' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: { 'bar' => 'foo' }
             )
             prop = existing.property(:properties)
             is = { 'foo' => 'bar' }
@@ -480,11 +480,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle additional properties in should' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => { 'bar' => 'foo', 'foo' => 'bar' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: { 'bar' => 'foo', 'foo' => 'bar' }
             )
             prop = existing.property(:properties)
             is = { 'foo' => 'bar' }
@@ -494,11 +494,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle additional properties in is' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => { 'bar' => 'foo' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: { 'bar' => 'foo' }
             )
             prop = existing.property(:properties)
             is = { 'bar' => 'foo', 'foo' => 'bar' }
@@ -508,11 +508,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle nested hash properties in should' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => { 'bar' => 'foo', 'baz' => { 'a' => 'b' } }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: { 'bar' => 'foo', 'baz' => { 'a' => 'b' } }
             )
             prop = existing.property(:properties)
             is = { 'bar' => 'foo' }
@@ -522,11 +522,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle nested hash properties in should hash/not-hash' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => { 'bar' => 'foo', 'baz' => { 'a' => 'b' } }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: { 'bar' => 'foo', 'baz' => { 'a' => 'b' } }
             )
             prop = existing.property(:properties)
             is = { 'bar' => 'foo', 'baz' => 'not hash' }
@@ -536,11 +536,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle nested, existing hash properties in is' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => { 'bar' => 'foo' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: { 'bar' => 'foo' }
             )
             prop = existing.property(:properties)
             is = { 'bar' => 'foo', 'baz' => { 'a' => 'b' } }
@@ -550,11 +550,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle nested matching hash properties' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => { 'bar' => 'foo', 'baz' => { 'a' => 'b' } }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: { 'bar' => 'foo', 'baz' => { 'a' => 'b' } }
             )
             prop = existing.property(:properties)
             is = { 'bar' => 'foo', 'baz' => { 'a' => 'b' } }
@@ -564,11 +564,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle nested not-matching hash properties' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => { 'bar' => 'foo', 'baz' => { 'a' => 'c' } }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: { 'bar' => 'foo', 'baz' => { 'a' => 'c' } }
             )
             prop = existing.property(:properties)
             is = { 'bar' => 'foo', 'baz' => { 'a' => 'b' } }
@@ -578,11 +578,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle depth nested matching hash properties' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => { 'bar' => 'foo', 'baz' => { 'a' => { 'b' => 'c' } } }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: { 'bar' => 'foo', 'baz' => { 'a' => { 'b' => 'c' } } }
             )
             prop = existing.property(:properties)
             is = { 'bar' => 'foo', 'baz' => { 'a' => { 'b' => 'c' } } }
@@ -592,11 +592,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should handle depth nested not-matching hash properties' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => { 'bar' => 'foo', 'baz' => { 'a' => { 'b' => 'c' } } }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: { 'bar' => 'foo', 'baz' => { 'a' => { 'b' => 'c' } } }
             )
             prop = existing.property(:properties)
             is = { 'bar' => 'foo', 'baz' => { 'a' => { 'b' => 'd' } } }
@@ -606,11 +606,11 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
           it 'should ignore protected properties in should' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :ignore,
-              :home => '/opt/aem',
-              :properties => {
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :ignore,
+              home: '/opt/aem',
+              properties: {
                 'bar' => 'foo',
                 'jcr:created' => 'a value',
                 'baz' => {
@@ -642,12 +642,12 @@ describe Puppet::Type.type(:aem_sling_resource) do
           describe 'force_passwords == false' do
             it 'should ignore password properties in should' do
               existing = described_class.new(
-                :name => 'bar',
-                :ensure => :present,
-                :handle_missing => :ignore,
-                :home => '/opt/aem',
-                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-                :properties => {
+                name: 'bar',
+                ensure: :present,
+                handle_missing: :ignore,
+                home: '/opt/aem',
+                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                properties: {
                   'bar' => 'foo',
                   'apassword' => 'a value',
                   'baz' => {
@@ -675,12 +675,12 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
             it 'should ignore password properties in is' do
               existing = described_class.new(
-                :name => 'bar',
-                :ensure => :present,
-                :handle_missing => :ignore,
-                :home => '/opt/aem',
-                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-                :properties => {
+                name: 'bar',
+                ensure: :present,
+                handle_missing: :ignore,
+                home: '/opt/aem',
+                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                properties: {
                   'bar' => 'foo',
                   'apassword' => 'a new value',
                   'baz' => {
@@ -714,13 +714,13 @@ describe Puppet::Type.type(:aem_sling_resource) do
           describe 'force_passwords == true' do
             it 'should update password properties in should' do
               existing = described_class.new(
-                :name => 'bar',
-                :ensure => :present,
-                :force_passwords => true,
-                :handle_missing => :ignore,
-                :home => '/opt/aem',
-                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-                :properties => {
+                name: 'bar',
+                ensure: :present,
+                force_passwords: true,
+                handle_missing: :ignore,
+                home: '/opt/aem',
+                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                properties: {
                   'bar' => 'foo',
                   'apassword' => 'a value',
                   'baz' => {
@@ -748,13 +748,13 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
             it 'should update password properties' do
               existing = described_class.new(
-                :name => 'bar',
-                :ensure => :present,
-                :force_passwords => true,
-                :handle_missing => :ignore,
-                :home => '/opt/aem',
-                :password_properties => ['apassword', 'anotherpassword', 'onemorepassword'],
-                :properties => {
+                name: 'bar',
+                ensure: :present,
+                force_passwords: true,
+                handle_missing: :ignore,
+                home: '/opt/aem',
+                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                properties: {
                   'bar' => 'foo',
                   'apassword' => 'a new value',
                   'baz' => {

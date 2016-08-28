@@ -4,7 +4,7 @@ describe 'updated aem settings' do
 
   let(:facts) do
     {
-      :environment => :root
+      environment: :root
     }
   end
 

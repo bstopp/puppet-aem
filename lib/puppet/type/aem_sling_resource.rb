@@ -8,11 +8,11 @@ This is a type used to perform sling api calls
 
   ensurable
 
-  newparam(:name, :namevar => true) do
+  newparam(:name, namevar: true) do
     desc 'The full path of the content node, or a unique name for this resource.'
   end
 
-  newparam(:force_passwords, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+  newparam(:force_passwords, boolean: true, parent: Puppet::Parameter::Boolean) do
     desc 'Force the updates of password properties if they differ.'
     defaultto :false
   end
@@ -32,7 +32,7 @@ This is a type used to perform sling api calls
     end
   end
 
-  newparam(:ignored_properties, :array_matching => :all) do
+  newparam(:ignored_properties, array_matching: :all) do
     desc 'The properties to ignore when checking for synchronization.'
     defaultto ['jcr:created', 'jcr:createdBy', 'cq:lastModified', 'cq:lastModifiedBy']
   end
@@ -45,12 +45,12 @@ This is a type used to perform sling api calls
     desc 'Password used to log into AEM.'
   end
 
-  newparam(:password_properties, :array_matching => :all) do
+  newparam(:password_properties, array_matching: :all) do
     desc 'Properties designated as passwords, these will be ignored on sync check unless force_passwords is true.'
     defaultto []
   end
 
-  newparam(:protected_properties, :array_matching => :all) do
+  newparam(:protected_properties, array_matching: :all) do
     desc 'Properties allowed when creating a node, but not during updates; ignored during synchronization.'
     defaultto ['jcr:primaryType']
   end

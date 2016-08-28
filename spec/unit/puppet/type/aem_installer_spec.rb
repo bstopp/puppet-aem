@@ -11,11 +11,11 @@ describe Puppet::Type.type(:aem_installer) do
     described_class.stubs(:defaultprovider).returns @provider_class
   end
 
-  before :each, :platform => :linux do
+  before :each, platform: :linux do
     expect(Puppet::Util::Platform).to receive(:windows?).and_return(false)
   end
 
-  before :each, :platform => :windows do
+  before :each, platform: :windows do
     expect(Puppet::Util::Platform).to receive(:windows?).and_return(true)
   end
 
@@ -43,16 +43,16 @@ describe Puppet::Type.type(:aem_installer) do
 
     describe 'ensure' do
       it 'should support present as a value for ensure' do
-        expect { described_class.new(:name => 'bar', :ensure => :present, :home => '/opt/aem') }.not_to raise_error
+        expect { described_class.new(name: 'bar', ensure: :present, home: '/opt/aem') }.not_to raise_error
       end
 
       it 'should support absent as a value for ensure' do
-        expect { described_class.new(:name => 'bar', :ensure => :absent, :home => '/opt/aem') }.not_to raise_error
+        expect { described_class.new(name: 'bar', ensure: :absent, home: '/opt/aem') }.not_to raise_error
       end
 
       it 'should not support other values' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :bar, :home => '/opt/aem')
+          described_class.new(name: 'bar', ensure: :bar, home: '/opt/aem')
         end.to raise_error(Puppet::Error, /Invalid value/)
       end
     end
@@ -63,12 +63,12 @@ describe Puppet::Type.type(:aem_installer) do
       end
 
       it 'should accept a name' do
-        inst = described_class.new(:name => 'bar', :home => '/opt/aem')
+        inst = described_class.new(name: 'bar', home: '/opt/aem')
         expect(inst[:name]).to eq('bar')
       end
 
       it 'should be munged to lowercase' do
-        inst = described_class.new(:name => 'BAR', :home => '/opt/aem')
+        inst = described_class.new(name: 'BAR', home: '/opt/aem')
         expect(inst[:name]).to eq('bar')
       end
     end
@@ -77,31 +77,31 @@ describe Puppet::Type.type(:aem_installer) do
 
       it 'should require a value' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :absent)
+          described_class.new(name: 'bar', ensure: :absent)
         end.to raise_error(Puppet::Error, /Home must be specified/)
       end
 
-      context 'linux', :platform => :linux do
+      context 'linux', platform: :linux do
 
         it 'should require absolute paths' do
           expect do
             described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :home => 'not/absolute'
+              name: 'bar',
+              ensure: :present,
+              home: 'not/absolute'
             )
           end.to raise_error(Puppet::Error, /fully qualified/)
         end
       end
 
-      context 'windows', :platform => :windows do
+      context 'windows', platform: :windows do
 
         it 'should require absolute paths' do
           expect do
             described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :home => 'not/absolute'
+              name: 'bar',
+              ensure: :present,
+              home: 'not/absolute'
             )
           end.to raise_error(Puppet::Error, /fully qualified/)
         end
@@ -111,7 +111,7 @@ describe Puppet::Type.type(:aem_installer) do
     describe 'timeout' do
       it 'should always be a number' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :absent, :home => '/opt/aem', :timeout => 'NaN')
+          described_class.new(name: 'bar', ensure: :absent, home: '/opt/aem', timeout: 'NaN')
         end.to raise_error(Puppet::Error, /Invalid value/)
       end
     end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 # Tests for parameters defaults and validation
-describe 'aem::dispatcher::farm', :type => :define do
+describe 'aem::dispatcher::farm', type: :define do
 
   let(:pre_condition) do
     '
@@ -12,7 +12,7 @@ describe 'aem::dispatcher::farm', :type => :define do
 
   let(:default_params) do
     {
-      :docroot => '/path/to/docroot'
+      docroot: '/path/to/docroot'
     }
   end
 
@@ -22,13 +22,13 @@ describe 'aem::dispatcher::farm', :type => :define do
 
   let(:default_facts) do
     {
-      :osfamily               => 'RedHat',
-      :operatingsystemrelease => '7.1.1503',
-      :operatingsystem        => 'CentOS',
-      :concat_basedir         => '/dne',
-      :id                     => 'root',
-      :kernel                 => 'Linux',
-      :path                   => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+      osfamily: 'RedHat',
+      operatingsystemrelease: '7.1.1503',
+      operatingsystem: 'CentOS',
+      concat_basedir: '/dne',
+      id: 'root',
+      kernel: 'Linux',
+      path: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
     }
   end
 
@@ -38,7 +38,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'allowed_clients' do
       let(:params) do
         default_params.merge(
-          :allowed_clients => [
+          allowed_clients: [
             { 'rank' => 100, 'glob' => '10.200.1.1', 'type' => 'allow' },
             { 'glob' => '*', 'type' => 'deny' }
           ]
@@ -57,7 +57,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'cache_rules' do
       let(:params) do
         default_params.merge(
-          :cache_rules => [
+          cache_rules: [
             { 'rank' => 200, 'glob' => '*.html', 'type' => 'allow' },
             { 'glob' => '*', 'type' => 'deny' }
           ]
@@ -76,7 +76,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'filter' do
       let(:params) do
         default_params.merge(
-          :filters => [
+          filters: [
             { 'rank' => 10, 'type' => 'allow', 'glob' => '/content*' },
             { 'type' => 'deny', 'glob' => '*' }
           ]
@@ -95,7 +95,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'ignore_parameters' do
       let(:params) do
         default_params.merge(
-          :ignore_parameters => [
+          ignore_parameters: [
             { 'rank' => 1, 'glob' => 'param=*', 'type' => 'allow' },
             { 'glob' => '*', 'type' => 'deny' }
           ]
@@ -114,7 +114,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'invalidate' do
       let(:params) do
         default_params.merge(
-          :invalidate => [
+          invalidate: [
             { 'rank' => 1000, 'glob' => '*.html', 'type' => 'allow' },
             { 'glob' => '*', 'type' => 'deny' }
           ]
@@ -133,7 +133,7 @@ describe 'aem::dispatcher::farm', :type => :define do
     context 'statistics' do
       let(:params) do
         default_params.merge(
-          :statistics => [
+          statistics: [
             { 'rank' => 2, 'glob' => '*', 'category' => 'others' },
             { 'glob' => '*.html', 'category' => 'html' }
           ]

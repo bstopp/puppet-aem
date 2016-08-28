@@ -4,7 +4,7 @@ describe 'create aem' do
 
   let(:facts) do
     {
-      :environment => :root
+      environment: :root
     }
   end
 
