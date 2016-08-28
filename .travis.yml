@@ -16,5 +16,6 @@ notifications:
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
 
-# uncomment this line if your project needs to run something other than `rake`:
-# script: bundle exec rspec spec
+branches:
+  only:
+  - master
