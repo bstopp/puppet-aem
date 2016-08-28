@@ -10,6 +10,7 @@ AllCops:
   Exclude:
     - 'Gemfile'
     - 'pkg/**/*'
+    - 'vendor/**/*'
 
 # Configure options
 Metrics/AbcSize:
