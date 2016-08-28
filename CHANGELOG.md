@@ -1,3 +1,14 @@
+## 2016-08-27 - Release 2.4.0
+### Summary
+
+* Bug fix for Apache restart every Agent run when multiple farms.
+* Use new packer boxes for testing.
+* Updating rubocop issues.
+
+#### Features:
+* Dispatcher farms now have `priority` attribute for load ordering.
+
+
 ## 2016-06-12 - Release 2.3.2
 ### Summary
 Update to support new features in Dispatcher v4.2.
