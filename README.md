@@ -651,6 +651,9 @@ Optional. Sets the cache */invalidate* section. Valid options: Hash, or Array of
 ##### `invalidate_handler`
 Optional. Sets the cache */invalidateHandler* rule. Valid options: any absolute path to file.
 
+##### `priority`
+Optional. Defines a priority for the resulting farm configuration to be included in the global dispatcher farm configuration. Farms with a lower priority will be included first. Farms with the same priority will be included in alphabetical order. Valid options are integers from `0` to `99`. Default value: 0
+
 ##### `propagate_synd_post`
 Optional. Sets the */propagateSyndPost* rule. Valid options: `0` or `1`.
 

@@ -58,6 +58,8 @@ class aem::dispatcher::params {
 
   $pass_error = '0'
 
+  $priority = 0
+
   $renders = {
     'hostname' => 'localhost',
     'port'     => 4503,

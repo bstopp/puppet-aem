@@ -107,12 +107,12 @@ class aem::dispatcher (
     if defined(Service[$::apache::service_name]) {
       Anchor['aem::dispatcher::begin']
       -> File["${::aem::dispatcher::params::farm_path}/${config_file}"]
-      ~> Service[$::apache::params::service_name]
+      ~> Service[$::apache::service_name]
       -> Anchor['aem::dispatcher::end']
 
       Anchor['aem::dispatcher::begin']
       -> File["${::aem::dispatcher::params::farm_path}/dispatcher.conf"]
-      ~> Service[$::apache::params::service_name]
+      ~> Service[$::apache::service_name]
       -> Anchor['aem::dispatcher::end']
     }
 

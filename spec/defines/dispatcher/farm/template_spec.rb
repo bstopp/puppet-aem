@@ -39,7 +39,7 @@ describe 'aem::dispatcher::farm', type: :define do
     it { is_expected.to compile }
     it do
       is_expected.to contain_file(
-        '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+        '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
       ).with(
         ensure: 'present'
       ).with_content(
@@ -98,21 +98,6 @@ describe 'aem::dispatcher::farm', type: :define do
         %r|/virtualhosts {\s*"\*"\s*}|
       )
     end
-    it do
-      is_expected.to contain_file_line(
-        'include aem-site.any'
-      ).with(
-        'ensure' => 'present',
-        'after'  => '/farms \{',
-        'line'   => '  $include "dispatcher.aem-site.any"',
-        'match'  => '  $include "dispatcher.aem-site.any"',
-        'path'   => '/etc/httpd/conf.modules.d/dispatcher.farms.any'
-      ).that_requires(
-        'File[/etc/httpd/conf.modules.d/dispatcher.farms.any]'
-      ).that_notifies(
-        'Service[httpd]'
-      )
-    end
   end
 
   describe 'specify parameters' do
@@ -125,7 +110,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/allowAuthorized "1"|
         )
@@ -139,7 +124,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/allowedClients {\s*/0 { /type "allow" /glob "10.200.1.1" }\s*}|
         )
@@ -153,7 +138,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/headers {\s*"New-Cache-Header"\s*"Another-Cache-Header"\s*}|
         )
@@ -172,7 +157,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/rules {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }|
         )
@@ -186,7 +171,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/enableTTL "1"\s*|
         )
@@ -200,7 +185,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/clientheaders {\s*"New-Client-Header"\s*"Another-New-Header"\s*}|
         )
@@ -214,7 +199,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/failover "1"\s*|
         )
@@ -229,7 +214,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|/filter {\s*/0 { /type "deny" /glob "/content\*" }|
           )
@@ -255,7 +240,7 @@ describe 'aem::dispatcher::farm', type: :define do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
-              '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
               %r|
                 /0\s{\s*
@@ -286,7 +271,7 @@ describe 'aem::dispatcher::farm', type: :define do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
-              '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
               %r|/0 {\s*/type\s*"allow"\s*/method\s*"GET"\s*}|
             )
@@ -305,7 +290,7 @@ describe 'aem::dispatcher::farm', type: :define do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
-              '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
               %r|/0 {\s*/type\s*"allow"\s*/url\s*"/path/to/content"\s*}|
             )
@@ -324,7 +309,7 @@ describe 'aem::dispatcher::farm', type: :define do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
-              '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
               %r|/0 {\s*/type\s*"allow"\s*/query\s*"param=\*"\s*}|
             )
@@ -343,7 +328,7 @@ describe 'aem::dispatcher::farm', type: :define do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
-              '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
               %r|/0 {\s*/type\s*"allow"\s*/protocol\s"https"\s*}|
             )
@@ -359,7 +344,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/gracePeriod "5"\s*|
         )
@@ -373,7 +358,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/health_check { /url "/health/check/url.html" }|
         )
@@ -392,7 +377,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/ignoreUrlParams {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "param=\*" }\s*}|
         )
@@ -411,7 +396,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/invalidate {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }\s*}|
         )
@@ -428,12 +413,37 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/invalidateHandler "/path/to/script"|
         ).without_content(
           %r|/invalidate |
         )
+      end
+    end
+
+    context 'priority' do
+      context 'priotity 1' do
+        let(:params) do
+          default_params.merge(priority: 1)
+        end
+        it { is_expected.to compile }
+        it do
+          is_expected.to contain_file(
+            '/etc/httpd/conf.modules.d/dispatcher.01-aem-site.inc.any'
+          )
+        end
+      end
+      context 'priotity 10' do
+        let(:params) do
+          default_params.merge(priority: 10)
+        end
+        it { is_expected.to compile }
+        it do
+          is_expected.to contain_file(
+            '/etc/httpd/conf.modules.d/dispatcher.10-aem-site.inc.any'
+          )
+        end
       end
     end
 
@@ -444,7 +454,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/propagateSyndPost "1"\s*|
         )
@@ -458,7 +468,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/numberOfRetries "5"|
         )
@@ -472,7 +482,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/retryDelay "5"|
         )
@@ -495,7 +505,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|
               /renders\s{\s*
@@ -524,7 +534,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|/renders {\s*/renderer0 {\s*/hostname\s*"publish.hostname.com"\s*/port\s"8080"\s*/timeout\s*"600"\s*}|
           )
@@ -543,7 +553,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|
               /renders\s{\s*
@@ -570,7 +580,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|/renders {\s*/renderer0 {\s*/hostname\s*"publish.hostname.com"\s*/port\s"8080"\s*/ipv4\s*"0"\s*}|
           )
@@ -596,7 +606,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|/renderer0 {\s*/hostname\s*"publish.hostname.com"\s*/port\s"8080"\s*/timeout\s*"600"\s*}|
           ).with_content(
@@ -613,7 +623,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/serveStaleOnError "1"\s*|
         )
@@ -633,7 +643,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|/sessionmanagement {\s*/directory\s*"/path/to/cache"\s*}|
           )
@@ -652,7 +662,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|/sessionmanagement {\s*/directory\s*"/path/to/cache"\s*/encode\s"md5"\s*}|
           )
@@ -671,7 +681,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|/sessionmanagement {\s*/directory\s*"/path/to/cache"\s*/header\s"HTTP:authorization"\s*}|
           )
@@ -690,7 +700,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|/sessionmanagement {\s*/directory\s*"/path/to/cache"\s*/timeout\s"1000"\s*}|
           )
@@ -711,7 +721,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|
               /sessionmanagement\s{\s*
@@ -733,7 +743,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|
             /statfile\s"/path/to/statfile"
@@ -749,7 +759,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/statfileslevel "3"|
         )
@@ -768,7 +778,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|
             /statistics\s{\s*
@@ -790,7 +800,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|/stickyConnectionsFor "/path/to/content"|
           )
@@ -803,7 +813,7 @@ describe 'aem::dispatcher::farm', type: :define do
         it { is_expected.to compile }
         it do
           is_expected.to contain_file(
-            '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
             %r|
               /stickyConnections\s{\s*\s
@@ -825,7 +835,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/unavailablePenalty "3"|
         )
@@ -844,7 +854,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|
             /vanity_urls\s{\s*
@@ -864,7 +874,7 @@ describe 'aem::dispatcher::farm', type: :define do
       it { is_expected.to compile }
       it do
         is_expected.to contain_file(
-          '/etc/httpd/conf.modules.d/dispatcher.aem-site.any'
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|
             /virtualhosts\s{\s*"www.avirtualhost.com"\s*"another.virtual.com"\s*}

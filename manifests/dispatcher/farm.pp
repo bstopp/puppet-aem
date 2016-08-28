@@ -17,6 +17,7 @@ define aem::dispatcher::farm(
   $ignore_parameters   = undef,
   $invalidate          = undef,
   $invalidate_handler  = undef,
+  $priority            = $::aem::dispatcher::params::priority,
   $propagate_synd_post = undef,
   $renders             = $::aem::dispatcher::params::renders,
   $retries             = undef,
@@ -128,6 +129,25 @@ define aem::dispatcher::farm(
     }
   }
 
+  if $priority {
+    if $priority.is_a(Integer) {
+      validate_integer($priority, 99, 0)
+      if $priority < 10 {
+        $priority_string = "0${priority}"
+      }
+      else {
+        $priority_string = $priority
+      }
+    }
+    else {
+      fail('Priority should be a valid Integer from 0 to 99')
+    }
+
+  }
+  else {
+    $priority_string = '00'
+  }
+
   if $propagate_synd_post {
     validate_integer($propagate_synd_post, 1, 0)
   }
@@ -217,37 +237,16 @@ define aem::dispatcher::farm(
     $_virtualhosts = $virtualhosts
   }
 
-  $_line_start = '  $include "dispatcher.'
-  $_line_end = '.any"'
-
   if $ensure == 'present' {
-    file { "${::aem::dispatcher::params::farm_path}/dispatcher.${name}.any" :
+    file { "${::aem::dispatcher::params::farm_path}/dispatcher.${priority_string}-${name}.inc.any" :
       ensure  => $ensure,
       content => template("${module_name}/dispatcher/dispatcher.any.erb"),
+      notify  => Service[$::apache::service_name],
     }
-    file_line { "include ${name}.any" :
-      ensure  => $ensure,
-      after   => '/farms \{',
-      line    => "${_line_start}${name}${_line_end}",
-      match   => "${_line_start}${name}${_line_end}",
-      path    => "${::aem::dispatcher::params::farm_path}/${::aem::dispatcher::config_file}",
-      require => File["${::aem::dispatcher::params::farm_path}/${::aem::dispatcher::config_file}"],
-      notify  => Service[$::apache::params::service_name],
-    }
-
   } else {
-
-    file_line { "include ${name}.any" :
+    file { "${::aem::dispatcher::params::farm_path}/dispatcher.${priority_string}-${name}.inc.any" :
       ensure => $ensure,
-      path   => "${::aem::dispatcher::params::farm_path}/${::aem::dispatcher::config_file}",
-      line   => "${_line_start}${name}${_line_end}",
-      match  => "${_line_start}${name}${_line_end}",
-    }
-
-    file { "${::aem::dispatcher::params::farm_path}/dispatcher.${name}.any" :
-      ensure  => $ensure,
-      require => File_line["include ${name}.any"],
-      notify  => Service[$::apache::params::service_name],
+      notify => Service[$::apache::service_name],
     }
   }
 
