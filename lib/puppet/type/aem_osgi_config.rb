@@ -7,7 +7,7 @@ This is a private type used to manage OSGi co=nfigurations via API calls.
 
   ensurable
 
-  newparam(:name, :namevar => true) do
+  newparam(:name, namevar: true) do
     desc 'The name of the OSGi configuration. This should be the SID.'
   end
 

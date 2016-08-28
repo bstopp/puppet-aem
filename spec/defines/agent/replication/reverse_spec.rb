@@ -1,15 +1,15 @@
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::agent::replication::reverse', :type => :defines do
+describe 'aem::agent::replication::reverse', type: :defines do
 
   let(:default_params) do
     {
-      :home           => '/opt/aem',
-      :name           => 'agentname',
-      :password       => 'password',
-      :runmode        => 'author',
-      :username       => 'username'
+      home: '/opt/aem',
+      name: 'agentname',
+      password: 'password',
+      runmode: 'author',
+      username: 'username'
     }
   end
 
@@ -30,43 +30,43 @@ describe 'aem::agent::replication::reverse', :type => :defines do
         is_expected.to contain_aem__agent__replication(
           'Agent Title'
         ).only_with(
-          :enabled              => true,
-          :ensure               => 'present',
-          :home                 => '/opt/aem',
-          :log_level            => 'info',
-          :name                 => 'agentname',
-          :password             => 'password',
-          :protocol_http_method => 'GET',
-          :resource_type        => 'cq/replication/components/revagent',
-          :reverse              => true,
-          :runmode              => 'author',
-          :serialize_type       => 'durbo',
-          :template             => '/libs/cq/replication/templates/revagent',
-          :username             => 'username'
+          enabled: true,
+          ensure: 'present',
+          home: '/opt/aem',
+          log_level: 'info',
+          name: 'agentname',
+          password: 'password',
+          protocol_http_method: 'GET',
+          resource_type: 'cq/replication/components/revagent',
+          reverse: true,
+          runmode: 'author',
+          serialize_type: 'durbo',
+          template: '/libs/cq/replication/templates/revagent',
+          username: 'username'
         )
       end
     end
     context 'all values' do
       let(:params) do
         default_params.update(
-          :agent_user           => 'agentuser',
-          :description          => 'description',
-          :enabled              => false,
-          :ensure               => 'present',
-          :force_passwords      => true,
-          :home                 => '/opt/aem',
-          :log_level            => 'error',
-          :name                 => 'agentname',
-          :password             => 'password',
-          :protocol_http_method => 'GET',
-          :runmode              => 'author',
-          :timeout              => 2000,
-          :trans_allow_exp_cert => true,
-          :trans_password       => 'transpassword',
-          :trans_ssl            => 'relaxed',
-          :trans_uri            => 'http://hostname:port/bin/receive',
-          :trans_user           => 'transuser',
-          :username             => 'username'
+          agent_user: 'agentuser',
+          description: 'description',
+          enabled: false,
+          ensure: 'present',
+          force_passwords: true,
+          home: '/opt/aem',
+          log_level: 'error',
+          name: 'agentname',
+          password: 'password',
+          protocol_http_method: 'GET',
+          runmode: 'author',
+          timeout: 2000,
+          trans_allow_exp_cert: true,
+          trans_password: 'transpassword',
+          trans_ssl: 'relaxed',
+          trans_uri: 'http://hostname:port/bin/receive',
+          trans_user: 'transuser',
+          username: 'username'
         )
       end
       it { is_expected.to compile }
@@ -74,28 +74,28 @@ describe 'aem::agent::replication::reverse', :type => :defines do
         is_expected.to contain_aem__agent__replication(
           'Agent Title'
         ).only_with(
-          :agent_user           => 'agentuser',
-          :description          => 'description',
-          :enabled              => false,
-          :ensure               => 'present',
-          :force_passwords      => true,
-          :home                 => '/opt/aem',
-          :log_level            => 'error',
-          :name                 => 'agentname',
-          :password             => 'password',
-          :protocol_http_method => 'GET',
-          :resource_type        => 'cq/replication/components/revagent',
-          :runmode              => 'author',
-          :reverse              => true,
-          :serialize_type       => 'durbo',
-          :template             => '/libs/cq/replication/templates/revagent',
-          :timeout              => 2000,
-          :trans_allow_exp_cert => true,
-          :trans_password       => 'transpassword',
-          :trans_ssl            => 'relaxed',
-          :trans_uri            => 'http://hostname:port/bin/receive',
-          :trans_user           => 'transuser',
-          :username             => 'username'
+          agent_user: 'agentuser',
+          description: 'description',
+          enabled: false,
+          ensure: 'present',
+          force_passwords: true,
+          home: '/opt/aem',
+          log_level: 'error',
+          name: 'agentname',
+          password: 'password',
+          protocol_http_method: 'GET',
+          resource_type: 'cq/replication/components/revagent',
+          runmode: 'author',
+          reverse: true,
+          serialize_type: 'durbo',
+          template: '/libs/cq/replication/templates/revagent',
+          timeout: 2000,
+          trans_allow_exp_cert: true,
+          trans_password: 'transpassword',
+          trans_ssl: 'relaxed',
+          trans_uri: 'http://hostname:port/bin/receive',
+          trans_user: 'transuser',
+          username: 'username'
         )
       end
     end
@@ -104,26 +104,26 @@ describe 'aem::agent::replication::reverse', :type => :defines do
   describe 'ensure absent' do
     context 'should work without error' do
       let(:params) do
-        default_params.update(:ensure => 'absent')
+        default_params.update(ensure: 'absent')
       end
       it { is_expected.to compile }
       it do
         is_expected.to contain_aem__agent__replication(
           'Agent Title'
         ).only_with(
-          :enabled              => true,
-          :ensure               => 'absent',
-          :home                 => '/opt/aem',
-          :log_level            => 'info',
-          :name                 => 'agentname',
-          :password             => 'password',
-          :protocol_http_method => 'GET',
-          :resource_type        => 'cq/replication/components/revagent',
-          :reverse              => true,
-          :runmode              => 'author',
-          :serialize_type       => 'durbo',
-          :template             => '/libs/cq/replication/templates/revagent',
-          :username             => 'username'
+          enabled: true,
+          ensure: 'absent',
+          home: '/opt/aem',
+          log_level: 'info',
+          name: 'agentname',
+          password: 'password',
+          protocol_http_method: 'GET',
+          resource_type: 'cq/replication/components/revagent',
+          reverse: true,
+          runmode: 'author',
+          serialize_type: 'durbo',
+          template: '/libs/cq/replication/templates/revagent',
+          username: 'username'
         )
       end
     end

@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::config', :type => :defines do
+describe 'aem::config', type: :defines do
 
   let(:default_facts) do
     {
-      :kernel                    => 'Linux',
-      :operatingsystem           => 'CentOS',
-      :operatingsystemmajrelease => '7'
+      kernel: 'Linux',
+      operatingsystem: 'CentOS',
+      operatingsystemmajrelease: '7'
     }
   end
 
@@ -17,18 +17,18 @@ describe 'aem::config', :type => :defines do
 
   let(:default_params) do
     {
-      :context_root   => :undef,
-      :debug_port     => :undef,
-      :group          => 'aem',
-      :home           => '/opt/aem',
-      :jvm_mem_opts   => :undef,
-      :jvm_opts       => :undef,
-      :osgi_configs   => :undef,
-      :port           => :undef,
-      :runmodes       => [],
-      :sample_content => true,
-      :type           => 'author',
-      :user           => 'aem'
+      context_root: :undef,
+      debug_port: :undef,
+      group: 'aem',
+      home: '/opt/aem',
+      jvm_mem_opts: :undef,
+      jvm_opts: :undef,
+      osgi_configs: :undef,
+      port: :undef,
+      runmodes: [],
+      sample_content: true,
+      type: 'author',
+      user: 'aem'
     }
   end
 
@@ -42,7 +42,7 @@ describe 'aem::config', :type => :defines do
 
     context 'context root' do
       let(:params) do
-        default_params.merge(:context_root => 'contextroot')
+        default_params.merge(context_root: 'contextroot')
       end
 
       it do
@@ -57,7 +57,7 @@ describe 'aem::config', :type => :defines do
 
     context 'debug port' do
       let(:params) do
-        default_params.merge(:debug_port => 12_345)
+        default_params.merge(debug_port: 12_345)
       end
 
       it do
@@ -71,7 +71,7 @@ describe 'aem::config', :type => :defines do
 
     context 'jvm_mem_opts' do
       let(:params) do
-        default_params.merge(:jvm_mem_opts => '-XmxAllYourMemory')
+        default_params.merge(jvm_mem_opts: '-XmxAllYourMemory')
       end
 
       it do
@@ -85,7 +85,7 @@ describe 'aem::config', :type => :defines do
 
     context 'jvm_opts' do
       let(:params) do
-        default_params.merge(:jvm_opts => 'Some Options')
+        default_params.merge(jvm_opts: 'Some Options')
       end
 
       it do
@@ -99,7 +99,7 @@ describe 'aem::config', :type => :defines do
 
     context 'port' do
       let(:params) do
-        default_params.merge(:port => 12_345)
+        default_params.merge(port: 12_345)
       end
 
       it do
@@ -113,7 +113,7 @@ describe 'aem::config', :type => :defines do
 
     context 'runmodes' do
       let(:params) do
-        default_params.merge(:runmodes => %w(test runmodes))
+        default_params.merge(runmodes: %w(test runmodes))
       end
 
       it do
@@ -128,7 +128,7 @@ describe 'aem::config', :type => :defines do
     context 'sample content' do
       context 'disabled' do
         let(:params) do
-          default_params.merge(:sample_content => false)
+          default_params.merge(sample_content: false)
         end
 
         it do
@@ -151,7 +151,7 @@ describe 'aem::config', :type => :defines do
       end
       context 'publish' do
         let(:params) do
-          default_params.merge(:type => 'publish')
+          default_params.merge(type: 'publish')
         end
         it { is_expected.to contain_file('/opt/aem/crx-quickstart/bin/start-env').with('content' => /TYPE='publish'/) }
       end
@@ -172,28 +172,28 @@ describe 'aem::config', :type => :defines do
         is_expected.to contain_file(
           '/opt/aem/crx-quickstart/bin/start-env'
         ).with(
-          :group => 'aem'
+          group: 'aem'
         )
       end
       it do
         is_expected.to contain_file(
           '/opt/aem/crx-quickstart/bin/start.orig'
         ).with(
-          :group => 'aem'
+          group: 'aem'
         )
       end
       it do
         is_expected.to contain_file(
           '/opt/aem/crx-quickstart/bin/start'
         ).with(
-          :group => 'aem'
+          group: 'aem'
         )
       end
       it do
         is_expected.to contain_file(
           '/opt/aem/crx-quickstart/install'
         ).with(
-          :group => 'aem'
+          group: 'aem'
         )
       end
     end
@@ -203,30 +203,30 @@ describe 'aem::config', :type => :defines do
         is_expected.to contain_file(
           '/opt/aem/crx-quickstart/bin/start-env'
         ).with(
-          :owner => 'aem',
-          :mode => '0775'
+          owner: 'aem',
+          mode: '0775'
         )
       end
       it do
         is_expected.to contain_file(
           '/opt/aem/crx-quickstart/bin/start.orig'
         ).with(
-          :owner => 'aem'
+          owner: 'aem'
         )
       end
       it do
         is_expected.to contain_file(
           '/opt/aem/crx-quickstart/bin/start'
         ).with(
-          :owner => 'aem'
+          owner: 'aem'
         )
       end
       it do
         is_expected.to contain_file(
           '/opt/aem/crx-quickstart/install'
         ).with(
-          :ensure => :directory,
-          :owner => 'aem'
+          ensure: :directory,
+          owner: 'aem'
         )
       end
     end
@@ -254,7 +254,7 @@ describe 'aem::config', :type => :defines do
     end
     let(:params) do
       default_params.merge(
-        :osgi_configs => [
+        osgi_configs: [
           {
             'osgi.name' => cfg_props1
           },
@@ -270,13 +270,13 @@ describe 'aem::config', :type => :defines do
         is_expected.to contain_aem__osgi__config(
           'osgi.name'
         ).only_with(
-          :ensure     => 'present',
-          :group      => 'aem',
-          :home       => '/opt/aem',
-          :name       => 'osgi.name',
-          :properties => cfg_props1,
-          :type       => 'file',
-          :user       => 'aem'
+          ensure: 'present',
+          group: 'aem',
+          home: '/opt/aem',
+          name: 'osgi.name',
+          properties: cfg_props1,
+          type: 'file',
+          user: 'aem'
         )
       end
     end
@@ -285,13 +285,13 @@ describe 'aem::config', :type => :defines do
         is_expected.to contain_aem__osgi__config(
           'osgi2.name'
         ).only_with(
-          :ensure     => 'present',
-          :group      => 'aem',
-          :home       => '/opt/aem',
-          :name       => 'osgi2.name',
-          :properties => cfg_props2,
-          :type       => 'file',
-          :user       => 'aem'
+          ensure: 'present',
+          group: 'aem',
+          home: '/opt/aem',
+          name: 'osgi2.name',
+          properties: cfg_props2,
+          type: 'file',
+          user: 'aem'
         )
       end
     end
@@ -319,7 +319,7 @@ describe 'aem::config', :type => :defines do
     end
     let(:params) do
       default_params.merge(
-        :osgi_configs => [
+        osgi_configs: [
           {
             'osgi.name' => {
               'pid'        => 'aem.config1',
@@ -341,14 +341,14 @@ describe 'aem::config', :type => :defines do
         is_expected.to contain_aem__osgi__config(
           'osgi.name'
         ).only_with(
-          :ensure     => 'present',
-          :group      => 'aem',
-          :home       => '/opt/aem',
-          :name       => 'osgi.name',
-          :pid        => 'aem.config1',
-          :properties => cfg_props1,
-          :type       => 'file',
-          :user       => 'aem'
+          ensure: 'present',
+          group: 'aem',
+          home: '/opt/aem',
+          name: 'osgi.name',
+          pid: 'aem.config1',
+          properties: cfg_props1,
+          type: 'file',
+          user: 'aem'
         )
       end
     end
@@ -357,14 +357,14 @@ describe 'aem::config', :type => :defines do
         is_expected.to contain_aem__osgi__config(
           'osgi2.name'
         ).only_with(
-          :ensure     => 'present',
-          :group      => 'aem',
-          :home       => '/opt/aem',
-          :name       => 'osgi2.name',
-          :pid        => 'aem.config2',
-          :properties => cfg_props2,
-          :type       => 'file',
-          :user       => 'aem'
+          ensure: 'present',
+          group: 'aem',
+          home: '/opt/aem',
+          name: 'osgi2.name',
+          pid: 'aem.config2',
+          properties: cfg_props2,
+          type: 'file',
+          user: 'aem'
         )
       end
     end

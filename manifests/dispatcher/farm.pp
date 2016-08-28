@@ -21,7 +21,7 @@ define aem::dispatcher::farm(
   $renders             = $::aem::dispatcher::params::renders,
   $retries             = undef,
   $retry_delay         = undef,
-  $serve_stale         = $::aem::dispatcher::params::serve_stale,
+  $serve_stale         = undef,
   $session_management  = undef,
   $stat_file           = undef,
   $stat_files_level    = undef,

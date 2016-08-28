@@ -1,10 +1,10 @@
 require 'spec_helper_acceptance'
 
-describe 'create replication agent', :license => false do
+describe 'create replication agent', license: false do
 
   let(:facts) do
     {
-      :environment => :root
+      environment: :root
     }
   end
 
@@ -79,7 +79,7 @@ describe 'create replication agent', :license => false do
       }
     MANIFEST
 
-    apply_manifest_on(master, pp, :catch_failures => true)
+    apply_manifest_on(master, pp, catch_failures: true)
     restart_puppetserver
     fqdn = on(master, 'facter fqdn').stdout.strip
     fqdn = fqdn.chop if fqdn.end_with?('.')
@@ -87,13 +87,13 @@ describe 'create replication agent', :license => false do
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --debug --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0, 2]
+      acceptable_exit_codes: [0, 2]
     )
 
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --debug --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0]
+      acceptable_exit_codes: [0]
     )
     cmd = 'curl http://localhost:4502/etc/replication/agents.author/customname.infinity.json '
     cmd += '-u admin:admin'

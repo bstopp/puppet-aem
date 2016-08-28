@@ -4,7 +4,7 @@ describe 'destroy' do
 
   let(:facts) do
     {
-      :environment => :root
+      environment: :root
     }
   end
 
@@ -37,17 +37,17 @@ describe 'destroy' do
     MANIFEST
 
     on default, puppet('resource', 'service', 'aem-author', 'ensure=stopped')
-    apply_manifest_on(master, pp, :catch_failures => true)
+    apply_manifest_on(master, pp, catch_failures: true)
     fqdn = on(master, 'facter fqdn').stdout.strip
     restart_puppetserver
     on(
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
-      :acceptable_exit_codes => [0, 2]
+      acceptable_exit_codes: [0, 2]
     )
   end
 
   it 'should have removed instance repository' do
-    shell('ls /opt/aem/author/crx-quickstart', :acceptable_exit_codes => 2)
+    shell('ls /opt/aem/author/crx-quickstart', acceptable_exit_codes: 2)
   end
 end

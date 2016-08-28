@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 # Tests for parameters defaults and validation
-describe 'aem::instance', :type => :defines do
+describe 'aem::instance', type: :defines do
 
   let(:default_facts) do
     {
-      :kernel                    => 'Linux',
-      :operatingsystem           => 'CentOS',
-      :operatingsystemmajrelease => '7'
+      kernel: 'Linux',
+      operatingsystem: 'CentOS',
+      operatingsystemmajrelease: '7'
     }
   end
 
@@ -17,7 +17,7 @@ describe 'aem::instance', :type => :defines do
 
   let(:default_params) do
     {
-      :source => '/tmp/aem-quickstart.jar'
+      source: '/tmp/aem-quickstart.jar'
     }
   end
 
@@ -66,7 +66,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'absent' do
         let(:params) do
-          default_params.merge(:ensure => 'absent')
+          default_params.merge(ensure: 'absent')
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('ensure' => 'absent') }
@@ -74,7 +74,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'invalid' do
         let(:params) do
-          default_params.merge(:ensure => 'invalid')
+          default_params.merge(ensure: 'invalid')
         end
 
         it { expect { is_expected.to compile }.to raise_error(/not supported for ensure/) }
@@ -83,7 +83,7 @@ describe 'aem::instance', :type => :defines do
 
     context 'context_root' do
       let(:params) do
-        default_params.merge(:context_root => 'contextroot')
+        default_params.merge(context_root: 'contextroot')
       end
       it { is_expected.to compile }
       it { is_expected.to contain_aem__instance('aem').with('context_root' => 'contextroot') }
@@ -92,7 +92,7 @@ describe 'aem::instance', :type => :defines do
     context 'debug_port' do
       context 'valid' do
         let(:params) do
-          default_params.merge(:debug_port => 12_345)
+          default_params.merge(debug_port: 12_345)
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('debug_port' => 12_345) }
@@ -100,7 +100,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'NaN' do
         let(:params) do
-          default_params.merge(:debug_port => 'NaN')
+          default_params.merge(debug_port: 'NaN')
         end
         it { expect { is_expected.to compile }.to raise_error(/to be an Integer/) }
       end
@@ -109,7 +109,7 @@ describe 'aem::instance', :type => :defines do
     context 'group' do
       context 'non default value' do
         let(:params) do
-          default_params.merge(:group => 'notaemgroup')
+          default_params.merge(group: 'notaemgroup')
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('group' => 'notaemgroup') }
@@ -120,7 +120,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'not absolute' do
         let(:params) do
-          default_params.merge(:home => 'not/absolute/path')
+          default_params.merge(home: 'not/absolute/path')
         end
         it { expect { is_expected.to compile }.to raise_error(/is not an absolute path/) }
       end
@@ -131,7 +131,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'non default value' do
         let(:params) do
-          default_params.merge(:jvm_mem_opts => '-Xmx1.21GW')
+          default_params.merge(jvm_mem_opts: '-Xmx1.21GW')
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('jvm_mem_opts' => '-Xmx1.21GW') }
@@ -142,7 +142,7 @@ describe 'aem::instance', :type => :defines do
     context 'jvm_opts' do
       context 'non default value' do
         let(:params) do
-          default_params.merge(:jvm_opts => '-Da.jvm.param=foobar')
+          default_params.merge(jvm_opts: '-Da.jvm.param=foobar')
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('jvm_opts' => '-Da.jvm.param=foobar') }
@@ -153,7 +153,7 @@ describe 'aem::instance', :type => :defines do
     context 'manage_group' do
       context 'false' do
         let(:params) do
-          default_params.merge(:manage_group => false)
+          default_params.merge(manage_group: false)
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('manage_group' => false) }
@@ -162,7 +162,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'invalid' do
         let(:params) do
-          default_params.merge(:manage_group => 'not boolean')
+          default_params.merge(manage_group: 'not boolean')
         end
         it { expect { is_expected.to compile }.to raise_error(/is not a boolean/) }
       end
@@ -171,7 +171,7 @@ describe 'aem::instance', :type => :defines do
     context 'manage_home' do
       context 'false' do
         let(:params) do
-          default_params.merge(:manage_home => false)
+          default_params.merge(manage_home: false)
         end
 
         context 'home does not exist' do
@@ -189,7 +189,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'invalid' do
         let(:params) do
-          default_params.merge(:manage_home => 'not boolean')
+          default_params.merge(manage_home: 'not boolean')
         end
         it { expect { is_expected.to compile }.to raise_error(/is not a boolean/) }
       end
@@ -198,7 +198,7 @@ describe 'aem::instance', :type => :defines do
     context 'manage_user' do
       context 'false' do
         let(:params) do
-          default_params.merge(:manage_user => false)
+          default_params.merge(manage_user: false)
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('manage_user' => false) }
@@ -207,7 +207,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'invalid' do
         let(:params) do
-          default_params.merge(:manage_user => 'not boolean')
+          default_params.merge(manage_user: 'not boolean')
         end
         it { expect { is_expected.to compile }.to raise_error(/is not a boolean/) }
       end
@@ -216,7 +216,7 @@ describe 'aem::instance', :type => :defines do
     context 'osgi_configs' do
       context 'not a map' do
         let(:params) do
-          default_params.merge(:osgi_configs => 'not a map')
+          default_params.merge(osgi_configs: 'not a map')
         end
         it { expect { is_expected.to compile }.to raise_error(/Hash or an Array of Hashes/) }
       end
@@ -224,7 +224,7 @@ describe 'aem::instance', :type => :defines do
       context 'hash' do
         let(:params) do
           default_params.merge(
-            :osgi_configs => {
+            osgi_configs: {
               'test' => {
                 'properties' => {
                   'key' => 'value'
@@ -239,7 +239,7 @@ describe 'aem::instance', :type => :defines do
       context 'array of hashes' do
         let(:params) do
           default_params.merge(
-            :osgi_configs => [
+            osgi_configs: [
               {
                 'testa' => {
                   'properties' => { 'key' => 'value' }
@@ -260,7 +260,7 @@ describe 'aem::instance', :type => :defines do
     context 'port' do
       context 'NaN' do
         let(:params) do
-          default_params.merge(:port => 'NaN')
+          default_params.merge(port: 'NaN')
         end
         it { expect { is_expected.to compile }.to raise_error(/to be an Integer/) }
       end
@@ -270,7 +270,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'valid' do
         let(:params) do
-          default_params.merge(:runmodes => %w(arunmode anotherrunmode))
+          default_params.merge(runmodes: %w(arunmode anotherrunmode))
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('runmodes' => %w(arunmode anotherrunmode)) }
@@ -278,7 +278,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'invalid' do
         let(:params) do
-          default_params.merge(:runmodes => { 'a' => 'hash' })
+          default_params.merge(runmodes: { 'a' => 'hash' })
         end
         it { expect { is_expected.to compile }.to raise_error(/is not an Array/) }
       end
@@ -287,7 +287,7 @@ describe 'aem::instance', :type => :defines do
     context 'sample_content' do
       context 'false' do
         let(:params) do
-          default_params.merge(:sample_content => false)
+          default_params.merge(sample_content: false)
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('sample_content' => false) }
@@ -295,7 +295,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'invalid' do
         let(:params) do
-          default_params.merge(:sample_content => 'not boolean')
+          default_params.merge(sample_content: 'not boolean')
         end
         it { expect { is_expected.to compile }.to raise_error(/is not a boolean/) }
       end
@@ -304,7 +304,7 @@ describe 'aem::instance', :type => :defines do
     context 'status' do
       context 'enabled' do
         let(:params) do
-          default_params.merge(:status => 'enabled')
+          default_params.merge(status: 'enabled')
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('status' => 'enabled') }
@@ -312,7 +312,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'disabled' do
         let(:params) do
-          default_params.merge(:status => 'disabled')
+          default_params.merge(status: 'disabled')
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('status' => 'disabled') }
@@ -320,7 +320,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'running' do
         let(:params) do
-          default_params.merge(:status => 'running')
+          default_params.merge(status: 'running')
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('status' => 'running') }
@@ -328,7 +328,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'unmanaged' do
         let(:params) do
-          default_params.merge(:status => 'unmanaged')
+          default_params.merge(status: 'unmanaged')
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('status' => 'unmanaged') }
@@ -336,7 +336,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'invalid' do
         let(:params) do
-          default_params.merge(:status => 'invalid')
+          default_params.merge(status: 'invalid')
         end
         it do
           expect do
@@ -349,7 +349,7 @@ describe 'aem::instance', :type => :defines do
     context 'snooze' do
       context 'NaN' do
         let(:params) do
-          default_params.merge(:snooze => 'NaN')
+          default_params.merge(snooze: 'NaN')
         end
         it { expect { is_expected.to compile }.to raise_error(/to be an Integer/) }
       end
@@ -358,7 +358,7 @@ describe 'aem::instance', :type => :defines do
     context 'source' do
       context 'valid value' do
         let(:params) do
-          default_params.merge(:source => '/tmp/aem-quickstart.jar')
+          default_params.merge(source: '/tmp/aem-quickstart.jar')
         end
         it { is_expected.to compile }
         it { is_expected.to contain_aem__instance('aem').with('source' => '/tmp/aem-quickstart.jar') }
@@ -366,7 +366,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'not absolute' do
         let(:params) do
-          default_params.merge(:source => 'not/absolute/path')
+          default_params.merge(source: 'not/absolute/path')
         end
         it { expect { is_expected.to compile }.to raise_error(/is not an absolute path/) }
       end
@@ -376,7 +376,7 @@ describe 'aem::instance', :type => :defines do
     context 'timeout' do
       context 'NaN' do
         let(:params) do
-          default_params.merge(:timeout => 'NaN')
+          default_params.merge(timeout: 'NaN')
         end
         it { expect { is_expected.to compile }.to raise_error(/to be an Integer/) }
       end
@@ -386,14 +386,14 @@ describe 'aem::instance', :type => :defines do
 
       context 'publish' do
         let(:params) do
-          default_params.merge(:type => 'publish')
+          default_params.merge(type: 'publish')
         end
         it { is_expected.to compile }
       end
 
       context 'invalid' do
         let(:params) do
-          default_params.merge(:type => 'invalid')
+          default_params.merge(type: 'invalid')
         end
 
         it { expect { is_expected.to compile }.to raise_error(/not supported for type/) }
@@ -405,14 +405,14 @@ describe 'aem::instance', :type => :defines do
 
       context 'major' do
         let(:params) do
-          default_params.merge(:version => '1')
+          default_params.merge(version: '1')
         end
         it { expect { is_expected.to compile }.to raise_error(/not a valid version/) }
       end
 
       context 'major minor' do
         let(:params) do
-          default_params.merge(:version => '1.2')
+          default_params.merge(version: '1.2')
         end
 
         it { is_expected.to compile }
@@ -420,7 +420,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'major minor bug' do
         let(:params) do
-          default_params.merge(:version => '1.2.3')
+          default_params.merge(version: '1.2.3')
         end
 
         it { is_expected.to compile }
@@ -428,7 +428,7 @@ describe 'aem::instance', :type => :defines do
 
       context 'major minor bug other' do
         let(:params) do
-          default_params.merge(:version => '1.2.3.4')
+          default_params.merge(version: '1.2.3.4')
         end
         it { expect { is_expected.to compile }.to raise_error(/not a valid version/) }
       end

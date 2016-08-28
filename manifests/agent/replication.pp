@@ -166,6 +166,8 @@ define aem::agent::replication(
 
     $_description = "**Managed by Puppet. Any changes made will be overwritten** ${description}"
 
+  } else {
+    $_description = undef
   }
 
   $password_properties = ['transportPassword', 'proxyPassword']

@@ -36,19 +36,19 @@ describe Puppet::Type.type(:aem_osgi_config) do
     describe 'ensure' do
       it 'should support present as a value for ensure' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :present, :handle_missing => 'merge', :home => '/opt/aem')
+          described_class.new(name: 'bar', ensure: :present, handle_missing: 'merge', home: '/opt/aem')
         end.not_to raise_error
       end
 
       it 'should support absent as a value for ensure' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :absent, :handle_missing => 'merge', :home => '/opt/aem')
+          described_class.new(name: 'bar', ensure: :absent, handle_missing: 'merge', home: '/opt/aem')
         end.not_to raise_error
       end
 
       it 'should not support other values' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :invalid, :handle_missing => 'merge', :home => '/opt/aem')
+          described_class.new(name: 'bar', ensure: :invalid, handle_missing: 'merge', home: '/opt/aem')
         end.to raise_error(Puppet::Error, /Invalid value/)
       end
     end
@@ -61,7 +61,7 @@ describe Puppet::Type.type(:aem_osgi_config) do
       end
 
       it 'should accept a name' do
-        inst = described_class.new(:name => 'bar', :home => '/opt/aem')
+        inst = described_class.new(name: 'bar', home: '/opt/aem')
         expect(inst[:name]).to eq('bar')
       end
     end
@@ -69,19 +69,19 @@ describe Puppet::Type.type(:aem_osgi_config) do
     describe 'handle_missing' do
       it 'should support merge as a value for handle_missing' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :merge, :home => '/opt/aem')
+          described_class.new(name: 'bar', ensure: :present, handle_missing: :merge, home: '/opt/aem')
         end.not_to raise_error
       end
 
       it 'should support remove as a value for handle_missing' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :present, :handle_missing => :remove, :home => '/opt/aem')
+          described_class.new(name: 'bar', ensure: :present, handle_missing: :remove, home: '/opt/aem')
         end.not_to raise_error
       end
 
       it 'should not support other values' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :preset, :handle_missing => :invalid, :home => '/opt/aem')
+          described_class.new(name: 'bar', ensure: :preset, handle_missing: :invalid, home: '/opt/aem')
         end.to raise_error(Puppet::Error, /Invalid value/)
       end
     end
@@ -90,31 +90,31 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
       it 'should require a value' do
         expect do
-          described_class.new(:name => 'bar', :ensure => :absent)
+          described_class.new(name: 'bar', ensure: :absent)
         end.to raise_error(Puppet::Error, /Home must be specified/)
       end
 
-      context 'linux', :platform => :linux do
+      context 'linux', platform: :linux do
 
         it 'should require absolute paths' do
           expect do
             described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :home => 'not/absolute'
+              name: 'bar',
+              ensure: :present,
+              home: 'not/absolute'
             )
           end.to raise_error(Puppet::Error, /fully qualified/)
         end
       end
 
-      context 'windows', :platform => :windows do
+      context 'windows', platform: :windows do
 
         it 'should require absolute paths' do
           expect do
             described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :home => 'not/absolute'
+              name: 'bar',
+              ensure: :present,
+              home: 'not/absolute'
             )
           end.to raise_error(Puppet::Error, /fully qualified/)
         end
@@ -125,10 +125,10 @@ describe Puppet::Type.type(:aem_osgi_config) do
       it 'should require value to be a hash' do
         expect do
           described_class.new(
-            :name => 'bar',
-            :ensure => :present,
-            :home => '/opt/aem',
-            :configuration => %w(foo bar)
+            name: 'bar',
+            ensure: :present,
+            home: '/opt/aem',
+            configuration: %w(foo bar)
           )
         end.to raise_error(Puppet::Error, /must be a hash/)
       end
@@ -142,10 +142,10 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
           it 'should handle same configuration' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :home => '/opt/aem',
-              :configuration => { 'foo' => 'bar' }
+              name: 'bar',
+              ensure: :present,
+              home: '/opt/aem',
+              configuration: { 'foo' => 'bar' }
             )
             prop = existing.property(:configuration)
             is = { 'foo' => 'bar' }
@@ -155,10 +155,10 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
           it 'should handle different configuration same key' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :home => '/opt/aem',
-              :configuration => { 'foo' => 'baz' }
+              name: 'bar',
+              ensure: :present,
+              home: '/opt/aem',
+              configuration: { 'foo' => 'baz' }
             )
             prop = existing.property(:configuration)
             is = { 'foo' => 'bar' }
@@ -168,10 +168,10 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
           it 'should handle different configuration, different key' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :home => '/opt/aem',
-              :configuration => { 'bar' => 'foo' }
+              name: 'bar',
+              ensure: :present,
+              home: '/opt/aem',
+              configuration: { 'bar' => 'foo' }
             )
             prop = existing.property(:configuration)
             is = { 'foo' => 'bar' }
@@ -181,10 +181,10 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
           it 'should handle additional configuration' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :home => '/opt/aem',
-              :configuration => { 'bar' => 'foo' }
+              name: 'bar',
+              ensure: :present,
+              home: '/opt/aem',
+              configuration: { 'bar' => 'foo' }
             )
             prop = existing.property(:configuration)
             is = { 'foo' => 'bar', 'bar' => 'foo' }
@@ -198,11 +198,11 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
           it 'should handle same resources' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :home => '/opt/aem',
-              :handle_missing => :merge,
-              :configuration => { 'foo' => 'bar' }
+              name: 'bar',
+              ensure: :present,
+              home: '/opt/aem',
+              handle_missing: :merge,
+              configuration: { 'foo' => 'bar' }
             )
             prop = existing.property(:configuration)
             is = { 'foo' => 'bar' }
@@ -212,11 +212,11 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
           it 'should handle different configuration same key' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :home => '/opt/aem',
-              :handle_missing => :merge,
-              :configuration => { 'foo' => 'baz' }
+              name: 'bar',
+              ensure: :present,
+              home: '/opt/aem',
+              handle_missing: :merge,
+              configuration: { 'foo' => 'baz' }
             )
             prop = existing.property(:configuration)
             is = { 'foo' => 'bar' }
@@ -226,11 +226,11 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
           it 'should handle different configuration different key' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :merge,
-              :home => '/opt/aem',
-              :configuration => { 'bar' => 'foo' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :merge,
+              home: '/opt/aem',
+              configuration: { 'bar' => 'foo' }
             )
             prop = existing.property(:configuration)
             is = { 'foo' => 'bar' }
@@ -240,11 +240,11 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
           it 'should handle additional configuration in should' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :merge,
-              :home => '/opt/aem',
-              :configuration => { 'bar' => 'foo', 'foo' => 'bar' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :merge,
+              home: '/opt/aem',
+              configuration: { 'bar' => 'foo', 'foo' => 'bar' }
             )
             prop = existing.property(:configuration)
             is = { 'foo' => 'bar' }
@@ -254,11 +254,11 @@ describe Puppet::Type.type(:aem_osgi_config) do
 
           it 'should handle additional configuration in is' do
             existing = described_class.new(
-              :name => 'bar',
-              :ensure => :present,
-              :handle_missing => :merge,
-              :home => '/opt/aem',
-              :configuration => { 'bar' => 'foo' }
+              name: 'bar',
+              ensure: :present,
+              handle_missing: :merge,
+              home: '/opt/aem',
+              configuration: { 'bar' => 'foo' }
             )
             prop = existing.property(:configuration)
             is = { 'bar' => 'foo', 'foo' => 'bar' }

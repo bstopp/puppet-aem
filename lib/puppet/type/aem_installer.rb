@@ -9,7 +9,7 @@ This is a private type intended to start, monitor, and stop an AEM instance, ins
 
   ensurable
 
-  newparam(:name, :namevar => true) do
+  newparam(:name, namevar: true) do
     desc 'The name of the AEM Instance.'
 
     munge do |value|
@@ -17,7 +17,7 @@ This is a private type intended to start, monitor, and stop an AEM instance, ins
     end
 
     def insync?(is)
-      is.casecmp(should) == 0
+      is.casecmp(should).zero?
     end
   end
 

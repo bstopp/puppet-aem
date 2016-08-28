@@ -1,3 +1,17 @@
+AllCops:
+  Include:
+    - 'lib/**/*.rb'
+    - 'spec/acceptnce/**/*.rb'
+    - 'spec/classes/**/*.rb'
+    - 'spec/defines/**/*.rb'
+    - 'spec/files/**/*.rb'
+    - 'spec/unit/**/*.rb'
+    - 'spec/*.rb'
+  Exclude:
+    - 'Gemfile'
+    - 'pkg/**/*'
+    - 'vendor/**/*'
+
 # Configure options
 Metrics/AbcSize:
   Max: 50
@@ -29,9 +43,6 @@ Style/EmptyLinesAroundClassBody:
 
 Style/EmptyLinesAroundMethodBody:
   Enabled: false
-
-Style/HashSyntax:
-  EnforcedStyle: hash_rockets
 
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:

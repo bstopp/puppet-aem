@@ -10,11 +10,11 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
     allow(File).to receive(:file?).with(any_args).at_least(1).and_call_original
     allow(File).to receive(:directory?).with(any_args).at_least(1).and_call_original
     Puppet::Type.type(:aem_installer).new(
-      :name     => 'aem',
-      :ensure   => :present,
-      :home     => '/opt/aem',
-      :provider => 'default',
-      :snooze   => 0
+      name: 'aem',
+      ensure: :present,
+      home: '/opt/aem',
+      provider: 'default',
+      snooze: 0
     )
   end
 
@@ -26,13 +26,14 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
 
   let(:execute_options) do
     {
-      :failonfail             => true,
-      :combine                => true,
-      :custom_environment     => {}
+      failonfail: true,
+      combine: true,
+      custom_environment: {}
     }
   end
 
   let(:mock_success_resp) do
+    # Mock Response for testing.
     class MockSuccessResp < Net::HTTPSuccess
       def initialize
       end
@@ -41,6 +42,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
   end
 
   let(:mock_redirect_resp) do
+    # Mock Response for testing.
     class MockRedirectResp < Net::HTTPRedirection
       def initialize
       end
@@ -49,6 +51,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
   end
 
   let(:mock_unavailable_resp) do
+    # Mock Response for testing.
     class MockUnavailableResp < Net::HTTPServiceUnavailable
       def initialize
       end
@@ -57,6 +60,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
   end
 
   let(:mock_unauthorized_resp) do
+    # Mock Response for testing.
     class MockUnauthorizedResp < Net::HTTPUnauthorized
       def initialize
       end
@@ -116,26 +120,26 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
 
     describe 'ensure is absent' do
       resource = Puppet::Type.type(:aem_installer).new(
-        :name     => 'aem',
-        :ensure   => :absent,
-        :home     => '/opt/aem',
-        :provider => 'default',
-        :snooze   => 0
+        name: 'aem',
+        ensure: :absent,
+        home: '/opt/aem',
+        provider: 'default',
+        snooze: 0
       )
 
-      it_should_behave_like('exists_check', :resource => resource, :ensure => :absent, :present => false)
+      it_should_behave_like('exists_check', resource: resource, ensure: :absent, present: false)
     end
 
     describe 'ensure is present' do
       resource = Puppet::Type.type(:aem_installer).new(
-        :name     => 'aem',
-        :ensure   => :present,
-        :home     => '/opt/aem',
-        :provider => 'default',
-        :snooze   => 0
+        name: 'aem',
+        ensure: :present,
+        home: '/opt/aem',
+        provider: 'default',
+        snooze: 0
       )
 
-      it_should_behave_like('exists_check', :resource => resource, :ensure => :present, :present => true)
+      it_should_behave_like('exists_check', resource: resource, ensure: :present, present: true)
     end
 
   end
@@ -214,49 +218,49 @@ PORT=#{opts[:port]}
     end
 
     describe 'creates instance as a user' do
-      it_should_behave_like('create_instance', :user => 'aem')
+      it_should_behave_like('create_instance', user: 'aem')
     end
 
     describe 'creates instance as a group' do
-      it_should_behave_like('create_instance', :group => 'aem')
+      it_should_behave_like('create_instance', group: 'aem')
     end
 
     describe 'creates instance as a user/group' do
-      it_should_behave_like('create_instance', :user => 'aem', :group => 'aem')
+      it_should_behave_like('create_instance', user: 'aem', group: 'aem')
     end
 
     describe 'supports non default port' do
       let(:resource) do
         Puppet::Type.type(:aem_installer).new(
-          :name         => 'aem',
-          :ensure       => :present,
-          :home         => '/opt/aem',
-          :provider     => 'default',
-          :snooze       => 0
+          name: 'aem',
+          ensure: :present,
+          home: '/opt/aem',
+          provider: 'default',
+          snooze: 0
         )
       end
-      it_should_behave_like('create_instance', :port => '8080')
+      it_should_behave_like('create_instance', port: '8080')
     end
 
     describe 'supports using context root for URI' do
       let(:resource) do
         Puppet::Type.type(:aem_installer).new(
-          :name         => 'aem',
-          :ensure       => :present,
-          :home         => '/opt/aem',
-          :provider     => 'default',
-          :snooze       => 0
+          name: 'aem',
+          ensure: :present,
+          home: '/opt/aem',
+          provider: 'default',
+          snooze: 0
         )
       end
-      it_should_behave_like('create_instance', :context_root => 'contextroot')
+      it_should_behave_like('create_instance', context_root: 'contextroot')
     end
 
     describe 'creates instance with redirect for monitor' do
-      it_should_behave_like('create_instance', :response_type => :mock_redirect_resp)
+      it_should_behave_like('create_instance', response_type: :mock_redirect_resp)
     end
 
     describe 'creates instance with unauthorized for monitor' do
-      it_should_behave_like('create_instance', :response_type => :mock_unauthorized_resp)
+      it_should_behave_like('create_instance', response_type: :mock_unauthorized_resp)
     end
 
     describe 'monitor timeout' do
@@ -264,12 +268,12 @@ PORT=#{opts[:port]}
         allow(File).to receive(:file?).with(any_args).and_call_original
         allow(File).to receive(:directory?).with(any_args).and_call_original
         Puppet::Type.type(:aem_installer).new(
-          :name     => 'aem',
-          :ensure   => :present,
-          :home     => '/opt/aem',
-          :provider => 'default',
-          :snooze   => 3,
-          :timeout  => 1
+          name: 'aem',
+          ensure: :present,
+          home: '/opt/aem',
+          provider: 'default',
+          snooze: 3,
+          timeout: 1
         )
       end
 

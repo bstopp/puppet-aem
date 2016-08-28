@@ -2,19 +2,19 @@ require 'etc'
 require 'fileutils'
 require 'net/http'
 
-Puppet::Type.type(:aem_installer).provide :default, :parent => Puppet::Provider do
+Puppet::Type.type(:aem_installer).provide :default, parent: Puppet::Provider do
 
-  commands :find => 'find'
-  commands :java => 'java'
+  commands find: 'find'
+  commands java: 'java'
 
   mk_resource_methods
 
   def initialize(resource = nil)
     super(resource)
     @exec_options = {
-      :failonfail => true,
-      :combine => true,
-      :custom_environment => {}
+      failonfail: true,
+      combine: true,
+      custom_environment: {}
     }
     @start_file = 'start'
     @start_env_file = 'start-env'

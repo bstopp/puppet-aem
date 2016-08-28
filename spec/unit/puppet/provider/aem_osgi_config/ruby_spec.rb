@@ -8,18 +8,18 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
 
   let(:resource) do
     Puppet::Type.type(:aem_osgi_config).new(
-      :name           => 'OsgiConfig',
-      :ensure         => :present,
-      :configuration  => {
+      name: 'OsgiConfig',
+      ensure: :present,
+      configuration: {
         'boolean' => false,
         'long'    => 123_456_789,
         'string'  => 'string'
       },
-      :handle_missing => :merge,
-      :home           => '/opt/aem',
-      :password       => 'admin',
-      :timeout        => 1,
-      :username       => 'admin'
+      handle_missing: :merge,
+      home: '/opt/aem',
+      password: 'admin',
+      timeout: 1,
+      username: 'admin'
     )
   end
 
@@ -100,8 +100,8 @@ PORT=#{opts[:port]}
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
         ).with(
-          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_return(:status => status, :body => config_data)
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: status, body: config_data)
 
         expect(provider.exists?).to eq(opts[:present])
         expect(get_stub).to have_been_requested
@@ -119,37 +119,37 @@ PORT=#{opts[:port]}
 
     describe 'ensure is absent' do
 
-      it_should_behave_like('exists_check', :present => false)
+      it_should_behave_like('exists_check', present: false)
     end
 
     describe 'ensure is present' do
-      it_should_behave_like('exists_check', :present => true)
+      it_should_behave_like('exists_check', present: true)
     end
 
     describe 'ensure is present with context root' do
-      it_should_behave_like('exists_check', :present => true, :context_root => 'contextroot')
+      it_should_behave_like('exists_check', present: true, context_root: 'contextroot')
     end
 
     context 'ensure is present with a pid' do
       let(:resource) do
         Puppet::Type.type(:aem_osgi_config).new(
-          :name           => 'OsgiConfig',
-          :ensure         => :present,
-          :configuration  => {
+          name: 'OsgiConfig',
+          ensure: :present,
+          configuration: {
             'boolean' => false,
             'long'    => 123_456_789,
             'string'  => 'string'
           },
-          :handle_missing => :merge,
-          :home           => '/opt/aem',
-          :password       => 'admin',
-          :pid            => 'aem.osgi',
-          :timeout        => 1,
-          :username       => 'admin'
+          handle_missing: :merge,
+          home: '/opt/aem',
+          password: 'admin',
+          pid: 'aem.osgi',
+          timeout: 1,
+          username: 'admin'
         )
       end
 
-      it_should_behave_like('exists_check', :present => true, :context_root => 'contextroot', :pid => 'aem.osgi')
+      it_should_behave_like('exists_check', present: true, context_root: 'contextroot', pid: 'aem.osgi')
     end
   end
 
@@ -180,8 +180,8 @@ PORT=#{opts[:port]}
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
         ).with(
-          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_return(:status => status, :body => config_data)
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: status, body: config_data)
 
         expected_params = opts[:post_params].merge('apply' => 'true')
         expected_params['$location'] = bundle_location if opts[:present]
@@ -189,12 +189,12 @@ PORT=#{opts[:port]}
         post_stub = stub_request(
           :post, "http://localhost:4502/system/console/configMgr/#{opts[:pid]}"
         ).with(
-          :body => expected_params,
-          :headers => {
+          body: expected_params,
+          headers: {
             'Referer' => 'http://localhost:4502/system/console/configMgr',
             'Authorization' => 'Basic YWRtaW46YWRtaW4='
           }
-        ).to_return(:status => 200)
+        ).to_return(status: 200)
 
         # Populate property hash
         provider.exists?
@@ -216,25 +216,25 @@ PORT=#{opts[:port]}
     describe 'create' do
       let(:resource) do
         Puppet::Type.type(:aem_osgi_config).new(
-          :name           => 'OsgiConfig',
-          :ensure         => :present,
-          :configuration  => {
+          name: 'OsgiConfig',
+          ensure: :present,
+          configuration: {
             'boolean' => true,
             'long'    => 987_654_321,
             'string'  => 'string'
           },
-          :handle_missing => :merge,
-          :home           => '/opt/aem',
-          :password       => 'admin',
-          :timeout        => 1,
-          :username       => 'admin'
+          handle_missing: :merge,
+          home: '/opt/aem',
+          password: 'admin',
+          timeout: 1,
+          username: 'admin'
         )
       end
 
       it_should_behave_like(
         'flush_posts',
-        :present => false,
-        :post_params => {
+        present: false,
+        post_params: {
           'propertylist' => 'boolean,long,string',
           'boolean'      => 'true',
           'long'         => '987654321',
@@ -246,41 +246,41 @@ PORT=#{opts[:port]}
     describe 'create with pid' do
       let(:resource) do
         Puppet::Type.type(:aem_osgi_config).new(
-          :name           => 'OsgiConfig',
-          :ensure         => :present,
-          :configuration  => {
+          name: 'OsgiConfig',
+          ensure: :present,
+          configuration: {
             'boolean' => true,
             'long'    => 987_654_321,
             'string'  => 'string'
           },
-          :handle_missing => :merge,
-          :home           => '/opt/aem',
-          :password       => 'admin',
-          :pid            => 'aem.osgi',
-          :timeout        => 1,
-          :username       => 'admin'
+          handle_missing: :merge,
+          home: '/opt/aem',
+          password: 'admin',
+          pid: 'aem.osgi',
+          timeout: 1,
+          username: 'admin'
         )
       end
 
       it_should_behave_like(
         'flush_posts',
-        :present => false,
-        :post_params => {
+        present: false,
+        post_params: {
           'propertylist' => 'boolean,long,string',
           'boolean'      => 'true',
           'long'         => '987654321',
           'string'       => 'string'
         },
-        :pid => 'aem.osgi'
+        pid: 'aem.osgi'
       )
     end
 
     describe 'destroy' do
       it_should_behave_like(
         'flush_posts',
-        :present     => false,
-        :destroy     => true,
-        :post_params => {
+        present: false,
+        destroy: true,
+        post_params: {
           'delete' => 'true'
         }
       )
@@ -289,54 +289,54 @@ PORT=#{opts[:port]}
     describe 'destroy with pid' do
       let(:resource) do
         Puppet::Type.type(:aem_osgi_config).new(
-          :name           => 'OsgiConfig',
-          :ensure         => :present,
-          :configuration  => {
+          name: 'OsgiConfig',
+          ensure: :present,
+          configuration: {
             'boolean' => true,
             'long'    => 987_654_321,
             'string'  => 'string'
           },
-          :handle_missing => :merge,
-          :home           => '/opt/aem',
-          :password       => 'admin',
-          :pid            => 'aem.osgi',
-          :timeout        => 1,
-          :username       => 'admin'
+          handle_missing: :merge,
+          home: '/opt/aem',
+          password: 'admin',
+          pid: 'aem.osgi',
+          timeout: 1,
+          username: 'admin'
         )
       end
 
       it_should_behave_like(
         'flush_posts',
-        :present     => false,
-        :destroy     => true,
-        :post_params => {
+        present: false,
+        destroy: true,
+        post_params: {
           'delete' => 'true'
         },
-        :pid => 'aem.osgi'
+        pid: 'aem.osgi'
       )
     end
 
     describe 'update with remove' do
       let(:resource) do
         Puppet::Type.type(:aem_osgi_config).new(
-          :name           => 'OsgiConfig',
-          :ensure         => :present,
-          :configuration  => {
+          name: 'OsgiConfig',
+          ensure: :present,
+          configuration: {
             'boolean' => true,
             'long'    => 987_654_321
           },
-          :handle_missing => :remove,
-          :home           => '/opt/aem',
-          :password       => 'admin',
-          :timeout        => 1,
-          :username       => 'admin'
+          handle_missing: :remove,
+          home: '/opt/aem',
+          password: 'admin',
+          timeout: 1,
+          username: 'admin'
         )
       end
 
       it_should_behave_like(
         'flush_posts',
-        :present     => true,
-        :post_params => {
+        present: true,
+        post_params: {
           'propertylist' => 'boolean,long',
           'boolean' => 'true',
           'long'    => '987654321'
@@ -347,53 +347,53 @@ PORT=#{opts[:port]}
     describe 'update with remove using pid' do
       let(:resource) do
         Puppet::Type.type(:aem_osgi_config).new(
-          :name           => 'OsgiConfig',
-          :ensure         => :present,
-          :configuration  => {
+          name: 'OsgiConfig',
+          ensure: :present,
+          configuration: {
             'boolean' => true,
             'long'    => 987_654_321
           },
-          :handle_missing => :remove,
-          :home           => '/opt/aem',
-          :password       => 'admin',
-          :pid            => 'aem.osgi',
-          :timeout        => 1,
-          :username       => 'admin'
+          handle_missing: :remove,
+          home: '/opt/aem',
+          password: 'admin',
+          pid: 'aem.osgi',
+          timeout: 1,
+          username: 'admin'
         )
       end
 
       it_should_behave_like(
         'flush_posts',
-        :present => true,
-        :post_params => {
+        present: true,
+        post_params: {
           'propertylist' => 'boolean,long',
           'boolean' => 'true',
           'long'    => '987654321'
         },
-        :pid => 'aem.osgi'
+        pid: 'aem.osgi'
       )
     end
 
     describe 'update with merge' do
       let(:resource) do
         Puppet::Type.type(:aem_osgi_config).new(
-          :name           => 'OsgiConfig',
-          :ensure         => :present,
-          :configuration  => {
+          name: 'OsgiConfig',
+          ensure: :present,
+          configuration: {
             'long'  => 987_654_321
           },
-          :handle_missing => :merge,
-          :home           => '/opt/aem',
-          :password       => 'admin',
-          :timeout        => 1,
-          :username       => 'admin'
+          handle_missing: :merge,
+          home: '/opt/aem',
+          password: 'admin',
+          timeout: 1,
+          username: 'admin'
         )
       end
 
       it_should_behave_like(
         'flush_posts',
-        :present => true,
-        :post_params => {
+        present: true,
+        post_params: {
           'propertylist' => 'boolean,long,string',
           'boolean' => 'false',
           'long'    => '987654321',
@@ -405,49 +405,49 @@ PORT=#{opts[:port]}
     describe 'update with merge using pid' do
       let(:resource) do
         Puppet::Type.type(:aem_osgi_config).new(
-          :name           => 'OsgiConfig',
-          :ensure         => :present,
-          :configuration  => {
+          name: 'OsgiConfig',
+          ensure: :present,
+          configuration: {
             'long'  => 987_654_321
           },
-          :handle_missing => :merge,
-          :home           => '/opt/aem',
-          :password       => 'admin',
-          :pid            => 'aem.osgi',
-          :timeout        => 1,
-          :username       => 'admin'
+          handle_missing: :merge,
+          home: '/opt/aem',
+          password: 'admin',
+          pid: 'aem.osgi',
+          timeout: 1,
+          username: 'admin'
         )
       end
 
       it_should_behave_like(
         'flush_posts',
-        :present => true,
-        :post_params => {
+        present: true,
+        post_params: {
           'propertylist' => 'boolean,long,string',
           'boolean' => 'false',
           'long'    => '987654321',
           'string'  => 'string'
         },
-        :pid => 'aem.osgi'
+        pid: 'aem.osgi'
       )
     end
 
     describe 'create with array because webmock has issues matching array in a hash for parameters' do
       let(:resource) do
         Puppet::Type.type(:aem_osgi_config).new(
-          :name           => 'OsgiConfig',
-          :ensure         => :present,
-          :configuration  => {
+          name: 'OsgiConfig',
+          ensure: :present,
+          configuration: {
             'boolean' => false,
             'long'    => 123_456_789,
             'string'  => 'string',
             'array'   => ['this', 'is', 'an', 'array']
           },
-          :handle_missing => :merge,
-          :home           => '/opt/aem',
-          :password       => 'admin',
-          :timeout        => 1,
-          :username       => 'admin'
+          handle_missing: :merge,
+          home: '/opt/aem',
+          password: 'admin',
+          timeout: 1,
+          username: 'admin'
         )
       end
 
@@ -466,8 +466,8 @@ PORT=4502
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
         ).with(
-          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_return(:status => 500, :body => config_data)
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 500, body: config_data)
 
         expected_params = 'boolean=false&long=123456789&string=string&array=this&array=is&array=an&array=array'
         expected_params += '&propertylist=boolean%2Clong%2Cstring%2Carray&apply=true'
@@ -475,12 +475,12 @@ PORT=4502
         post_stub = stub_request(
           :post, 'http://localhost:4502/system/console/configMgr/OsgiConfig'
         ).with(
-          :body => expected_params,
-          :headers => {
+          body: expected_params,
+          headers: {
             'Referer' => 'http://localhost:4502/system/console/configMgr',
             'Authorization' => 'Basic YWRtaW46YWRtaW4='
           }
-        ).to_return(:status => 200)
+        ).to_return(status: 200)
 
         # Populate property hash
         provider.exists?
@@ -508,17 +508,17 @@ PORT=4502
 
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
-        ).to_return(:status => 200, :body => config_data)
+        ).to_return(status: 200, body: config_data)
 
         post_stub = stub_request(
           :post, 'http://localhost:4502/system/console/configMgr/OsgiConfig'
         ).with(
-          :body => {
+          body: {
             'delete' => 'true',
             'apply'  => 'true'
           },
-          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_return(:status => 500)
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 500)
 
         # Populate property hash
         provider.exists?
@@ -546,7 +546,7 @@ PORT=4502
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
         ).with(
-          :headers => { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_timeout
 
         # Populate property hash
