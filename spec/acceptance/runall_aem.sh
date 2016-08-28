@@ -29,6 +29,7 @@ num_specs=$(expr ${#specs[@]} - 1)
 
 for file in `ls $nodesdir`;
 do
+        echo "Running tests against: ${node}"
     for ((i=0; i<=num_specs; i++));
     do
         node=$(echo $file | sed -e 's/.yml//g')
@@ -50,14 +51,14 @@ do
             provision=no
         fi
 
-        echo "Running test ${spec} for ${node}"
+        echo "    Test: ${spec}"
         BEAKER_set=${node} BEAKER_provision=${provision} BEAKER_destroy=${destroy} bundle exec rspec spec/acceptance/aem/${spec}.rb > ${logfile} 2>&1
         if [ $? != 0 ];
         then
             cd .vagrant/beaker_vagrant_files/${node}.yml
             vagrant destroy --force
             cd ${startdir}
-            echo "Re-Running test ${spec} for ${node}"
+            echo "    Re-test: ${spec}"
             BEAKER_set=${node} BEAKER_provision=yes BEAKER_destroy=${destroy} bundle exec rspec spec/acceptance/aem/${spec}.rb >> ${logfile} 2>&1
             if [ $? != 0 ];
             then
