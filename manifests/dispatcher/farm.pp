@@ -241,6 +241,7 @@ define aem::dispatcher::farm(
     file { "${::aem::dispatcher::params::farm_path}/dispatcher.${priority_string}-${name}.inc.any" :
       ensure  => $ensure,
       content => template("${module_name}/dispatcher/dispatcher.any.erb"),
+      notify  => Service[$::apache::service_name],
     }
   } else {
     file { "${::aem::dispatcher::params::farm_path}/dispatcher.${priority_string}-${name}.inc.any" :
