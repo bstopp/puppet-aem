@@ -73,7 +73,7 @@ define aem::agent::replication(
 
   if $ensure == 'present' {
     if $mixin_types {
-       validate_array($mixin_types)
+      validate_array($mixin_types)
     }
 
     if $batch_enabled {
