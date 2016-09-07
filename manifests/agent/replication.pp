@@ -13,6 +13,7 @@ define aem::agent::replication(
   $force_passwords       = undef,
   $home                  = undef,
   $log_level             = 'info',
+  $mixin_types           = undef,
   $password              = undef,
   $protocol_close_conn   = undef,
   $protocol_conn_timeout = undef,
@@ -71,6 +72,9 @@ define aem::agent::replication(
   }
 
   if $ensure == 'present' {
+    if $mixin_types {
+       validate_array($mixin_types)
+    }
 
     if $batch_enabled {
       validate_bool($batch_enabled)
@@ -181,6 +185,7 @@ define aem::agent::replication(
     'jcr:description'             => $_description,
     'enabled'                     => $enabled,
     'logLevel'                    => $log_level,
+    'jcr:mixinTypes'              => $mixin_types,
     'protocolHTTPConnectionClose' => $protocol_close_conn,
     'protocolConnectTimeout'      => $protocol_conn_timeout,
     'protocolHTTPHeaders'         => $protocol_http_headers,
@@ -215,7 +220,7 @@ define aem::agent::replication(
     'triggerDistribute'           => $trigger_on_dist,
     'triggerModified'             => $trigger_on_mod,
     'triggerReceive'              => $trigger_on_receive,
-    'triggerOnOffTime'            => $trigger_onoff_time
+    'triggerOnOffTime'            => $trigger_onoff_time,
   }
 
   $_resource_props = delete_undef_values($resource_props)
