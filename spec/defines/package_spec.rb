@@ -73,7 +73,7 @@ describe 'aem::package', type: :defines do
       it { is_expected.to_not contain_exec('aem unpack').that_requires('File[/opt/aem]') }
     end
 
-    context 'pakage type' do
+    context 'package type' do
 
       context 'jar' do
         let(:params) do
