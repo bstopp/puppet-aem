@@ -48,7 +48,8 @@ describe 'aem::instance', type: :defines do
         'snooze'          => 10,
         'timeout'         => 600,
         'type'            => 'author',
-        'user'            => 'aem'
+        'user'            => 'aem',
+        'pkg_type'        => 'jar'
       )
     end
   end
@@ -432,6 +433,32 @@ describe 'aem::instance', type: :defines do
         end
         it { expect { is_expected.to compile }.to raise_error(/not a valid version/) }
       end
+    end
+
+    context 'pkg_type' do
+
+      context 'jar' do
+        let(:params) do
+          default_params.merge(pkg_type: 'jar')
+        end
+        it { is_expected.to compile }
+      end
+
+      context 'os' do
+        let(:params) do
+          default_params.merge(pkg_type: 'os')
+        end
+        it { is_expected.to compile }
+      end
+
+      context 'invalid' do
+        let(:params) do
+          default_params.merge(type: 'xx')
+        end
+
+        it { expect { is_expected.to compile }.to raise_error(/not supported for type/) }
+      end
+
     end
 
   end

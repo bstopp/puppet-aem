@@ -22,7 +22,8 @@ describe 'aem::package', type: :defines do
       home: '/opt/aem',
       manage_home: true,
       source: '/tmp/aem-quickstart.jar',
-      user: 'aem'
+      user: 'aem',
+      type: 'jar'
     }
   end
 
@@ -72,18 +73,43 @@ describe 'aem::package', type: :defines do
       it { is_expected.to_not contain_exec('aem unpack').that_requires('File[/opt/aem]') }
     end
 
-    context 'unpack' do
+    context 'pakage type' do
 
-      it do
-        is_expected.to contain_exec(
-          'aem unpack'
-        ).with(
-          command: 'java -jar /tmp/aem-quickstart.jar -b /opt/aem -unpack',
-          creates: '/opt/aem/crx-quickstart',
-          group: 'aem',
-          onlyif: ['which java', 'test -f /tmp/aem-quickstart.jar'],
-          user: 'aem'
-        )
+      context 'jar' do
+        let(:params) do
+          default_params.merge(type: 'jar')
+        end
+        it do
+          is_expected.to contain_exec(
+            'aem unpack'
+          ).with(
+            command: 'java -jar /tmp/aem-quickstart.jar -b /opt/aem -unpack',
+            creates: '/opt/aem/crx-quickstart',
+            group: 'aem',
+            onlyif: ['which java', 'test -f /tmp/aem-quickstart.jar'],
+            user: 'aem'
+          )
+        end
+      end
+
+      context 'os' do
+        let(:params) do
+          default_params.merge(type: 'os')
+        end
+        it do
+          is_expected.to contain_package(
+            'aem'
+          ).with(
+            ensure: 'installed'
+          )
+        end
+      end
+
+      context 'xxx' do
+        let(:params) do
+          default_params.merge(type: 'xxx')
+        end
+        it { expect { is_expected.to compile }.to raise_error(/Unsupported package type/) }
       end
     end
   end

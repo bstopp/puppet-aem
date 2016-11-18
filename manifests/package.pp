@@ -11,6 +11,7 @@ define aem::package (
   $manage_home,
   $source,
   $user,
+  $type = 'jar',
 ) {
   File {
     group => $group,
@@ -32,16 +33,24 @@ define aem::package (
       }
     }
 
-    if defined(File[$home]) {
-      File[$home]
-      -> Exec["${name} unpack"]
-    }
+    if $type == 'jar' {
+      if defined(File[$home]) {
+        File[$home]
+        -> Exec["${name} unpack"]
+      }
 
-    # Unpack the Jar
-    exec { "${name} unpack":
-      command => "java -jar ${source} -b ${home} -unpack",
-      creates => "${home}/crx-quickstart",
-      onlyif  => ['which java', "test -f ${source}"],
+      # Unpack the Jar
+      exec { "${name} unpack":
+        command => "java -jar ${source} -b ${home} -unpack",
+        creates => "${home}/crx-quickstart",
+        onlyif  => ['which java', "test -f ${source}"],
+      }
+    } elsif $type == 'os' {
+      package { 'aem':
+        ensure => installed,
+      }
+    } else {
+      fail("Unsupported package type : ${type} !")
     }
 
   } else {
