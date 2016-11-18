@@ -12,4 +12,4 @@ aem::license { 'aem' :
 }
 
 # Ensure the service doesn't start before license is available
-Aem::License['aem'] ~> Aem::Service['aem-aem']
+Aem::License['aem'] ~> Aem::Service['aem']

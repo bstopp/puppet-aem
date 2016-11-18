@@ -13,4 +13,4 @@ aem::license { 'aem' :
   version     => '6.1.0',
 }
 
-Aem::License['aem'] ~> Aem::Service['aem-aem']
+Aem::License['aem'] ~> Aem::Service['aem']
