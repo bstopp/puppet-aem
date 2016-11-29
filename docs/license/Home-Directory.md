@@ -16,5 +16,7 @@ aem::license { 'aem' :
   version     => '6.1.0',
 }
 
-Aem::License['aem'] ~> Aem::Service['aem-aem']
+Aem::License['aem'] ~> Aem::Service['aem']
 ~~~
+
+*The Aem::Service definition created for AEM uses the aem::instance $name to ensure uniqueness, thus here the service reference is 'aem'.*

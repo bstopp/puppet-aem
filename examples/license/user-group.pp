@@ -16,4 +16,4 @@ aem::license { 'aem' :
   group       => 'vagrant',
 }
 
-Aem::License['aem'] ~> Aem::Service['aem-aem']
+Aem::License['aem'] ~> Aem::Service['aem']

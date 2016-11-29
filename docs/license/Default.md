@@ -16,7 +16,7 @@ aem::license { 'aem' :
 
 # Ensure the service doesn't start before license is available
 
-Aem::License['aem'] ~> Aem::Service['aem-aem']
+Aem::License['aem'] ~> Aem::Service['aem']
 ~~~
 
-*The default service definition created for AEM is pre-pended with 'aem-', to ensure uniqueness, thus the service reference is 'aem-aem'.*
+*The Aem::Service definition created for AEM uses the aem::instance $name to ensure uniqueness, thus here the service reference is 'aem'.*
