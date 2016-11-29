@@ -11,6 +11,6 @@ aem::agent::replication { 'Flush Agent' :
   runmode        => 'author',
   serialize_type => 'flush',
   template       => '/libs/cq/replication/templates/agent',
-  trans_uri      => 'http://localhost:80/dispatcher/invlaidate.cache',
+  trans_uri      => 'http://localhost:80/dispatcher/invalidate.cache',
   username       => 'admin',
 }
