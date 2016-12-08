@@ -55,6 +55,7 @@ describe 'aem::dispatcher', type: :class do
         'ensure'  => 'file',
         'path'    => '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so',
         'group'   => 'root',
+        'mode'    => '0755',
         'owner'   => 'root',
         'replace' => 'true',
         'source'  => '/tmp/dispatcher-apache2.X-4.1.X.so'
@@ -77,6 +78,7 @@ describe 'aem::dispatcher', type: :class do
         'ensure'  => 'file',
         'path'    => '/etc/httpd/conf.modules.d/dispatcher.conf',
         'group'   => 'root',
+        'mode'    => '0644',
         'owner'   => 'root',
         'replace' => 'true'
       ).with_content(

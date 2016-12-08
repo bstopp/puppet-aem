@@ -14,11 +14,6 @@ class aem::dispatcher (
   $user               = $::aem::dispatcher::params::user
 ) inherits ::aem::dispatcher::params {
 
-  # Check for Apache because it is used by parameter defaults
-  if ! defined(Class['apache']) {
-    fail('You must include the apache base class before using any dispatcher class or defined resources')
-  }
-
   anchor { 'aem::dispatcher::begin': }
 
   validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
@@ -67,6 +62,7 @@ class aem::dispatcher (
     file { "${::aem::dispatcher::params::mod_path}/${_mod_filename}" :
       ensure  => file,
       group   => $group,
+      mode    => '0755',
       owner   => $user,
       replace => true,
       source  => $module_file,
@@ -83,6 +79,7 @@ class aem::dispatcher (
     file { "${::aem::dispatcher::params::farm_path}/dispatcher.conf" :
       ensure  => file,
       group   => $group,
+      mode    => $::apache::file_mode,
       owner   => $user,
       replace => true,
       content => template("${module_name}/dispatcher/dispatcher.conf.erb")
@@ -91,6 +88,7 @@ class aem::dispatcher (
     file {  "${::aem::dispatcher::params::farm_path}/${config_file}":
       ensure  => file,
       group   => $group,
+      mode    => $::apache::file_mode,
       owner   => $user,
       replace => true,
       content => template("${module_name}/dispatcher/dispatcher.farms.erb")

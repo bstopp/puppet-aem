@@ -4,6 +4,11 @@
 #
 class aem::dispatcher::params {
 
+  # Check for Apache
+  if ! defined(Class['apache']) {
+    fail('You must include the apache base class before using any dispatcher class or defined resources')
+  }
+
   if $::osfamily == 'RedHat' or $::operatingsystem == 'amazon' {
 
     $mod_path = "${::apache::httpd_dir}/${::apache::lib_path}"
