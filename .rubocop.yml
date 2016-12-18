@@ -11,6 +11,7 @@ AllCops:
     - 'Gemfile'
     - 'pkg/**/*'
     - 'vendor/**/*'
+  TargetRubyVersion: 2.0
 
 # Configure options
 Metrics/AbcSize:
@@ -55,4 +56,10 @@ Style/SymbolProc:
   Enabled: false
 
 Style/WordArray:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Lint/EmptyWhen:
   Enabled: false

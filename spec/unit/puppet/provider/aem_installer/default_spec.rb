@@ -35,8 +35,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
   let(:mock_success_resp) do
     # Mock Response for testing.
     class MockSuccessResp < Net::HTTPSuccess
-      def initialize
-      end
+      def initialize; end
     end
     MockSuccessResp.new
   end
@@ -44,8 +43,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
   let(:mock_redirect_resp) do
     # Mock Response for testing.
     class MockRedirectResp < Net::HTTPRedirection
-      def initialize
-      end
+      def initialize; end
     end
     MockRedirectResp.new
   end
@@ -53,8 +51,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
   let(:mock_unavailable_resp) do
     # Mock Response for testing.
     class MockUnavailableResp < Net::HTTPServiceUnavailable
-      def initialize
-      end
+      def initialize; end
     end
     MockUnavailableResp.new
   end
@@ -62,8 +59,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
   let(:mock_unauthorized_resp) do
     # Mock Response for testing.
     class MockUnauthorizedResp < Net::HTTPUnauthorized
-      def initialize
-      end
+      def initialize; end
     end
     MockUnauthorizedResp.new
   end
