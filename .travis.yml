@@ -13,6 +13,9 @@ notifications:
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
 
-branches:
-  only:
-  - master
+after_script:
+  - bundle exec codeclimate-test-reporter
+
+#branches:
+#  only:
+#  - master

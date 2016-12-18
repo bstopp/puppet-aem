@@ -33,3 +33,5 @@ if puppetversion = ENV['PUPPET_VERSION']
 else
   gem 'puppet', require: false
 end
+
+gem 'crx_packmgr_api_client', '>=1.0.0', require: false

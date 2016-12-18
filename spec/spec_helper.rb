@@ -1,12 +1,14 @@
+require 'simplecov'
+SimpleCov.start do
+  add_filter '/fixtures/'
+  add_filter '/spec/'
+end
+
 require 'rubygems'
 require 'rspec/mocks'
 require 'webmock/rspec'
 require 'puppetlabs_spec_helper/module_spec_helper'
-require 'codeclimate-test-reporter'
 
-CodeClimate::TestReporter.start
-
-WebMock.disable_net_connect!(allow: 'codeclimate.com')
 
 RSpec.configure do |config|
 
