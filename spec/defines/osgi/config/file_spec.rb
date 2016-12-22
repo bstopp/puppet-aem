@@ -130,7 +130,6 @@ describe 'aem::osgi::config::file', type: :defines do
     context 'default' do
       it { is_expected.to contain_file('/opt/aem/crx-quickstart/install/aem.config').that_requires('File[/opt/aem]') }
     end
-
   end
 
   describe 'uses pid for file name' do

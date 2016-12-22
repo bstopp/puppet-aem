@@ -8,45 +8,36 @@ GEM
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
-    beaker (2.51.0)
+    beaker (3.6.0)
       aws-sdk-v1 (~> 1.57)
-      beaker-answers (~> 0.0)
       beaker-hiera (~> 0.0)
       beaker-hostgenerator
-      beaker-pe (~> 0.0)
       docker-api
       fission (~> 0.4)
-      fog (~> 1.25, < 1.35.0)
-      fog-google (~> 0.0.9)
-      google-api-client (~> 0.8, < 0.9.5)
+      fog (~> 1.38)
+      google-api-client (~> 0.9)
       hocon (~> 1.0)
       in-parallel (~> 0.1)
       inifile (~> 2.0)
       json (~> 1.8)
-      mime-types (~> 2.99)
+      minitar (~> 0.5.4)
       minitest (~> 5.4)
       net-scp (~> 1.2)
-      net-ssh (~> 2.9)
+      net-ssh (= 3.3.0.beta1)
       open_uri_redirections (~> 0.2.1)
-      rbvmomi (~> 1.8, < 1.9.0)
+      rbvmomi (~> 1.9)
       rsync (~> 1.0.9)
       stringify-hash (~> 0.0)
       unf (~> 0.1)
-    beaker-answers (0.13.0)
-      hocon (~> 1.0)
-      require_all (~> 1.3.2)
-      stringify-hash (~> 0.0.0)
     beaker-hiera (0.1.1)
       stringify-hash (~> 0.0.0)
-    beaker-hostgenerator (0.8.0)
+    beaker-hostgenerator (0.8.1)
       deep_merge (~> 1.0)
-      stringify-hash (~> 0.0.0)
-    beaker-pe (0.12.1)
       stringify-hash (~> 0.0.0)
     beaker-puppet_install_helper (0.5.0)
       beaker (>= 2.0)
-    beaker-rspec (5.6.0)
-      beaker (~> 2.0)
+    beaker-rspec (6.0.0)
+      beaker (~> 3.0)
       rspec
       serverspec (~> 2)
       specinfra (~> 2)
@@ -55,13 +46,13 @@ GEM
       simplecov
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
-    crx_packmgr_api_client (1.0.0)
+    crx_packmgr_api_client (1.1.0)
       json (~> 1.8, >= 1.8.3)
       typhoeus (~> 1.0, >= 1.0.1)
     deep_merge (1.1.1)
     diff-lcs (1.2.5)
     docile (1.1.5)
-    docker-api (1.33.0)
+    docker-api (1.33.1)
       excon (>= 0.38.0)
       json
     ethon (0.10.1)
@@ -75,18 +66,22 @@ GEM
     ffi (1.9.14)
     fission (0.5.0)
       CFPropertyList (~> 2.2)
-    fog (1.34.0)
+    fog (1.38.0)
+      fog-aliyun (>= 0.1.0)
       fog-atmos
       fog-aws (>= 0.6.0)
       fog-brightbox (~> 0.4)
+      fog-cloudatcost (~> 0.1.0)
       fog-core (~> 1.32)
       fog-dynect (~> 0.0.2)
       fog-ecloud (~> 0.1)
-      fog-google (>= 0.0.2)
+      fog-google (<= 0.1.0)
       fog-json
       fog-local
+      fog-openstack
       fog-powerdns (>= 0.1.1)
       fog-profitbricks
+      fog-rackspace
       fog-radosgw (>= 0.0.2)
       fog-riakcs
       fog-sakuracloud (>= 0.0.4)
@@ -96,9 +91,15 @@ GEM
       fog-terremark
       fog-vmfusion
       fog-voxel
+      fog-vsphere (>= 0.4.0)
+      fog-xenserver
       fog-xml (~> 0.1.1)
       ipaddress (~> 0.5)
-      nokogiri (~> 1.5, >= 1.5.11)
+    fog-aliyun (0.1.0)
+      fog-core (~> 1.27)
+      fog-json (~> 1.0)
+      ipaddress (~> 0.8)
+      xml-simple (~> 1.1)
     fog-atmos (0.1.0)
       fog-core
       fog-xml
@@ -111,6 +112,11 @@ GEM
       fog-core (~> 1.22)
       fog-json
       inflecto (~> 0.0.2)
+    fog-cloudatcost (0.1.2)
+      fog-core (~> 1.36)
+      fog-json (~> 1.0)
+      fog-xml (~> 0.1)
+      ipaddress (~> 0.8)
     fog-core (1.43.0)
       builder
       excon (~> 0.49)
@@ -122,7 +128,7 @@ GEM
     fog-ecloud (0.3.0)
       fog-core
       fog-xml
-    fog-google (0.0.9)
+    fog-google (0.1.0)
       fog-core
       fog-json
       fog-xml
@@ -131,6 +137,10 @@ GEM
       multi_json (~> 1.10)
     fog-local (0.3.1)
       fog-core (~> 1.27)
+    fog-openstack (0.1.18)
+      fog-core (>= 1.40)
+      fog-json (>= 1.0)
+      ipaddress (>= 0.8)
     fog-powerdns (0.1.1)
       fog-core (~> 1.27)
       fog-json (~> 1.0)
@@ -138,6 +148,11 @@ GEM
     fog-profitbricks (3.0.0)
       fog-core (~> 1.42)
       fog-json (~> 1.0)
+    fog-rackspace (0.1.2)
+      fog-core (>= 1.35)
+      fog-json (>= 1.0)
+      fog-xml (>= 0.1)
+      ipaddress (>= 0.8)
     fog-radosgw (0.0.5)
       fog-core (>= 1.21.0)
       fog-json
@@ -167,6 +182,12 @@ GEM
     fog-voxel (0.1.0)
       fog-core
       fog-xml
+    fog-vsphere (1.5.2)
+      fog-core
+      rbvmomi (~> 1.9)
+    fog-xenserver (0.2.3)
+      fog-core
+      fog-xml
     fog-xml (0.1.2)
       fog-core
       nokogiri (~> 1.5, >= 1.5.11)
@@ -177,7 +198,7 @@ GEM
     gettext-setup (0.10)
       fast_gettext (~> 1.1.0)
       gettext (>= 3.0.2)
-    google-api-client (0.9.4)
+    google-api-client (0.9.20)
       addressable (~> 2.3)
       googleauth (~> 0.5)
       httpclient (~> 2.7)
@@ -186,7 +207,6 @@ GEM
       mime-types (>= 1.6)
       representable (~> 2.3.0)
       retriable (~> 2.0)
-      thor (~> 0.19)
     googleauth (0.5.1)
       faraday (~> 0.9)
       jwt (~> 1.4)
@@ -218,8 +238,11 @@ GEM
       json
       semantic_puppet (>= 0.1.2, < 2.0.0)
       spdx-licenses (~> 1.0)
-    mime-types (2.99.3)
+    mime-types (3.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2016.0521)
     mini_portile2 (2.1.0)
+    minitar (0.5.4)
     minitest (5.10.1)
     mocha (1.2.1)
       metaclass (~> 0.0.1)
@@ -227,7 +250,7 @@ GEM
     multipart-post (2.0.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
-    net-ssh (2.9.4)
+    net-ssh (3.3.0.beta1)
     net-telnet (0.1.1)
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
@@ -252,13 +275,13 @@ GEM
       rspec-puppet (~> 2.0)
     rainbow (2.1.0)
     rake (12.0.0)
-    rbvmomi (1.8.2)
-      builder
-      nokogiri (>= 1.4.1)
-      trollop
+    rbvmomi (1.9.4)
+      builder (~> 3.2)
+      json (>= 1.8)
+      nokogiri (~> 1.5)
+      trollop (~> 2.1)
     representable (2.3.0)
       uber (~> 0.0.7)
-    require_all (1.3.3)
     retriable (2.1.0)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
@@ -313,7 +336,6 @@ GEM
       sfl
     stringify-hash (0.0.2)
     text (1.3.1)
-    thor (0.19.4)
     trollop (2.1.2)
     typhoeus (1.1.2)
       ethon (>= 0.9.0)
@@ -326,16 +348,17 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
+    xml-simple (1.1.5)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  beaker (~> 2.31)
+  beaker
   beaker-puppet_install_helper (>= 0.2.1)
   beaker-rspec
   codeclimate-test-reporter
-  crx_packmgr_api_client (>= 1.0.0)
+  crx_packmgr_api_client (>= 1.1.0)
   facter
   metadata-json-lint
   puppet

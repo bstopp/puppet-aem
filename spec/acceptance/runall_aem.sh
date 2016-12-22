@@ -11,6 +11,7 @@ then
         'create_aem_spec'
         'start_env_spec'
         'license_spec'
+        'file_crx_package_spec'
         'file_osgi_spec'
         'console_osgi_spec'
         'sling_resource_spec'

@@ -92,7 +92,6 @@ aem_license(module_root)
 
 unless ENV['BEAKER_provision'] == 'no'
 
-  # Install module
   dsipatcher_mod = File.expand_path(File.join(module_root, 'spec', 'files', default.host_hash[:dispatcher_file]))
   scp_to(default, dsipatcher_mod, '/tmp/dispatcher-apache-module.so')
 
@@ -107,6 +106,10 @@ unless ENV['BEAKER_provision'] == 'no'
   ensure_script = File.expand_path(File.join(module_root, 'spec', 'files', 'ensure-running.sh'))
   scp_to(default, ensure_script, '/tmp/ensure-running.sh')
   on default, 'chmod 775 /tmp/ensure-running.sh'
+
+  test_zip = File.expand_path(File.join(module_root, 'spec', 'files', 'test-1.0.0.zip'))
+  scp_to(default, test_zip, '/tmp/test-1.0.0.zip')
+
   # Credit to Puppetlabs Puppet Agent project,
   # This was the only place i could find that had an example that
   # made all of this stuff work.
@@ -212,6 +215,7 @@ RSpec.shared_examples 'setup aem' do
         home            => \"/opt/aem/author\",
         jvm_mem_opts    => \"-Xmx2048m\",
         osgi_configs    => \$osgi,
+        packages        => [\"/tmp/test-1.0.0.zip\"],
         source          => \"/tmp/aem-quickstart.jar\",
         timeout         => 1200,
         user            => \"vagrant\",

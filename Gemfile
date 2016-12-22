@@ -16,7 +16,7 @@ group :linting do
 end
 
 group :system_tests do
-  gem 'beaker', '~>2.31',               require: false
+  gem 'beaker',                         require: false
   gem 'beaker-rspec',                   require: false
   gem 'serverspec',                     require: false
   gem 'beaker-puppet_install_helper', '>= 0.2.1', require: false
@@ -34,4 +34,4 @@ else
   gem 'puppet', require: false
 end
 
-gem 'crx_packmgr_api_client', '>=1.0.0', require: false
+gem 'crx_packmgr_api_client', '>=1.1.0', require: false
