@@ -7,3 +7,5 @@
 !package_list_exists.json
 !package_list_installed.json
 !package_list_missing.json
+!api_response.xml
+!api_error.xml

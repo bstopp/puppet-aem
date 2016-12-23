@@ -1,7 +1,7 @@
 source ENV['GEM_SOURCE'] || 'https://rubygems.org'
 
 group :development, :tests do
-  gem 'rspec', '~> 3.4',           require: false
+  gem 'rspec',                     require: false
   gem 'rake',                      require: false
   gem 'metadata-json-lint',        require: false
   gem 'rspec-puppet',              require: false
@@ -16,10 +16,10 @@ group :linting do
 end
 
 group :system_tests do
-  gem 'beaker',                         require: false
-  gem 'beaker-rspec',                   require: false
-  gem 'serverspec',                     require: false
-  gem 'beaker-puppet_install_helper', '>= 0.2.1', require: false
+  gem 'beaker',                       require: false
+  gem 'beaker-rspec',                 require: false
+  gem 'serverspec',                   require: false
+  gem 'beaker-puppet_install_helper', require: false
 end
 
 if facterversion = ENV['FACTER_GEM_VERSION']
@@ -35,3 +35,4 @@ else
 end
 
 gem 'crx_packmgr_api_client', '>=1.1.0', require: false
+gem 'xml-simple',             '>=1.1.5', require: false
