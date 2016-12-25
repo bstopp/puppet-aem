@@ -1,7 +1,9 @@
-require 'crx_packmgr_api_client'
 require 'xmlsimple'
+require 'crx_packmgr_api_client'
 
 Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
+
+  confine :feature => :aem_crx_pkg_client
 
   mk_resource_methods
 
@@ -28,11 +30,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
   end
 
   def flush
-    if @property_flush[:ensure] == :absent
-      result = remove_package
-    else
-      result = upload_package
-    end
+    result = @property_flush[:ensure] == :absent ? remove_package : upload_package
     raise_on_failure(result)
     find_package
   end
@@ -63,7 +61,6 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     @client = CrxPackageManager::DefaultApi.new(CrxPackageManager::ApiClient.new(config))
     @client
   end
-
 
   def find_package
     client = build_client

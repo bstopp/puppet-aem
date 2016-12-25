@@ -15,6 +15,7 @@ then
         'file_osgi_spec'
         'console_osgi_spec'
         'sling_resource_spec'
+        'crx_package_spec'
         'replication_spec'
         'update_aem_spec'
         'update_env_spec'

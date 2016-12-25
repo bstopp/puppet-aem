@@ -80,7 +80,7 @@ end
 
 def aem_license(module_root)
   license_file = File.join(module_root, 'spec', 'files', 'license.properties')
-  return if File.exist?(license_file)
+  return unless File.exist?(license_file)
   File.foreach(license_file) do |line|
     match = line.match(/license.downloadID=(\S+)/)
     ENV['AEM_LICENSE'] = match.captures[0] if match
