@@ -3,7 +3,7 @@ require 'crx_packmgr_api_client'
 
 Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
-  confine :feature => :aem_crx_pkg_client
+  confine feature: :aem_crx_pkg_client
 
   mk_resource_methods
 
