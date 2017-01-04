@@ -126,6 +126,7 @@ unless ENV['BEAKER_provision'] == 'no'
   install_package master, 'puppetserver'
   master['use-service'] = true
 
+  on master, puppet('module', 'install', 'puppetlabs-ruby'), acceptable_exit_codes: [0, 1]
   on master, puppet('module', 'install', 'puppetlabs-stdlib'), acceptable_exit_codes: [0, 1]
   on master, puppet('module', 'install', 'puppetlabs-concat'), acceptable_exit_codes: [0, 1]
   on master, puppet('module', 'install', 'puppetlabs-apache'), acceptable_exit_codes: [0, 1]

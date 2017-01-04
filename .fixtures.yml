@@ -2,7 +2,8 @@ fixtures:
   repositories:
     apache: "https://github.com/puppetlabs/puppetlabs-apache.git"
     concat: "https://github.com/puppetlabs/puppetlabs-concat.git"
-    stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
     java: "https://github.com/puppetlabs/puppetlabs-java.git"
+    ruby: "https://github.com/puppetlabs/puppetlabs-ruby.git"
+    stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
   symlinks:
     aem: "#{source_dir}"

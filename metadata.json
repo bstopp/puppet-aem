@@ -12,6 +12,10 @@
     {
       "name": "puppetlabs/stdlib",
       "version_requirement": ">=4.6.0 < 5.0.0"
+    },
+    {
+      "name": "puppetlabs/ruby",
+      "version_requirement": ">=0.6.0 < 1.0.0"
     }
   ],
   "requirements": [

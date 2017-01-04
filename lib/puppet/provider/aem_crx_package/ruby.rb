@@ -1,11 +1,12 @@
-require 'xmlsimple'
-require 'crx_packmgr_api_client'
 
 Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
-  confine feature: :aem_crx_pkg_client
-
   mk_resource_methods
+
+  def self.require_libs
+    require 'crx_packmgr_api_client'
+    require 'xmlsimple'
+  end
 
   def initialize(resource = nil)
     super(resource)
@@ -13,6 +14,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
   end
 
   def exists?
+    self.class.require_libs
     find_package
     @property_hash[:ensure] == :present || @property_hash[:ensure] == :installed
   end
@@ -30,6 +32,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
   end
 
   def flush
+    self.class.require_libs
     result = @property_flush[:ensure] == :absent ? remove_package : upload_package
     raise_on_failure(result)
     find_package
@@ -54,6 +57,8 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
     config = CrxPackageManager::Configuration.new
     config.configure do |c|
+      c.username = @resource[:username]
+      c.password = @resource[:password]
       c.host = "localhost:#{port}" if port
       c.base_path = "#{context_root}/#{c.base_path}" if context_root
     end

@@ -5,7 +5,10 @@ describe 'aem::crx::package', type: :defines do
 
   let(:facts) do
     {
-      kernel: 'Linux'
+      kernel: 'Linux',
+      osfamily: 'RedHat',
+      operatingsystemmajrelease: '7',
+      is_pe: false
     }
   end
 
@@ -225,6 +228,20 @@ describe 'aem::crx::package', type: :defines do
         end
 
         it do
+          is_expected.to compile.with_all_deps
+
+          is_expected.to contain_package('crx_packmgr_api_client').with(
+            ensure:   '1.1.0',
+            name:     'crx_packmgr_api_client',
+            provider: 'puppet_gem'
+          ).that_requires('Class[ruby::dev]')
+
+          is_expected.to contain_package('xml-simple').with(
+            ensure:   '>=1.1.5',
+            name:     'xml-simple',
+            provider: 'puppet_gem'
+          ).that_requires('Class[ruby::dev]')
+
           is_expected.to contain_aem_crx_package(
             'aem'
           ).only_with(
@@ -236,25 +253,39 @@ describe 'aem::crx::package', type: :defines do
             source:   '/path/to/file.zip',
             username: 'admin',
             version:  '1.0.0'
-          )
+          ).that_requires('Package[crx_packmgr_api_client]')
         end
       end
 
       context 'ensure absent' do
         let(:params) do
           params = default_params.merge(
-            ensure:   'absent',
-            password: 'admin',
+            ensure:      'absent',
+            password:    'admin',
             pkg_group:   'my_packages',
             pkg_version: '1.0.0',
-            type:     'api',
-            username: 'admin'
+            type:        'api',
+            username:    'admin'
           )
           params.delete(:source)
           params
         end
 
         it do
+          is_expected.to compile.with_all_deps
+
+          is_expected.to contain_package('crx_packmgr_api_client').with(
+            ensure:   '1.1.0',
+            name:     'crx_packmgr_api_client',
+            provider: 'puppet_gem'
+          ).that_requires('Class[ruby::dev]')
+
+          is_expected.to contain_package('xml-simple').with(
+            ensure:   '>=1.1.5',
+            name:     'xml-simple',
+            provider: 'puppet_gem'
+          ).that_requires('Class[ruby::dev]')
+
           is_expected.to contain_aem_crx_package(
             'aem'
           ).only_with(
@@ -265,22 +296,37 @@ describe 'aem::crx::package', type: :defines do
             password: 'admin',
             username: 'admin',
             version:  '1.0.0'
-          )
+          ).that_requires('Package[crx_packmgr_api_client]')
         end
       end
+
       context 'ensure installed' do
         let(:params) do
           default_params.merge(
-            ensure:   'installed',
-            password: 'admin',
+            ensure:      'installed',
+            password:    'admin',
             pkg_group:   'my_packages',
             pkg_version: '1.0.0',
-            type:     'api',
-            username: 'admin'
+            type:        'api',
+            username:    'admin'
           )
         end
 
         it do
+          is_expected.to compile.with_all_deps
+
+          is_expected.to contain_package('crx_packmgr_api_client').with(
+            ensure:   '1.1.0',
+            name:     'crx_packmgr_api_client',
+            provider: 'puppet_gem'
+          ).that_requires('Class[ruby::dev]')
+
+          is_expected.to contain_package('xml-simple').with(
+            ensure:   '>=1.1.5',
+            name:     'xml-simple',
+            provider: 'puppet_gem'
+          ).that_requires('Class[ruby::dev]')
+
           is_expected.to contain_aem_crx_package(
             'aem'
           ).only_with(
@@ -292,7 +338,7 @@ describe 'aem::crx::package', type: :defines do
             source:   '/path/to/file.zip',
             username: 'admin',
             version:  '1.0.0'
-          )
+          ).that_requires('Package[crx_packmgr_api_client]')
         end
       end
     end

@@ -38,6 +38,20 @@ define aem::crx::package (
       if $pkg_version == undef {
         fail("Package Version is required when type == 'api'")
       }
+
+      include ::ruby::dev
+      include ::aem
+
+      package { 'crx_packmgr_api_client' :
+        ensure   => $aem::crx_packmgr_api_client_ver,
+        provider => $aem::puppetgem
+      }
+
+      package { 'xml-simple' :
+        ensure   => $aem::xmlsimple_ver,
+        provider => $aem::puppetgem
+      }
+
       aem_crx_package { $name :
         ensure   => $ensure,
         group    => $pkg_group,
@@ -48,6 +62,12 @@ define aem::crx::package (
         username => $username,
         version  => $pkg_version
       }
+
+      Class['ruby::dev']
+      -> Class['aem']
+      -> Package['xml-simple']
+      -> Package['crx_packmgr_api_client']
+      -> Aem_Crx_Package[$name]
 
     }
     'file': {
