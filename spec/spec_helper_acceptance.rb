@@ -3,7 +3,7 @@ require 'beaker-rspec'
 require 'beaker/puppet_install_helper'
 
 UNSUPPORTED_PLATFORMS = %w(Suse windows AIX Solaris).freeze
-ENV['PUPPET_INSTALL_VERSION'] = ENV['PUPPET_INSTALL_VERSION'] || '4.2'
+ENV['PUPPET_INSTALL_VERSION'] = ENV['PUPPET_INSTALL_VERSION'] || '1.8.0'
 
 def server_opts
   {
@@ -40,7 +40,7 @@ def setup_puppet(host)
   step 'Install puppet on agent'
   install_puppetlabs_release_repo host, 'pc1'
   configure_defaults_on host, 'foss'
-  install_puppet_agent_on host
+  install_puppet_agent_on(host, puppet_agent_version: ENV['PUPPET_INSTALL_VERSION'])
   configure_puppet_on(host, {})
 
   agenthostname = on(host, 'facter fqdn').stdout.strip
@@ -122,7 +122,7 @@ unless ENV['BEAKER_provision'] == 'no'
   master['puppetservice'] = 'puppetserver'
   master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
   master['type'] = 'aio'
-  install_puppet_agent_on master
+  install_puppet_agent_on(master, puppet_agent_version: ENV['PUPPET_INSTALL_VERSION'])
   install_package master, 'puppetserver'
   master['use-service'] = true
 
@@ -216,7 +216,7 @@ RSpec.shared_examples 'setup aem' do
         home            => \"/opt/aem/author\",
         jvm_mem_opts    => \"-Xmx2048m\",
         osgi_configs    => \$osgi,
-        packages        => [\"/tmp/test-1.0.0.zip\"],
+        crx_packages    => [\"/tmp/test-1.0.0.zip\"],
         source          => \"/tmp/aem-quickstart.jar\",
         timeout         => 1200,
         user            => \"vagrant\",

@@ -135,20 +135,42 @@ describe 'aem::crx::package', type: :defines do
         end
       end
 
-    end
-  end
+      context 'source' do
 
-  context 'type == file' do
-    context 'package file' do
-      context 'should be required' do
-        let(:params) do
-          params = default_params.merge(type: 'file')
-          params.delete(:source)
-          params
+        context 'not specified' do
+          let(:params) do
+            tmp = default_params.clone
+            tmp.delete(:home)
+            tmp.delete(:source)
+            tmp.merge(type: 'api')
+          end
+          it { is_expected.to raise_error(/is not an absolute path/) }
         end
-        it { is_expected.to raise_error(/is not an absolute path/i) }
+
+        context 'not absolute' do
+          let(:params) do
+            default_params.merge(source: 'not/absolute/path', type: 'api')
+          end
+          it { is_expected.to raise_error(/is not an absolute path/) }
+        end
+
+      end
+
+    end
+
+    context 'type == file' do
+      context 'package file' do
+        context 'should be required' do
+          let(:params) do
+            params = default_params.merge(type: 'file')
+            params.delete(:source)
+            params
+          end
+          it { is_expected.to raise_error(/is not an absolute path/i) }
+        end
       end
     end
+
   end
 
   describe 'defines resources based on type' do
@@ -231,7 +253,7 @@ describe 'aem::crx::package', type: :defines do
           is_expected.to compile.with_all_deps
 
           is_expected.to contain_package('crx_packmgr_api_client').with(
-            ensure:   '1.1.0',
+            ensure:   '1.1.1',
             name:     'crx_packmgr_api_client',
             provider: 'puppet_gem'
           ).that_requires('Class[ruby::dev]')
@@ -275,7 +297,7 @@ describe 'aem::crx::package', type: :defines do
           is_expected.to compile.with_all_deps
 
           is_expected.to contain_package('crx_packmgr_api_client').with(
-            ensure:   '1.1.0',
+            ensure:   '1.1.1',
             name:     'crx_packmgr_api_client',
             provider: 'puppet_gem'
           ).that_requires('Class[ruby::dev]')
@@ -316,7 +338,7 @@ describe 'aem::crx::package', type: :defines do
           is_expected.to compile.with_all_deps
 
           is_expected.to contain_package('crx_packmgr_api_client').with(
-            ensure:   '1.1.0',
+            ensure:   '1.1.1',
             name:     'crx_packmgr_api_client',
             provider: 'puppet_gem'
           ).that_requires('Class[ruby::dev]')

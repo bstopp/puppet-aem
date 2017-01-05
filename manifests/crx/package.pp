@@ -21,6 +21,10 @@ define aem::crx::package (
 
   validate_absolute_path($home)
 
+  if $ensure != 'absent' {
+    validate_absolute_path($source)
+  }
+
   case $type {
     'api': {
 
@@ -71,8 +75,6 @@ define aem::crx::package (
 
     }
     'file': {
-
-      validate_absolute_path($source)
 
       case $ensure {
         /^(present|installed)$/ : { $_ensure = 'present' }

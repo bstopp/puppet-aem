@@ -81,7 +81,7 @@ PORT=#{opts[:port]}
 
         if opts[:present]
           res_data = provider.properties
-          expect(res_data).to_not eq(:absent)
+          expect(res_data).not_to eq(:absent)
           expect(res_data['jcr:primaryType']).to eq('cq:Page')
           expect(res_data['jcr:content']).to be_a(Hash)
           expect(res_data['jcr:content']['jcr:primaryType']).to eq('nt:unstructured')
@@ -180,7 +180,7 @@ PORT=#{opts[:port]}
           times = 2
         end
 
-        expect { provider.flush }.to_not raise_error
+        expect { provider.flush }.not_to raise_error
         expect(get_stub).to have_been_requested.times(times)
         expect(post_stub).to have_been_requested
       end

@@ -24,7 +24,7 @@ describe 'aem::config', type: :defines do
       jvm_mem_opts: :undef,
       jvm_opts: :undef,
       osgi_configs: :undef,
-      packages: :undef,
+      crx_packages: :undef,
       port: :undef,
       runmodes: [],
       sample_content: true,
@@ -374,7 +374,7 @@ describe 'aem::config', type: :defines do
     end
     let(:params) do
       default_params.merge(
-        packages: %w(
+        crx_packages: %w(
           /path/to/first-package-1.0.0.zip
           /path/to/second-package-2.0.0.zip
         )

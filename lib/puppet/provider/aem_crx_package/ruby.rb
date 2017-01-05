@@ -3,6 +3,9 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
   mk_resource_methods
 
+  confine feature: :xmlsimple
+  confine feature: :crx_packmgr_api_client
+
   def self.require_libs
     require 'crx_packmgr_api_client'
     require 'xmlsimple'
@@ -13,13 +16,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     @property_flush = {}
   end
 
-  def exists?
-    self.class.require_libs
-    find_package
-    @property_hash[:ensure] == :present || @property_hash[:ensure] == :installed
-  end
-
-  def create
+  def upload
     @property_flush[:ensure] = :present
   end
 
@@ -27,13 +24,28 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     @property_flush[:ensure] = :installed
   end
 
-  def destroy
+  def remove
     @property_flush[:ensure] = :absent
+  end
+
+  def retrieve
+    self.class.require_libs
+    find_package
+    @property_hash[:ensure]
   end
 
   def flush
     self.class.require_libs
-    result = @property_flush[:ensure] == :absent ? remove_package : upload_package
+    case @property_flush[:ensure]
+    when :absent
+      result = remove_package
+    when :present
+      result = @property_hash[:ensure] == :absent ? upload_package : uninstall_package
+    when :installed
+      result = @property_hash[:ensure] == :absent ? upload_package(true) : install_package
+    else
+      raise "Unknown property flush value: #{@property_flush[:ensure]}"
+    end
     raise_on_failure(result)
     find_package
   end
@@ -83,11 +95,20 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     end
   end
 
-  def upload_package
+  def upload_package(install = false)
     client = build_client
     pkg = File.new(@resource[:source])
-    install = @property_flush[:ensure] == :installed
     client.service_post(pkg, install: install)
+  end
+
+  def install_package
+    client = build_client
+    client.service_get('inst', group: @resource[:group], name: @resource[:name])
+  end
+
+  def uninstall_package
+    client = build_client
+    client.service_get('uninst', group: @resource[:group], name: @resource[:name])
   end
 
   def remove_package

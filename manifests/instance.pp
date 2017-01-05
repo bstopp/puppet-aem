@@ -15,7 +15,7 @@ define aem::instance (
   $manage_home    = true,
   $manage_user    = true,
   $osgi_configs   = undef,
-  $packages       = undef,
+  $crx_packages   = undef,
   $port           = 4502,
   $runmodes       = [],
   $sample_content = true,
@@ -69,8 +69,8 @@ define aem::instance (
     }
   }
 
-  if $packages {
-    validate_array($packages)
+  if $crx_packages {
+    validate_array($crx_packages)
   }
 
   validate_integer($port)
@@ -126,7 +126,7 @@ define aem::instance (
       jvm_mem_opts   => $jvm_mem_opts,
       jvm_opts       => $jvm_opts,
       osgi_configs   => $osgi_configs,
-      packages       => $packages,
+      crx_packages   => $crx_packages,
       port           => $port,
       runmodes       => $runmodes,
       sample_content => $sample_content,

@@ -68,8 +68,8 @@ describe 'aem::package', type: :defines do
         default_params.merge(manage_home: false)
       end
 
-      it { is_expected.to_not contain_file('/opt/aem') }
-      it { is_expected.to_not contain_exec('aem unpack').that_requires('File[/opt/aem]') }
+      it { is_expected.not_to contain_file('/opt/aem') }
+      it { is_expected.not_to contain_exec('aem unpack').that_requires('File[/opt/aem]') }
     end
 
     context 'unpack' do
@@ -130,8 +130,8 @@ describe 'aem::package', type: :defines do
           default_params.merge(manage_home: false)
         end
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to_not contain_file('/opt/aem') }
-        it { is_expected.to_not contain_exec('aem unpack').that_requires('File[/opt/aem]') }
+        it { is_expected.not_to contain_file('/opt/aem') }
+        it { is_expected.not_to contain_exec('aem unpack').that_requires('File[/opt/aem]') }
       end
     end
 

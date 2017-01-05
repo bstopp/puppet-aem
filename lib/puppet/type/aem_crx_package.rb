@@ -6,10 +6,10 @@ This is a private type used to manage CRX Packages via API calls.
   DOC
 
   ensurable do
-    desc 'Create, install or remove the package.'
+    desc 'Upload, install/uninstall or remove the package.'
 
     newvalue(:present) do
-      provider.create
+      provider.upload
     end
 
     newvalue(:installed) do
@@ -17,7 +17,11 @@ This is a private type used to manage CRX Packages via API calls.
     end
 
     newvalue(:absent) do
-      provider.destroy
+      provider.remove
+    end
+
+    def retrieve
+      provider.retrieve
     end
   end
 

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sleep 15
 
 idx=0
 while [  $idx -lt 60 ]; do

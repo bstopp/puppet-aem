@@ -3,9 +3,11 @@ require 'crx_packmgr_api_client'
 
 describe Puppet::Type.type(:aem_crx_package).provider(:ruby) do
 
-  let(:resource) do
+  let(:source) do
+    File.join(File.dirname(__FILE__), '..', '..', '..', '..', 'files', 'test-1.0.0.zip')
+  end
 
-    source = File.join(File.dirname(__FILE__), '..', '..', '..', '..', 'files', 'test-1.0.0.zip')
+  let(:resource) do
 
     Puppet::Type.type(:aem_crx_package).new(
       ensure: :present,
@@ -58,8 +60,8 @@ describe Puppet::Type.type(:aem_crx_package).provider(:ruby) do
     File.new(File.join(File.dirname(__FILE__), '..', '..', '..', '..', 'files', 'api_error.xml')).read
   end
 
-  describe 'exists?' do
-    shared_examples 'exists_check' do |opts|
+  describe 'retrieve ensure value' do
+    shared_examples 'resource_check' do |opts|
       it do
 
         opts[:port] ||= 4502
@@ -89,158 +91,269 @@ PORT=#{opts[:port]}
           path: '/etc/packages/my_packages/test-1.0.0.zip'
         ).and_return(pkg_list)
 
-        expect(provider.exists?).to eq(opts[:expected])
+        expect(provider.retrieve).to eq(opts[:expected])
       end
     end
 
     describe 'package exists' do
       it_should_behave_like(
-        'exists_check',
+        'resource_check',
         return_val: 'exists',
-        expected: true
+        expected: :present
       )
     end
     describe 'package does not exist' do
       it_should_behave_like(
-        'exists_check',
+        'resource_check',
         return_val: 'installed',
-        expected: true
+        expected: :installed
       )
     end
     describe 'package does not exist' do
       it_should_behave_like(
-        'exists_check',
+        'resource_check',
         return_val: 'missing',
-        expected: false
+        expected: :absent
       )
     end
+
     describe 'supports context root' do
       it_should_behave_like(
-        'exists_check',
+        'resource_check',
         return_val: 'exists',
-        expected: true,
+        expected: :present,
         context_root: 'contextroot'
       )
     end
 
     describe 'supports port' do
       it_should_behave_like(
-        'exists_check',
+        'resource_check',
         return_val: 'exists',
-        expected: true,
+        expected: :present,
         port: '8080'
       )
     end
   end
 
   describe 'flush' do
-    describe 'create' do
-      it 'should upload source file' do
-        envdata = <<-EOF
-        PORT=4502
-        EOF
+    describe 'ensure present' do
+      context 'resource does not exist' do
+        it 'should upload source file' do
+          envdata = <<-EOF
+          PORT=4502
+          EOF
 
-        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
-        # Setup Missing API Call
-        hash = JSON.parse(list_missing, symbolize_names: true).to_hash
-        pkg_list = CrxPackageManager::PackageList.new
-        pkg_list = pkg_list.build_from_hash(hash)
-        expect_any_instance_of(
-          CrxPackageManager::DefaultApi
-        ).to receive(:list).with(
-          path: '/etc/packages/my_packages/test-1.0.0.zip'
-        ).and_return(pkg_list)
+          # Setup Missing API Call
+          hash = JSON.parse(list_missing, symbolize_names: true).to_hash
+          pkg_list = CrxPackageManager::PackageList.new
+          pkg_list = pkg_list.build_from_hash(hash)
+          expect_any_instance_of(
+            CrxPackageManager::DefaultApi
+          ).to receive(:list).with(
+            path: '/etc/packages/my_packages/test-1.0.0.zip'
+          ).and_return(pkg_list)
 
-        # Should upload file
-        expect_any_instance_of(
-          CrxPackageManager::DefaultApi
-        ).to receive(:service_post).with(
-          instance_of(File), install: false
-        ).and_return(service_response)
+          # Should upload file
+          expect_any_instance_of(
+            CrxPackageManager::DefaultApi
+          ).to receive(:service_post).with(
+            instance_of(File), install: false
+          ).and_return(service_response)
 
-        # Should repopulate data after upload
-        hash = JSON.parse(list_exists, symbolize_names: true).to_hash
-        pkg_list = CrxPackageManager::PackageList.new
-        pkg_list = pkg_list.build_from_hash(hash)
-        expect_any_instance_of(
-          CrxPackageManager::DefaultApi
-        ).to receive(:list).with(
-          path: '/etc/packages/my_packages/test-1.0.0.zip'
-        ).and_return(pkg_list)
+          # Should repopulate data after upload
+          hash = JSON.parse(list_exists, symbolize_names: true).to_hash
+          pkg_list = CrxPackageManager::PackageList.new
+          pkg_list = pkg_list.build_from_hash(hash)
+          expect_any_instance_of(
+            CrxPackageManager::DefaultApi
+          ).to receive(:list).with(
+            path: '/etc/packages/my_packages/test-1.0.0.zip'
+          ).and_return(pkg_list)
 
-        expect { provider.exists? }.to_not raise_error
-        expect { provider.create }.to_not raise_error
-        expect { provider.flush }.to_not raise_error
+          expect { provider.retrieve }.not_to raise_error
+          expect { provider.upload }.not_to raise_error
+          expect { provider.flush }.not_to raise_error
 
-        expect(provider.resource[:group]).to eq('my_packages')
-        expect(provider.resource[:name]).to eq('test')
-        expect(provider.resource[:version]).to eq('1.0.0')
-        expect(provider.resource[:ensure]).to eq(:present)
+          expect(provider.resource[:group]).to eq('my_packages')
+          expect(provider.resource[:name]).to eq('test')
+          expect(provider.resource[:version]).to eq('1.0.0')
+          expect(provider.resource[:ensure]).to eq(:present)
+        end
+      end
 
+      context 'resource exists and installed' do
+        it 'should uninstall package' do
+          envdata = <<-EOF
+          PORT=4502
+          EOF
+
+          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+
+          # Setup Installed API Call
+          hash = JSON.parse(list_installed, symbolize_names: true).to_hash
+          pkg_list = CrxPackageManager::PackageList.new
+          pkg_list = pkg_list.build_from_hash(hash)
+          expect_any_instance_of(
+            CrxPackageManager::DefaultApi
+          ).to receive(:list).with(
+            path: '/etc/packages/my_packages/test-1.0.0.zip'
+          ).and_return(pkg_list)
+
+          # Should uninstall package
+          expect_any_instance_of(
+            CrxPackageManager::DefaultApi
+          ).to receive(:service_get).with(
+            'uninst', name: 'test', group: 'my_packages'
+          ).and_return(service_response)
+
+          # Should repopulate data after upload
+          hash = JSON.parse(list_exists, symbolize_names: true).to_hash
+          pkg_list = CrxPackageManager::PackageList.new
+          pkg_list = pkg_list.build_from_hash(hash)
+          expect_any_instance_of(
+            CrxPackageManager::DefaultApi
+          ).to receive(:list).with(
+            path: '/etc/packages/my_packages/test-1.0.0.zip'
+          ).and_return(pkg_list)
+
+          expect { provider.retrieve }.not_to raise_error
+          expect { provider.upload }.not_to raise_error
+          expect { provider.flush }.not_to raise_error
+
+          expect(provider.resource[:group]).to eq('my_packages')
+          expect(provider.resource[:name]).to eq('test')
+          expect(provider.resource[:version]).to eq('1.0.0')
+          expect(provider.resource[:ensure]).to eq(:present)
+        end
       end
     end
 
-    describe 'installed' do
-      let(:resource) do
+    describe 'install' do
+      context 'does not exist' do
+        let(:resource) do
 
-        source = File.join(File.dirname(__FILE__), '..', '..', '..', '..', 'files', 'test-1.0.0.zip')
+          source = File.join(File.dirname(__FILE__), '..', '..', '..', '..', 'files', 'test-1.0.0.zip')
 
-        Puppet::Type.type(:aem_crx_package).new(
-          ensure: :installed,
-          name: 'test',
-          group: 'my_packages',
-          home: '/opt/aem',
-          password: 'admin',
-          source: source,
-          timeout: 1,
-          username: 'admin',
-          version: '1.0.0'
-        )
+          Puppet::Type.type(:aem_crx_package).new(
+            ensure: :installed,
+            name: 'test',
+            group: 'my_packages',
+            home: '/opt/aem',
+            password: 'admin',
+            source: source,
+            timeout: 1,
+            username: 'admin',
+            version: '1.0.0'
+          )
+        end
+        it 'should upload source file with install == true' do
+          envdata = <<-EOF
+          PORT=4502
+          EOF
+
+          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+
+          # Setup Missing API Call
+          hash = JSON.parse(list_missing, symbolize_names: true).to_hash
+          pkg_list = CrxPackageManager::PackageList.new
+          pkg_list = pkg_list.build_from_hash(hash)
+          expect_any_instance_of(
+            CrxPackageManager::DefaultApi
+          ).to receive(:list).with(
+            path: '/etc/packages/my_packages/test-1.0.0.zip'
+          ).and_return(pkg_list)
+
+          # Should upload/install file
+          expect_any_instance_of(
+            CrxPackageManager::DefaultApi
+          ).to receive(:service_post).with(
+            instance_of(File), install: true
+          ).and_return(service_response)
+
+          # Should repopulate data after upload
+          hash = JSON.parse(list_exists, symbolize_names: true).to_hash
+          pkg_list = CrxPackageManager::PackageList.new
+          pkg_list = pkg_list.build_from_hash(hash)
+          expect_any_instance_of(
+            CrxPackageManager::DefaultApi
+          ).to receive(:list).with(
+            path: '/etc/packages/my_packages/test-1.0.0.zip'
+          ).and_return(pkg_list)
+
+          expect { provider.retrieve }.not_to raise_error
+          expect { provider.install }.not_to raise_error
+          expect { provider.flush }.not_to raise_error
+
+          expect(provider.resource[:group]).to eq('my_packages')
+          expect(provider.resource[:name]).to eq('test')
+          expect(provider.resource[:version]).to eq('1.0.0')
+          expect(provider.resource[:ensure]).to eq(:installed)
+        end
       end
-      it 'should upload source file with install == true' do
-        envdata = <<-EOF
-        PORT=4502
-        EOF
 
-        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+      context 'exists' do
+        let(:resource) do
 
-        # Setup Missing API Call
-        hash = JSON.parse(list_missing, symbolize_names: true).to_hash
-        pkg_list = CrxPackageManager::PackageList.new
-        pkg_list = pkg_list.build_from_hash(hash)
-        expect_any_instance_of(
-          CrxPackageManager::DefaultApi
-        ).to receive(:list).with(
-          path: '/etc/packages/my_packages/test-1.0.0.zip'
-        ).and_return(pkg_list)
+          source = File.join(File.dirname(__FILE__), '..', '..', '..', '..', 'files', 'test-1.0.0.zip')
 
-        # Should upload/install file
-        expect_any_instance_of(
-          CrxPackageManager::DefaultApi
-        ).to receive(:service_post).with(
-          instance_of(File), install: true
-        ).and_return(service_response)
+          Puppet::Type.type(:aem_crx_package).new(
+            ensure: :installed,
+            name: 'test',
+            group: 'my_packages',
+            home: '/opt/aem',
+            password: 'admin',
+            source: source,
+            timeout: 1,
+            username: 'admin',
+            version: '1.0.0'
+          )
+        end
+        it 'should install package' do
+          envdata = <<-EOF
+          PORT=4502
+          EOF
 
-        # Should repopulate data after upload
-        hash = JSON.parse(list_exists, symbolize_names: true).to_hash
-        pkg_list = CrxPackageManager::PackageList.new
-        pkg_list = pkg_list.build_from_hash(hash)
-        expect_any_instance_of(
-          CrxPackageManager::DefaultApi
-        ).to receive(:list).with(
-          path: '/etc/packages/my_packages/test-1.0.0.zip'
-        ).and_return(pkg_list)
+          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
-        expect { provider.exists? }.to_not raise_error
-        expect { provider.install }.to_not raise_error
-        expect { provider.flush }.to_not raise_error
+          # Setup Missing API Call
+          hash = JSON.parse(list_exists, symbolize_names: true).to_hash
+          pkg_list = CrxPackageManager::PackageList.new
+          pkg_list = pkg_list.build_from_hash(hash)
+          expect_any_instance_of(
+            CrxPackageManager::DefaultApi
+          ).to receive(:list).with(
+            path: '/etc/packages/my_packages/test-1.0.0.zip'
+          ).and_return(pkg_list)
 
-        expect(provider.resource[:group]).to eq('my_packages')
-        expect(provider.resource[:name]).to eq('test')
-        expect(provider.resource[:version]).to eq('1.0.0')
-        expect(provider.resource[:ensure]).to eq(:installed)
+          # Should upload/install file
+          expect_any_instance_of(
+            CrxPackageManager::DefaultApi
+          ).to receive(:service_get).with(
+            'inst', name: 'test', group: 'my_packages'
+          ).and_return(service_response)
 
+          # Should repopulate data after upload
+          hash = JSON.parse(list_installed, symbolize_names: true).to_hash
+          pkg_list = CrxPackageManager::PackageList.new
+          pkg_list = pkg_list.build_from_hash(hash)
+          expect_any_instance_of(
+            CrxPackageManager::DefaultApi
+          ).to receive(:list).with(
+            path: '/etc/packages/my_packages/test-1.0.0.zip'
+          ).and_return(pkg_list)
+
+          expect { provider.retrieve }.not_to raise_error
+          expect { provider.install }.not_to raise_error
+          expect { provider.flush }.not_to raise_error
+
+          expect(provider.resource[:group]).to eq('my_packages')
+          expect(provider.resource[:name]).to eq('test')
+          expect(provider.resource[:version]).to eq('1.0.0')
+          expect(provider.resource[:ensure]).to eq(:installed)
+        end
       end
     end
 
@@ -290,9 +403,9 @@ PORT=#{opts[:port]}
           path: '/etc/packages/my_packages/test-1.0.0.zip'
         ).and_return(pkg_list)
 
-        expect { provider.exists? }.to_not raise_error
-        expect { provider.destroy }.to_not raise_error
-        expect { provider.flush }.to_not raise_error
+        expect { provider.retrieve }.not_to raise_error
+        expect { provider.remove }.not_to raise_error
+        expect { provider.flush }.not_to raise_error
 
         expect(provider.resource[:group]).to eq('my_packages')
         expect(provider.resource[:name]).to eq('test')
@@ -329,8 +442,8 @@ PORT=#{opts[:port]}
           instance_of(File), install: false
         ).and_return(service_failure)
 
-        expect { provider.exists? }.to_not raise_error
-        expect { provider.create }.to_not raise_error
+        expect { provider.retrieve }.not_to raise_error
+        expect { provider.upload }.not_to raise_error
         expect { provider.flush }.to raise_error(/An Error Occurred/)
 
       end
@@ -373,8 +486,8 @@ PORT=#{opts[:port]}
           'rm', group: 'my_packages', name: 'test'
         ).and_return(service_failure)
 
-        expect { provider.exists? }.to_not raise_error
-        expect { provider.destroy }.to_not raise_error
+        expect { provider.retrieve }.not_to raise_error
+        expect { provider.remove }.not_to raise_error
         expect { provider.flush }.to raise_error(/An Error Occurred/)
 
       end

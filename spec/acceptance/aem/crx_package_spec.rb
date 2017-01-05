@@ -3,6 +3,10 @@ require 'crx_packmgr_api_client'
 
 describe 'crx package mgr api', license: false do
 
+  let(:supports_ranges) do
+    !ENV['PUPPET_INSTALL_VERSION'] && ENV['PUPPET_INSTALL_VERSION'] < '1.2.0'
+  end
+
   let(:facts) do
     {
       environment: :root
@@ -11,20 +15,36 @@ describe 'crx package mgr api', license: false do
 
   include_examples 'setup aem'
 
-  it 'should remove existing package' do
+  it 'should upload package' do
+
+    # remove it from the system first
+    cmd = 'curl -u admin:admin "http://localhost:4502/crx/packmgr/service.jsp?cmd=rm&name=test&group=my_packages"'
+    shell(cmd)
+
+    # Make sure it's not the right state to start
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(0)
+    end
 
     site = <<-MANIFEST
       'node \"agent\" {
 
         aem::crx::package { \"author-test-pkg\" :
-          ensure         => absent,
-          home           => \"/opt/aem/author\",
-          password       => \"admin\",
-          pkg_group      => \"my_packages\",
-          pkg_name       => \"test\",
-          pkg_version    => \"1.0.0\",
-          type           => \"api\",
-          username       => \"admin\",
+          ensure      => present,
+          home        => \"/opt/aem/author\",
+          password    => \"admin\",
+          pkg_group   => \"my_packages\",
+          pkg_name    => \"test\",
+          pkg_version => \"1.0.0\",
+          source      => \"/tmp/test-1.0.0.zip\",
+          type        => \"api\",
+          username    => \"admin\"
         }
 
       }'
@@ -53,16 +73,442 @@ describe 'crx package mgr api', license: false do
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0]
-    )
+    ) if supports_ranges
 
-    cmd = 'curl http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
-      jsonresult = JSON.parse(result.stdout)
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
       list = CrxPackageManager::PackageList.new
-      data = list.build_from_hash(jsonresult)
-      expect(data.total).to eq(0)
-      expect(data.results).to be_nil
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(1)
+      pkg = list.results[0]
+      expect(pkg.last_unwrapped).not_to be_nil
+      expect(pkg.last_unpacked).to be_nil
+    end
+  end
+
+  it 'should remove existing package' do
+
+    # Make sure it's not the right state to start
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(1)
+    end
+
+    site = <<-MANIFEST
+      'node \"agent\" {
+
+        aem::crx::package { \"author-test-pkg\" :
+          ensure      => absent,
+          home        => \"/opt/aem/author\",
+          password    => \"admin\",
+          pkg_group   => \"my_packages\",
+          pkg_name    => \"test\",
+          pkg_version => \"1.0.0\",
+          type        => \"api\",
+          username    => \"admin\"
+        }
+
+      }'
+    MANIFEST
+
+    pp = <<-MANIFEST
+      file {
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+          ensure => file,
+          content => #{site}
+      }
+    MANIFEST
+
+    apply_manifest_on(master, pp, catch_failures: true)
+    restart_puppetserver
+    fqdn = on(master, 'facter fqdn').stdout.strip
+    fqdn = fqdn.chop if fqdn.end_with?('.')
+
+    on(
+      default,
+      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0, 2]
+    )
+
+    on(
+      default,
+      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0]
+    ) if supports_ranges
+
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(0)
+      expect(list.results).to eq([])
+    end
+  end
+
+  it 'should support upload but not install package' do
+
+    # Make sure it's not the right state to start
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(0)
+    end
+
+    site = <<-MANIFEST
+      'node \"agent\" {
+
+        aem::crx::package { \"author-test-pkg\" :
+          ensure      => present,
+          home        => \"/opt/aem/author\",
+          password    => \"admin\",
+          pkg_group   => \"my_packages\",
+          pkg_name    => \"test\",
+          pkg_version => \"1.0.0\",
+          source      => \"/tmp/test-1.0.0.zip\",
+          type        => \"api\",
+          username    => \"admin\"
+        }
+
+      }'
+    MANIFEST
+
+    pp = <<-MANIFEST
+      file {
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+          ensure => file,
+          content => #{site}
+      }
+    MANIFEST
+
+    apply_manifest_on(master, pp, catch_failures: true)
+    restart_puppetserver
+    fqdn = on(master, 'facter fqdn').stdout.strip
+    fqdn = fqdn.chop if fqdn.end_with?('.')
+
+    on(
+      default,
+      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0, 2]
+    )
+
+    on(
+      default,
+      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0]
+    ) if supports_ranges
+
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(1)
+      pkg = list.results[0]
+
+      expect(pkg.last_unwrapped).not_to be_nil
+      expect(pkg.last_unpacked).to be_nil
+    end
+  end
+
+  it 'should install existing package' do
+
+    # Make sure it's not the right state to start
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(1)
+      pkg = list.results[0]
+      expect(pkg.last_unwrapped).not_to be_nil
+      expect(pkg.last_unpacked).to be_nil
+    end
+
+    site = <<-MANIFEST
+      'node \"agent\" {
+
+        aem::crx::package { \"author-test-pkg\" :
+          ensure      => installed,
+          home        => \"/opt/aem/author\",
+          password    => \"admin\",
+          pkg_group   => \"my_packages\",
+          pkg_name    => \"test\",
+          pkg_version => \"1.0.0\",
+          source      => \"/tmp/test-1.0.0.zip\",
+          type        => \"api\",
+          username    => \"admin\"
+        }
+
+      }'
+    MANIFEST
+
+    pp = <<-MANIFEST
+      file {
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+          ensure => file,
+          content => #{site}
+      }
+    MANIFEST
+
+    apply_manifest_on(master, pp, catch_failures: true)
+    restart_puppetserver
+    fqdn = on(master, 'facter fqdn').stdout.strip
+    fqdn = fqdn.chop if fqdn.end_with?('.')
+
+    on(
+      default,
+      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0, 2]
+    )
+
+    on(
+      default,
+      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0]
+    ) if supports_ranges
+
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(1)
+      pkg = list.results[0]
+      expect(pkg.last_unwrapped).not_to be_nil
+      expect(pkg.last_unpacked).not_to be_nil
+    end
+  end
+
+  it 'should uninstall existing package' do
+
+    # Make sure it's not the right state to start
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(1)
+      pkg = list.results[0]
+      expect(pkg.last_unwrapped).not_to be_nil
+      expect(pkg.last_unpacked).not_to be_nil
+    end
+
+    site = <<-MANIFEST
+      'node \"agent\" {
+
+        aem::crx::package { \"author-test-pkg\" :
+          ensure      => present,
+          home        => \"/opt/aem/author\",
+          password    => \"admin\",
+          pkg_group   => \"my_packages\",
+          pkg_name    => \"test\",
+          pkg_version => \"1.0.0\",
+          source      => \"/tmp/test-1.0.0.zip\",
+          type        => \"api\",
+          username    => \"admin\"
+        }
+
+      }'
+    MANIFEST
+
+    pp = <<-MANIFEST
+      file {
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+          ensure => file,
+          content => #{site}
+      }
+    MANIFEST
+
+    apply_manifest_on(master, pp, catch_failures: true)
+    restart_puppetserver
+    fqdn = on(master, 'facter fqdn').stdout.strip
+    fqdn = fqdn.chop if fqdn.end_with?('.')
+
+    on(
+      default,
+      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0, 2]
+    )
+
+    on(
+      default,
+      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0]
+    ) if supports_ranges
+
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(1)
+      pkg = list.results[0]
+      expect(pkg.last_unwrapped).not_to be_nil
+      expect(pkg.last_unpacked).to be_nil
+    end
+  end
+
+  it 'should remove uploaded package' do
+
+    # Make sure it's not the right state to start
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(1)
+      pkg = list.results[0]
+      expect(pkg.last_unwrapped).not_to be_nil
+      expect(pkg.last_unpacked).to be_nil
+    end
+
+    site = <<-MANIFEST
+      'node \"agent\" {
+
+        aem::crx::package { \"author-test-pkg\" :
+          ensure      => absent,
+          home        => \"/opt/aem/author\",
+          password    => \"admin\",
+          pkg_group   => \"my_packages\",
+          pkg_name    => \"test\",
+          pkg_version => \"1.0.0\",
+          type        => \"api\",
+          username    => \"admin\"
+        }
+
+      }'
+    MANIFEST
+
+    pp = <<-MANIFEST
+      file {
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+          ensure => file,
+          content => #{site}
+      }
+    MANIFEST
+
+    apply_manifest_on(master, pp, catch_failures: true)
+    restart_puppetserver
+    fqdn = on(master, 'facter fqdn').stdout.strip
+    fqdn = fqdn.chop if fqdn.end_with?('.')
+
+    on(
+      default,
+      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0, 2]
+    )
+
+    on(
+      default,
+      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0]
+    ) if supports_ranges
+
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(0)
+    end
+  end
+
+  it 'should install package' do
+
+    # Make sure it's not the right state to start
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(0)
+    end
+
+    site = <<-MANIFEST
+      'node \"agent\" {
+
+        aem::crx::package { \"author-test-pkg\" :
+          ensure      => installed,
+          home        => \"/opt/aem/author\",
+          password    => \"admin\",
+          pkg_group   => \"my_packages\",
+          pkg_name    => \"test\",
+          pkg_version => \"1.0.0\",
+          source      => \"/tmp/test-1.0.0.zip\",
+          type        => \"api\",
+          username    => \"admin\"
+        }
+
+      }'
+    MANIFEST
+
+    pp = <<-MANIFEST
+      file {
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+          ensure => file,
+          content => #{site}
+      }
+    MANIFEST
+
+    apply_manifest_on(master, pp, catch_failures: true)
+    restart_puppetserver
+    fqdn = on(master, 'facter fqdn').stdout.strip
+    fqdn = fqdn.chop if fqdn.end_with?('.')
+
+    on(
+      default,
+      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0, 2]
+    )
+
+    on(
+      default,
+      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0]
+    ) if supports_ranges
+
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(1)
+      pkg = list.results[0]
+      expect(pkg.last_unwrapped).not_to be_nil
+      expect(pkg.last_unpacked).not_to be_nil
     end
   end
 end
