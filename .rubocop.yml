@@ -1,39 +1,19 @@
+inherit_from: .rubocop_todo.yml
+
 AllCops:
-  Include:
-    - 'lib/**/*.rb'
-    - 'spec/acceptnce/**/*.rb'
-    - 'spec/classes/**/*.rb'
-    - 'spec/defines/**/*.rb'
-    - 'spec/files/**/*.rb'
-    - 'spec/unit/**/*.rb'
-    - 'spec/*.rb'
   Exclude:
-    - 'Gemfile'
     - 'pkg/**/*'
     - 'vendor/**/*'
   TargetRubyVersion: 2.0
-
-# Configure options
-Metrics/AbcSize:
-  Max: 50
-
-Metrics/ClassLength:
-  Max: 250
-
-Metrics/CyclomaticComplexity:
-  Max: 20
 
 Metrics/LineLength:
   Max: 120
 
 Metrics/MethodLength:
-  Max: 40
-
-Metrics/PerceivedComplexity:
-  Max: 20
+  Max: 30
 
 # Disabled undesired features
-Style/ClassAndModuleChildren:
+Style/EmptyLinesAroundBlockBody:
   Enabled: false
 
 Style/EmptyLinesAroundBlockBody:
@@ -48,18 +28,3 @@ Style/EmptyLinesAroundMethodBody:
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:
     '%r': '||'
-
-Style/PerlBackrefs:
-  Enabled: false
-
-Style/SymbolProc:
-  Enabled: false
-
-Style/WordArray:
-  Enabled: false
-
-Metrics/BlockLength:
-  Enabled: false
-
-Lint/EmptyWhen:
-  Enabled: false

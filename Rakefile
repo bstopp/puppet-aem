@@ -9,7 +9,6 @@ exclude_paths = [
   'pkg/**/*'
 ]
 
-
 task default: [:spec, :lint, :rubocop]
 
 PuppetLint.configuration.fail_on_warnings = true

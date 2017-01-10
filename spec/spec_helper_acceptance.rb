@@ -1,9 +1,11 @@
+@puppet_agent_version = ENV['PUPPET_INSTALL_VERSION'] || '1.8.0'
+
 require 'beaker'
 require 'beaker-rspec'
 require 'beaker/puppet_install_helper'
 
 UNSUPPORTED_PLATFORMS = %w(Suse windows AIX Solaris).freeze
-ENV['PUPPET_INSTALL_VERSION'] = ENV['PUPPET_INSTALL_VERSION'] || '1.8.0'
+@puppet_agent_version = ENV['PUPPET_INSTALL_VERSION'] ||= '1.8.0'
 
 def server_opts
   {
@@ -40,7 +42,7 @@ def setup_puppet(host)
   step 'Install puppet on agent'
   install_puppetlabs_release_repo host, 'pc1'
   configure_defaults_on host, 'foss'
-  install_puppet_agent_on(host, puppet_agent_version: ENV['PUPPET_INSTALL_VERSION'])
+  install_puppet_agent_on(host, puppet_agent_version: @puppet_agent_version)
   configure_puppet_on(host, {})
 
   agenthostname = on(host, 'facter fqdn').stdout.strip
@@ -116,13 +118,12 @@ unless ENV['BEAKER_provision'] == 'no'
 
   # Install puppet-server on master
   step 'Setup Puppet'
-  install_puppetlabs_release_repo master, 'pc1'
 
   options['is_puppetserver'] = true
   master['puppetservice'] = 'puppetserver'
   master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
   master['type'] = 'aio'
-  install_puppet_agent_on(master, puppet_agent_version: ENV['PUPPET_INSTALL_VERSION'])
+  install_puppet_agent_on(master, puppet_agent_version: @puppet_agent_version)
   install_package master, 'puppetserver'
   master['use-service'] = true
 

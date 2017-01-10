@@ -61,9 +61,7 @@ This is a private type used to manage CRX Packages via API calls.
 
     defaultto 60
 
-    munge do |value|
-      value.to_i
-    end
+    munge(&:to_i)
   end
 
   newparam(:username) do

@@ -8,8 +8,9 @@ GEM
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
-    beaker (3.6.0)
+    beaker (3.7.0)
       aws-sdk-v1 (~> 1.57)
+      beaker-facter (~> 0.0)
       beaker-hiera (~> 0.0)
       beaker-hostgenerator
       docker-api
@@ -19,7 +20,6 @@ GEM
       hocon (~> 1.0)
       in-parallel (~> 0.1)
       inifile (~> 2.0)
-      json (~> 1.8)
       minitar (~> 0.5.4)
       minitest (~> 5.4)
       net-scp (~> 1.2)
@@ -29,12 +29,14 @@ GEM
       rsync (~> 1.0.9)
       stringify-hash (~> 0.0)
       unf (~> 0.1)
+    beaker-facter (0.1.0)
+      stringify-hash (~> 0.0.0)
     beaker-hiera (0.1.1)
       stringify-hash (~> 0.0.0)
-    beaker-hostgenerator (0.8.1)
+    beaker-hostgenerator (0.8.2)
       deep_merge (~> 1.0)
       stringify-hash (~> 0.0.0)
-    beaker-puppet_install_helper (0.5.0)
+    beaker-puppet_install_helper (0.6.0)
       beaker (>= 2.0)
     beaker-rspec (6.0.0)
       beaker (~> 3.0)
@@ -42,12 +44,10 @@ GEM
       serverspec (~> 2)
       specinfra (~> 2)
     builder (3.2.2)
-    codeclimate-test-reporter (1.0.3)
-      simplecov
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
-    crx_packmgr_api_client (1.1.0)
-      json (~> 1.8, >= 1.8.3)
+    crx_packmgr_api_client (1.1.1)
+      json (~> 1.8, >= 1.8.0)
       typhoeus (~> 1.0, >= 1.0.1)
     deep_merge (1.1.1)
     diff-lcs (1.2.5)
@@ -60,7 +60,7 @@ GEM
     excon (0.54.0)
     facter (2.4.6)
       CFPropertyList (~> 2.2.6)
-    faraday (0.10.0)
+    faraday (0.10.1)
       multipart-post (>= 1.2, < 3)
     fast_gettext (1.1.0)
     ffi (1.9.14)
@@ -137,7 +137,7 @@ GEM
       multi_json (~> 1.10)
     fog-local (0.3.1)
       fog-core (~> 1.27)
-    fog-openstack (0.1.18)
+    fog-openstack (0.1.19)
       fog-core (>= 1.40)
       fog-json (>= 1.0)
       ipaddress (>= 0.8)
@@ -148,7 +148,7 @@ GEM
     fog-profitbricks (3.0.0)
       fog-core (~> 1.42)
       fog-json (~> 1.0)
-    fog-rackspace (0.1.2)
+    fog-rackspace (0.1.3)
       fog-core (>= 1.35)
       fog-json (>= 1.0)
       fog-xml (>= 0.1)
@@ -182,7 +182,7 @@ GEM
     fog-voxel (0.1.0)
       fog-core
       fog-xml
-    fog-vsphere (1.5.2)
+    fog-vsphere (1.6.0)
       fog-core
       rbvmomi (~> 1.9)
     fog-xenserver (0.2.3)
@@ -195,9 +195,10 @@ GEM
     gettext (3.2.2)
       locale (>= 2.0.5)
       text (>= 1.3.0)
-    gettext-setup (0.10)
+    gettext-setup (0.11)
       fast_gettext (~> 1.1.0)
       gettext (>= 3.0.2)
+      locale
     google-api-client (0.9.20)
       addressable (~> 2.3)
       googleauth (~> 0.5)
@@ -215,7 +216,7 @@ GEM
       multi_json (~> 1.11)
       os (~> 0.9)
       signet (~> 0.7)
-    hashdiff (0.3.1)
+    hashdiff (0.3.2)
     hiera (3.2.2)
     hocon (1.2.4)
     httpclient (2.8.3)
@@ -252,20 +253,20 @@ GEM
       net-ssh (>= 2.6.5)
     net-ssh (3.3.0.beta1)
     net-telnet (0.1.1)
-    nokogiri (1.6.8.1)
+    nokogiri (1.7.0.1)
       mini_portile2 (~> 2.1.0)
     open_uri_redirections (0.2.1)
     os (0.9.6)
     parser (2.3.3.1)
       ast (~> 2.2)
     powerpack (0.1.1)
-    public_suffix (2.0.4)
+    public_suffix (2.0.5)
     puppet (4.8.1)
       CFPropertyList (~> 2.2.6)
       facter (> 2.0, < 4)
       hiera (>= 2.0, < 4)
       json_pure (~> 1.8)
-    puppet-lint (2.0.2)
+    puppet-lint (2.1.0)
     puppet-syntax (2.2.0)
       rake
     puppetlabs_spec_helper (1.2.2)
@@ -273,7 +274,7 @@ GEM
       puppet-lint (~> 2.0)
       puppet-syntax (~> 2.0)
       rspec-puppet (~> 2.0)
-    rainbow (2.1.0)
+    rainbow (2.2.1)
     rake (12.0.0)
     rbvmomi (1.9.4)
       builder (~> 3.2)
@@ -344,7 +345,7 @@ GEM
       unf_ext
     unf_ext (0.0.7.2)
     unicode-display_width (1.1.2)
-    webmock (2.3.1)
+    webmock (2.3.2)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
@@ -357,8 +358,7 @@ DEPENDENCIES
   beaker
   beaker-puppet_install_helper
   beaker-rspec
-  codeclimate-test-reporter
-  crx_packmgr_api_client (>= 1.1.0)
+  crx_packmgr_api_client (>= 1.1.1)
   facter
   metadata-json-lint
   puppet
@@ -369,6 +369,7 @@ DEPENDENCIES
   rspec-puppet
   rubocop
   serverspec
+  simplecov
   webmock
   xml-simple (>= 1.1.5)
 

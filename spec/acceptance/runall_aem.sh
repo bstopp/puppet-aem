@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/bash +x
 
 startdir=$(pwd)
 rootdir=$(dirname $0)
 nodesdir="${rootdir}/nodesets"
-logdir="${rootdir}/logs"
+logdir="${rootdir}/log"
 
-if [ "$1" = "" ];
+if [ "$1" = "" ] || [ "$1" = "all" ];
 then
     specs=(
         'create_aem_spec'
@@ -28,8 +28,6 @@ fi
 if [ "$2" = "" ];
 then
     versions=(
-        '1.0.0'
-        '1.1.0'
         '1.2.0'
         '1.3.0'
         '1.4.0'
@@ -45,21 +43,23 @@ fi
 destroy=no
 provision=yes
 num_specs=$(expr ${#specs[@]} - 1)
-num_vers=$(expr ${#versions[@]} -1)
+num_vers=$(expr ${#versions[@]} - 1)
 
-for file in `ls $nodesdir`;
+for((i=0; i<=num_vers; i++));
 do
-    node=$(echo $file | sed -e 's/.yml//g')
-    echo "Running tests against: ${node}"
-    for((i=0; i<=num_vers; i++));
+    version="${versions[$i]}"
+    echo "Puppet Agent Version: ${version}"
+
+    for file in `ls $nodesdir`;
     do
-        version="${versions[$i]}"
-        echo "    Puppet Agent Version: ${version}"
+        node=$(echo $file | sed -e 's/.yml//g')
+        echo "    Node: ${node}"
+
         for ((j=0; j<=num_specs; j++));
         do
-            mkdir -p ${logdir}/${node}/pv${version}
+            mkdir -p ${logdir}/pv${version}/${node}
             spec="${specs[$j]}"
-            logfile="${logdir}/${node}/pv${version}/${spec}.log"
+            logfile="${logdir}/pv${version}/${node}/${spec}.log"
 
             if [ $j = $num_specs ];
             then
@@ -67,7 +67,7 @@ do
             else
                 destroy=no
             fi
-            reprov="$((i % 5))"
+            reprov="$((j % 5))"
             if [ $j = 0 ] || [ $reprov = 0 ];
             then
                 provision=yes
@@ -75,15 +75,20 @@ do
                 provision=no
             fi
 
-            echo "    Test: ${spec}"
-            PUPPET_INSTALL_VERSION=${version} BEAKER_set=${node} BEAKER_provision=${provision} BEAKER_destroy=${destroy} bundle exec rspec spec/acceptance/aem/${spec}.rb > ${logfile} 2>&1
+            echo "        Test: ${spec}"
+            PUPPET_INSTALL_VERSION=${version} \
+            BEAKER_set=${node} \
+            BEAKER_provision=${provision} \
+            BEAKER_destroy=${destroy} \
+            bundle exec rspec spec/acceptance/aem/${spec}.rb > ${logfile} 2>&1
+
             if [ $? != 0 ];
             then
                 cd .vagrant/beaker_vagrant_files/${node}.yml
                 vagrant destroy --force
                 cd ${startdir}
-                echo "    Re-test: ${spec}"
-                BEAKER_set=${node} BEAKER_provision=yes BEAKER_destroy=${destroy} bundle exec rspec spec/acceptance/aem/${spec}.rb >> ${logfile} 2>&1
+                echo "        Re-test: ${spec}"
+                PUPPET_INSTALL_VERSION=${version} BEAKER_set=${node} BEAKER_provision=yes BEAKER_destroy=${destroy} bundle exec rspec spec/acceptance/aem/${spec}.rb >> ${logfile} 2>&1
                 if [ $? != 0 ];
                 then
                     cd .vagrant/beaker_vagrant_files/${node}.yml

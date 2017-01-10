@@ -3,10 +3,6 @@ require 'crx_packmgr_api_client'
 
 describe 'crx package mgr api', license: false do
 
-  let(:supports_ranges) do
-    !ENV['PUPPET_INSTALL_VERSION'] && ENV['PUPPET_INSTALL_VERSION'] < '1.2.0'
-  end
-
   let(:facts) do
     {
       environment: :root
@@ -18,7 +14,7 @@ describe 'crx package mgr api', license: false do
   it 'should upload package' do
 
     # remove it from the system first
-    cmd = 'curl -u admin:admin "http://localhost:4502/crx/packmgr/service.jsp?cmd=rm&name=test&group=my_packages"'
+    cmd = 'curl -u admin:admin -s "http://localhost:4502/crx/packmgr/service.jsp?cmd=rm&name=test&group=my_packages"'
     shell(cmd)
 
     # Make sure it's not the right state to start
@@ -65,7 +61,7 @@ describe 'crx package mgr api', license: false do
 
     on(
       default,
-      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      puppet("agent --debug --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0, 2]
     )
 
@@ -73,7 +69,7 @@ describe 'crx package mgr api', license: false do
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0]
-    ) if supports_ranges
+    )
 
     cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
     cmd += '-u admin:admin'
@@ -142,7 +138,7 @@ describe 'crx package mgr api', license: false do
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0]
-    ) if supports_ranges
+    )
 
     cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
     cmd += '-u admin:admin'
@@ -210,7 +206,7 @@ describe 'crx package mgr api', license: false do
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0]
-    ) if supports_ranges
+    )
 
     cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
     cmd += '-u admin:admin'
@@ -284,7 +280,7 @@ describe 'crx package mgr api', license: false do
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0]
-    ) if supports_ranges
+    )
 
     cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
     cmd += '-u admin:admin'
@@ -357,7 +353,7 @@ describe 'crx package mgr api', license: false do
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0]
-    ) if supports_ranges
+    )
 
     cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
     cmd += '-u admin:admin'
@@ -429,7 +425,7 @@ describe 'crx package mgr api', license: false do
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0]
-    ) if supports_ranges
+    )
 
     cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
     cmd += '-u admin:admin'
@@ -496,7 +492,7 @@ describe 'crx package mgr api', license: false do
       default,
       puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0]
-    ) if supports_ranges
+    )
 
     cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
     cmd += '-u admin:admin'

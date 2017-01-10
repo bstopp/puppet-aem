@@ -52,6 +52,17 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
   private
 
+  def build_cfg(port = nil, context_root = nil)
+    config = CrxPackageManager::Configuration.new
+    config.configure do |c|
+      c.username = @resource[:username]
+      c.password = @resource[:password]
+      c.host = "localhost:#{port}" if port
+      c.base_path = "#{context_root}/#{c.base_path}" if context_root
+    end
+    config
+  end
+
   def build_client
 
     return @client if @client
@@ -67,13 +78,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
       context_root = match.captures[0] if match
     end
 
-    config = CrxPackageManager::Configuration.new
-    config.configure do |c|
-      c.username = @resource[:username]
-      c.password = @resource[:password]
-      c.host = "localhost:#{port}" if port
-      c.base_path = "#{context_root}/#{c.base_path}" if context_root
-    end
+    config = build_cfg(port, context_root)
 
     @client = CrxPackageManager::DefaultApi.new(CrxPackageManager::ApiClient.new(config))
     @client
@@ -83,6 +88,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     client = build_client
 
     path = "/etc/packages/#{@resource[:group]}/#{@resource[:name]}-#{@resource[:version]}.zip"
+    # TODO: Need to loop/timeout for AEM not being online quite yet
     data = client.list(path: path)
 
     if data.total == 1
