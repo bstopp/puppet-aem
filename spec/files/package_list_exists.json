@@ -1,0 +1,30 @@
+{
+  "results": [
+    {
+      "pid": "my_packages:test:1.0.0",
+      "path": "/etc/packages/my_packages/crx-package-1.0.0.zip",
+      "name": "crx-package",
+      "downloadName": "test-1.0.0.zip",
+      "group": "my_packages",
+      "groupTitle": "my_packages",
+      "version": "1.0.0",
+      "description": "",
+      "thumbnail": "/crx/packmgr/thumbnail.jsp?_charset_=utf-8&path=%2fetc%2fpackages%2fmy_packages%2ftest-1.0.0.zip&ck=1482371544636",
+      "buildCount": 3,
+      "lastUnwrapped": 1482371544642,
+      "lastUnwrappedBy": "admin",
+      "size": 10580,
+      "hasSnapshot": false,
+      "needsRewrap": false,
+      "builtWith": "Adobe Experience Manager-6.2.0",
+      "requiresRoot": false,
+      "requiresRestart": false,
+      "acHandling": "",
+      "dependencies": [],
+      "resolved": true,
+      "filter": [],
+      "screenshots": []
+    }
+  ],
+  "total": 1
+}

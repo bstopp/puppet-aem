@@ -121,7 +121,7 @@ describe 'create replication agent', license: false do
       expect(jsonresult['jcr:content']['proxyHost']).to eq('proxy.domain.com')
       expect(jsonresult['jcr:content']['proxyNTLMDomain']).to eq('proxydomain')
       expect(jsonresult['jcr:content']['proxyNTLMHost']).to eq('proxy.ntlm.domain.com')
-      expect(jsonresult['jcr:content']['proxyPassword']).to_not be_nil
+      expect(jsonresult['jcr:content']['proxyPassword']).not_to be_nil
       expect(jsonresult['jcr:content']['proxyPort']).to eq('12345')
       expect(jsonresult['jcr:content']['proxyUser']).to eq('proxyuser')
       expect(jsonresult['jcr:content']['sling:resourceType']).to eq('cq/replication/components/revagent')
@@ -135,7 +135,7 @@ describe 'create replication agent', license: false do
       expect(jsonresult['jcr:content']['protocolHTTPExpired']).to eq('true')
       expect(jsonresult['jcr:content']['transportNTLMDomain']).to eq('transdomain')
       expect(jsonresult['jcr:content']['transportNTLMHost']).to eq('trans.ntlm.domain.com')
-      expect(jsonresult['jcr:content']['transportPassword']).to_not be_nil
+      expect(jsonresult['jcr:content']['transportPassword']).not_to be_nil
       expect(jsonresult['jcr:content']['transportUri']).to eq('http://localhost:4503/bin/receive?sling:authRequestLogin=1')
       expect(jsonresult['jcr:content']['transportUser']).to eq('transuser')
       expect(jsonresult['jcr:content']['directory']).to eq('/var/path')

@@ -1,0 +1,12 @@
+<crx version="1.4.1" user="admin" workspace="crx.default">
+  <request>
+    <param name="cmd" value="help"/>
+    <param name="file" value="test"/>
+  </request>
+  <response>
+    <data>
+      Response Data
+    </data>
+    <status code="200">ok</status>
+  </response>
+</crx>

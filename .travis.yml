@@ -1,9 +1,7 @@
 language: ruby
 rvm:
- - "2.0.0"
- - "2.1.8"
- - "2.2.4"
- - "2.3.0"
+ - "2.2.6"
+ - "2.3.3"
 
 notifications:
   webhooks:
@@ -13,6 +11,9 @@ notifications:
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
 
-branches:
-  only:
-  - master
+after_script:
+  - bundle exec codeclimate-test-reporter
+
+#branches:
+#  only:
+#  - master

@@ -1,13 +1,16 @@
-## 2016-08-27 - Release 2.4.0
+## 2016-12-31 - Release 2.4.0
 ### Summary
 
+* Support for CRX Packages via file or API.
 * Bug fix for Apache restart every Agent run when multiple farms.
+* Bug fixes for Apache bindings.
 * Use new packer boxes for testing.
 * Updating rubocop issues.
+* Documentation updates.
 
 #### Features:
 * Dispatcher farms now have `priority` attribute for load ordering.
-
+* CRX Package upload, installation, removal support.
 
 ## 2016-06-12 - Release 2.3.2
 ### Summary

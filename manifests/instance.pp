@@ -15,6 +15,7 @@ define aem::instance (
   $manage_home    = true,
   $manage_user    = true,
   $osgi_configs   = undef,
+  $crx_packages   = undef,
   $port           = 4502,
   $runmodes       = [],
   $sample_content = true,
@@ -67,6 +68,11 @@ define aem::instance (
       fail("Aem::Instance[${name}]: 'osgi_configs' must be either a Hash or an Array of Hashes")
     }
   }
+
+  if $crx_packages {
+    validate_array($crx_packages)
+  }
+
   validate_integer($port)
   validate_array($runmodes)
 
@@ -120,6 +126,7 @@ define aem::instance (
       jvm_mem_opts   => $jvm_mem_opts,
       jvm_opts       => $jvm_opts,
       osgi_configs   => $osgi_configs,
+      crx_packages   => $crx_packages,
       port           => $port,
       runmodes       => $runmodes,
       sample_content => $sample_content,

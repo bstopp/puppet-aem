@@ -115,9 +115,9 @@ This is a type used to perform sling api calls
 
       case resource[:handle_missing]
       when :ignore
-        return ignore_comp(should, is)
+        ignore_comp(should, is)
       when :remove
-        return remove_comp(should, is)
+        remove_comp(should, is)
       else
         raise(Puppet::ResourceError, "Invalid value for :handle_missing: #{resource[:handle_missing]}")
       end

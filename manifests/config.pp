@@ -12,6 +12,7 @@ define aem::config(
   $jvm_mem_opts,
   $jvm_opts,
   $osgi_configs,
+  $crx_packages,
   $port,
   $runmodes,
   $sample_content,
@@ -82,6 +83,19 @@ define aem::config(
           type       => 'file',
           user       => $user
         }
+      }
+    }
+  }
+
+  if $crx_packages {
+    $crx_packages.each | $pkg | {
+      $_filename = basename($pkg)
+      aem::crx::package { "${home}/crx-quickstart/install/${_filename}" :
+        group  => $group,
+        home   => $home,
+        source => $pkg,
+        type   => 'file',
+        user   => $user
       }
     }
   }

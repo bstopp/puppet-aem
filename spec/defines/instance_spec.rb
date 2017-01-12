@@ -77,6 +77,7 @@ describe 'aem::instance', type: :defines do
         jvm_mem_opts: '-Xmx1024m',
         jvm_opts: nil,
         osgi_configs: nil,
+        crx_packages: nil,
         port: 4502,
         runmodes: [],
         sample_content: true,
@@ -217,6 +218,45 @@ describe 'aem::instance', type: :defines do
       end
     end
 
+  end
+
+  context 'crx packages' do
+    let(:params) do
+      default_params.merge(
+        crx_packages: %w(
+          /path/to/first-package-1.0.0.zip
+          /path/to/second-package-2.0.0.zip
+        )
+      )
+    end
+
+    let(:facts) do
+      default_facts
+    end
+
+    it { is_expected.to compile.with_all_deps }
+    it do
+      is_expected.to contain_aem__config(
+        'aem'
+      ).with(
+        context_root: nil,
+        debug_port: nil,
+        group: 'aem',
+        home: '/opt/aem',
+        jvm_mem_opts: '-Xmx1024m',
+        jvm_opts: nil,
+        osgi_configs: nil,
+        crx_packages: %w(
+          /path/to/first-package-1.0.0.zip
+          /path/to/second-package-2.0.0.zip
+        ),
+        port: 4502,
+        runmodes: [],
+        sample_content: true,
+        type: 'author',
+        user: 'aem'
+      )
+    end
   end
 
   context 'default remove' do

@@ -1,3 +1,4 @@
+require 'rake/clean'
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-syntax/tasks/puppet-syntax'
 require 'rubocop/rake_task'
@@ -19,3 +20,10 @@ PuppetLint.configuration.send('disable_variable_scope')
 
 PuppetLint.configuration.ignore_paths = exclude_paths
 PuppetSyntax.exclude_paths = exclude_paths
+
+CLEAN.include('coverage')
+CLEAN.include('junit')
+CLEAN.include('log')
+CLEAN.include('.vagrant')
+CLEAN.include('spec/fixtures')
+CLEAN.include('spec/acceptance/logst')

@@ -1,9 +1,13 @@
+@puppet_agent_version = ENV['PUPPET_INSTALL_VERSION'] || '1.8.0'
+
 require 'beaker'
 require 'beaker-rspec'
 require 'beaker/puppet_install_helper'
 
 UNSUPPORTED_PLATFORMS = %w(Suse windows AIX Solaris).freeze
-ENV['PUPPET_INSTALL_VERSION'] = ENV['PUPPET_INSTALL_VERSION'] || '4.2'
+@puppet_agent_version = ENV['PUPPET_INSTALL_VERSION'] ||= '1.8.0'
+
+DEBUG = '--debug'.freeze if ENV['BEAKER_debug']
 
 def server_opts
   {
@@ -40,7 +44,7 @@ def setup_puppet(host)
   step 'Install puppet on agent'
   install_puppetlabs_release_repo host, 'pc1'
   configure_defaults_on host, 'foss'
-  install_puppet_agent_on host
+  install_puppet_agent_on(host, puppet_agent_version: @puppet_agent_version)
   configure_puppet_on(host, {})
 
   agenthostname = on(host, 'facter fqdn').stdout.strip
@@ -80,10 +84,11 @@ end
 
 def aem_license(module_root)
   license_file = File.join(module_root, 'spec', 'files', 'license.properties')
+  return unless File.exist?(license_file)
   File.foreach(license_file) do |line|
     match = line.match(/license.downloadID=(\S+)/)
     ENV['AEM_LICENSE'] = match.captures[0] if match
-  end if File.exist?(license_file)
+  end
 end
 
 module_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
@@ -91,7 +96,6 @@ aem_license(module_root)
 
 unless ENV['BEAKER_provision'] == 'no'
 
-  # Install module
   dsipatcher_mod = File.expand_path(File.join(module_root, 'spec', 'files', default.host_hash[:dispatcher_file]))
   scp_to(default, dsipatcher_mod, '/tmp/dispatcher-apache-module.so')
 
@@ -106,22 +110,26 @@ unless ENV['BEAKER_provision'] == 'no'
   ensure_script = File.expand_path(File.join(module_root, 'spec', 'files', 'ensure-running.sh'))
   scp_to(default, ensure_script, '/tmp/ensure-running.sh')
   on default, 'chmod 775 /tmp/ensure-running.sh'
+
+  test_zip = File.expand_path(File.join(module_root, 'spec', 'files', 'test-1.0.0.zip'))
+  scp_to(default, test_zip, '/tmp/test-1.0.0.zip')
+
   # Credit to Puppetlabs Puppet Agent project,
   # This was the only place i could find that had an example that
   # made all of this stuff work.
 
   # Install puppet-server on master
   step 'Setup Puppet'
-  install_puppetlabs_release_repo master, 'pc1'
 
   options['is_puppetserver'] = true
   master['puppetservice'] = 'puppetserver'
   master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
   master['type'] = 'aio'
-  install_puppet_agent_on master
+  install_puppet_agent_on(master, puppet_agent_version: @puppet_agent_version)
   install_package master, 'puppetserver'
   master['use-service'] = true
 
+  on master, puppet('module', 'install', 'puppetlabs-ruby'), acceptable_exit_codes: [0, 1]
   on master, puppet('module', 'install', 'puppetlabs-stdlib'), acceptable_exit_codes: [0, 1]
   on master, puppet('module', 'install', 'puppetlabs-concat'), acceptable_exit_codes: [0, 1]
   on master, puppet('module', 'install', 'puppetlabs-apache'), acceptable_exit_codes: [0, 1]
@@ -211,6 +219,7 @@ RSpec.shared_examples 'setup aem' do
         home            => \"/opt/aem/author\",
         jvm_mem_opts    => \"-Xmx2048m\",
         osgi_configs    => \$osgi,
+        crx_packages    => [\"/tmp/test-1.0.0.zip\"],
         source          => \"/tmp/aem-quickstart.jar\",
         timeout         => 1200,
         user            => \"vagrant\",
@@ -231,6 +240,22 @@ RSpec.shared_examples 'setup aem' do
       }
 
       Aem::License[\"author\"] ~> Aem::Service[\"author\"]
+
+      aem::crx::package { \"author-test-pkg\" :
+        ensure      => installed,
+        home        => \"/opt/aem/author\",
+        password    => \"admin\",
+        pkg_group   => \"my_packages\",
+        pkg_name    => \"test\",
+        pkg_version => \"1.0.0\",
+        source      => \"/tmp/test-1.0.0.zip\",
+        type        => \"api\",
+        username    => \"admin\"
+      }
+
+      Aem::Instance[\"author\"]
+      -> Aem::Crx::Package[\"author-test-pkg\"]
+
     }'
   MANIFEST
 
@@ -250,7 +275,7 @@ RSpec.shared_examples 'setup aem' do
 
   on(
     default,
-    puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+    puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
     acceptable_exit_codes: [0, 2]
   )
 

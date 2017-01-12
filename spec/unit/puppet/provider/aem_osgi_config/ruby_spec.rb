@@ -108,7 +108,7 @@ PORT=#{opts[:port]}
 
         if opts[:present]
           configuration = provider.configuration
-          expect(configuration).to_not eq(:absent)
+          expect(configuration).not_to eq(:absent)
           expect(configuration['boolean']).to eq(false)
           expect(configuration['long']).to eq(123_456_789)
           expect(configuration['string']).to eq('string')
@@ -207,7 +207,7 @@ PORT=#{opts[:port]}
           times = 2
         end
 
-        expect { provider.flush }.to_not raise_error
+        expect { provider.flush }.not_to raise_error
         expect(get_stub).to have_been_requested.times(times)
         expect(post_stub).to have_been_requested
       end
@@ -485,7 +485,7 @@ PORT=4502
         # Populate property hash
         provider.exists?
         provider.create
-        expect { provider.flush }.to_not raise_error
+        expect { provider.flush }.not_to raise_error
         expect(get_stub).to have_been_requested.times(2)
         expect(post_stub).to have_been_requested
 

@@ -24,6 +24,7 @@ describe 'aem::config', type: :defines do
       jvm_mem_opts: :undef,
       jvm_opts: :undef,
       osgi_configs: :undef,
+      crx_packages: :undef,
       port: :undef,
       runmodes: [],
       sample_content: true,
@@ -236,9 +237,6 @@ describe 'aem::config', type: :defines do
     let(:facts) do
       default_facts
     end
-    let(:params) do
-      default_params
-    end
 
     let(:cfg_props1) do
       {
@@ -363,6 +361,50 @@ describe 'aem::config', type: :defines do
           name: 'osgi2.name',
           pid: 'aem.config2',
           properties: cfg_props2,
+          type: 'file',
+          user: 'aem'
+        )
+      end
+    end
+  end
+
+  describe 'crx packages' do
+    let(:facts) do
+      default_facts
+    end
+    let(:params) do
+      default_params.merge(
+        crx_packages: %w(
+          /path/to/first-package-1.0.0.zip
+          /path/to/second-package-2.0.0.zip
+        )
+      )
+    end
+    context 'defines first config resource' do
+      it do
+        is_expected.to contain_aem__crx__package(
+          '/opt/aem/crx-quickstart/install/first-package-1.0.0.zip'
+        ).only_with(
+          ensure: 'present',
+          group: 'aem',
+          home: '/opt/aem',
+          name: '/opt/aem/crx-quickstart/install/first-package-1.0.0.zip',
+          source: '/path/to/first-package-1.0.0.zip',
+          type: 'file',
+          user: 'aem'
+        )
+      end
+    end
+    context 'defines second config resource' do
+      it do
+        is_expected.to contain_aem__crx__package(
+          '/opt/aem/crx-quickstart/install/second-package-2.0.0.zip'
+        ).only_with(
+          ensure: 'present',
+          group: 'aem',
+          home: '/opt/aem',
+          name: '/opt/aem/crx-quickstart/install/second-package-2.0.0.zip',
+          source: '/path/to/second-package-2.0.0.zip',
           type: 'file',
           user: 'aem'
         )

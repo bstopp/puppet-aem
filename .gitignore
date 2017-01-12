@@ -11,5 +11,5 @@ pkg/
 vendor/
 spec/fixtures/
 coverage/
-log/
+**/log
 junit/
