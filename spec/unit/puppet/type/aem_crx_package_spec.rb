@@ -17,7 +17,7 @@ describe Puppet::Type.type(:aem_crx_package) do
   end
 
   describe 'when validating attributes' do
-    [:name, :home, :password, :source, :timeout, :username].each do |param|
+    [:name, :home, :password, :retries, :source, :timeout, :username].each do |param|
       it "should have a #{param} parameter" do
         expect(described_class.attrtype(param)).to eq(:param)
       end
@@ -89,6 +89,24 @@ describe Puppet::Type.type(:aem_crx_package) do
             )
           end.to raise_error(Puppet::Error, /fully qualified/)
         end
+      end
+    end
+
+    describe 'retries' do
+      it 'should require it to be a number' do
+        expect do
+          described_class.new(name: 'bar', ensure: :present, home: '/opt/aem', retries: 'foo')
+        end.to raise_error(/Parameter retries failed/)
+      end
+
+      it 'should have a default' do
+        test = described_class.new(name: 'bar', ensure: :present, home: '/opt/aem')
+        expect(test.parameter(:retries).value).to eq(10)
+      end
+
+      it 'should convert to a number' do
+        test = described_class.new(name: 'bar', ensure: :present, home: '/opt/aem', retries: '60')
+        expect(test.parameter(:timeout).value).to eq(60)
       end
     end
 

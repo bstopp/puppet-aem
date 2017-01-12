@@ -7,6 +7,8 @@ require 'beaker/puppet_install_helper'
 UNSUPPORTED_PLATFORMS = %w(Suse windows AIX Solaris).freeze
 @puppet_agent_version = ENV['PUPPET_INSTALL_VERSION'] ||= '1.8.0'
 
+DEBUG = '--debug'.freeze if ENV['BEAKER_debug']
+
 def server_opts
   {
     master: { autosign: true }
@@ -238,6 +240,22 @@ RSpec.shared_examples 'setup aem' do
       }
 
       Aem::License[\"author\"] ~> Aem::Service[\"author\"]
+
+      aem::crx::package { \"author-test-pkg\" :
+        ensure      => installed,
+        home        => \"/opt/aem/author\",
+        password    => \"admin\",
+        pkg_group   => \"my_packages\",
+        pkg_name    => \"test\",
+        pkg_version => \"1.0.0\",
+        source      => \"/tmp/test-1.0.0.zip\",
+        type        => \"api\",
+        username    => \"admin\"
+      }
+
+      Aem::Instance[\"author\"]
+      -> Aem::Crx::Package[\"author-test-pkg\"]
+
     }'
   MANIFEST
 
@@ -257,7 +275,7 @@ RSpec.shared_examples 'setup aem' do
 
   on(
     default,
-    puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+    puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
     acceptable_exit_codes: [0, 2]
   )
 

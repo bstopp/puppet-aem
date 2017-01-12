@@ -416,6 +416,63 @@ PORT=#{opts[:port]}
     end
   end
   describe 'error cases' do
+
+    describe 'finding package has a retry' do
+      it 'should raise an error' do
+        envdata = <<-EOF
+        PORT=4502
+        EOF
+
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+
+        # Setup Missing API Call
+        expect_any_instance_of(
+          CrxPackageManager::DefaultApi
+        ).to receive(:list).with(
+          path: '/etc/packages/my_packages/test-1.0.0.zip'
+        ).exactly(11).times.and_raise(CrxPackageManager::ApiError)
+
+        expect { provider.retrieve }.to raise_error(CrxPackageManager::ApiError)
+
+      end
+    end
+
+    context 'retry is configurable' do
+      let(:resource) do
+
+        Puppet::Type.type(:aem_crx_package).new(
+          ensure: :present,
+          name: 'test',
+          group: 'my_packages',
+          home: '/opt/aem',
+          password: 'admin',
+          retries: 1,
+          source: source,
+          timeout: 1,
+          username: 'admin',
+          version: '1.0.0'
+        )
+      end
+
+      it 'should raise an error' do
+        envdata = <<-EOF
+        PORT=4502
+        EOF
+
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+
+        # Setup Missing API Call
+        expect_any_instance_of(
+          CrxPackageManager::DefaultApi
+        ).to receive(:list).with(
+          path: '/etc/packages/my_packages/test-1.0.0.zip'
+        ).exactly(2).times.and_raise(CrxPackageManager::ApiError)
+
+        expect { provider.retrieve }.to raise_error(CrxPackageManager::ApiError)
+
+      end
+    end
+
     describe 'ensure installed upload call fails' do
 
       it 'should raise an error' do

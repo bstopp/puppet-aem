@@ -57,6 +57,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     config.configure do |c|
       c.username = @resource[:username]
       c.password = @resource[:password]
+      c.timeout = @resource[:timeout]
       c.host = "localhost:#{port}" if port
       c.base_path = "#{context_root}/#{c.base_path}" if context_root
     end
@@ -88,8 +89,16 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     client = build_client
 
     path = "/etc/packages/#{@resource[:group]}/#{@resource[:name]}-#{@resource[:version]}.zip"
-    # TODO: Need to loop/timeout for AEM not being online quite yet
-    data = client.list(path: path)
+    begin
+      retries ||= @resource[:retries]
+      data = client.list(path: path)
+    rescue CrxPackageManager::ApiError => e
+      Puppet.info("Unable to find package for Aem_crx_package[#{name}]: #{e}")
+      will_retry = (retries -= 1) >= 0
+      Puppet.debug("Retrying package lookup; remaining retries: #{retries}") if will_retry
+      retry if will_retry
+      raise
+    end
 
     if data.total == 1
       pkg = data.results[0]

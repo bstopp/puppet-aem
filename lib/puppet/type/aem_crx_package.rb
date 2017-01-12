@@ -50,6 +50,15 @@ This is a private type used to manage CRX Packages via API calls.
     desc 'Password used to log into AEM.'
   end
 
+  newparam(:retries) do
+    desc 'Number of retries to communicate with AEM before giving up.'
+    newvalues(/^\d+$/)
+
+    defaultto 10
+
+    munge(&:to_i)
+  end
+
   newparam(:source) do
     desc 'The source package file to upload/install.'
   end
