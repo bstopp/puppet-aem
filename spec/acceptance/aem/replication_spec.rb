@@ -28,6 +28,7 @@ describe 'create replication agent', license: false do
           enabled               => false,
           home                  => \"/opt/aem/author\",
           log_level             => \"debug\",
+          mixin_types           => [\"cq:ReplicationStatus\"],
           name                  => \"customname\",
           password              => \"admin\",
           protocol_close_conn   => true,
@@ -109,6 +110,7 @@ describe 'create replication agent', license: false do
       expect(jsonresult['jcr:content']['jcr:description']).to eq(desc)
       expect(jsonresult['jcr:content']['enabled']).to eq('false')
       expect(jsonresult['jcr:content']['logLevel']).to eq('debug')
+      expect(jsonresult['jcr:content']['jcr:mixinTypes']).to match_array(['cq:ReplicationStatus'])
       expect(jsonresult['jcr:content']['protocolHTTPConnectionClose']).to eq('true')
       expect(jsonresult['jcr:content']['protocolConnectTimeout']).to eq('1000')
       expect(
