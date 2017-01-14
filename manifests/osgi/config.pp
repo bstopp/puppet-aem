@@ -18,18 +18,21 @@ define aem::osgi::config(
   validate_re($ensure, '^(present|absent)$',
     "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
 
+  if $ensure == 'present' {
+    if $properties == undef {
+      fail('Properties must contain at least one entry.')
+    }
+
+    if !is_hash($properties) {
+      fail("Aem::Osgi::Config[${name}]: 'properties' must be a Hash of values")
+    }
+  }
+
   validate_absolute_path($home)
-
-  if $properties == undef {
-    fail('Properties must contain at least one entry.')
-  }
-
-  if !is_hash($properties) {
-    fail("Aem::Osgi::Config[${name}]: 'properties' must be a Hash of values")
-  }
 
   validate_re($type, '^(console|file)$',
     "${type} is not supported for type. Allowed values are 'console' and 'file'.")
+
 
   if $type == 'console' {
 

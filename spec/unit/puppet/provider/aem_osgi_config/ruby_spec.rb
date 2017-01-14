@@ -67,11 +67,39 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
     data
   end
 
+  let(:config_missing) { [] }
+
   let(:exception) do
     Errno::ECONNREFUSED.new
   end
 
   describe 'exists?' do
+
+    describe 'aem not running' do
+      it 'should generate an error' do
+        WebMock.reset!
+
+        envdata = <<-EOF
+PORT=4502
+        EOF
+
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+
+        uri_s = 'http://localhost:4502'
+        uri_s = "#{uri_s}/system/console/configMgr/#{resource[:name]}.json"
+        uri = URI(uri_s)
+
+        get_stub = stub_request(
+          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_timeout
+
+        # Populate property hash
+        expect { provider.exists? }.to raise_error(/expired/)
+        expect(get_stub).to have_been_requested.at_least_times(1)
+      end
+    end
 
     shared_examples 'exists_check' do |opts|
       it do
@@ -95,23 +123,25 @@ PORT=#{opts[:port]}
         uri_s = "#{uri_s}/system/console/configMgr/#{opts[:pid]}.json"
         uri = URI(uri_s)
 
-        status = opts[:present] ? 200 : 500
+        body = opts[:present] ? config_data : config_missing
 
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
         ).with(
           headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_return(status: status, body: config_data)
+        ).to_return(status: 200, body: body.to_s)
 
         expect(provider.exists?).to eq(opts[:present])
         expect(get_stub).to have_been_requested
 
         if opts[:present]
           configuration = provider.configuration
-          expect(configuration).not_to eq(:absent)
+          expect(provider.ensure).to eq(:present)
           expect(configuration['boolean']).to eq(false)
           expect(configuration['long']).to eq(123_456_789)
           expect(configuration['string']).to eq('string')
+        else
+          expect(provider.ensure).to eq(:absent)
         end
 
       end
@@ -175,16 +205,20 @@ PORT=#{opts[:port]}
         uri_s = "#{uri_s}/system/console/configMgr/#{opts[:pid]}.json"
         uri = URI(uri_s)
 
-        status = opts[:present] ? 200 : 500
-
+        exists_body = opts[:present] ? config_data : config_missing
+        updated_body = after_data
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
         ).with(
           headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_return(status: status, body: config_data)
+        ).to_return(
+          { status: 200, body: exists_body.to_s },
+          status: 200,
+          body: updated_body.to_s
+        )
 
         expected_params = opts[:post_params].merge('apply' => 'true')
-        expected_params['$location'] = bundle_location if opts[:present]
+        expected_params['$location'] = bundle_location if opts[:present] && !opts[:destroy]
 
         post_stub = stub_request(
           :post, "http://localhost:4502/system/console/configMgr/#{opts[:pid]}"
@@ -201,15 +235,15 @@ PORT=#{opts[:port]}
 
         if opts[:destroy]
           provider.destroy
-          times = 1
         else
           provider.create
-          times = 2
         end
 
+        expect(provider.configuration).not_to eq(resource[:configuration])
         expect { provider.flush }.not_to raise_error
-        expect(get_stub).to have_been_requested.times(times)
+        expect(get_stub).to have_been_requested.twice
         expect(post_stub).to have_been_requested
+        expect(provider.configuration).to eq(resource[:configuration] ? resource[:configuration] : :absent)
       end
     end
 
@@ -226,9 +260,28 @@ PORT=#{opts[:port]}
           handle_missing: :merge,
           home: '/opt/aem',
           password: 'admin',
-          timeout: 1,
+          timeout: 5,
           username: 'admin'
         )
+      end
+
+      let(:after_data) do
+        data = JSON.parse(config_data.dup)
+        data[0]['properties'] = {
+          'boolean' => {
+            'is_set' => true,
+            'value'  => true
+          },
+          'long' => {
+            'is_set' => true,
+            'value'  => 987_654_321
+          },
+          'string' => {
+            'is_set' => true,
+            'value'  => 'string'
+          }
+        }
+        data.to_json
       end
 
       it_should_behave_like(
@@ -262,6 +315,25 @@ PORT=#{opts[:port]}
         )
       end
 
+      let(:after_data) do
+        data = JSON.parse(config_data.dup)
+        data[0]['properties'] = {
+          'boolean' => {
+            'is_set' => true,
+            'value'  => true
+          },
+          'long' => {
+            'is_set' => true,
+            'value'  => 987_654_321
+          },
+          'string' => {
+            'is_set' => true,
+            'value'  => 'string'
+          }
+        }
+        data.to_json
+      end
+
       it_should_behave_like(
         'flush_posts',
         present: false,
@@ -276,9 +348,20 @@ PORT=#{opts[:port]}
     end
 
     describe 'destroy' do
+      let(:resource) do
+        Puppet::Type.type(:aem_osgi_config).new(
+          name: 'OsgiConfig',
+          ensure: :absent,
+          home: '/opt/aem',
+          password: 'admin',
+          timeout: 1,
+          username: 'admin'
+        )
+      end
+      let(:after_data) { config_missing }
       it_should_behave_like(
         'flush_posts',
-        present: false,
+        present: true,
         destroy: true,
         post_params: {
           'delete' => 'true'
@@ -290,13 +373,7 @@ PORT=#{opts[:port]}
       let(:resource) do
         Puppet::Type.type(:aem_osgi_config).new(
           name: 'OsgiConfig',
-          ensure: :present,
-          configuration: {
-            'boolean' => true,
-            'long'    => 987_654_321,
-            'string'  => 'string'
-          },
-          handle_missing: :merge,
+          ensure: :absent,
           home: '/opt/aem',
           password: 'admin',
           pid: 'aem.osgi',
@@ -304,10 +381,10 @@ PORT=#{opts[:port]}
           username: 'admin'
         )
       end
-
+      let(:after_data) { config_missing }
       it_should_behave_like(
         'flush_posts',
-        present: false,
+        present: true,
         destroy: true,
         post_params: {
           'delete' => 'true'
@@ -332,7 +409,20 @@ PORT=#{opts[:port]}
           username: 'admin'
         )
       end
-
+      let(:after_data) do
+        data = JSON.parse(config_data.dup)
+        data[0]['properties'] = {
+          'boolean' => {
+            'is_set' => true,
+            'value'  => true
+          },
+          'long' => {
+            'is_set' => true,
+            'value'  => 987_654_321
+          }
+        }
+        data.to_json
+      end
       it_should_behave_like(
         'flush_posts',
         present: true,
@@ -361,7 +451,20 @@ PORT=#{opts[:port]}
           username: 'admin'
         )
       end
-
+      let(:after_data) do
+        data = JSON.parse(config_data.dup)
+        data[0]['properties'] = {
+          'boolean' => {
+            'is_set' => true,
+            'value'  => true
+          },
+          'long' => {
+            'is_set' => true,
+            'value'  => 987_654_321
+          }
+        }
+        data.to_json
+      end
       it_should_behave_like(
         'flush_posts',
         present: true,
@@ -380,7 +483,7 @@ PORT=#{opts[:port]}
           name: 'OsgiConfig',
           ensure: :present,
           configuration: {
-            'long'  => 987_654_321
+            'long' => 987_654_321
           },
           handle_missing: :merge,
           home: '/opt/aem',
@@ -389,7 +492,16 @@ PORT=#{opts[:port]}
           username: 'admin'
         )
       end
-
+      let(:after_data) do
+        data = JSON.parse(config_data.dup)
+        data[0]['properties'] = {
+          'long' => {
+            'is_set' => true,
+            'value'  => 987_654_321
+          }
+        }
+        data.to_json
+      end
       it_should_behave_like(
         'flush_posts',
         present: true,
@@ -408,7 +520,7 @@ PORT=#{opts[:port]}
           name: 'OsgiConfig',
           ensure: :present,
           configuration: {
-            'long'  => 987_654_321
+            'long' => 987_654_321
           },
           handle_missing: :merge,
           home: '/opt/aem',
@@ -417,6 +529,16 @@ PORT=#{opts[:port]}
           timeout: 1,
           username: 'admin'
         )
+      end
+      let(:after_data) do
+        data = JSON.parse(config_data.dup)
+        data[0]['properties'] = {
+          'long' => {
+            'is_set' => true,
+            'value'  => 987_654_321
+          }
+        }
+        data.to_json
       end
 
       it_should_behave_like(
@@ -441,7 +563,7 @@ PORT=#{opts[:port]}
             'boolean' => false,
             'long'    => 123_456_789,
             'string'  => 'string',
-            'array'   => ['this', 'is', 'an', 'array']
+            'array'   => %w(this is an array)
           },
           handle_missing: :merge,
           home: '/opt/aem',
@@ -449,6 +571,29 @@ PORT=#{opts[:port]}
           timeout: 1,
           username: 'admin'
         )
+      end
+
+      let(:after_data) do
+        data = JSON.parse(config_data.dup)
+        data[0]['properties'] = {
+          'boolean' => {
+            'is_set' => true,
+            'value'  => false
+          },
+          'long' => {
+            'is_set' => true,
+            'value'  => 123_456_789
+          },
+          'string' => {
+            'is_set' => true,
+            'value'  => 'string'
+          },
+          'array' => {
+            'is_set' => true,
+            'value'  => %w(this is an array)
+          }
+        }
+        data.to_json
       end
 
       it 'should work without errors' do
@@ -467,7 +612,11 @@ PORT=4502
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
         ).with(
           headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_return(status: 500, body: config_data)
+        ).to_return(
+          { status: 200, body: config_missing.to_s },
+          status: 200,
+          body: after_data.to_s
+        )
 
         expected_params = 'boolean=false&long=123456789&string=string&array=this&array=is&array=an&array=array'
         expected_params += '&propertylist=boolean%2Clong%2Cstring%2Carray&apply=true'
@@ -485,9 +634,11 @@ PORT=4502
         # Populate property hash
         provider.exists?
         provider.create
+        expect(provider.configuration).not_to eq(resource[:configuration])
         expect { provider.flush }.not_to raise_error
-        expect(get_stub).to have_been_requested.times(2)
+        expect(get_stub).to have_been_requested.twice
         expect(post_stub).to have_been_requested
+        expect(provider.configuration).to eq(resource[:configuration])
 
       end
     end
@@ -524,36 +675,9 @@ PORT=4502
         provider.exists?
         provider.destroy
         expect { provider.flush }.to raise_error(/500/)
-        expect(get_stub).to have_been_requested
+        expect(get_stub).to have_been_requested.once
         expect(post_stub).to have_been_requested
       end
     end
-
-    describe 'aem not running' do
-      it 'should generate an error' do
-        WebMock.reset!
-
-        envdata = <<-EOF
-PORT=4502
-        EOF
-
-        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
-
-        uri_s = 'http://localhost:4502'
-        uri_s = "#{uri_s}/system/console/configMgr/#{resource[:name]}.json"
-        uri = URI(uri_s)
-
-        get_stub = stub_request(
-          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
-        ).with(
-          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_timeout
-
-        # Populate property hash
-        expect { provider.exists? }.to raise_error(/expired/)
-        expect(get_stub).to have_been_requested.at_least_times(1)
-      end
-    end
   end
-
 end

@@ -127,7 +127,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
           jsn = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
           # Not found is OK to return
           return jsn if jsn || res.is_a?(Net::HTTPNotFound)
-          raise 'Invalid response encountered'
+          raise 'Invalid response encountered.'
         rescue
           Puppet.debug('Unable to get configurations, waiting for AEM to start...')
           sleep 10
