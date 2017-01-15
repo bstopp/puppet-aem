@@ -345,14 +345,20 @@ describe 'console osgi configs', license: false do
     on(
       default,
       puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0, 2]
+    )
+
+    on(
+      default,
+      puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0]
     )
 
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" '
-    cmd += 'http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json '
+    cmd = 'curl -s http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
-      expect(result.stdout).to eq(/404/)
+      jsonresult = JSON.parse(result.stdout)
+      expect(jsonresult.empty?).to be_truthy
     end
   end
 end
