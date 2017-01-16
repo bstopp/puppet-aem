@@ -15,6 +15,10 @@ HOSTS:
     platform: debian-7-amd64
     box: bstopp/debian-7-x64
     hypervisor: vagrant
+    forwarded_ports:
+      author:
+          from: 4502
+          to: 4502
     dispatcher_file: dispatcher-apache2.2-4.2.0.so
     vagrant_cpus: 2
 

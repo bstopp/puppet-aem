@@ -203,7 +203,7 @@ describe 'console osgi configs', license: false do
 
     on(
       default,
-      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0, 2]
     )
 
@@ -240,13 +240,13 @@ describe 'console osgi configs', license: false do
 
     on(
       default,
-      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0, 2]
     )
 
     on(
       default,
-      puppet("agent --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
       acceptable_exit_codes: [0]
     )
 
@@ -266,6 +266,99 @@ describe 'console osgi configs', license: false do
       expect(configed_props['filter.methods']['is_set']).to eq(true)
       expect(configed_props['filter.methods']['values']).to eq(['POST', 'PUT', 'DELETE', 'TRACE'])
 
+    end
+  end
+
+  it 'should remove configurations' do
+
+    site = <<-MANIFEST
+      'node \"agent\" {
+
+        \$osgi = {
+          \"allow.empty\"    => true,
+          \"allow.hosts\"    => [\"author.localhost.localmachine\"],
+          \"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
+        }
+        aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" :
+          ensure         => present,
+          properties     => \$osgi,
+          handle_missing => \"remove\",
+          home           => \"/opt/aem/author\",
+          password       => \"admin\",
+          type           => \"console\",
+          username       => \"admin\",
+        }
+      }'
+    MANIFEST
+
+    pp = <<-MANIFEST
+      file {
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+          ensure => file,
+          content => #{site}
+      }
+    MANIFEST
+
+    apply_manifest_on(master, pp, catch_failures: true)
+    restart_puppetserver
+    fqdn = on(master, 'facter fqdn').stdout.strip
+    fqdn = fqdn.chop if fqdn.end_with?('.')
+
+    on(
+      default,
+      puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0, 2]
+    )
+
+    site = <<-MANIFEST
+      'node \"agent\" {
+
+        aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" :
+          ensure         => absent,
+          home           => \"/opt/aem/author\",
+          password       => \"admin\",
+          type           => \"console\",
+          username       => \"admin\",
+        }
+      }'
+    MANIFEST
+
+    pp = <<-MANIFEST
+      file {
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+          ensure => file,
+          content => #{site}
+      }
+    MANIFEST
+
+    apply_manifest_on(master, pp, catch_failures: true)
+    restart_puppetserver
+    fqdn = on(master, 'facter fqdn').stdout.strip
+    fqdn = fqdn.chop if fqdn.end_with?('.')
+
+    on(
+      default,
+      puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0, 2]
+    )
+
+    on(
+      default,
+      puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0, 2]
+    )
+
+    on(
+      default,
+      puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      acceptable_exit_codes: [0]
+    )
+
+    cmd = 'curl -s http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout)
+      expect(jsonresult.empty?).to be_truthy
     end
   end
 end

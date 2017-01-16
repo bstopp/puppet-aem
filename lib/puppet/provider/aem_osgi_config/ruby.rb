@@ -25,11 +25,8 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, parent: Puppet::Provider do
   end
 
   def flush
-    if @property_flush[:ensure] == :absent
-      post_to_cfgmgr('delete' => true)
-      return
-    end
-    post_to_cfgmgr(resource[:configuration])
+    post_data = @property_flush[:ensure] == :absent ? { 'delete' => true } : resource[:configuration]
+    post_to_cfgmgr(post_data)
     read_config
     @property_flush.clear
   end
@@ -38,13 +35,14 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, parent: Puppet::Provider do
 
   def read_config
     cfg_json = current_config
-    if cfg_json
+    if cfg_json && !cfg_json.empty?
       configuration = json_to_configuration(cfg_json)
       @property_hash[:configuration] = configuration.clone
       @property_flush[:existing_config] = configuration.clone
       @property_flush[:location] = bundle_location(cfg_json)
       @property_hash[:ensure] = :present
     else
+      @property_hash[:configuration] = nil
       @property_hash[:ensure] = :absent
     end
 
@@ -86,7 +84,8 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, parent: Puppet::Provider do
             http.request(req)
           end
           cfg = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
-          return cfg
+          return cfg if cfg
+          raise 'Invalid response encountered.'
         rescue
           Puppet.debug('Unable to get configurations, waiting for AEM to start...')
           sleep 10

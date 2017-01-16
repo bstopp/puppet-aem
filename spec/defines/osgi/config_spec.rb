@@ -96,7 +96,7 @@ describe 'aem::osgi::config', type: :defines do
     end
 
     context 'properties' do
-      context 'not specifed' do
+      context 'not specified' do
         let(:params) do
           tmp = default_params.clone
           tmp.delete(:properties)

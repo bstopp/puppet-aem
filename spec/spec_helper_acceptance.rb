@@ -7,7 +7,7 @@ require 'beaker/puppet_install_helper'
 UNSUPPORTED_PLATFORMS = %w(Suse windows AIX Solaris).freeze
 @puppet_agent_version = ENV['PUPPET_INSTALL_VERSION'] ||= '1.8.0'
 
-DEBUG = '--debug'.freeze if ENV['BEAKER_debug']
+DEBUG = ENV['BEAKER_debug'] ? '--debug'.freeze : ''.freeze
 
 def server_opts
   {

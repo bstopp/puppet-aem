@@ -26,10 +26,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
   end
 
   def flush
-    if @property_flush[:ensure] == :absent
-      submit
-      return
-    end
     submit
     read_content
     @property_flush.clear
@@ -38,7 +34,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
   protected
 
   def build_delete(is, should)
-
     to_delete = {}
     is.each do |key, value|
       next if ignored?(key, is)
@@ -89,7 +84,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
   end
 
   def content_uri
-
     return @content_uri if @content_uri
 
     port = nil
@@ -111,7 +105,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
   end
 
   def current_content
-
     depth = get_depth(resource[:properties])
 
     uri = URI("#{content_uri}.#{depth}.json")
@@ -127,7 +120,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
           jsn = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
           # Not found is OK to return
           return jsn if jsn || res.is_a?(Net::HTTPNotFound)
-          raise 'Invalid response encountered'
+          raise 'Invalid response encountered.'
         rescue
           Puppet.debug('Unable to get configurations, waiting for AEM to start...')
           sleep 10
@@ -183,7 +176,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
 
   def read_content
     content = current_content
-
+    Puppet.debug("Current content: #{content}")
     if content
       @property_hash[:properties] = content.clone
       @property_flush[:existing_props] = content.clone
@@ -202,7 +195,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
   end
 
   def ignored?(key, is_hsh = nil)
-
     ignored = resource[:ignored_properties].include?(key)
 
     ignored ||= !@property_flush[:existing_props].empty? &&
@@ -216,24 +208,32 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
   end
 
   def submit
-
     uri = URI(content_uri)
 
-    req = Net::HTTP::Post.new(uri.request_uri)
-    req.basic_auth(resource[:username], resource[:password])
-    req.form_data = build_parameters
-    req['Referer'] = uri.to_s
+    begin
+      retries ||= @resource[:retries]
+      req = Net::HTTP::Post.new(uri.request_uri)
+      req.basic_auth(resource[:username], resource[:password])
+      req.form_data = build_parameters
+      req['Referer'] = uri.to_s
 
-    res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-      http.read_timeout = resource[:timeout]
-      http.request(req)
-    end
+      res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+        http.read_timeout = resource[:timeout]
+        http.request(req)
+      end
 
-    case res
-    when Net::HTTPCreated, Net::HTTPOK
-      # OK
-    else
-      res.value
+      if res.is_a?(Net::HTTPCreated) || res.is_a?(Net::HTTPOK)
+        Puppet.debug("Successful creation: #{res.value}")
+      else
+        Puppet.debug("Error occurred: #{res.code}")
+        res.value
+      end
+    rescue
+      will_retry = (retries -= 1) >= 0
+      Puppet.debug("Retrying resource creation; remaining retries: #{retries}") if will_retry
+      sleep 10
+      retry if will_retry
+      raise
     end
   end
 end
