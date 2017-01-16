@@ -1,4 +1,6 @@
-## OSGi Config: File Type Example
+# OSGi Config
+
+## File Type Example
 
 If the **type** is set to *file*, a file will be created in the *<home>/crx-quickstart/install* folder.
 

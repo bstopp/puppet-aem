@@ -1,5 +1,6 @@
+# CRX Package
 
-## CRX Package: Console Examples
+## Console Examples
 
 If **type** is set to *api*, the provider will use a API call to the CRX Package Manager to upload the package.
 

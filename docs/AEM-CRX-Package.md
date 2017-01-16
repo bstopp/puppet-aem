@@ -1,3 +1,4 @@
+# CRX Package
 
 The `aem::crx::package` resource allows you can create and manage CRX Packages for an AEM instance. 
 

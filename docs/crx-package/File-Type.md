@@ -1,3 +1,5 @@
+# CRX Package
+
 ## CRX Package: File Type Example
 
 If the **type** is set to *file*, the source package will be copied to the *<home>/crx-quickstart/install* folder.

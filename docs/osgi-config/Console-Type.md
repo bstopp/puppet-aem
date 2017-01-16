@@ -1,5 +1,6 @@
+# OSGi Config
 
-## OSGi Config: Console Examples
+## Console Examples
 
 If **type** is set to *console*, the provider will use a API call to the Felix Web Console to update the OSGi configuration
 

@@ -1,3 +1,4 @@
+# AEM Instance
 
 The `aem::instance` resource definition is used to install and manage an AEM instance. An AEM installation is considered complete when the following steps have occurred:
 

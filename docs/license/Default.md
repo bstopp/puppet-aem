@@ -1,3 +1,5 @@
+# AEM License
+
 ## Default License Example
 
 This is an example for defining an AEM instance, and a license.

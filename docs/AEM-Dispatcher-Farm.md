@@ -1,3 +1,4 @@
+# Dispatcher Farm
 
 The `aem::dispatcher::farm` resource allows you to configure a Dispatcher Farm definition. For details on Farm configuration see: [Dispatcher Farm Documentation](https://docs.adobe.com/docs/en/dispatcher/disp-config.html)
 

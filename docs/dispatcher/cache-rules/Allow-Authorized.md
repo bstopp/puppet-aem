@@ -1,3 +1,5 @@
+# Dispatcher - Cache Rules
+
 ### Allow Authorized Example
 
 [See Documentation](https://docs.adobe.com/docs/en/dispatcher/disp-config.html#Caching%20When%20Authentication%20is%20Used)
