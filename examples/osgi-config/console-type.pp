@@ -6,7 +6,7 @@ $cfgs = {
   'index.files' => [ 'index', 'index.html', 'index.htm' ]
 }
 
-aem::osgi::config { 'org.apache.sling.security.impl.ReferrerFilter' :
+aem::osgi::config { 'org.apache.sling.servlets.get.DefaultGetServlet' :
   ensure         => present,
   properties     => $cfgs,
   handle_missing => 'remove',
@@ -23,7 +23,7 @@ $cfgs = {
   'index.files' => [ 'index', 'index.html', 'index.htm' ]
 }
 
-aem::osgi::config { 'org.apache.sling.security.impl.ReferrerFilter' :
+aem::osgi::config { 'org.apache.sling.servlets.get.DefaultGetServlet' :
   ensure         => present,
   properties     => $cfgs,
   handle_missing => 'merge',
@@ -40,9 +40,9 @@ $cfgs = {
   'index.files' => [ 'index', 'index.html', 'index.htm' ]
 }
 
-aem::osgi::config { 'org.apache.sling.security.impl.ReferrerFilter-Author' :
+aem::osgi::config { 'org.apache.sling.servlets.get.DefaultGetServlet-Author' :
   ensure         => present,
-  pid            => 'org.apache.sling.security.impl.ReferrerFilter',
+  pid            => 'org.apache.sling.servlets.get.DefaultGetServlet',
   properties     => $cfgs,
   handle_missing => 'merge',
   home           => '/opt/aem/author',

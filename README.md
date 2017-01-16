@@ -106,7 +106,7 @@ For more options and detailed explanations, please see the [Puppet AEM Wiki][wik
   - [Type: Aem_Sling_Resource](#type-aem_sling_resource)
 - **[Private Defines][]**
   - [Define: aem::config](#define-aemconfig)
-  - [Define: aem::crx::package::file](#define-aemcrxpackagefile)
+  - [Define: aem::crx::`package::file](#define-aemcrxpackagefile)
   - [Define: aem::osgi::config::file](#define-aemosgiconfigfile)
   - [Define: aem::package](#define-aempackage)
 - **[Private Types][]**
@@ -584,17 +584,17 @@ Required. The username for authenticating to AEM.
 
 #### Define: `aem::crx:package`
 
-Manages an AEM CRX Package; allows for saving packages via a file (in the <<home>>/install directory) or posted to the CRX Package Manager API. For examples, see the [wiki](docs/AEM-CRX-Package.md).
+Manages an AEM CRX Package; allows for saving packages via a file (in the crx-quickstart/install directory) or posted to the CRX Package Manager API. For examples, see the [wiki](docs/AEM-CRX-Package.md).
 
 ##### `name`
 Namevar. Required.
 
 ##### `ensure`
 Required. Changes the state of this CRX Package.  
-* `present`: Uploaded but not installed; if installed will uninstall.
-* `installed`: Uploaded and installed; if only valid when **type**=`api`. (**Default**)
-* `purged`: Uninstalled, then removed from the package manager.
-* `absent`: Removed from the package manager.
+* `present`: Uploaded but not installed; if installed will uninstall. 
+* `installed`: Uploaded and installed; if only valid when **type**=`api`. Equivalent to `present` when **type** == `file`. (**Default**)
+* `purged`: Uninstalled, then removed from the package manager. Equivalent to `absent` when **type** == `file`.
+* `absent`: Removed from the package manager. 
 
 ##### `group`
 Optional. Sets the group for file ownership. Valid options: any valid group. Default: `aem`.
@@ -985,7 +985,7 @@ This define unpacks the AEM Quickstart jar for preparation to configure.
 
 ### Private Types
 
-#### Type: `aem_osgi_config`
+#### Type: `aem_crx_package`
 This custom type manages CRX Packages which are of type `api`.
 
 #### Type: `aem_installer`
