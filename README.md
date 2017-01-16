@@ -592,7 +592,7 @@ Namevar. Required.
 ##### `ensure`
 Required. Changes the state of this CRX Package.  
 * `present`: Uploaded but not installed; if installed will uninstall. 
-* `installed`: Uploaded and installed; if only valid when **type**=`api`. Equivalent to `present` when **type** == `file`. (**Default**)
+* `installed`: Uploaded and installed; Equivalent to `present` when **type** == `file`. (**Default**)
 * `purged`: Uninstalled, then removed from the package manager. Equivalent to `absent` when **type** == `file`.
 * `absent`: Removed from the package manager. 
 
