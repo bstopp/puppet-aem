@@ -1,8 +1,8 @@
-## File Type Example
+## OSGi Config: File Type Example
 
 If the **type** is set to *file*, a file will be created in the *<home>/crx-quickstart/install* folder.
 
-**Note**: File OSGi Configurations only seem to be ready before the AEM instance starts for the first time. This is a funcion of AEM; not a failure of the module to create the defined file.
+**Note**: File OSGi Configurations only seem to be ready before the AEM instance starts for the first time. This is a function of AEM; not a failure of the module to create the defined file.
 
 This example sets the Referrer Filter to allow the host *author.localhost* and *vagrant.localhost*.
 

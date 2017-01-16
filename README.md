@@ -62,7 +62,7 @@
 
 ## Setup
 
-**What the AEM Puppet module affects**
+**What the AEM Puppet module affects:**
 
 - AEM Installation files and directories
 - Service configuration and startup files
@@ -96,6 +96,7 @@ For more options and detailed explanations, please see the [Puppet AEM Wiki][wik
   - [Define: aem::agent::replication::publish](#define-aemagentreplicationpublish)
   - [Define: aem::agent::replication::reverse](#define-aemagentreplicationreverse)
   - [Define: aem::agent::replication::static](#define-aemagentreplicationstatic)
+  - [Define: aem::crx::package](#define-aemcrxpackage)
   - [Define: aem::dispatcher::farm](#define-aemdispatcherfarm)
   - [Define: aem::instance](#define-aeminstance)
   - [Define: aem::license](#define-aemlicense)
@@ -105,9 +106,11 @@ For more options and detailed explanations, please see the [Puppet AEM Wiki][wik
   - [Type: Aem_Sling_Resource](#type-aem_sling_resource)
 - **[Private Defines][]**
   - [Define: aem::config](#define-aemconfig)
+  - [Define: aem::crx::package::file](#define-aemcrxpackagefile)
   - [Define: aem::osgi::config::file](#define-aemosgiconfigfile)
   - [Define: aem::package](#define-aempackage)
 - **[Private Types][]**
+  - [Type: Aem_Crx_Package](#type-aem_crx_package)
   - [Type: Aem_Installer](#type-aem_installer)
   - [Type: Aem_Osgi_Config](#type-aem_osgi_config)
 
@@ -579,12 +582,56 @@ Required. Sets the runmode for persisting the Replication agent.
 ##### `username`
 Required. The username for authenticating to AEM.
 
+#### Define: `aem::crx:package`
+
+Manages an AEM CRX Package; allows for saving packages via a file (in the <<home>>/install directory) or posted to the CRX Package Manager API. For examples, see the [wiki](docs/AEM-CRX-Package.md).
+
+##### `name`
+Namevar. Required.
+
+##### `ensure`
+Required. Changes the state of this CRX Package.  
+* `present`: Uploaded but not installed; if installed will uninstall.
+* `installed`: Uploaded and installed; if only valid when **type**=`api`. (**Default**)
+* `purged`: Uninstalled, then removed from the package manager.
+* `absent`: Removed from the package manager.
+
+##### `group`
+Optional. Sets the group for file ownership. Valid options: any valid group. Default: `aem`.
+
+##### `home`
+Required. Sets the directory in which AEM exists. Valid options: any absolute path.
+
+##### `pkg_group`
+Required if **type** == `api`. The CRX Package group.
+
+##### `pkg_name`
+Required if **type** == `api`. The CRX Package name.
+
+##### `pkg_version`
+Required if **type** == `api`. The CRX Package group.
+
+##### `password`
+Required if **type** == `api`. Sets the password of the CRX Package Manager API user. Valid options: any valid password.
+
+##### `source`
+Required. Sets the source package file to use. Valid options: any absolute path to file.
+
+##### `type`
+Required. Sets the means by which to persist the package. Valid options: `api` or `file`. `api` will use API client to the CRX Package Manager. `file` will copy the package file in the *crx-quickstart/install* folder.
+
+##### `user`
+Optional. Sets the user for file ownership. Valid options: any valid user. Default: `aem`.
+
+##### `username`
+Required if **type** == `api`. Sets the user for accessing the CRX Package Manager API. Valid options: any valid user.
+
 #### Define: `aem::dispatcher::farm`
 
 Configures a single farm instance within the Dispatcher. For more details and examples, see the [wiki](docs/AEM-Dispatcher-Farm.md).
 
 ##### `ensure`
-Optional. Changes the state of this dispatcher farm configuration. Valid options: `present` or `absent`. Default: `present`.
+Required. Changes the state of this dispatcher farm configuration. Valid options: `present` or `absent`. Default: `present`.
 
 ##### `allow_authorized`
 Optional. Sets the cache */allowAuthorized* rule. Valid options: `0` or `1`.
@@ -892,7 +939,7 @@ Required. Changes the state of the Sling resource definition. Valid options: `pr
 ##### `force_passwords`
 Optiona. Flag to specify whether or not to update password properties, they are submitted regardless of current state. Setting this will cause an update each time the agent runs.
 
-##### `handle_missing`
+## ### `handle_missing`
 Optional. Determine how to handle properties which are specified in the repository, but not not provided. See [wiki][wiki] for examples. Valid options: `ignore` or `remove`. Default: `ingore`.
 
 ##### `home`
@@ -924,20 +971,22 @@ Optional. Sets the timeout, in seconds, when waiting for a response. Valid optio
 
 ### Private Defines
 
-#### Define: `aem::package`
-
-### Private Defines
-
-#### Define: `aem::package`
-This define unpacks the AEM Quickstart jar for preparation to configure.
-
 #### Define: `aem::config`
 This define sets up the start templates to ensure the AEM instance executes with the correct state.
+
+#### Define: `aem::crx::package::file`
+This define is used to manage CRX Packages which are of type `file`.
 
 #### Define: `aem::osgi::config::file`
 This define is used to manage OSGi Configurations which are of type `file`.
 
+#### Define: `aem::package`
+This define unpacks the AEM Quickstart jar for preparation to configure.
+
 ### Private Types
+
+#### Type: `aem_osgi_config`
+This custom type manages CRX Packages which are of type `api`.
 
 #### Type: `aem_installer`
 This custom type starts the AEM instance to create the base repository, monitors for it's initialization, then shuts the system down.
