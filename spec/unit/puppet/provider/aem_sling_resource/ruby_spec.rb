@@ -174,14 +174,12 @@ PORT=#{opts[:port]}
 
         if opts[:destroy]
           provider.destroy
-          times = 1
         else
           provider.create
-          times = 2
         end
 
         expect { provider.flush }.not_to raise_error
-        expect(get_stub).to have_been_requested.times(times)
+        expect(get_stub).to have_been_requested.twice
         expect(post_stub).to have_been_requested
       end
     end
@@ -1179,7 +1177,23 @@ PORT=#{opts[:port]}
       end
     end
 
-    describe 'flush post errors' do
+    context 'flush post errors' do
+      let(:resource) do
+        Puppet::Type.type(:aem_sling_resource).new(
+          name: '/etc/testcontent/nodename',
+          ensure: :present,
+          home: '/opt/aem',
+          password: 'admin',
+          properties: {
+            'title' => 'string',
+            'text'  => 'string with text'
+          },
+          retries: 2,
+          timeout: 1,
+          username: 'admin'
+        )
+      end
+
       it 'should generate an error' do
         WebMock.reset!
 
@@ -1210,7 +1224,7 @@ PORT=4502
         provider.destroy
         expect { provider.flush }.to raise_error(/500/)
         expect(get_stub).to have_been_requested
-        expect(post_stub).to have_been_requested
+        expect(post_stub).to have_been_requested.times(3)
       end
     end
 

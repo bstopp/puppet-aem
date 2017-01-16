@@ -125,6 +125,15 @@ This is a type used to perform sling api calls
     end
   end
 
+  newparam(:retries) do
+    desc 'Number of retries to communicate with AEM before giving up.'
+    newvalues(/^\d+$/)
+
+    defaultto 10
+
+    munge(&:to_i)
+  end
+
   newparam(:timeout) do
     desc 'Timeout for a successful AEM start. Default = 60 seconds'
 

@@ -19,15 +19,16 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
   describe 'when validating attributes' do
     [
-      :name,
       :force_passwords,
       :handle_missing,
       :home,
-      :username,
+      :name,
       :path,
       :password,
       :password_properties,
-      :protected_properties
+      :protected_properties,
+      :retries,
+      :username
     ].each do |param|
       it "should have a #{param} parameter" do
         expect(described_class.attrtype(param)).to eq(:param)
@@ -122,6 +123,25 @@ describe Puppet::Type.type(:aem_sling_resource) do
         end.to raise_error(Puppet::Error, /must be a hash/)
       end
     end
+
+    describe 'retries' do
+      it 'should require it to be a number' do
+        expect do
+          described_class.new(name: 'bar', ensure: :present, home: '/opt/aem', retries: 'foo')
+        end.to raise_error(/Parameter retries failed/)
+      end
+
+      it 'should have a default' do
+        test = described_class.new(name: 'bar', ensure: :present, home: '/opt/aem')
+        expect(test.parameter(:retries).value).to eq(10)
+      end
+
+      it 'should convert to a number' do
+        test = described_class.new(name: 'bar', ensure: :present, home: '/opt/aem', retries: '10')
+        expect(test.parameter(:retries).value).to eq(10)
+      end
+    end
+
   end
 
   describe 'when testing sync of values' do
