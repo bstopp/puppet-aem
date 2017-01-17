@@ -1,3 +1,5 @@
+# Dispatcher - Cache Rules
+
 ### Statfile Example
 
 [See Documentation](https://docs.adobe.com/docs/en/dispatcher/disp-config.html#Naming%20the%20Statfile)

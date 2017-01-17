@@ -4,13 +4,14 @@ facterversion = ENV['FACTER_GEM_VERSION']
 puppetversion = ENV['PUPPET_VERSION']
 
 group :development, :tests do
-  gem 'metadata-json-lint',     require: false
-  gem 'puppetlabs_spec_helper', require: false
-  gem 'rake',                   require: false
-  gem 'rspec',                  require: false
-  gem 'rspec-puppet',           require: false
-  gem 'simplecov',              require: false
-  gem 'webmock',                require: false
+  gem 'codeclimate-test-reporter',  require: false
+  gem 'metadata-json-lint',         require: false
+  gem 'puppetlabs_spec_helper',     require: false
+  gem 'rake',                       require: false
+  gem 'rspec',                      require: false
+  gem 'rspec-puppet',               require: false
+  gem 'simplecov',                  require: false
+  gem 'webmock',                    require: false
 end
 
 group :linting do

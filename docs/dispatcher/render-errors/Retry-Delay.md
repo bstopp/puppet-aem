@@ -1,3 +1,5 @@
+# Dispatcher - Render Errors
+
 ### Retry Delay Example
 
 [See Documentation](https://docs.adobe.com/docs/en/dispatcher/disp-config.html#Specifying%20the%20Page%20Retry%20Delay)
