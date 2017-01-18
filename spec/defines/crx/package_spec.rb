@@ -47,6 +47,14 @@ describe 'aem::crx::package', type: :defines do
         end
         it { is_expected.to compile }
       end
+
+      context 'purged' do
+        let(:params) do
+          default_params.merge(ensure: 'purged', type: 'file')
+        end
+        it { is_expected.to compile }
+      end
+
       context 'installed' do
         let(:params) do
           default_params.merge(ensure: 'invalid', type: 'file')
@@ -58,7 +66,7 @@ describe 'aem::crx::package', type: :defines do
     context 'type' do
       context 'api' do
         let(:params) do
-          default_params.merge(type: 'api', pkg_group: 'my_packages', pkg_version: '1')
+          default_params.merge(type: 'api', pkg_group: 'my_packages', pkg_name: 'test', pkg_version: '1')
         end
         it { is_expected.to compile }
       end
@@ -126,10 +134,19 @@ describe 'aem::crx::package', type: :defines do
         end
       end
 
-      context 'package version' do
+      context 'package name' do
         context 'should be required' do
           let(:params) do
             default_params.merge(type: 'api', pkg_group: 'my_packages')
+          end
+          it { is_expected.to raise_error(/package name is required/i) }
+        end
+      end
+
+      context 'package version' do
+        context 'should be required' do
+          let(:params) do
+            default_params.merge(type: 'api', pkg_group: 'my_packages', pkg_name: 'test')
           end
           it { is_expected.to raise_error(/package version is required/i) }
         end
@@ -194,9 +211,47 @@ describe 'aem::crx::package', type: :defines do
         end
       end
 
+      context 'ensure installed' do
+        let(:params) do
+          default_params.merge(ensure: 'installed', type: 'file')
+        end
+
+        it do
+          is_expected.to contain_aem__crx__package__file(
+            'aem'
+          ).only_with(
+            ensure: 'present',
+            group:  'aem',
+            home:   '/opt/aem',
+            name:   'aem',
+            source: '/path/to/file.zip',
+            user:   'aem'
+          )
+        end
+      end
+
       context 'ensure absent' do
         let(:params) do
           default_params.merge(ensure: 'absent', type: 'file')
+        end
+
+        it do
+          is_expected.to contain_aem__crx__package__file(
+            'aem'
+          ).only_with(
+            ensure: 'absent',
+            group:  'aem',
+            home:   '/opt/aem',
+            name:   'aem',
+            source: '/path/to/file.zip',
+            user:   'aem'
+          )
+        end
+      end
+
+      context 'ensure purged' do
+        let(:params) do
+          default_params.merge(ensure: 'purged', type: 'file')
         end
 
         it do
@@ -243,6 +298,7 @@ describe 'aem::crx::package', type: :defines do
           default_params.merge(
             password:    'admin',
             pkg_group:   'my_packages',
+            pkg_name:    'test',
             pkg_version: '1.0.0',
             type:        'api',
             username:    'admin'
@@ -270,7 +326,7 @@ describe 'aem::crx::package', type: :defines do
             ensure:   'present',
             group:    'my_packages',
             home:     '/opt/aem',
-            name:     'aem',
+            name:     'test',
             password: 'admin',
             source:   '/path/to/file.zip',
             username: 'admin',
@@ -285,6 +341,7 @@ describe 'aem::crx::package', type: :defines do
             ensure:      'absent',
             password:    'admin',
             pkg_group:   'my_packages',
+            pkg_name:    'test',
             pkg_version: '1.0.0',
             type:        'api',
             username:    'admin'
@@ -314,7 +371,7 @@ describe 'aem::crx::package', type: :defines do
             ensure:   'absent',
             group:    'my_packages',
             home:     '/opt/aem',
-            name:     'aem',
+            name:     'test',
             password: 'admin',
             username: 'admin',
             version:  '1.0.0'
@@ -328,6 +385,7 @@ describe 'aem::crx::package', type: :defines do
             ensure:      'installed',
             password:    'admin',
             pkg_group:   'my_packages',
+            pkg_name:    'test',
             pkg_version: '1.0.0',
             type:        'api',
             username:    'admin'
@@ -355,7 +413,7 @@ describe 'aem::crx::package', type: :defines do
             ensure:   'installed',
             group:    'my_packages',
             home:     '/opt/aem',
-            name:     'aem',
+            name:     'test',
             password: 'admin',
             source:   '/path/to/file.zip',
             username: 'admin',

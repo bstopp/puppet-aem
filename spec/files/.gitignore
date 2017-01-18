@@ -3,9 +3,7 @@
 !.gitignore
 !faux-start-env
 !ensure-running.sh
-!test-1.0.0.zip
-!package_list_exists.json
-!package_list_installed.json
-!package_list_missing.json
+!test-*.zip
+!pkg_list_*.json
 !api_response.xml
 !api_error.xml

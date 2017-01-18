@@ -1,0 +1,41 @@
+{
+  "results": [
+    {
+      "pid": "my_packages:test:1.0.0",
+      "path": "/etc/packages/my_packages/test-1.0.0.zip",
+      "name": "test",
+      "downloadName": "test-1.0.0.zip",
+      "group": "my_packages",
+      "groupTitle": "my_packages",
+      "version": "1.0.0",
+      "description": "",
+      "thumbnail": "/crx/packmgr/thumbnail.jsp?_charset_=utf-8&path=%2fetc%2fpackages%2fmy_packages%2ftest-1.0.0.zip&ck=1484611879702",
+      "buildCount": 9,
+      "lastUnpacked": 1484612003449,
+      "lastUnpackedBy": "admin",
+      "lastUnwrapped": 1484611879703,
+      "lastUnwrappedBy": "admin",
+      "size": 12080,
+      "hasSnapshot": true,
+      "needsRewrap": false,
+      "builtWith": "Adobe Experience Manager-6.2.0",
+      "requiresRoot": false,
+      "requiresRestart": false,
+      "acHandling": "",
+      "dependencies": [],
+      "resolved": true,
+      "filter": [
+        {
+          "root": "/content/package-test",
+          "rules": []
+        },
+        {
+          "root": "/content/second-package-test",
+          "rules": []
+        }
+      ],
+      "screenshots": []
+    }
+  ],
+  "total": 2
+}

@@ -20,8 +20,21 @@ This is a private type used to manage CRX Packages via API calls.
       provider.remove
     end
 
+    newvalue(:purged) do
+      provider.purge
+    end
+
     def retrieve
       provider.retrieve
+    end
+
+    def insync?(is)
+      retval = super(is)
+      unless retval
+        retval = (@should.include?(:absent) || @should.include?(:purged)) &&
+                 (is == :absent || is == :purged)
+      end
+      retval
     end
   end
 

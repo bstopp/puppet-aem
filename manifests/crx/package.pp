@@ -16,8 +16,8 @@ define aem::crx::package (
   $username    = undef,
 ) {
 
-  validate_re($ensure, '^(present|installed|absent)$',
-    "${ensure} is not supported for ensure. Allowed values are: 'present', 'installed' or 'absent'.")
+  validate_re($ensure, '^(present|installed|absent|purged)$',
+    "${ensure} is not supported for ensure. Allowed values are: 'present', 'installed', 'absent' or 'purged'.")
 
   validate_absolute_path($home)
 
@@ -37,6 +37,10 @@ define aem::crx::package (
 
       if $pkg_group == undef {
         fail("Package Group is required when type == 'api'")
+      }
+
+      if $pkg_name == undef {
+        fail("Package Name is required when type == 'api'")
       }
 
       if $pkg_version == undef {
@@ -79,7 +83,8 @@ define aem::crx::package (
       case $ensure {
         /^(present|installed)$/ : { $_ensure = 'present' }
         'absent': { $_ensure = $ensure }
-        default: { $_ensure = 'pesent'}
+        'purged': { $_ensure = 'absent' }
+        default: { $_ensure = 'pesent' }
       }
       aem::crx::package::file { $name :
         ensure => $_ensure,
