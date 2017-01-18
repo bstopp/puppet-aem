@@ -45,6 +45,8 @@ GEM
       serverspec (~> 2)
       specinfra (~> 2)
     builder (3.2.2)
+    codeclimate-test-reporter (1.0.3)
+      simplecov
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     crx_packmgr_api_client (1.1.1)
@@ -360,6 +362,7 @@ DEPENDENCIES
   beaker
   beaker-puppet_install_helper
   beaker-rspec
+  codeclimate-test-reporter
   crx_packmgr_api_client (>= 1.1.1)
   facter
   metadata-json-lint

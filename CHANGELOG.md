@@ -1,9 +1,13 @@
-## 2016-12-31 - Release 2.4.0
+##
+## 2016-01-17 - Release 2.4.0
 ### Summary
 
+* **Minimum Puppet version 4.2**
 * Support for CRX Packages via file or API.
 * Bug fix for Apache restart every Agent run when multiple farms.
 * Bug fixes for Apache bindings.
+* Bug fixes for Replication Agents
+* Amazon Linux Service configuration
 * Use new packer boxes for testing.
 * Updating rubocop issues.
 * Documentation updates.

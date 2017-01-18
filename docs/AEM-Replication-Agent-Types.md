@@ -1,3 +1,4 @@
+# Replication Agent Types
 
 The `aem::agent::replication::*` resources allows you to create and manage specific Replication Agent types.
 

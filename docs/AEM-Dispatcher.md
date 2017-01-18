@@ -1,3 +1,4 @@
+# Dispatcher
 
 The `aem::dispatcher` resource allows you to enable the Dispatcher Module in Apache. By default, no Dispatcher Farms are configured, to configure them, see: [aem::dispatcher::farm](/docs/AEM-Dispatcher-Farm.md)
 

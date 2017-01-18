@@ -1,3 +1,5 @@
+# Dispatcher - Cache Rules
+
 ### Ignore URL Parameters Example
 
 [See Documentation](https://docs.adobe.com/docs/en/dispatcher/disp-config.html#Ignoring%20URL%20Parameters)

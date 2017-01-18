@@ -1,3 +1,5 @@
+# Replication
+
 ## Publish Replication Agent Examples
 
 The `aem::agent::replication::publish` resource allows you to create and manage specific Publish Replication Agents.

@@ -21,14 +21,13 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.0.0 < 5.0.0"
+      "version_requirement": ">= 4.2.0 < 5.0.0"
     }
   ],
   "operatingsystem_support": [
     {
       "operatingsystem": "CentOS",
       "operatingsystemrelease": [
-        "7.0",
         "7.2"
       ]
     },
@@ -42,8 +41,8 @@
     {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
-        "7.8",
-        "8.2"
+        "7",
+        "8"
       ]
     }
   ],

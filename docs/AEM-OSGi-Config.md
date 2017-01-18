@@ -1,3 +1,4 @@
+# OSGi Config
 
 The `aem::osgi::config` resource allows you can create and manage OSGi configurations for an AEM instance. 
 

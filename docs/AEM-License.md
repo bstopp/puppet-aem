@@ -1,3 +1,4 @@
+# AEM License
 
 The `aem::license` resource definition is used to create and manage an AEM license file.
 
