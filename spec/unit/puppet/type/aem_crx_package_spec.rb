@@ -51,10 +51,74 @@ describe Puppet::Type.type(:aem_crx_package) do
         end.not_to raise_error
       end
 
+      it 'should support purged as a value for ensure' do
+        expect do
+          described_class.new(name: 'bar', ensure: :purged, home: '/opt/aem')
+        end.not_to raise_error
+      end
+
       it 'should not support other values' do
         expect do
           described_class.new(name: 'bar', ensure: :invalid, home: '/opt/aem')
         end.to raise_error(Puppet::Error, /Invalid value/)
+      end
+      context 'insync?' do
+        let(:resource) { described_class.new(name: 'bar', ensure: :present, home: '/opt/aem') }
+        let(:ensre) { resource.property(:ensure) }
+
+        context 'ensure is present' do
+          it 'should match to present' do
+            expect(ensre.insync?(:present)).to be_truthy
+          end
+          [:installed, :absent, :purged].each do |param|
+            it "should not match #{param}" do
+              expect(ensre.insync?(param)).to be_falsey
+            end
+          end
+        end
+        context 'ensure is installed' do
+          before :each do
+            resource[:ensure] = :installed
+          end
+          it 'should match to installed' do
+            expect(ensre.insync?(:installed)).to be_truthy
+          end
+          [:present, :absent, :purged].each do |param|
+            it "should not match #{param}" do
+              expect(ensre.insync?(param)).to be_falsey
+            end
+          end
+        end
+        context 'ensure is absent' do
+          before :each do
+            resource[:ensure] = :absent
+          end
+          [:absent, :purged].each do |param|
+            it "should match #{param}" do
+              expect(ensre.insync?(param)).to be_truthy
+            end
+          end
+          [:present, :installed].each do |param|
+            it "should not match #{param}" do
+              expect(ensre.insync?(param)).to be_falsey
+            end
+          end
+        end
+        context 'ensure is purged' do
+          before :each do
+            resource[:ensure] = :purged
+          end
+          [:absent, :purged].each do |param|
+            it "should match #{param}" do
+              expect(ensre.insync?(param)).to be_truthy
+            end
+          end
+          [:present, :installed].each do |param|
+            it "should not match #{param}" do
+              expect(ensre.insync?(param)).to be_falsey
+            end
+          end
+        end
       end
     end
 

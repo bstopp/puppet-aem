@@ -28,6 +28,10 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     @property_flush[:ensure] = :absent
   end
 
+  def purge
+    @property_flush[:ensure] = :purged
+  end
+
   def retrieve
     self.class.require_libs
     find_package
@@ -37,6 +41,12 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
   def flush
     self.class.require_libs
     case @property_flush[:ensure]
+    when :purged
+      if @property_hash[:ensure] == :installed
+        result = uninstall_package
+        raise_on_failure(result)
+      end
+      result = remove_package
     when :absent
       result = remove_package
     when :present
@@ -48,6 +58,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     end
     raise_on_failure(result)
     find_package
+    @property_flush.clear
   end
 
   private
@@ -59,7 +70,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
       c.password = @resource[:password]
       c.timeout = @resource[:timeout]
       c.host = "localhost:#{port}" if port
-      c.base_path = "#{context_root}/#{c.base_path}" if context_root
+      c.base_path = "#{context_root}#{c.base_path}" if context_root
     end
     config
   end
@@ -88,10 +99,10 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
   def find_package
     client = build_client
 
-    path = "/etc/packages/#{@resource[:group]}/#{@resource[:name]}-#{@resource[:version]}.zip"
+    path = "/etc/packages/#{@resource[:group]}/#{@resource[:name]}-.zip"
     begin
       retries ||= @resource[:retries]
-      data = client.list(path: path)
+      data = client.list(path: path, include_versions: true)
     rescue CrxPackageManager::ApiError => e
       Puppet.info("Unable to find package for Aem_crx_package[#{name}]: #{e}")
       will_retry = (retries -= 1) >= 0
@@ -100,14 +111,23 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
       raise
     end
 
-    if data.total == 1
-      pkg = data.results[0]
+    pkg = find_version(data.results)
+    if pkg
       @property_hash[:group] = pkg.group
       @property_hash[:version] = pkg.version
       @property_hash[:ensure] = pkg.last_unpacked ? :installed : :present
     else
       @property_hash[:ensure] = :absent
     end
+  end
+
+  def find_version(ary)
+    pkg = nil
+    ary && ary.each do |p|
+      pkg = p if p.version == @resource[:version]
+      break if pkg
+    end
+    pkg
   end
 
   def upload_package(install = false)
@@ -118,24 +138,27 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
   def install_package
     client = build_client
-    client.service_get('inst', group: @resource[:group], name: @resource[:name])
+    client.service_exec('install', @resource[:name], @resource[:group], @resource[:version])
   end
 
   def uninstall_package
     client = build_client
-    client.service_get('uninst', group: @resource[:group], name: @resource[:name])
+    client.service_exec('uninstall', @resource[:name], @resource[:group], @resource[:version])
   end
 
   def remove_package
     client = build_client
-    client.service_get('rm', group: @resource[:group], name: @resource[:name])
+    client.service_exec('delete', @resource[:name], @resource[:group], @resource[:version])
   end
 
   def raise_on_failure(api_response)
-    hash = XmlSimple.xml_in(api_response, ForceArray: false, KeyToSymbol: true, AttrToSymbol: true)
-    response = CrxPackageManager::ServiceResponse.new
-    response.build_from_hash(hash)
-    raise(response.response.status[:content]) unless response.response.status[:code].to_i == 200
-
+    if api_response.is_a?(CrxPackageManager::ServiceExecResponse)
+      raise(api_response.msg) unless api_response.success
+    else
+      hash = XmlSimple.xml_in(api_response, ForceArray: false, KeyToSymbol: true, AttrToSymbol: true)
+      response = CrxPackageManager::ServiceResponse.new
+      response.build_from_hash(hash)
+      raise(response.response.status[:content]) unless response.response.status[:code].to_i == 200
+    end
   end
 end

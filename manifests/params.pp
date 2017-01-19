@@ -4,7 +4,7 @@
 
 class aem::params {
 
-  $crx_packmgr_api_client_ver = '1.1.1'
+  $crx_packmgr_api_client_ver = '1.2.0'
 
   # Gem provider may vary based on version/type of puppet install.
   # This can be a little complicated and may need revisited over time.

@@ -9,13 +9,11 @@
       "groupTitle": "my_packages",
       "version": "1.0.0",
       "description": "",
-      "thumbnail": "/crx/packmgr/thumbnail.jsp?_charset_=utf-8&path=%2fetc%2fpackages%2fmy_packages%2ftest-1.0.0.zip&ck=1482371544636",
-      "buildCount": 3,
-      "lastUnpacked": 1482371846998,
-      "lastUnpackedBy": "admin",
-      "lastUnwrapped": 1482371544642,
+      "thumbnail": "/crx/packmgr/thumbnail.jsp?_charset_=utf-8&path=%2fetc%2fpackages%2fmy_packages%2ftest-1.0.0.zip&ck=1484611879702",
+      "buildCount": 9,
+      "lastUnwrapped": 1484611879703,
       "lastUnwrappedBy": "admin",
-      "size": 10580,
+      "size": 12080,
       "hasSnapshot": true,
       "needsRewrap": false,
       "builtWith": "Adobe Experience Manager-6.2.0",
@@ -24,9 +22,18 @@
       "acHandling": "",
       "dependencies": [],
       "resolved": true,
-      "filter": [],
+      "filter": [
+        {
+          "root": "/content/package-test",
+          "rules": []
+        },
+        {
+          "root": "/content/second-package-test",
+          "rules": []
+        }
+      ],
       "screenshots": []
     }
   ],
-  "total": 1
+  "total": 2
 }
