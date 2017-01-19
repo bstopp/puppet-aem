@@ -1,10 +1,11 @@
-require 'rake/clean'
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-lint/tasks/puppet-lint'
 require 'puppet-syntax/tasks/puppet-syntax'
+require 'rake/clean'
 require 'rubocop/rake_task'
 
 exclude_paths = %w(
+  vendor/**/*.pp
   spec/**/*.pp
   pkg/**/*.pp
 )

@@ -6,6 +6,21 @@ AllCops:
     - 'vendor/**/*'
   TargetRubyVersion: 2.0
 
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/defines/service_spec.rb'
+  ExcludedMethods:
+    - 'describe'
+    - 'context'
+    - 'it'
+    - 'shared_examples'
+    - 'newtype'
+    - 'provide'
+    - 'newproperty'
+    - 'let'
+    - 'shell'
+    - 'CentOS'
+
 Metrics/LineLength:
   Max: 120
 
