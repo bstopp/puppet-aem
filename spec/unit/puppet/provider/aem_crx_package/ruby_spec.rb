@@ -110,6 +110,10 @@ describe Puppet::Type.type(:aem_crx_package).provider(:ruby) do
     File.new(File.join(File.dirname(__FILE__), '..', '..', '..', '..', 'files', 'api_error.xml')).read
   end
 
+  let(:service_exec_failure) do
+    CrxPackageManager::ServiceExecResponse.new(success: false, msg: 'An Error Occurred')
+  end
+
   describe 'retrieve ensure attribute' do
     shared_examples 'resource_check' do |opts|
       it do
@@ -323,8 +327,8 @@ PORT=#{opts[:port]}
 
           expect_any_instance_of(
             CrxPackageManager::DefaultApi
-          ).to receive(:service_get).with(
-            'inst', group: 'my_packages', name: 'test'
+          ).to receive(:service_exec).with(
+            'install', 'test', 'my_packages', '1.0.0'
           ).and_return(service_response)
 
           expect { provider.retrieve }.not_to raise_error
@@ -461,8 +465,8 @@ PORT=#{opts[:port]}
 
             expect_any_instance_of(
               CrxPackageManager::DefaultApi
-            ).to receive(:service_get).with(
-              'rm', group: 'my_packages', name: 'test'
+            ).to receive(:service_exec).with(
+              'delete', 'test', 'my_packages', '1.0.0'
             ).and_return(service_response)
 
             expect { provider.retrieve }.not_to raise_error
@@ -506,8 +510,8 @@ PORT=#{opts[:port]}
 
             expect_any_instance_of(
               CrxPackageManager::DefaultApi
-            ).to receive(:service_get).with(
-              'rm', group: 'my_packages', name: 'test'
+            ).to receive(:service_exec).with(
+              'delete', 'test', 'my_packages', '1.0.0'
             ).and_return(service_response)
 
             expect { provider.retrieve }.not_to raise_error
@@ -554,8 +558,8 @@ PORT=#{opts[:port]}
 
           expect_any_instance_of(
             CrxPackageManager::DefaultApi
-          ).to receive(:service_get).with(
-            'uninst', group: 'my_packages', name: 'test'
+          ).to receive(:service_exec).with(
+            'uninstall', 'test', 'my_packages', '1.0.0'
           ).and_return(service_response)
 
           expect { provider.retrieve }.not_to raise_error
@@ -692,14 +696,14 @@ PORT=#{opts[:port]}
 
             expect_any_instance_of(
               CrxPackageManager::DefaultApi
-            ).to receive(:service_get).with(
-              'uninst', group: 'my_packages', name: 'test'
+            ).to receive(:service_exec).with(
+              'uninstall', 'test', 'my_packages', '1.0.0'
             ).and_return(service_response)
 
             expect_any_instance_of(
               CrxPackageManager::DefaultApi
-            ).to receive(:service_get).with(
-              'rm', group: 'my_packages', name: 'test'
+            ).to receive(:service_exec).with(
+              'delete', 'test', 'my_packages', '1.0.0'
             ).and_return(service_response)
 
             expect { provider.retrieve }.not_to raise_error
@@ -743,8 +747,8 @@ PORT=#{opts[:port]}
 
             expect_any_instance_of(
               CrxPackageManager::DefaultApi
-            ).to receive(:service_get).with(
-              'rm', group: 'my_packages', name: 'test'
+            ).to receive(:service_exec).with(
+              'delete', 'test', 'my_packages', '1.0.0'
             ).and_return(service_response)
 
             expect { provider.retrieve }.not_to raise_error
@@ -791,8 +795,8 @@ PORT=#{opts[:port]}
 
           expect_any_instance_of(
             CrxPackageManager::DefaultApi
-          ).to receive(:service_get).with(
-            'inst', group: 'my_packages', name: 'test'
+          ).to receive(:service_exec).with(
+            'install', 'test', 'my_packages', '2.0.0'
           ).and_return(service_response)
 
           expect { provider.retrieve }.not_to raise_error
@@ -929,8 +933,8 @@ PORT=#{opts[:port]}
 
             expect_any_instance_of(
               CrxPackageManager::DefaultApi
-            ).to receive(:service_get).with(
-              'rm', group: 'my_packages', name: 'test'
+            ).to receive(:service_exec).with(
+              'delete', 'test', 'my_packages', '2.0.0'
             ).and_return(service_response)
 
             expect { provider.retrieve }.not_to raise_error
@@ -974,8 +978,8 @@ PORT=#{opts[:port]}
 
             expect_any_instance_of(
               CrxPackageManager::DefaultApi
-            ).to receive(:service_get).with(
-              'rm', group: 'my_packages', name: 'test'
+            ).to receive(:service_exec).with(
+              'delete', 'test', 'my_packages', '2.0.0'
             ).and_return(service_response)
 
             expect { provider.retrieve }.not_to raise_error
@@ -1022,8 +1026,8 @@ PORT=#{opts[:port]}
 
           expect_any_instance_of(
             CrxPackageManager::DefaultApi
-          ).to receive(:service_get).with(
-            'uninst', group: 'my_packages', name: 'test'
+          ).to receive(:service_exec).with(
+            'uninstall', 'test', 'my_packages', '2.0.0'
           ).and_return(service_response)
 
           expect { provider.retrieve }.not_to raise_error
@@ -1160,14 +1164,14 @@ PORT=#{opts[:port]}
 
             expect_any_instance_of(
               CrxPackageManager::DefaultApi
-            ).to receive(:service_get).with(
-              'uninst', group: 'my_packages', name: 'test'
+            ).to receive(:service_exec).with(
+              'uninstall', 'test', 'my_packages', '2.0.0'
             ).and_return(service_response)
 
             expect_any_instance_of(
               CrxPackageManager::DefaultApi
-            ).to receive(:service_get).with(
-              'rm', group: 'my_packages', name: 'test'
+            ).to receive(:service_exec).with(
+              'delete', 'test', 'my_packages', '2.0.0'
             ).and_return(service_response)
 
             expect { provider.retrieve }.not_to raise_error
@@ -1211,8 +1215,8 @@ PORT=#{opts[:port]}
 
             expect_any_instance_of(
               CrxPackageManager::DefaultApi
-            ).to receive(:service_get).with(
-              'rm', group: 'my_packages', name: 'test'
+            ).to receive(:service_exec).with(
+              'delete', 'test', 'my_packages', '2.0.0'
             ).and_return(service_response)
 
             expect { provider.retrieve }.not_to raise_error
@@ -1307,6 +1311,43 @@ PORT=#{opts[:port]}
       end
     end
 
+    context 'ensure installed call fails' do
+      let(:resource) do
+        Puppet::Type.type(:aem_crx_package).new(
+          ensure: :installed,
+          name: 'test',
+          group: 'my_packages',
+          home: '/opt/aem',
+          password: 'admin',
+          username: 'admin',
+          version: '1.0.0'
+        )
+      end
+
+      it 'should raise an error' do
+        envdata = ''
+
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+
+        expect_any_instance_of(
+          CrxPackageManager::DefaultApi
+        ).to receive(:list).with(
+          path: '/etc/packages/my_packages/test-.zip',
+          include_versions: true
+        ).and_return(list_one_installed)
+
+        expect_any_instance_of(
+          CrxPackageManager::DefaultApi
+        ).to receive(:service_exec).with(
+          'install', 'test', 'my_packages', '1.0.0'
+        ).and_return(service_exec_failure)
+
+        expect { provider.retrieve }.not_to raise_error
+        expect { provider.install }.not_to raise_error
+        expect { provider.flush }.to raise_error(/An Error Occurred/)
+      end
+    end
+
     context 'ensure absent remove call fails' do
       let(:resource) do
         Puppet::Type.type(:aem_crx_package).new(
@@ -1334,12 +1375,49 @@ PORT=#{opts[:port]}
 
         expect_any_instance_of(
           CrxPackageManager::DefaultApi
-        ).to receive(:service_get).with(
-          'rm', group: 'my_packages', name: 'test'
-        ).and_return(service_failure)
+        ).to receive(:service_exec).with(
+          'delete', 'test', 'my_packages', '1.0.0'
+        ).and_return(service_exec_failure)
 
         expect { provider.retrieve }.not_to raise_error
         expect { provider.remove }.not_to raise_error
+        expect { provider.flush }.to raise_error(/An Error Occurred/)
+      end
+    end
+
+    context 'ensure purged uninstall call fails' do
+      let(:resource) do
+        Puppet::Type.type(:aem_crx_package).new(
+          ensure: :purged,
+          name: 'test',
+          group: 'my_packages',
+          home: '/opt/aem',
+          password: 'admin',
+          username: 'admin',
+          version: '1.0.0'
+        )
+      end
+
+      it 'should raise an error' do
+        envdata = ''
+
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+
+        expect_any_instance_of(
+          CrxPackageManager::DefaultApi
+        ).to receive(:list).with(
+          path: '/etc/packages/my_packages/test-.zip',
+          include_versions: true
+        ).and_return(list_one_installed)
+
+        expect_any_instance_of(
+          CrxPackageManager::DefaultApi
+        ).to receive(:service_exec).with(
+          'uninstall', 'test', 'my_packages', '1.0.0'
+        ).and_return(service_exec_failure)
+
+        expect { provider.retrieve }.not_to raise_error
+        expect { provider.purge }.not_to raise_error
         expect { provider.flush }.to raise_error(/An Error Occurred/)
       end
     end

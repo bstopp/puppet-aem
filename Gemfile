@@ -38,5 +38,5 @@ else
   gem 'puppet', require: false
 end
 
-gem 'crx_packmgr_api_client', '>=1.1.1', require: false
-gem 'xml-simple',             '>=1.1.5', require: false
+gem 'crx_packmgr_api_client', '~>1.2', require: false
+gem 'xml-simple',             '~>1.1.5', require: false

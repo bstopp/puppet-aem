@@ -309,7 +309,7 @@ describe 'aem::crx::package', type: :defines do
           is_expected.to compile.with_all_deps
 
           is_expected.to contain_package('crx_packmgr_api_client').with(
-            ensure:   '1.1.1',
+            ensure:   '1.2.0',
             name:     'crx_packmgr_api_client',
             provider: 'puppet_gem'
           ).that_requires('Class[ruby::dev]')
@@ -354,7 +354,7 @@ describe 'aem::crx::package', type: :defines do
           is_expected.to compile.with_all_deps
 
           is_expected.to contain_package('crx_packmgr_api_client').with(
-            ensure:   '1.1.1',
+            ensure:   '1.2.0',
             name:     'crx_packmgr_api_client',
             provider: 'puppet_gem'
           ).that_requires('Class[ruby::dev]')
@@ -396,7 +396,7 @@ describe 'aem::crx::package', type: :defines do
           is_expected.to compile.with_all_deps
 
           is_expected.to contain_package('crx_packmgr_api_client').with(
-            ensure:   '1.1.1',
+            ensure:   '1.2.0',
             name:     'crx_packmgr_api_client',
             provider: 'puppet_gem'
           ).that_requires('Class[ruby::dev]')

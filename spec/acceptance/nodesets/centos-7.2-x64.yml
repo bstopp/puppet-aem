@@ -19,6 +19,9 @@ HOSTS:
       author:
           from: 4502
           to: 4502
+      author_dbg:
+          from: 30303
+          to: 30303
     dispatcher_file: dispatcher-apache2.4-4.1.12.so
     vagrant_cpus: 2
 

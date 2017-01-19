@@ -14,7 +14,7 @@ describe 'aem', type: :class do
     it do
       is_expected.to compile.with_all_deps
       is_expected.to contain_class('aem').only_with(
-        crx_packmgr_api_client_ver: '1.1.1',
+        crx_packmgr_api_client_ver: '1.2.0',
         name:                       'Aem',
         puppetgem:                  'puppet_gem',
         xmlsimple_ver:              '>=1.1.5'
@@ -33,7 +33,7 @@ describe 'aem', type: :class do
     it do
       is_expected.to compile.with_all_deps
       is_expected.to contain_class('aem').only_with(
-        crx_packmgr_api_client_ver: '1.1.1',
+        crx_packmgr_api_client_ver: '1.2.0',
         name:                       'Aem',
         puppetgem:                  'pe_gem',
         xmlsimple_ver:              '>=1.1.5'
@@ -52,7 +52,7 @@ describe 'aem', type: :class do
     it do
       is_expected.to compile.with_all_deps
       is_expected.to contain_class('aem').only_with(
-        crx_packmgr_api_client_ver: '1.1.1',
+        crx_packmgr_api_client_ver: '1.2.0',
         name:                       'Aem',
         puppetgem:                  'pe_puppetserver_gem',
         xmlsimple_ver:              '>=1.1.5'
