@@ -40,17 +40,16 @@ describe 'aem::service', type: :defines do
   end
 
   %w(CentOS Fedora RedHat).each do |os|
-    describe os do
-      context 'version >= 7' do
+    context os do
 
+      let(:params) do
+        default_params
+      end
+
+      context 'version >= 7' do
         let(:facts) do
           default_facts.merge(operatingsystem: os, operatingsystemmajrelease: '7')
         end
-
-        let(:params) do
-          default_params
-        end
-
         it do
           is_expected.to contain_aem__service__systemd('aem').only_with(
             ensure: 'present',
@@ -67,11 +66,6 @@ describe 'aem::service', type: :defines do
         let(:facts) do
           default_facts.merge(operatingsystem: os, operatingsystemmajrelease: '6')
         end
-
-        let(:params) do
-          default_params
-        end
-
         it do
           is_expected.to contain_aem__service__init('aem').only_with(
             ensure: 'present',
@@ -82,7 +76,6 @@ describe 'aem::service', type: :defines do
             user: 'aem'
           )
         end
-
       end
     end
   end
