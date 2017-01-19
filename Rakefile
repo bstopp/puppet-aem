@@ -5,6 +5,7 @@ require 'rake/clean'
 require 'rubocop/rake_task'
 
 exclude_paths = %w(
+  vendor/**/*.pp
   spec/**/*.pp
   pkg/**/*.pp
 )
