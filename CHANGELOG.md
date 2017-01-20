@@ -1,5 +1,5 @@
-##
-## 2016-01-19 - Release 2.4.0
+
+## 2017-01-19 - Release 2.4.0
 ### Summary
 
 * **Minimum Puppet version 4.2**
