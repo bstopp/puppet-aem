@@ -12,8 +12,8 @@ group :development, :tests do
   gem 'rspec-puppet',               require: false
   gem 'simplecov',                  require: false
   gem 'webmock',                    require: false
-  #Until https://github.com/hirakiuc/tinybucket/issues/113 is fixed
-  gem 'rainbow', '<2.2',           require: false
+  # Until https://github.com/hirakiuc/tinybucket/issues/113 is fixed
+  gem 'rainbow', '<2.2', require: false
 end
 
 group :linting do
