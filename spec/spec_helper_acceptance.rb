@@ -117,6 +117,9 @@ unless ENV['BEAKER_provision'] == 'no'
   test_zip = File.expand_path(File.join(module_root, 'spec', 'files', 'test-2.0.0.zip'))
   scp_to(default, test_zip, '/tmp/test-2.0.0.zip')
 
+  test_zip = File.expand_path(File.join(module_root, 'spec', 'files', 'secondtest-1.0.0.zip'))
+  scp_to(default, test_zip, '/tmp/secondtest-1.0.0.zip')
+
   # Credit to Puppetlabs Puppet Agent project,
   # This was the only place i could find that had an example that
   # made all of this stuff work.

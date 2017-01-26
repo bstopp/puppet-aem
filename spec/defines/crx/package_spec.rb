@@ -421,6 +421,36 @@ describe 'aem::crx::package', type: :defines do
           ).that_requires('Package[crx_packmgr_api_client]')
         end
       end
+
+      context 'multiple defined' do
+        let(:params) do
+          default_params.merge(
+            ensure:      'installed',
+            password:    'admin',
+            pkg_group:   'my_packages',
+            pkg_name:    'test',
+            pkg_version: '1.0.0',
+            type:        'api',
+            username:    'admin'
+          )
+        end
+        let(:pre_condition) do
+          'aem::crx::package { "existing" :
+            ensure      => installed,
+            home        =>"/opt/aem",
+            password    => "admin",
+            pkg_group   => "my_packages",
+            pkg_name    => "otherpackage",
+            pkg_version => "1.0.0",
+            source      => "/path/to/other.zip",
+            type        => "api",
+            username    => "admin"
+          }'
+        end
+        it 'should work' do
+          is_expected.to compile.with_all_deps
+        end
+      end
     end
   end
 end

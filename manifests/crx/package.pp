@@ -50,15 +50,16 @@ define aem::crx::package (
       include ::ruby::dev
       include ::aem
 
-      package { 'crx_packmgr_api_client' :
-        ensure   => $aem::crx_packmgr_api_client_ver,
-        provider => $aem::puppetgem
-      }
-
-      package { 'xml-simple' :
-        ensure   => $aem::xmlsimple_ver,
-        provider => $aem::puppetgem
-      }
+      ensure_packages({
+        'crx_packmgr_api_client' => {
+          'ensure'   => $aem::crx_packmgr_api_client_ver,
+          'provider' => $aem::puppetgem
+        },
+        'xml-simple' => {
+          'ensure'   => $aem::xmlsimple_ver,
+          'provider' => $aem::puppetgem
+        }
+      })
 
       aem_crx_package { $name :
         ensure   => $ensure,
