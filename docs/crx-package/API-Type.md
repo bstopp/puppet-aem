@@ -6,7 +6,7 @@ The group (_pkg_group_), name (_pkg_name_), and version (_pkg_version_) resource
 
 This information can be found inside the packages, in the `META-INF/properties.xml` file. Or, as this image shows, in the CRX Package Manager UI.
 
-![crx-package](docs/crx-package/crx-package.png)
+![crx-package](/docs/crx-package/crx-package.png)
 
 ## API Examples
 
