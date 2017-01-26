@@ -275,7 +275,7 @@ GEM
       puppet-lint (~> 2.0)
       puppet-syntax (~> 2.0)
       rspec-puppet (~> 2.0)
-    rainbow (2.2.1)
+    rainbow (2.1.0)
     rake (10.5.0)
     rbvmomi (1.9.4)
       builder (~> 3.2)
@@ -367,6 +367,7 @@ DEPENDENCIES
   puppet
   puppet-lint
   puppetlabs_spec_helper
+  rainbow (< 2.2)
   rake
   rspec
   rspec-puppet
