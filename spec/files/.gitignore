@@ -4,6 +4,7 @@
 !faux-start-env
 !ensure-running.sh
 !test-*.zip
+!secondtest-1.0.0.zip
 !pkg_list_*.json
 !api_response.xml
 !api_error.xml

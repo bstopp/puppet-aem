@@ -1,4 +1,11 @@
 
+## 2017-01-26 - Release 2.4.1
+### Summary
+
+Bug fix release.
+
+* Fixed #80: Multiple packages are not supported.
+
 ## 2017-01-19 - Release 2.4.0
 ### Summary
 
@@ -78,7 +85,7 @@ Redesigned implementation to use DSL over custom types.
 ### Summary
 Fully functional AEM installation module management. Installs and allows changing of standard AEM run configuration options.
 
-#### Features: 
+#### Features:
 - README Updates.
 - Significant unit test implementations.
 - Support parameters: `context_root`, `debug_port`, `group`, `jvm_mem_opts`, `jvm_opts`, `port`, `runmodes`, `samplecontent`, `snooze`, `timeout`, `user`, `version`.
@@ -86,7 +93,7 @@ Fully functional AEM installation module management. Installs and allows changin
 
 ## 2015-07-29 - Release 0.1.0
 ### Summary
-Initial release of functionality supporting definition and management of an AEM Installation. 
+Initial release of functionality supporting definition and management of an AEM Installation.
 
-#### Features: 
+#### Features:
 - Specify `type` and `user`.

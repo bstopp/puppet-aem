@@ -1,10 +1,18 @@
 # CRX Package
 
-## Console Examples
+## Notes
+
+The group (_pkg_group_), name (_pkg_name_), and version (_pkg_version_) resource properties need to match exactly what you would find in the package. If these values do not match, Puppet may reinstall the package on each run, as it will not be able to identify that the package is installed.
+
+This information can be found inside the packages, in the `META-INF/properties.xml` file. Or, as this image shows, in the CRX Package Manager UI.
+
+![crx-package](docs/crx-package/crx-package.png)
+
+## API Examples
 
 If **type** is set to *api*, the provider will use a API call to the CRX Package Manager to upload the package.
 
-* [Upload Package](#upload)
+* [Upload/Uninstall Package](#upload)
 * [Install Package](#install)
 * [Remove Package](#remove)
 * [Uninstall and Remove](#purge)
