@@ -39,7 +39,11 @@ This is a private type used to manage CRX Packages via API calls.
   end
 
   newparam(:name, namevar: true) do
-    desc 'The name of the CRX Package.'
+    desc 'Namevar, Unique value to allow multiple resources in one manifest.'
+  end
+
+  newproperty(:pkg) do
+    desc 'The name of the CRX package.'
   end
 
   newproperty(:group) do

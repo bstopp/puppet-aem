@@ -99,12 +99,12 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
   def find_package
     client = build_client
 
-    path = "/etc/packages/#{@resource[:group]}/#{@resource[:name]}-.zip"
+    path = "/etc/packages/#{@resource[:group]}/#{@resource[:pkg]}-.zip"
     begin
       retries ||= @resource[:retries]
       data = client.list(path: path, include_versions: true)
     rescue CrxPackageManager::ApiError => e
-      Puppet.info("Unable to find package for Aem_crx_package[#{name}]: #{e}")
+      Puppet.info("Unable to find package for Aem_crx_package[#{@resource[:pkg]}]: #{e}")
       will_retry = (retries -= 1) >= 0
       Puppet.debug("Retrying package lookup; remaining retries: #{retries}") if will_retry
       retry if will_retry
@@ -138,17 +138,17 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
   def install_package
     client = build_client
-    client.service_exec('install', @resource[:name], @resource[:group], @resource[:version])
+    client.service_exec('install', @resource[:pkg], @resource[:group], @resource[:version])
   end
 
   def uninstall_package
     client = build_client
-    client.service_exec('uninstall', @resource[:name], @resource[:group], @resource[:version])
+    client.service_exec('uninstall', @resource[:pkg], @resource[:group], @resource[:version])
   end
 
   def remove_package
     client = build_client
-    client.service_exec('delete', @resource[:name], @resource[:group], @resource[:version])
+    client.service_exec('delete', @resource[:pkg], @resource[:group], @resource[:version])
   end
 
   def raise_on_failure(api_response)

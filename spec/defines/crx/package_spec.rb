@@ -326,8 +326,9 @@ describe 'aem::crx::package', type: :defines do
             ensure:   'present',
             group:    'my_packages',
             home:     '/opt/aem',
-            name:     'test',
+            name:     'aem',
             password: 'admin',
+            pkg:      'test',
             source:   '/path/to/file.zip',
             username: 'admin',
             version:  '1.0.0'
@@ -371,8 +372,9 @@ describe 'aem::crx::package', type: :defines do
             ensure:   'absent',
             group:    'my_packages',
             home:     '/opt/aem',
-            name:     'test',
+            name:     'aem',
             password: 'admin',
+            pkg:      'test',
             username: 'admin',
             version:  '1.0.0'
           ).that_requires('Package[crx_packmgr_api_client]')
@@ -413,8 +415,9 @@ describe 'aem::crx::package', type: :defines do
             ensure:   'installed',
             group:    'my_packages',
             home:     '/opt/aem',
-            name:     'test',
+            name:     'aem',
             password: 'admin',
+            pkg:      'test',
             source:   '/path/to/file.zip',
             username: 'admin',
             version:  '1.0.0'
@@ -443,6 +446,36 @@ describe 'aem::crx::package', type: :defines do
             pkg_name    => "otherpackage",
             pkg_version => "1.0.0",
             source      => "/path/to/other.zip",
+            type        => "api",
+            username    => "admin"
+          }'
+        end
+        it 'should work' do
+          is_expected.to compile.with_all_deps
+        end
+      end
+
+      context 'multiple same packages different targets' do
+        let(:params) do
+          default_params.merge(
+            ensure:      'installed',
+            password:    'admin',
+            pkg_group:   'my_packages',
+            pkg_name:    'test',
+            pkg_version: '1.0.0',
+            type:        'api',
+            username:    'admin'
+          )
+        end
+        let(:pre_condition) do
+          'aem::crx::package { "existing" :
+            ensure      => installed,
+            home        =>"/opt/aem/other",
+            password    => "admin",
+            pkg_group   => "my_packages",
+            pkg_name    => "test",
+            pkg_version => "1.0.0",
+            source      => "/path/to/file.zip",
             type        => "api",
             username    => "admin"
           }'
