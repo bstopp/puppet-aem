@@ -13,13 +13,14 @@ describe 'crx package mgr api', license: false do
 
   it 'should purge package' do
     # Make sure its in the right state to start
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
+
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       expect(result.stdout).to match(/200/)
     end
 
-    cmd = 'curl -s "http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip'
+    cmd = 'curl -s "http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip'
     cmd += '&includeVersions=true" '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
@@ -27,19 +28,18 @@ describe 'crx package mgr api', license: false do
       list = CrxPackageManager::PackageList.new
       list.build_from_hash(jsonresult)
 
-      expect(list.total).to eq(1)
+      expect(list.total).to eq(2)
     end
 
     site = <<-MANIFEST
       'node \"agent\" {
         aem::crx::package { \"author-test-pkg\" :
-          ensure      => purged,
+          ensure      => \"purged\",
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
           pkg_name    => \"test\",
-          pkg_version => \"1.0.0\",
-          source      => \"/tmp/test-1.0.0.zip\",
+          pkg_version => \"2.0.0\",
           type        => \"api\",
           username    => \"admin\"
         }
@@ -61,7 +61,7 @@ describe 'crx package mgr api', license: false do
 
     on(
       default,
-      puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose --server #{fqdn}"),
+      puppet("agent #{DEBUG} --detailed-exitcodes --onetime --no-daemonize --verbose  --trace --server #{fqdn}"),
       acceptable_exit_codes: [0, 2]
     )
 
@@ -72,7 +72,8 @@ describe 'crx package mgr api', license: false do
     #   acceptable_exit_codes: [0]
     # )
 
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s "http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip'
+    cmd += '&includeVersions=false" '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -82,17 +83,24 @@ describe 'crx package mgr api', license: false do
       expect(list.total).to eq(0)
     end
 
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       expect(result.stdout).to match(/404/)
     end
+
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      expect(result.stdout).to match(/200/)
+    end
+
   end
 
   it 'should upload package' do
 
     # Make sure its in the right state to start
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -110,8 +118,8 @@ describe 'crx package mgr api', license: false do
           password    => \"admin\",
           pkg_group   => \"my_packages\",
           pkg_name    => \"test\",
-          pkg_version => \"1.0.0\",
-          source      => \"/tmp/test-1.0.0.zip\",
+          pkg_version => \"2.0.0\",
+          source      => \"/tmp/test-2.0.0.zip\",
           type        => \"api\",
           username    => \"admin\"
         }
@@ -144,7 +152,7 @@ describe 'crx package mgr api', license: false do
     #   acceptable_exit_codes: [0]
     # )
 
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -161,7 +169,7 @@ describe 'crx package mgr api', license: false do
   it 'should remove existing package' do
 
     # Make sure its in the right state to start
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -179,7 +187,7 @@ describe 'crx package mgr api', license: false do
           password    => \"admin\",
           pkg_group   => \"my_packages\",
           pkg_name    => \"test\",
-          pkg_version => \"1.0.0\",
+          pkg_version => \"2.0.0\",
           type        => \"api\",
           username    => \"admin\"
         }
@@ -212,7 +220,7 @@ describe 'crx package mgr api', license: false do
     #   acceptable_exit_codes: [0]
     # )
 
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -227,7 +235,7 @@ describe 'crx package mgr api', license: false do
   it 'should support upload but not install package' do
 
     # Make sure its in the right state to start
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -236,7 +244,7 @@ describe 'crx package mgr api', license: false do
 
       expect(list.total).to eq(0)
     end
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       expect(result.stdout).to match(/404/)
@@ -250,8 +258,8 @@ describe 'crx package mgr api', license: false do
           password    => \"admin\",
           pkg_group   => \"my_packages\",
           pkg_name    => \"test\",
-          pkg_version => \"1.0.0\",
-          source      => \"/tmp/test-1.0.0.zip\",
+          pkg_version => \"2.0.0\",
+          source      => \"/tmp/test-2.0.0.zip\",
           type        => \"api\",
           username    => \"admin\"
         }
@@ -284,7 +292,7 @@ describe 'crx package mgr api', license: false do
     #   acceptable_exit_codes: [0]
     # )
 
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -298,7 +306,7 @@ describe 'crx package mgr api', license: false do
       expect(pkg.last_unpacked).to be_nil
     end
 
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       expect(result.stdout).to match(/404/)
@@ -308,14 +316,14 @@ describe 'crx package mgr api', license: false do
 
   it 'should install existing package' do
 
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       expect(result.stdout).to match(/404/)
     end
 
     # Make sure its in the right state to start
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -336,8 +344,8 @@ describe 'crx package mgr api', license: false do
           password    => \"admin\",
           pkg_group   => \"my_packages\",
           pkg_name    => \"test\",
-          pkg_version => \"1.0.0\",
-          source      => \"/tmp/test-1.0.0.zip\",
+          pkg_version => \"2.0.0\",
+          source      => \"/tmp/test-2.0.0.zip\",
           type        => \"api\",
           username    => \"admin\"
         }
@@ -370,7 +378,7 @@ describe 'crx package mgr api', license: false do
     #   acceptable_exit_codes: [0]
     # )
 
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -383,7 +391,7 @@ describe 'crx package mgr api', license: false do
       expect(pkg.last_unpacked).not_to be_nil
     end
 
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       expect(result.stdout).to match(/200/)
@@ -393,7 +401,7 @@ describe 'crx package mgr api', license: false do
   it 'should uninstall existing package' do
 
     # Make sure its in the right state to start
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -405,7 +413,7 @@ describe 'crx package mgr api', license: false do
       expect(pkg.last_unwrapped).not_to be_nil
       expect(pkg.last_unpacked).not_to be_nil
     end
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       expect(result.stdout).to match(/200/)
@@ -419,8 +427,8 @@ describe 'crx package mgr api', license: false do
           password    => \"admin\",
           pkg_group   => \"my_packages\",
           pkg_name    => \"test\",
-          pkg_version => \"1.0.0\",
-          source      => \"/tmp/test-1.0.0.zip\",
+          pkg_version => \"2.0.0\",
+          source      => \"/tmp/test-2.0.0.zip\",
           type        => \"api\",
           username    => \"admin\"
         }
@@ -453,7 +461,7 @@ describe 'crx package mgr api', license: false do
     #   acceptable_exit_codes: [0]
     # )
 
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -465,7 +473,7 @@ describe 'crx package mgr api', license: false do
       expect(pkg.last_unwrapped).not_to be_nil
       expect(pkg.last_unpacked).to be_nil
     end
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       expect(result.stdout).to match(/404/)
@@ -475,7 +483,7 @@ describe 'crx package mgr api', license: false do
   it 'should remove uploaded package' do
 
     # Make sure its in the right state to start
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -497,7 +505,7 @@ describe 'crx package mgr api', license: false do
           password    => \"admin\",
           pkg_group   => \"my_packages\",
           pkg_name    => \"test\",
-          pkg_version => \"1.0.0\",
+          pkg_version => \"2.0.0\",
           type        => \"api\",
           username    => \"admin\"
         }
@@ -531,7 +539,7 @@ describe 'crx package mgr api', license: false do
     #   acceptable_exit_codes: [0]
     # )
 
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -540,12 +548,22 @@ describe 'crx package mgr api', license: false do
 
       expect(list.total).to eq(0)
     end
+
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd += '-u admin:admin'
+    shell(cmd) do |result|
+      jsonresult = JSON.parse(result.stdout, symbolize_names: true)
+      list = CrxPackageManager::PackageList.new
+      list.build_from_hash(jsonresult)
+
+      expect(list.total).to eq(1)
+    end
   end
 
   it 'should install package' do
 
     # Make sure its in the right state to start
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -564,8 +582,8 @@ describe 'crx package mgr api', license: false do
           password    => \"admin\",
           pkg_group   => \"my_packages\",
           pkg_name    => \"test\",
-          pkg_version => \"1.0.0\",
-          source      => \"/tmp/test-1.0.0.zip\",
+          pkg_version => \"2.0.0\",
+          source      => \"/tmp/test-2.0.0.zip\",
           type        => \"api\",
           username    => \"admin\"
         }
@@ -599,7 +617,7 @@ describe 'crx package mgr api', license: false do
     #   acceptable_exit_codes: [0]
     # )
 
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -616,7 +634,7 @@ describe 'crx package mgr api', license: false do
   it 'should install new version of package' do
 
     # Make sure its in the right state to start
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -625,12 +643,12 @@ describe 'crx package mgr api', license: false do
 
       expect(list.total).to eq(1)
     end
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       expect(result.stdout).to match(/200/)
     end
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       expect(result.stdout).to match(/404/)
@@ -645,8 +663,8 @@ describe 'crx package mgr api', license: false do
           password    => \"admin\",
           pkg_group   => \"my_packages\",
           pkg_name    => \"test\",
-          pkg_version => \"2.0.0\",
-          source      => \"/tmp/test-2.0.0.zip\",
+          pkg_version => \"3.0.0\",
+          source      => \"/tmp/test-3.0.0.zip\",
           type        => \"api\",
           username    => \"admin\"
         }
@@ -680,7 +698,7 @@ describe 'crx package mgr api', license: false do
     #   acceptable_exit_codes: [0]
     # )
 
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-3.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -695,7 +713,7 @@ describe 'crx package mgr api', license: false do
     cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
-      expect(result.stdout).to match(/404/)
+      expect(result.stdout).to match(/200/)
     end
     cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
     cmd += '-u admin:admin'
@@ -707,7 +725,7 @@ describe 'crx package mgr api', license: false do
   it 'should purge new version of package' do
 
     # Make sure its in the right state to start
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-3.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -719,7 +737,7 @@ describe 'crx package mgr api', license: false do
     cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
-      expect(result.stdout).to match(/404/)
+      expect(result.stdout).to match(/200/)
     end
     cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
     cmd += '-u admin:admin'
@@ -735,8 +753,7 @@ describe 'crx package mgr api', license: false do
           password    => \"admin\",
           pkg_group   => \"my_packages\",
           pkg_name    => \"test\",
-          pkg_version => \"2.0.0\",
-          source      => \"/tmp/test-2.0.0.zip\",
+          pkg_version => \"3.0.0\",
           type        => \"api\",
           username    => \"admin\"
         }
@@ -769,7 +786,7 @@ describe 'crx package mgr api', license: false do
     #   acceptable_exit_codes: [0]
     # )
 
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-3.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -777,7 +794,7 @@ describe 'crx package mgr api', license: false do
       list.build_from_hash(jsonresult)
       expect(list.total).to eq(0)
     end
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-1.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -788,12 +805,12 @@ describe 'crx package mgr api', license: false do
       expect(pkg.last_unwrapped).not_to be_nil
       expect(pkg.last_unpacked).not_to be_nil
     end
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       expect(result.stdout).to match(/200/)
     end
-    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/second-package-test.json '
+    cmd = 'curl -s -o /dev/null -w "%{http_code}" http://localhost:4502/content/package-test.json '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       expect(result.stdout).to match(/404/)
@@ -803,7 +820,7 @@ describe 'crx package mgr api', license: false do
   it 'should support multiple packages defined in one manifest' do
 
     # Make sure it's in the right state to start
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-3.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)
@@ -831,8 +848,8 @@ describe 'crx package mgr api', license: false do
           password    => \"admin\",
           pkg_group   => \"my_packages\",
           pkg_name    => \"test\",
-          pkg_version => \"2.0.0\",
-          source      => \"/tmp/test-2.0.0.zip\",
+          pkg_version => \"3.0.0\",
+          source      => \"/tmp/test-3.0.0.zip\",
           type        => \"api\",
           username    => \"admin\"
         }
@@ -877,7 +894,7 @@ describe 'crx package mgr api', license: false do
     #   acceptable_exit_codes: [0]
     # )
 
-    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-2.0.0.zip '
+    cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-3.0.0.zip '
     cmd += '-u admin:admin'
     shell(cmd) do |result|
       jsonresult = JSON.parse(result.stdout, symbolize_names: true)

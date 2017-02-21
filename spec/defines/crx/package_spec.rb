@@ -157,7 +157,6 @@ describe 'aem::crx::package', type: :defines do
         context 'not specified' do
           let(:params) do
             tmp = default_params.clone
-            tmp.delete(:home)
             tmp.delete(:source)
             tmp.merge(type: 'api')
           end
@@ -171,8 +170,24 @@ describe 'aem::crx::package', type: :defines do
           it { is_expected.to raise_error(/is not an absolute path/) }
         end
 
-      end
+        context 'purged allows unspecified' do
+          let(:params) do
+            tmp = default_params.clone
+            tmp.delete(:source)
+            tmp.merge(type: 'api', ensure: 'purged', pkg_group: 'my_packages', pkg_name: 'test', pkg_version: '1.0.0')
+          end
+          it { is_expected.to compile }
+        end
 
+        context 'absent allows unspecified' do
+          let(:params) do
+            tmp = default_params.clone
+            tmp.delete(:source)
+            tmp.merge(type: 'api', ensure: 'purged', pkg_group: 'my_packages', pkg_name: 'test', pkg_version: '1.0.0')
+          end
+          it { is_expected.to compile }
+        end
+      end
     end
 
     context 'type == file' do
@@ -440,7 +455,7 @@ describe 'aem::crx::package', type: :defines do
         let(:pre_condition) do
           'aem::crx::package { "existing" :
             ensure      => installed,
-            home        =>"/opt/aem",
+            home        => "/opt/aem",
             password    => "admin",
             pkg_group   => "my_packages",
             pkg_name    => "otherpackage",

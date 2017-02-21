@@ -18,27 +18,34 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
   def upload
     @property_flush[:ensure] = :present
+    Puppet.debug('aem_crx_package::ruby - Upload requested.')
   end
 
   def install
     @property_flush[:ensure] = :installed
+    Puppet.debug('aem_crx_package::ruby - Install requested.')
   end
 
   def remove
     @property_flush[:ensure] = :absent
+    Puppet.debug('aem_crx_package::ruby - Remove requested.')
   end
 
   def purge
     @property_flush[:ensure] = :purged
+    Puppet.debug('aem_crx_package::ruby - Purge requested.')
   end
 
   def retrieve
     self.class.require_libs
     find_package
+    Puppet.debug("aem_crx_package::ruby - Retrieve - Property Hash: #{@property_hash}")
     @property_hash[:ensure]
   end
 
   def flush
+    return unless @property_flush[:ensure]
+    Puppet.debug('aem_crx_package::ruby - Flushing out to AEM.')
     self.class.require_libs
     case @property_flush[:ensure]
     when :purged
@@ -54,7 +61,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     when :installed
       result = @property_hash[:ensure] == :absent ? upload_package(true) : install_package
     else
-      raise "Unknown property flush value: #{@property_flush[:ensure]}"
+      raise(Puppet::ResourceError, "Unknown property flush value: #{@property_flush[:ensure]}")
     end
     raise_on_failure(result)
     find_package
@@ -111,29 +118,30 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
       raise
     end
 
-    pkg = find_version(data.results)
-    if pkg
-      @property_hash[:group] = pkg.group
-      @property_hash[:version] = pkg.version
-      @property_hash[:ensure] = pkg.last_unpacked ? :installed : :present
+    found_pkg = find_version(data.results)
+    Puppet.debug("aem_crx_package::ruby - Found package: #{found_pkg}")
+    if found_pkg
+      @property_hash[:group] = found_pkg.group
+      @property_hash[:version] = found_pkg.version
+      @property_hash[:ensure] = found_pkg.last_unpacked ? :installed : :present
     else
       @property_hash[:ensure] = :absent
     end
   end
 
   def find_version(ary)
-    pkg = nil
+    found_pkg = nil
     ary && ary.each do |p|
-      pkg = p if p.version == @resource[:version]
-      break if pkg
+      found_pkg = p if p.version == @resource[:version]
+      break if found_pkg
     end
-    pkg
+    found_pkg
   end
 
   def upload_package(install = false)
     client = build_client
-    pkg = File.new(@resource[:source])
-    client.service_post(pkg, install: install)
+    file = File.new(@resource[:source])
+    client.service_post(file, install: install)
   end
 
   def install_package

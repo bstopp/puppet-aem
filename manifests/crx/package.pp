@@ -21,7 +21,7 @@ define aem::crx::package (
 
   validate_absolute_path($home)
 
-  if $ensure != 'absent' {
+  if $ensure != 'absent' and $ensure != 'purged' {
     validate_absolute_path($source)
   }
 
