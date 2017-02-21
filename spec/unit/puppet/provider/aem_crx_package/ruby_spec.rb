@@ -21,15 +21,16 @@ describe Puppet::Type.type(:aem_crx_package).provider(:ruby) do
 
   let(:resource) do
     Puppet::Type.type(:aem_crx_package).new(
-      ensure: :present,
-      name: 'test',
-      group: 'my_packages',
-      home: '/opt/aem',
+      ensure:   :present,
+      name:     'test',
+      group:    'my_packages',
+      home:     '/opt/aem',
       password: 'admin',
-      source: source,
-      timeout: 1,
+      pkg:      'test',
+      source:   source,
+      timeout:  1,
       username: 'admin',
-      version: '3.0.0'
+      version:  '3.0.0'
     )
   end
 
@@ -206,15 +207,16 @@ PORT=#{opts[:port]}
       context 'changes to uploaded' do
         let(:resource) do
           Puppet::Type.type(:aem_crx_package).new(
-            ensure: :present,
-            name: 'test',
-            group: 'my_packages',
-            home: '/opt/aem',
+            ensure:   :present,
+            name:     'test',
+            group:    'my_packages',
+            home:     '/opt/aem',
             password: 'admin',
-            source: source,
-            timeout: 1,
+            pkg:      'test',
+            source:   source,
+            timeout:  1,
             username: 'admin',
-            version: '1.0.0'
+            version:  '1.0.0'
           )
         end
         it 'should work' do
@@ -251,15 +253,16 @@ PORT=#{opts[:port]}
       context 'changes to installed' do
         let(:resource) do
           Puppet::Type.type(:aem_crx_package).new(
-            ensure: :installed,
-            name: 'test',
-            group: 'my_packages',
-            home: '/opt/aem',
+            ensure:   :installed,
+            name:     'test',
+            group:    'my_packages',
+            home:     '/opt/aem',
             password: 'admin',
-            source: source,
-            timeout: 1,
+            pkg:      'test',
+            source:   source,
+            timeout:  1,
             username: 'admin',
-            version: '1.0.0'
+            version:  '1.0.0'
           )
         end
         it 'should work' do
@@ -299,15 +302,16 @@ PORT=#{opts[:port]}
       context 'changes to installed' do
         let(:resource) do
           Puppet::Type.type(:aem_crx_package).new(
-            ensure: :installed,
-            name: 'test',
-            group: 'my_packages',
-            home: '/opt/aem',
+            ensure:   :installed,
+            name:     'test',
+            group:    'my_packages',
+            home:     '/opt/aem',
             password: 'admin',
-            source: source,
-            timeout: 1,
+            pkg:      'test',
+            source:   source,
+            timeout:  1,
             username: 'admin',
-            version: '1.0.0'
+            version:  '1.0.0'
           )
         end
         it 'should work' do
@@ -345,15 +349,16 @@ PORT=#{opts[:port]}
         context 'uploads new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :present,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :present,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '2.0.0'
+              version:  '2.0.0'
             )
           end
           it 'should work' do
@@ -390,15 +395,16 @@ PORT=#{opts[:port]}
         context 'installs new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :installed,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :installed,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '2.0.0'
+              version:  '2.0.0'
             )
           end
           it 'should work' do
@@ -437,15 +443,16 @@ PORT=#{opts[:port]}
         context 'not uninstalled first - was not installed' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :purged,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :purged,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '1.0.0'
+              version:  '1.0.0'
             )
           end
           it 'should work' do
@@ -482,15 +489,16 @@ PORT=#{opts[:port]}
         context 'removed but not uninstalled first' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :absent,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :absent,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '1.0.0'
+              version:  '1.0.0'
             )
           end
           it 'should work' do
@@ -530,15 +538,16 @@ PORT=#{opts[:port]}
       context 'changes to uploaded' do
         let(:resource) do
           Puppet::Type.type(:aem_crx_package).new(
-            ensure: :present,
-            name: 'test',
-            group: 'my_packages',
-            home: '/opt/aem',
+            ensure:   :present,
+            name:     'test',
+            group:    'my_packages',
+            home:     '/opt/aem',
             password: 'admin',
-            source: source,
-            timeout: 1,
+            pkg:      'test',
+            source:   source,
+            timeout:  1,
             username: 'admin',
-            version: '1.0.0'
+            version:  '1.0.0'
           )
         end
         it 'should work' do
@@ -576,15 +585,16 @@ PORT=#{opts[:port]}
         context 'uploads new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :present,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :present,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '2.0.0'
+              version:  '2.0.0'
             )
           end
           it 'should work' do
@@ -621,15 +631,16 @@ PORT=#{opts[:port]}
         context 'installs new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :installed,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :installed,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '2.0.0'
+              version:  '2.0.0'
             )
           end
           it 'should work' do
@@ -668,15 +679,16 @@ PORT=#{opts[:port]}
         context 'uninstalled first' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :purged,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :purged,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '1.0.0'
+              version:  '1.0.0'
             )
           end
           it 'should work' do
@@ -720,14 +732,15 @@ PORT=#{opts[:port]}
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
               ensure: :absent,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '1.0.0'
+              version:  '1.0.0'
             )
           end
           it 'should work' do
@@ -767,15 +780,16 @@ PORT=#{opts[:port]}
       context 'changes to installed' do
         let(:resource) do
           Puppet::Type.type(:aem_crx_package).new(
-            ensure: :installed,
-            name: 'test',
-            group: 'my_packages',
-            home: '/opt/aem',
+            ensure:   :installed,
+            name:     'test',
+            group:    'my_packages',
+            home:     '/opt/aem',
             password: 'admin',
-            source: source,
-            timeout: 1,
+            pkg:      'test',
+            source:   source,
+            timeout:  1,
             username: 'admin',
-            version: '2.0.0'
+            version:  '2.0.0'
           )
         end
         it 'should work' do
@@ -813,15 +827,16 @@ PORT=#{opts[:port]}
         context 'uploads new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :present,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :present,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '3.0.0'
+              version:  '3.0.0'
             )
           end
           it 'should work' do
@@ -858,15 +873,16 @@ PORT=#{opts[:port]}
         context 'installs new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :installed,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :installed,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '3.0.0'
+              version:  '3.0.0'
             )
           end
           it 'should work' do
@@ -905,15 +921,16 @@ PORT=#{opts[:port]}
         context 'not uninstalled first - was not installed' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :purged,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :purged,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '2.0.0'
+              version:  '2.0.0'
             )
           end
           it 'should work' do
@@ -950,15 +967,16 @@ PORT=#{opts[:port]}
         context 'removed but not uninstalled first' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :absent,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :absent,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '2.0.0'
+              version:  '2.0.0'
             )
           end
           it 'should work' do
@@ -998,15 +1016,16 @@ PORT=#{opts[:port]}
       context 'changes to uploaded' do
         let(:resource) do
           Puppet::Type.type(:aem_crx_package).new(
-            ensure: :present,
-            name: 'test',
-            group: 'my_packages',
-            home: '/opt/aem',
+            ensure:   :present,
+            name:     'test',
+            group:    'my_packages',
+            home:     '/opt/aem',
             password: 'admin',
-            source: source,
-            timeout: 1,
+            pkg:      'test',
+            source:   source,
+            timeout:  1,
             username: 'admin',
-            version: '2.0.0'
+            version:  '2.0.0'
           )
         end
         it 'should work' do
@@ -1044,15 +1063,16 @@ PORT=#{opts[:port]}
         context 'uploads new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :present,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :present,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '3.0.0'
+              version:  '3.0.0'
             )
           end
           it 'should work' do
@@ -1089,15 +1109,16 @@ PORT=#{opts[:port]}
         context 'installs new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :installed,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :installed,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '3.0.0'
+              version:  '3.0.0'
             )
           end
           it 'should work' do
@@ -1136,15 +1157,16 @@ PORT=#{opts[:port]}
         context 'uninstalled first' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :purged,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :purged,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '2.0.0'
+              version:  '2.0.0'
             )
           end
           it 'should work' do
@@ -1187,15 +1209,16 @@ PORT=#{opts[:port]}
         context 'removed but not uninstalled first' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure: :absent,
-              name: 'test',
-              group: 'my_packages',
-              home: '/opt/aem',
+              ensure:   :absent,
+              name:     'test',
+              group:    'my_packages',
+              home:     '/opt/aem',
               password: 'admin',
-              source: source,
-              timeout: 1,
+              pkg:      'test',
+              source:   source,
+              timeout:  1,
               username: 'admin',
-              version: '2.0.0'
+              version:  '2.0.0'
             )
           end
           it 'should work' do
@@ -1256,16 +1279,17 @@ PORT=#{opts[:port]}
       let(:resource) do
 
         Puppet::Type.type(:aem_crx_package).new(
-          ensure: :present,
-          name: 'test',
-          group: 'my_packages',
-          home: '/opt/aem',
+          ensure:   :present,
+          name:     'test',
+          group:    'my_packages',
+          home:     '/opt/aem',
           password: 'admin',
-          retries: 1,
-          source: source,
-          timeout: 1,
+          pkg:      'test',
+          retries:  1,
+          source:   source,
+          timeout:  1,
           username: 'admin',
-          version: '1.0.0'
+          version:  '1.0.0'
         )
       end
 
@@ -1314,13 +1338,14 @@ PORT=#{opts[:port]}
     context 'ensure installed call fails' do
       let(:resource) do
         Puppet::Type.type(:aem_crx_package).new(
-          ensure: :installed,
-          name: 'test',
-          group: 'my_packages',
-          home: '/opt/aem',
+          ensure:   :installed,
+          name:     'test',
+          group:    'my_packages',
+          home:     '/opt/aem',
           password: 'admin',
+          pkg:      'test',
           username: 'admin',
-          version: '1.0.0'
+          version:  '1.0.0'
         )
       end
 
@@ -1351,13 +1376,14 @@ PORT=#{opts[:port]}
     context 'ensure absent remove call fails' do
       let(:resource) do
         Puppet::Type.type(:aem_crx_package).new(
-          ensure: :absent,
-          name: 'test',
-          group: 'my_packages',
-          home: '/opt/aem',
+          ensure:   :absent,
+          name:     'test',
+          group:    'my_packages',
+          home:     '/opt/aem',
           password: 'admin',
+          pkg:      'test',
           username: 'admin',
-          version: '1.0.0'
+          version:  '1.0.0'
         )
       end
 
@@ -1388,13 +1414,14 @@ PORT=#{opts[:port]}
     context 'ensure purged uninstall call fails' do
       let(:resource) do
         Puppet::Type.type(:aem_crx_package).new(
-          ensure: :purged,
-          name: 'test',
-          group: 'my_packages',
-          home: '/opt/aem',
+          ensure:   :purged,
+          name:     'test',
+          group:    'my_packages',
+          home:     '/opt/aem',
           password: 'admin',
+          pkg:      'test',
           username: 'admin',
-          version: '1.0.0'
+          version:  '1.0.0'
         )
       end
 

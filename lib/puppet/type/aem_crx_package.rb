@@ -32,22 +32,41 @@ This is a private type used to manage CRX Packages via API calls.
       retval = super(is)
       unless retval
         retval = (@should.include?(:absent) || @should.include?(:purged)) &&
-                 (is == :absent || is == :purged)
+                 (is.to_sym == :absent || is.to_sym == :purged)
       end
       retval
     end
   end
 
   newparam(:name, namevar: true) do
-    desc 'The name of the CRX Package.'
+    desc 'Namevar, Unique value to allow multiple resources in one manifest.'
+  end
+
+  newproperty(:pkg) do
+    desc 'The name of the CRX package.'
+    validate do |value|
+      if value.nil?
+        raise(Puppet::ResourceError, 'Package name must be specified.')
+      end
+    end
   end
 
   newproperty(:group) do
     desc 'The group of the CRX Package.'
+    validate do |value|
+      if value.nil?
+        raise(Puppet::ResourceError, 'Package group must be specified.')
+      end
+    end
   end
 
   newproperty(:version) do
     desc 'The version of the CRX Package.'
+    validate do |value|
+      if value.nil?
+        raise(Puppet::ResourceError, 'Package version must be specified.')
+      end
+    end
   end
 
   newparam(:home) do

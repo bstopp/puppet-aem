@@ -117,6 +117,9 @@ unless ENV['BEAKER_provision'] == 'no'
   test_zip = File.expand_path(File.join(module_root, 'spec', 'files', 'test-2.0.0.zip'))
   scp_to(default, test_zip, '/tmp/test-2.0.0.zip')
 
+  test_zip = File.expand_path(File.join(module_root, 'spec', 'files', 'test-3.0.0.zip'))
+  scp_to(default, test_zip, '/tmp/test-3.0.0.zip')
+
   test_zip = File.expand_path(File.join(module_root, 'spec', 'files', 'secondtest-1.0.0.zip'))
   scp_to(default, test_zip, '/tmp/secondtest-1.0.0.zip')
 
@@ -253,8 +256,8 @@ RSpec.shared_examples 'setup aem' do
         password    => \"admin\",
         pkg_group   => \"my_packages\",
         pkg_name    => \"test\",
-        pkg_version => \"1.0.0\",
-        source      => \"/tmp/test-1.0.0.zip\",
+        pkg_version => \"2.0.0\",
+        source      => \"/tmp/test-2.0.0.zip\",
         type        => \"api\",
         username    => \"admin\"
       }

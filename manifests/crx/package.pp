@@ -21,7 +21,7 @@ define aem::crx::package (
 
   validate_absolute_path($home)
 
-  if $ensure != 'absent' {
+  if $ensure != 'absent' and $ensure != 'purged' {
     validate_absolute_path($source)
   }
 
@@ -61,12 +61,12 @@ define aem::crx::package (
         }
       })
 
-      aem_crx_package { $name :
+      aem_crx_package { $title :
         ensure   => $ensure,
         group    => $pkg_group,
         home     => $home,
-        name     => $pkg_name,
         password => $password,
+        pkg      => $pkg_name,
         source   => $source,
         username => $username,
         version  => $pkg_version
@@ -76,7 +76,7 @@ define aem::crx::package (
       -> Class['aem']
       -> Package['xml-simple']
       -> Package['crx_packmgr_api_client']
-      -> Aem_Crx_Package[$name]
+      -> Aem_Crx_Package[$title]
 
     }
     'file': {
@@ -87,10 +87,11 @@ define aem::crx::package (
         'purged': { $_ensure = 'absent' }
         default: { $_ensure = 'pesent' }
       }
-      aem::crx::package::file { $name :
+      aem::crx::package::file { $title :
         ensure => $_ensure,
         group  => $group,
         home   => $home,
+        name   => $name,
         source => $source,
         user   => $user,
       }
