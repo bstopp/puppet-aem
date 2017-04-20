@@ -25,7 +25,9 @@ define aem::instance (
   $timeout        = 600,
   $type           = author,
   $user           = 'aem',
-  $version        = undef) {
+  $version        = undef,
+  $pkg_type       = 'jar',
+) {
 
   anchor { "aem::${name}::begin": }
 
@@ -104,6 +106,7 @@ define aem::instance (
     manage_home => $manage_home,
     source      => $source,
     user        => $user,
+    type        => $pkg_type,
   }
 
   if $status != 'unmanaged' {
