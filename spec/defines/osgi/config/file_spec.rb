@@ -34,7 +34,7 @@ describe 'aem::osgi::config::file', type: :defines do
         'character_literal'       => 'C"X"',
         'boolean_literal'         => 'B"false"',
         'unknown_type_literal'    => 'A"foo"',
-        'wrong_format_literal'    => 'T"false" ',
+        'wrong_format_literal'    => 'T"false" '
       },
       user: 'aem'
     }
@@ -128,14 +128,14 @@ describe 'aem::osgi::config::file', type: :defines do
         )
       end
     end
-    
+
     context 'simple string literal' do
 
       it do
         is_expected.to contain_file(
           '/opt/aem/crx-quickstart/install/aem.config'
         ).with_content(
-           /simple_string_literal=T"simple string"\s/
+          /simple_string_literal=T"simple string"\s/
         )
       end
     end
