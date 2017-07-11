@@ -6,6 +6,9 @@ service.pid="<%= $pid %>"
 <%- $properties.keys.each | String $key | { -%>
   <%- if is_array($properties[$key]) { -%>
 <%= $key -%>=["<%= $properties[$key].join('","') -%>"]
+  <%- } elsif is_string($properties[$key]) and $properties[$key] =~ /^[T|I|L|F|D|X|S|C|B]".*"$/ { -%>
+<%= $key -%>=<%= $properties[$key] -%>
+
   <%- } else {-%>
     <%- if is_bool($properties[$key]) { -%>
       <%- $type = "B" -%>
