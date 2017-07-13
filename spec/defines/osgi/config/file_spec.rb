@@ -135,7 +135,7 @@ describe 'aem::osgi::config::file', type: :defines do
         is_expected.to contain_file(
           '/opt/aem/crx-quickstart/install/aem.config'
         ).with_content(
-          /simple_string_literal=T"simple string"\s/
+          /simple_string_literal="simple string"\s/
         )
       end
     end
