@@ -391,7 +391,8 @@ describe 'aem::config', type: :defines do
           name: '/opt/aem/crx-quickstart/install/first-package-1.0.0.zip',
           source: '/path/to/first-package-1.0.0.zip',
           type: 'file',
-          user: 'aem'
+          user: 'aem',
+          manage_rubygems: true
         )
       end
     end
@@ -406,7 +407,8 @@ describe 'aem::config', type: :defines do
           name: '/opt/aem/crx-quickstart/install/second-package-2.0.0.zip',
           source: '/path/to/second-package-2.0.0.zip',
           type: 'file',
-          user: 'aem'
+          user: 'aem',
+          manage_rubygems: true
         )
       end
     end
