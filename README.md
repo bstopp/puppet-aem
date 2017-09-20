@@ -591,10 +591,10 @@ Namevar. Required.
 
 ##### `ensure`
 Required. Changes the state of this CRX Package.  
-* `present`: Uploaded but not installed; if installed will uninstall. 
+* `present`: Uploaded but not installed; if installed will uninstall.
 * `installed`: Uploaded and installed; Equivalent to `present` when **type** == `file`. (**Default**)
 * `purged`: Uninstalled, then removed from the package manager. Equivalent to `absent` when **type** == `file`.
-* `absent`: Removed from the package manager. 
+* `absent`: Removed from the package manager.
 
 ##### `group`
 Optional. Sets the group for file ownership. Valid options: any valid group. Default: `aem`.
@@ -625,6 +625,10 @@ Optional. Sets the user for file ownership. Valid options: any valid user. Defau
 
 ##### `username`
 Required if **type** == `api`. Sets the user for accessing the CRX Package Manager API. Valid options: any valid user.
+
+##### `manage_rubygems`
+Optional. Setting to false will stop this define managing the Ruby and rubygems installs. This is necessary if these are managed via another way, like systempackages for example.
+Default: `true`.
 
 #### Define: `aem::dispatcher::farm`
 
