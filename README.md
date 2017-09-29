@@ -626,6 +626,10 @@ Optional. Sets the user for file ownership. Valid options: any valid user. Defau
 ##### `username`
 Required if **type** == `api`. Sets the user for accessing the CRX Package Manager API. Valid options: any valid user.
 
+##### `timeout`
+Optional. Timeout value for AEM to finish the install and relply with an OK state.
+Default: 60(seconds).
+
 #### Define: `aem::dispatcher::farm`
 
 Configures a single farm instance within the Dispatcher. For more details and examples, see the [wiki][].
