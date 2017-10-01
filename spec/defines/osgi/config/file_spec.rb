@@ -20,10 +20,21 @@ describe 'aem::osgi::config::file', type: :defines do
       home: '/opt/aem',
       pid: :undef,
       properties: {
-        'boolean' => false,
-        'long'    => 123_456_789,
-        'string'  => 'string',
-        'array'   => ['an', 'array', 'of', 'values']
+        'boolean'                 => false,
+        'long'                    => 123_456_789,
+        'string'                  => 'string',
+        'array'                   => ['an', 'array', 'of', 'values'],
+        'simple_string_literal'   => 'T"simple string"',
+        'integer_literal'         => 'I"10"',
+        'long_literal'            => 'L"99"',
+        'float_literal'           => 'F"3.14"',
+        'double_literal'          => 'D"9.99"',
+        'byte_literal'            => 'X"Y"',
+        'short_literal'           => 'S"100"',
+        'character_literal'       => 'C"X"',
+        'boolean_literal'         => 'B"false"',
+        'unknown_type_literal'    => 'A"foo"',
+        'wrong_format_literal'    => 'T"false" '
       },
       user: 'aem'
     }
@@ -114,6 +125,127 @@ describe 'aem::osgi::config::file', type: :defines do
           '/opt/aem/crx-quickstart/install/aem.config'
         ).with_content(
           /array=\["an","array","of","values"\]/
+        )
+      end
+    end
+
+    context 'simple string literal' do
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install/aem.config'
+        ).with_content(
+          /simple_string_literal="simple string"\s/
+        )
+      end
+    end
+
+    context 'integer literal' do
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install/aem.config'
+        ).with_content(
+          /integer_literal=I"10"\s/
+        )
+      end
+    end
+
+    context 'long literal' do
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install/aem.config'
+        ).with_content(
+          /long_literal=L"99"\s/
+        )
+      end
+    end
+
+    context 'float literal' do
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install/aem.config'
+        ).with_content(
+          /float_literal=F"3.14"\s/
+        )
+      end
+    end
+
+    context 'double literal' do
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install/aem.config'
+        ).with_content(
+          /double_literal=D"9.99"\s/
+        )
+      end
+    end
+
+    context 'byte literal' do
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install/aem.config'
+        ).with_content(
+          /byte_literal=X"Y"\s/
+        )
+      end
+    end
+
+    context 'short literal' do
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install/aem.config'
+        ).with_content(
+          /short_literal=S"100"\s/
+        )
+      end
+    end
+
+    context 'character literal' do
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install/aem.config'
+        ).with_content(
+          /character_literal=C"X"\s/
+        )
+      end
+    end
+
+    context 'boolean literal' do
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install/aem.config'
+        ).with_content(
+          /boolean_literal=B"false"\s/
+        )
+      end
+    end
+
+    context 'unknown type literal' do
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install/aem.config'
+        ).with_content(
+          /unknown_type_literal="A"foo""\s/
+        )
+      end
+    end
+
+    context 'wrong format literal' do
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/install/aem.config'
+        ).with_content(
+          /wrong_format_literal="T"false" "\s/
         )
       end
     end

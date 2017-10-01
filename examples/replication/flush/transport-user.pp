@@ -12,4 +12,3 @@ aem::agent::replication::flush { 'Flush Agent' :
   trans_user     => 'not-the-admin-user',
   username       => 'admin',
 }
-}

@@ -6,15 +6,16 @@ define aem::crx::package (
   $ensure          = 'present',
   $group           = 'aem',
   $home            = undef,
+  $manage_rubygems = true,
   $pkg_group       = undef,
   $pkg_name        = undef,
   $pkg_version     = undef,
   $password        = undef,
   $source          = undef,
+  $timeout         = undef,
   $type            = undef,
   $user            = 'aem',
   $username        = undef,
-  $manage_rubygems = true,
 ) {
 
   validate_re($ensure, '^(present|installed|absent|purged)$',
@@ -78,7 +79,8 @@ define aem::crx::package (
         pkg      => $pkg_name,
         source   => $source,
         username => $username,
-        version  => $pkg_version
+        version  => $pkg_version,
+        timeout  => $timeout,
       }
     }
     'file': {

@@ -630,6 +630,10 @@ Required if **type** == `api`. Sets the user for accessing the CRX Package Manag
 Optional. Setting to false will stop this define managing the Ruby and rubygems installs. This is necessary if these are managed via another way, like systempackages for example.
 Default: `true`.
 
+##### `timeout`
+Optional. Timeout value for AEM to finish the install and reply with an OK state.
+Default: 60(seconds).
+
 #### Define: `aem::dispatcher::farm`
 
 Configures a single farm instance within the Dispatcher. For more details and examples, see the [wiki][].
