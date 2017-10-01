@@ -121,6 +121,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     found_pkg = find_version(data.results)
     Puppet.debug("aem_crx_package::ruby - Found package: #{found_pkg}")
     if found_pkg
+      @property_hash[:pkg] = found_pkg.name
       @property_hash[:group] = found_pkg.group
       @property_hash[:version] = found_pkg.version
       @property_hash[:ensure] = found_pkg.last_unpacked ? :installed : :present
