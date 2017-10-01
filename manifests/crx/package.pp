@@ -14,6 +14,7 @@ define aem::crx::package (
   $type        = undef,
   $user        = 'aem',
   $username    = undef,
+  $timeout     = undef,
 ) {
 
   validate_re($ensure, '^(present|installed|absent|purged)$',
@@ -69,7 +70,8 @@ define aem::crx::package (
         pkg      => $pkg_name,
         source   => $source,
         username => $username,
-        version  => $pkg_version
+        version  => $pkg_version,
+        timeout  => $timeout,
       }
 
       Class['ruby::dev']
