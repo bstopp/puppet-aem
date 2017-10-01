@@ -9,7 +9,7 @@ group :development, :tests do
   gem 'puppetlabs_spec_helper',     require: false
   gem 'rake',                       require: false
   gem 'rspec',                      require: false
-  gem 'rspec-puppet',               require: false
+  gem 'rspec-puppet', '<2.6',       require: false
   gem 'simplecov',                  require: false
   gem 'webmock',                    require: false
   # Until https://github.com/hirakiuc/tinybucket/issues/113 is fixed
