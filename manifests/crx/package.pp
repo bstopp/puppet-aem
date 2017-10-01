@@ -101,7 +101,7 @@ define aem::crx::package (
       }
     }
     default: {
-      fail("${type} is not supported for type. Allowed values are 'api' and 'type'.")
+      fail("${type} is not supported for type. Allowed values are 'api' and 'file'.")
     }
   }
 }
