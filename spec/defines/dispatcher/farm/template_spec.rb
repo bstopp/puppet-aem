@@ -869,7 +869,7 @@ describe 'aem::dispatcher::farm', type: :define do
 
     context 'virtualhosts' do
       let(:params) do
-        default_params.merge(virtualhosts: %w(www.avirtualhost.com another.virtual.com))
+        default_params.merge(virtualhosts: %w[www.avirtualhost.com another.virtual.com])
       end
       it { is_expected.to compile }
       it do

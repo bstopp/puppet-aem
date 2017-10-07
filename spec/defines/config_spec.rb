@@ -114,7 +114,7 @@ describe 'aem::config', type: :defines do
 
     context 'runmodes' do
       let(:params) do
-        default_params.merge(runmodes: %w(test runmodes))
+        default_params.merge(runmodes: %w[test runmodes])
       end
 
       it do
@@ -374,10 +374,10 @@ describe 'aem::config', type: :defines do
     end
     let(:params) do
       default_params.merge(
-        crx_packages: %w(
+        crx_packages: %w[
           /path/to/first-package-1.0.0.zip
           /path/to/second-package-2.0.0.zip
-        )
+        ]
       )
     end
     context 'defines first config resource' do
