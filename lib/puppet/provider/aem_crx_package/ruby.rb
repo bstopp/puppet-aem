@@ -109,10 +109,13 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     path = "/etc/packages/#{@resource[:group]}/#{@resource[:pkg]}-.zip"
     begin
       retries ||= @resource[:retries]
+      retry_timeout = @resource[:retry_timeout]
       data = client.list(path: path, include_versions: true)
     rescue CrxPackageManager::ApiError => e
       Puppet.info("Unable to find package for Aem_crx_package[#{@resource[:pkg]}]: #{e}")
       will_retry = (retries -= 1) >= 0
+      Puppet.debug("Waiting #{retry_timeout} seconds before retrying package lookup") if will_retry
+      sleep retry_timeout
       Puppet.debug("Retrying package lookup; remaining retries: #{retries}") if will_retry
       retry if will_retry
       raise
