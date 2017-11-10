@@ -66,7 +66,7 @@ This is a private type intended to start, monitor, and stop an AEM instance, ins
     autos
   end
 
-  %i[user group].each do |type|
+  [:user, :group].each do |type|
     autorequire(type) do
       if @parameters.include?(type)
         val = @parameters[type]
