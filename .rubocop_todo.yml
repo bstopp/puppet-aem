@@ -13,11 +13,17 @@ Bundler/DuplicatedGem:
   Exclude:
     - 'Gemfile'
 
+Layout/IndentHeredoc:
+  Enabled: false
+
 # Offense count: 2
 Lint/EmptyWhen:
   Exclude:
     - 'lib/puppet/provider/aem_osgi_config/ruby.rb'
     - 'lib/puppet/provider/aem_sling_resource/ruby.rb'
+
+Lint/ScriptPermission:
+  Enabled: false
 
 # Offense count: 15
 Metrics/AbcSize:
@@ -30,6 +36,9 @@ Metrics/CyclomaticComplexity:
 # Offense count: 6
 Metrics/PerceivedComplexity:
   Max: 10
+
+Style/FormatStringToken:
+  EnforcedStyle: template
 
 ## Offense count: 6
 ## Cop supports --auto-correct.

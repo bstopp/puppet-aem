@@ -39,7 +39,7 @@ describe 'aem::service', type: :defines do
     end
   end
 
-  %w(CentOS Fedora RedHat).each do |os|
+  %w[CentOS Fedora RedHat].each do |os|
     context os do
 
       let(:params) do

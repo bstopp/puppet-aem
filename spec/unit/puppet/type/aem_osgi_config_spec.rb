@@ -18,7 +18,7 @@ describe Puppet::Type.type(:aem_osgi_config) do
   end
 
   describe 'when validating attributes' do
-    [:name, :handle_missing, :home, :username, :password, :pid].each do |param|
+    %i[name handle_missing home username password pid].each do |param|
       it "should have a #{param} parameter" do
         expect(described_class.attrtype(param)).to eq(:param)
       end
@@ -128,7 +128,7 @@ describe Puppet::Type.type(:aem_osgi_config) do
             name: 'bar',
             ensure: :present,
             home: '/opt/aem',
-            configuration: %w(foo bar)
+            configuration: %w[foo bar]
           )
         end.to raise_error(Puppet::Error, /must be a hash/)
       end

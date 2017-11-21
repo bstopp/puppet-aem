@@ -4,7 +4,7 @@ require 'beaker'
 require 'beaker-rspec'
 require 'beaker/puppet_install_helper'
 
-UNSUPPORTED_PLATFORMS = %w(Suse windows AIX Solaris).freeze
+UNSUPPORTED_PLATFORMS = %w[Suse windows AIX Solaris].freeze
 @puppet_agent_version = ENV['PUPPET_INSTALL_VERSION'] ||= '1.8.0'
 
 DEBUG = ENV['BEAKER_debug'] ? '--debug'.freeze : ''.freeze
@@ -250,47 +250,55 @@ RSpec.shared_examples 'setup aem' do
 
       Aem::License[\"author\"] ~> Aem::Service[\"author\"]
 
-      aem::crx::package { \"author-test-pkg\" :
-        ensure      => installed,
-        home        => \"/opt/aem/author\",
-        password    => \"admin\",
-        pkg_group   => \"my_packages\",
-        pkg_name    => \"test\",
-        pkg_version => \"2.0.0\",
-        source      => \"/tmp/test-2.0.0.zip\",
-        type        => \"api\",
-        username    => \"admin\"
-      }
+  MANIFEST
 
-      $res_props = {
-        \"jcr:primaryType\" => \"nt:unstructured\",
-        \"title\"            => \"title string\",
-        \"text\"             => \"text string\",
-        \"child\"            => {
+  if ENV['AEM_LICENSE']
+    site += <<-MANIFEST
+        aem::crx::package { \"author-test-pkg\" :
+          ensure      => installed,
+          home        => \"/opt/aem/author\",
+          password    => \"admin\",
+          pkg_group   => \"my_packages\",
+          pkg_name    => \"test\",
+          pkg_version => \"2.0.0\",
+          source      => \"/tmp/test-2.0.0.zip\",
+          type        => \"api\",
+          username    => \"admin\"
+        }
+
+        $res_props = {
           \"jcr:primaryType\" => \"nt:unstructured\",
-          \"property\"         => \"value\",
-          \"grandchild\"       => {
+          \"title\"            => \"title string\",
+          \"text\"             => \"text string\",
+          \"child\"            => {
             \"jcr:primaryType\" => \"nt:unstructured\",
-            \"child attrib\"     => \"another value\",
-            \"array\"            => [\"this\", \"is\", \"an\", \"array\"]
+            \"property\"         => \"value\",
+            \"grandchild\"       => {
+              \"jcr:primaryType\" => \"nt:unstructured\",
+              \"child attrib\"     => \"another value\",
+              \"array\"            => [\"this\", \"is\", \"an\", \"array\"]
+            }
           }
         }
-      }
 
-      aem_sling_resource { \"test-node\" :
-        ensure         => present,
-        path           => \"/content/testnode\",
-        properties     => $res_props,
-        handle_missing => \"remove\",
-        home           => \"/opt/aem/author\",
-        password       => \"admin\",
-        username       => \"admin\"
-      }
+        aem_sling_resource { \"test-node\" :
+          ensure         => present,
+          path           => \"/content/testnode\",
+          properties     => $res_props,
+          handle_missing => \"remove\",
+          home           => \"/opt/aem/author\",
+          password       => \"admin\",
+          username       => \"admin\"
+        }
 
-      Aem::Instance[\"author\"]
-      -> Aem_sling_resource[\"test-node\"]
-      -> Aem::Crx::Package[\"author-test-pkg\"]
+        Aem::Instance[\"author\"]
+        -> Aem_sling_resource[\"test-node\"]
+        -> Aem::Crx::Package[\"author-test-pkg\"]
 
+    MANIFEST
+  end
+
+  site += <<-MANIFEST
     }'
   MANIFEST
 

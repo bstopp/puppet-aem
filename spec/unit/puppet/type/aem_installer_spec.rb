@@ -26,13 +26,13 @@ describe Puppet::Type.type(:aem_installer) do
   end
 
   describe 'when validating attributes' do
-    [:name, :snooze, :timeout].each do |param|
+    %i[name snooze timeout].each do |param|
       it "should have a #{param} parameter" do
         expect(described_class.attrtype(param)).to eq(:param)
       end
     end
 
-    [:home].each do |property|
+    %i[home].each do |property|
       it "should have a #{property} property" do
         expect(described_class.attrtype(property)).to eq(:property)
       end

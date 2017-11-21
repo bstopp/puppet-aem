@@ -53,7 +53,6 @@ Puppet::Type.type(:aem_installer).provide :default, parent: Puppet::Provider do
   def find_instance
     hash = {}
     begin
-
       cmd = [command(:find).to_s, @resource[:home], "-name \"#{@launchpad_name}\"", '-type f']
       execpipe(cmd) do |process|
         process.each_line do |line|
@@ -140,7 +139,6 @@ Puppet::Type.type(:aem_installer).provide :default, parent: Puppet::Provider do
           when Net::HTTPSuccess, Net::HTTPRedirection, Net::HTTPUnauthorized
             return if desired_state == :on
           end
-
         rescue
           return if desired_state == :off
         end
