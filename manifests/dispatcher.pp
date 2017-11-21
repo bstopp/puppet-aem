@@ -69,7 +69,6 @@ class aem::dispatcher (
       group   => $group,
       owner   => $user,
       replace => true,
-      seltype => 'httpd_module_t',
       source  => $module_file,
     }
 
@@ -78,7 +77,6 @@ class aem::dispatcher (
       group   => $group,
       owner   => $user,
       replace => true,
-      seltype => 'httpd_module_t',
       target  => "${::aem::dispatcher::params::mod_path}/${_mod_filename}",
     }
 
