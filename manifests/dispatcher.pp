@@ -96,6 +96,22 @@ class aem::dispatcher (
       content => template("${module_name}/dispatcher/dispatcher.farms.erb")
     }
 
+    if $facts['selinux'] {
+      File["${::aem::dispatcher::params::mod_path}/${_mod_filename}"] {
+        seltype => 'httpd_modules_t',
+      }
+
+      File["${::aem::dispatcher::params::mod_path}/mod_dispatcher.so"] {
+        seltype => 'httpd_modules_t',
+      }
+
+      selboolean { 'httpd_can_network_connect':
+        value      => 'on',
+        persistent => true,
+      }
+    }
+
+
     Anchor['aem::dispatcher::begin']
     -> File["${::aem::dispatcher::params::mod_path}/${_mod_filename}"]
     -> File["${::aem::dispatcher::params::mod_path}/mod_dispatcher.so"]
