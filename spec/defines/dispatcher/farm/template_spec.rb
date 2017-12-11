@@ -231,9 +231,9 @@ describe 'aem::dispatcher::farm', type: :define do
                 'query'     => 'param=*',
                 'protocol'  => 'https',
                 'path'      => '/different/path/to/content',
-                'selectors' => '((sys|doc)view|query|[0-9-]+)',
-                'extension' => '(css|gif|ico|js|png|swf|jpe?g)',
-                'suffix'    => '/suffix/path'
+                'selectors' => '\'((sys|doc)view|query|[0-9-]+)\'',
+                'extension' => '\'(css|gif|ico|js|png|swf|jpe?g)\'',
+                'suffix'    => '\'/suffix/path\''
               }
             )
           end
@@ -278,6 +278,25 @@ describe 'aem::dispatcher::farm', type: :define do
           end
         end
 
+        context 'method regex' do
+          let(:params) do
+            default_params.merge(
+              filters: {
+                'type'   => 'allow',
+                'method' => '\'(GET|HEAD)\''
+              }
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+            ).with_content(
+              %r|/0 {\s*/type\s*"allow"\s*/method\s*\'\(GET\|HEAD\)\'\s*}|
+            )
+          end
+        end
+
         context 'url value' do
           let(:params) do
             default_params.merge(
@@ -293,6 +312,25 @@ describe 'aem::dispatcher::farm', type: :define do
               '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
               %r|/0 {\s*/type\s*"allow"\s*/url\s*"/path/to/content"\s*}|
+            )
+          end
+        end
+
+        context 'url regex' do
+          let(:params) do
+            default_params.merge(
+              filters: {
+                'type' => 'allow',
+                'url'  => '\'/path/to/(content|lib)/?\''
+              }
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+            ).with_content(
+              %r|/0 {\s*/type\s*"allow"\s*/url\s*\'/path/to/\(content\|lib\)/\?\'\s*}|
             )
           end
         end
@@ -316,6 +354,25 @@ describe 'aem::dispatcher::farm', type: :define do
           end
         end
 
+        context 'query regex' do
+          let(:params) do
+            default_params.merge(
+              filters: {
+                'type'     => 'allow',
+                'query'    => '\'param=.*\''
+              }
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+            ).with_content(
+              %r|/0 {\s*/type\s*"allow"\s*/query\s*\'param=\.\*\'\s*}|
+            )
+          end
+        end
+
         context 'protocol' do
           let(:params) do
             default_params.merge(
@@ -331,6 +388,177 @@ describe 'aem::dispatcher::farm', type: :define do
               '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
               %r|/0 {\s*/type\s*"allow"\s*/protocol\s"https"\s*}|
+            )
+          end
+        end
+
+        context 'protocol regex' do
+          let(:params) do
+            default_params.merge(
+              filters: {
+                'type'     => 'allow',
+                'protocol' => '\'https?\''
+              }
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+            ).with_content(
+              %r|/0 {\s*/type\s*"allow"\s*/protocol\s\'https\?\'\s*}|
+            )
+          end
+        end
+
+        context 'path' do
+          let(:params) do
+            default_params.merge(
+              filters: {
+                'type' => 'allow',
+                'path' => '/path/to/content'
+              }
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+            ).with_content(
+              %r|/0 {\s*/type\s*"allow"\s*/path\s*"/path/to/content"\s*}|
+            )
+          end
+        end
+
+        context 'path regex' do
+          let(:params) do
+            default_params.merge(
+              filters: {
+                'type' => 'allow',
+                'path' => '\'/path/to/(content|lib)/?\''
+              }
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+            ).with_content(
+              %r|/0 {\s*/type\s*"allow"\s*/path\s*\'/path/to/\(content\|lib\)/\?\'\s*}|
+            )
+          end
+        end
+
+        context 'selectors' do
+          let(:params) do
+            default_params.merge(
+              filters: {
+                'type'      => 'allow',
+                'selectors' => 'thumb'
+              }
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+            ).with_content(
+              %r|/0 {\s*/type\s*"allow"\s*/selectors\s"thumb"\s*}|
+            )
+          end
+        end
+
+        context 'selectors regex' do
+          let(:params) do
+            default_params.merge(
+              filters: {
+                'type'      => 'allow',
+                'selectors' => '\'[0-9]+\''
+              }
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+            ).with_content(
+              %r|/0 {\s*/type\s*"allow"\s*/selectors\s\'\[0-9\]\+\'\s*}|
+            )
+          end
+        end
+
+        context 'extension' do
+          let(:params) do
+            default_params.merge(
+              filters: {
+                'type'      => 'allow',
+                'extension' => 'ico'
+              }
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+            ).with_content(
+              %r|/0 {\s*/type\s*"allow"\s*/extension\s"ico"\s*}|
+            )
+          end
+        end
+
+        context 'extension regex' do
+          let(:params) do
+            default_params.merge(
+              filters: {
+                'type'      => 'allow',
+                'extension' => '\'(ico|png)\''
+              }
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+            ).with_content(
+              %r|/0 {\s*/type\s*"allow"\s*/extension\s\'\(ico\|png\)\'\s*}|
+            )
+          end
+        end
+
+        context 'suffix' do
+          let(:params) do
+            default_params.merge(
+              filters: {
+                'type'   => 'allow',
+                'suffix' => '/suffix/path'
+              }
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+            ).with_content(
+              %r|/0 {\s*/type\s*"allow"\s*/suffix\s"/suffix/path"\s*}|
+            )
+          end
+        end
+
+        context 'suffix regex' do
+          let(:params) do
+            default_params.merge(
+              filters: {
+                'type'   => 'allow',
+                'suffix' => '\'/suffix/path/.*\''
+              }
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+            ).with_content(
+              %r|/0 {\s*/type\s*"allow"\s*/suffix\s\'/suffix/path/\.\*\'\s*}|
             )
           end
         end

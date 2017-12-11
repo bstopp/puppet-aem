@@ -33,7 +33,7 @@
 
   /renders {
   <%- @_renders.each_with_index do |renderer, idx| -%>
-    /renderer<%= idx -%> { 
+    /renderer<%= idx -%> {
       /hostname "<%= renderer['hostname'] -%>"
       /port "<%= renderer['port'] -%>"
       <%- if renderer['timeout'] -%>
@@ -57,28 +57,28 @@
     /<%= idx -%> {
       /type "<%= filter['type'] -%>"
       <%- if filter['method'] -%>
-      /method "<%= filter['method'] -%>"
+      /method <%= scope.call_function('render_farm_filter', [filter['method']]) -%>
       <%- end -%>
       <%- if filter['url'] -%>
-      /url "<%= filter['url'] -%>"
+      /url <%= scope.call_function('render_farm_filter', [filter['url']]) -%>
       <%- end -%>
       <%- if filter['query'] -%>
-      /query "<%= filter['query'] -%>"
+      /query <%= scope.call_function('render_farm_filter', [filter['query']]) -%>
       <%- end -%>
       <%- if filter['protocol'] -%>
-      /protocol "<%= filter['protocol'] -%>"
+      /protocol <%= scope.call_function('render_farm_filter', [filter['protocol']]) -%>
       <%- end -%>
       <%- if filter['path'] -%>
-      /path "<%= filter['path'] -%>"
+      /path <%= scope.call_function('render_farm_filter', [filter['path']]) -%>
       <%- end -%>
       <%- if filter['selectors'] -%>
-      /selectors '<%= filter['selectors'] -%>'
+      /selectors <%= scope.call_function('render_farm_filter', [filter['selectors']]) -%>
       <%- end -%>
       <%- if filter['extension'] -%>
-      /extension '<%= filter['extension'] -%>'
+      /extension <%= scope.call_function('render_farm_filter', [filter['extension']]) -%>
       <%- end -%>
       <%- if filter['suffix'] -%>
-      /suffix '<%= filter['suffix'] -%>'
+      /suffix <%= scope.call_function('render_farm_filter', [filter['suffix']]) -%>
       <%- end -%>
     }
     <%- end -%>

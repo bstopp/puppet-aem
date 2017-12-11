@@ -20,6 +20,18 @@ There are two methods for defining a Filter hash. If the hash contains the _glob
   * extension
   * suffix
 
+As of Dispatcher version 4.2.0 there is [support for POSIX regular expressions](https://helpx.adobe.com/experience-manager/dispatcher/using/dispatcher-configuration.html#main-pars_title_1996763852) for the following values:
+
+  * url
+  * query
+  * protocol
+  * path
+  * selectors
+  * extension
+  * suffix
+
+If you want to use a POSIX regular expression you must encapsulate it in single quotes.
+
 #### Glob Example
 
 This example creates a Farm definition with custom filter rules, using a glob example:
@@ -28,8 +40,8 @@ This example creates a Farm definition with custom filter rules, using a glob ex
 aem::dispatcher::farm { 'site' :
   docroot => '/var/www',
   filters => [
-    { 
-      'rank' => 310, 
+    {
+      'rank' => 310,
       'type' => 'allow',
       'glob' => '*.html',
     },
@@ -56,7 +68,7 @@ This definition will create a file *dispatcher.site.any* with the following cont
   }
 
   /renders {
-    /renderer0 { 
+    /renderer0 {
       /hostname "localhost"
       /port "4503"
     }
@@ -98,8 +110,8 @@ aem::dispatcher::farm { 'site' :
       'rank'      => 310,
       'type'      => 'allow',
       'path'      => '/content',
-      'selectors' => '(feed|rss|pages|languages|blueprint|infinity|tidy)'
-      'extension' => '(json|xml|html)'
+      'selectors' => '\'(feed|rss|pages|languages|blueprint|infinity|tidy)\''
+      'extension' => '\'(json|xml|html)\''
     },
     {
       'rank' => 300,
@@ -135,8 +147,8 @@ This definition will create a file *dispatcher.site.any* with the following cont
     /1 {
       /type "allow"
       /path "/content"
-      /selectors '(feed|rss|pages|languages|blueprint|infinity|tidy)'
-      /extension '(json|xml|html)'
+      /selectors '\'(feed|rss|pages|languages|blueprint|infinity|tidy)\''
+      /extension '\'(json|xml|html)\''
     }
   }
 
