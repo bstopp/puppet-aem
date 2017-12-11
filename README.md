@@ -138,7 +138,7 @@ Optional. Sets the group for file ownership. Valid options: any valid group. Def
 Optional. Sets the name and location of the dispatcher log file. Valid options: any fully qualified file name. Default: *<apache log root>/dispatcher.log*.
 
 ##### `log_level`
-Optional. Sets the log level for dispatcher logging. Valid options: `0`, `1`, `2`, `3`, `error`, `warn`, `info`, `debug`. Default: `warn`.
+Optional. Sets the log level for dispatcher logging. Valid options: `0`, `1`, `2`, `3`, `4`, `error`, `warn`, `info`, `debug`, `trace`. Default: `warn`.
 
 #### `module_file`
 Required. Specifies which dispatcher module will be loaded. Valid options: any absolute path to file.
