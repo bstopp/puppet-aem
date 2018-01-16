@@ -563,7 +563,7 @@ PORT=#{opts[:port]}
             'boolean' => false,
             'long'    => 123_456_789,
             'string'  => 'string',
-            'array'   => %w(this is an array)
+            'array'   => %w[this is an array]
           },
           handle_missing: :merge,
           home: '/opt/aem',
@@ -590,7 +590,7 @@ PORT=#{opts[:port]}
           },
           'array' => {
             'is_set' => true,
-            'value'  => %w(this is an array)
+            'value'  => %w[this is an array]
           }
         }
         data.to_json

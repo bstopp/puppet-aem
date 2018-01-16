@@ -4,22 +4,22 @@ require 'puppet-syntax/tasks/puppet-syntax'
 require 'rake/clean'
 require 'rubocop/rake_task'
 
-exclude_paths = %w(
+exclude_paths = %w[
   vendor/**/*.pp
   spec/**/*.pp
   pkg/**/*.pp
-)
+]
 
-disabled_checks = %w(
+disabled_checks = %w[
   80chars
   class_inherits_from_params_class
   class_parameter_defaults
   documentation
   single_quote_string_with_variables
   variable_scope
-)
+]
 
-task default: [:spec, :lint, :rubocop]
+task default: %i[spec lint rubocop]
 
 PuppetLint::RakeTask.new :lint do |config|
   config.fail_on_warnings = true

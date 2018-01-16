@@ -108,15 +108,16 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
     depth = get_depth(resource[:properties])
 
     uri = URI("#{content_uri}.#{depth}.json")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.set_debug_output($stdout) if Puppet[:debug]
     req = Net::HTTP::Get.new(uri.request_uri)
+
     req.basic_auth resource[:username], resource[:password]
 
     Timeout.timeout(@resource[:timeout]) do
       Kernel.loop do
         begin
-          res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-            http.request(req)
-          end
+          res = http.request(req)
           jsn = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
           # Not found is OK to return
           return jsn if jsn || res.is_a?(Net::HTTPNotFound)

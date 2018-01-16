@@ -9,7 +9,7 @@ group :development, :tests do
   gem 'puppetlabs_spec_helper',     require: false
   gem 'rake',                       require: false
   gem 'rspec',                      require: false
-  gem 'rspec-puppet',               require: false
+  gem 'rspec-puppet', '<2.6',       require: false
   gem 'simplecov',                  require: false
   gem 'webmock',                    require: false
   # Until https://github.com/hirakiuc/tinybucket/issues/113 is fixed
@@ -22,7 +22,7 @@ group :linting do
 end
 
 group :system_tests do
-  gem 'beaker',                       require: false
+  gem 'beaker', '<3.14.0',            require: false
   gem 'beaker-puppet_install_helper', require: false
   gem 'beaker-rspec',                 require: false
   gem 'serverspec',                   require: false

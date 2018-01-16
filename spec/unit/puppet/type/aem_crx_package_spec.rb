@@ -17,13 +17,13 @@ describe Puppet::Type.type(:aem_crx_package) do
   end
 
   describe 'when validating attributes' do
-    [:name, :home, :password, :retries, :source, :timeout, :username].each do |param|
+    %i[name home password retries source timeout username].each do |param|
       it "should have a #{param} parameter" do
         expect(described_class.attrtype(param)).to eq(:param)
       end
     end
 
-    [:group, :version].each do |prop|
+    %i[group version].each do |prop|
       it "should have a #{prop} property" do
         expect(described_class.attrtype(prop)).to eq(:property)
       end
@@ -70,7 +70,7 @@ describe Puppet::Type.type(:aem_crx_package) do
           it 'should match to present' do
             expect(ensre.insync?(:present)).to be_truthy
           end
-          [:installed, :absent, :purged].each do |param|
+          %i[installed absent purged].each do |param|
             it "should not match #{param}" do
               expect(ensre.insync?(param)).to be_falsey
             end
@@ -83,7 +83,7 @@ describe Puppet::Type.type(:aem_crx_package) do
           it 'should match to installed' do
             expect(ensre.insync?(:installed)).to be_truthy
           end
-          [:present, :absent, :purged].each do |param|
+          %i[present absent purged].each do |param|
             it "should not match #{param}" do
               expect(ensre.insync?(param)).to be_falsey
             end
@@ -93,12 +93,12 @@ describe Puppet::Type.type(:aem_crx_package) do
           before :each do
             resource[:ensure] = :absent
           end
-          [:absent, :purged].each do |param|
+          %i[absent purged].each do |param|
             it "should match #{param}" do
               expect(ensre.insync?(param)).to be_truthy
             end
           end
-          [:present, :installed].each do |param|
+          %i[present installed].each do |param|
             it "should not match #{param}" do
               expect(ensre.insync?(param)).to be_falsey
             end
@@ -108,12 +108,12 @@ describe Puppet::Type.type(:aem_crx_package) do
           before :each do
             resource[:ensure] = :purged
           end
-          [:absent, :purged].each do |param|
+          %i[absent purged].each do |param|
             it "should match #{param}" do
               expect(ensre.insync?(param)).to be_truthy
             end
           end
-          [:present, :installed].each do |param|
+          %i[present installed].each do |param|
             it "should not match #{param}" do
               expect(ensre.insync?(param)).to be_falsey
             end

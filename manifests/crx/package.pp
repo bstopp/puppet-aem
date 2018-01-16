@@ -3,17 +3,19 @@
 # Used to install a CRX Package.
 #
 define aem::crx::package (
-  $ensure      = 'present',
-  $group       = 'aem',
-  $home        = undef,
-  $pkg_group   = undef,
-  $pkg_name    = undef,
-  $pkg_version = undef,
-  $password    = undef,
-  $source      = undef,
-  $type        = undef,
-  $user        = 'aem',
-  $username    = undef,
+  $ensure          = 'present',
+  $group           = 'aem',
+  $home            = undef,
+  $manage_rubygems = true,
+  $pkg_group       = undef,
+  $pkg_name        = undef,
+  $pkg_version     = undef,
+  $password        = undef,
+  $source          = undef,
+  $timeout         = undef,
+  $type            = undef,
+  $user            = 'aem',
+  $username        = undef,
 ) {
 
   validate_re($ensure, '^(present|installed|absent|purged)$',
@@ -47,19 +49,27 @@ define aem::crx::package (
         fail("Package Version is required when type == 'api'")
       }
 
-      include ::ruby::dev
-      include ::aem
+      if $manage_rubygems {
+        include ::ruby::dev
+        include ::aem
 
-      ensure_packages({
-        'crx_packmgr_api_client' => {
-          'ensure'   => $aem::crx_packmgr_api_client_ver,
-          'provider' => $aem::puppetgem
-        },
-        'xml-simple' => {
-          'ensure'   => $aem::xmlsimple_ver,
-          'provider' => $aem::puppetgem
-        }
-      })
+        ensure_packages({
+          'crx_packmgr_api_client' => {
+            'ensure'   => $aem::crx_packmgr_api_client_ver,
+            'provider' => $aem::puppetgem
+          },
+          'xml-simple' => {
+            'ensure'   => $aem::xmlsimple_ver,
+            'provider' => $aem::puppetgem
+          }
+        })
+
+        Class['ruby::dev']
+        -> Class['aem']
+        -> Package['xml-simple']
+        -> Package['crx_packmgr_api_client']
+        -> Aem_Crx_Package[$title]
+      }
 
       aem_crx_package { $title :
         ensure   => $ensure,
@@ -69,15 +79,9 @@ define aem::crx::package (
         pkg      => $pkg_name,
         source   => $source,
         username => $username,
-        version  => $pkg_version
+        version  => $pkg_version,
+        timeout  => $timeout,
       }
-
-      Class['ruby::dev']
-      -> Class['aem']
-      -> Package['xml-simple']
-      -> Package['crx_packmgr_api_client']
-      -> Aem_Crx_Package[$title]
-
     }
     'file': {
 
@@ -97,7 +101,7 @@ define aem::crx::package (
       }
     }
     default: {
-      fail("${type} is not supported for type. Allowed values are 'api' and 'type'.")
+      fail("${type} is not supported for type. Allowed values are 'api' and 'file'.")
     }
   }
 }

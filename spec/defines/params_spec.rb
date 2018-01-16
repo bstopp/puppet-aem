@@ -270,10 +270,10 @@ describe 'aem::instance', type: :defines do
 
       context 'valid' do
         let(:params) do
-          default_params.merge(runmodes: %w(arunmode anotherrunmode))
+          default_params.merge(runmodes: %w[arunmode anotherrunmode])
         end
         it { is_expected.to compile }
-        it { is_expected.to contain_aem__instance('aem').with('runmodes' => %w(arunmode anotherrunmode)) }
+        it { is_expected.to contain_aem__instance('aem').with('runmodes' => %w[arunmode anotherrunmode]) }
       end
 
       context 'invalid' do
