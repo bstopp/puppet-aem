@@ -16,6 +16,8 @@ define aem::crx::package (
   $type            = undef,
   $user            = 'aem',
   $username        = undef,
+  $retries         = undef,
+  $retry_timeout   = undef,
 ) {
 
   validate_re($ensure, '^(present|installed|absent|purged)$',
@@ -72,15 +74,17 @@ define aem::crx::package (
       }
 
       aem_crx_package { $title :
-        ensure   => $ensure,
-        group    => $pkg_group,
-        home     => $home,
-        password => $password,
-        pkg      => $pkg_name,
-        source   => $source,
-        username => $username,
-        version  => $pkg_version,
-        timeout  => $timeout,
+        ensure        => $ensure,
+        group         => $pkg_group,
+        home          => $home,
+        password      => $password,
+        pkg           => $pkg_name,
+        source        => $source,
+        username      => $username,
+        version       => $pkg_version,
+        timeout       => $timeout,
+        retries       => $retries,
+        retry_timeout => $retry_timeout
       }
     }
     'file': {

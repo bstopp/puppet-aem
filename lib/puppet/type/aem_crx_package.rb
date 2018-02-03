@@ -91,6 +91,15 @@ This is a private type used to manage CRX Packages via API calls.
     munge(&:to_i)
   end
 
+  newparam(:retry_timeout) do
+    desc 'Seconds to wait between retries to communicate with AEM before giving up.'
+    newvalues(/^\d+$/)
+
+    defaultto 1
+
+    munge(&:to_i)
+  end
+
   newparam(:source) do
     desc 'The source package file to upload/install.'
   end
