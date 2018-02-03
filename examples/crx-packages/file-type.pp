@@ -5,6 +5,7 @@ aem::crx::package { 'author-test-pkg' :
   group  => 'aem',
   home   => '/opt/aem',
   source => '/path/to/file.zip',
+  type   => 'file',
   user   => 'aem'
 }
 
