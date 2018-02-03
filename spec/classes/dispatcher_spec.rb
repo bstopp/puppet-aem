@@ -258,10 +258,16 @@ describe 'aem::dispatcher', type: :class do
           end
           it { is_expected.to compile.with_all_deps }
         end
+        context 'should accept 4' do
+          let(:params) do
+            default_params.merge(log_level: '4')
+          end
+          it { is_expected.to compile.with_all_deps }
+        end
 
         context 'should not accept any other positive value' do
           let(:params) do
-            default_params.merge(log_level: '4')
+            default_params.merge(log_level: '5')
           end
           it { expect { is_expected.to compile }.to raise_error(/smaller or equal/) }
         end
@@ -295,6 +301,12 @@ describe 'aem::dispatcher', type: :class do
         context 'should accept debug' do
           let(:params) do
             default_params.merge(log_level: 'debug')
+          end
+          it { is_expected.to compile.with_all_deps }
+        end
+        context 'should accept trace' do
+          let(:params) do
+            default_params.merge(log_level: 'trace')
           end
           it { is_expected.to compile.with_all_deps }
         end

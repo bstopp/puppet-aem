@@ -29,10 +29,10 @@ class aem::dispatcher (
   }
 
   if is_integer($log_level) {
-    validate_integer($log_level, 3, 0)
+    validate_integer($log_level, 4, 0)
   } else {
-    validate_re($log_level, '^(error|warn|info|debug)$',
-      "${log_level} is not supported for log_level. Allowed values are 'error', 'warn', 'info', and 'debug'.")
+    validate_re($log_level, '^(error|warn|info|debug|trace)$',
+      "${log_level} is not supported for log_level. Allowed values are 'error', 'warn', 'info', 'debug' and 'trace'.")
   }
 
   validate_absolute_path($module_file)
