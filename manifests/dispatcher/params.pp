@@ -54,8 +54,6 @@ class aem::dispatcher::params {
 
   $log_level = 'warn'
 
-  $no_server_header = 'off'
-
   $pass_error = '0'
 
   $priority = 0

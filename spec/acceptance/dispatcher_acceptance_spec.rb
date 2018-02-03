@@ -127,9 +127,6 @@ describe 'dispatcher acceptance' do
       it 'should specify the Dispatcher Log Level' do
         shell("grep -- 'DispatcherLogLevel.*warn' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
-      it 'should specify the Dispatcher Server Header' do
-        shell("grep -- 'DispatcherNoServerHeader.*off' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
-      end
       it 'should specify the Dispatcher Decline Root' do
         shell("grep -- 'DispatcherDeclineRoot.*off' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
@@ -423,7 +420,6 @@ describe 'dispatcher acceptance' do
               log_file          => \"\${::apache::logroot}/my-dispatcher.log\",
               log_level         => 3,
               module_file       => \"/tmp/dispatcher-apache-module.so\",
-              no_server_header  => \"on\",
               use_processed_url => 1,
               pass_error        => \"400-404",
             }
@@ -493,9 +489,6 @@ describe 'dispatcher acceptance' do
       end
       it 'should specify the Dispatcher Log Level' do
         shell("grep -- 'DispatcherLogLevel.*3' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
-      end
-      it 'should specify the Dispatcher Server Header' do
-        shell("grep -- 'DispatcherNoServerHeader.*on' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)
       end
       it 'should specify the Dispatcher Decline Root' do
         shell("grep -- 'DispatcherDeclineRoot.*1' #{conf_dir}/dispatcher.conf", acceptable_exit_codes: 0)

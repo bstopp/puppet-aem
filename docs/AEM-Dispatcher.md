@@ -42,7 +42,6 @@ class { 'aem::dispatcher' :
   log_file          => '/path/to/log/dir/my-dispatcher.log',
   log_level         => 3,
   module_file       => '/path/to/dispatcher-module.so',
-  no_server_header  => 'on',
   use_processed_url => 1,
   pass_error        => '400-404,500',
 }
@@ -54,7 +53,6 @@ This definition loads the dispatcher module into the Apache and configures it wi
 * The farm will have a name referenced: *named-instance*
 * Log file: *my-dispatcher.log*, in the directory: */path/to/log*
 * DispatcherLogLevel: *3*
-* DispatcherNoServerHeader: *on*
 * DispatcherDelcineRoot: *1*
 * DispatcherUseProcessedURL: *1*
 * DispatcherPassError: *400-404,500*

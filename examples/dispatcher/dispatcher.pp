@@ -16,7 +16,6 @@ class { 'aem::dispatcher' :
   log_file          => '/path/to/log/dir/my-dispatcher.log',
   log_level         => 3,
   module_file       => '/path/to/dispatcher-module.so',
-  no_server_header  => 'on',
   use_processed_url => 1,
   pass_error        => '400-404,500',
 }
