@@ -169,7 +169,7 @@
     /url "<%= @auth_checker['url'] -%>"
 
     /filter {
-    <%- @auth_checker['filters'].sort_by { |entry| entry['rank'] || -1 }.each_with_index do |filter, idx| -%>
+    <%- @auth_checker['filter'].sort_by { |entry| entry['rank'] || -1 }.each_with_index do |filter, idx| -%>
       <%- if filter['glob'] -%>
       /<%= idx -%> { /type "<%= filter['type'] -%>" /glob "<%= filter['glob'] -%>" }
       <%- else -%>
@@ -206,7 +206,7 @@
 
     /headers {
     <%- @auth_checker['headers'].sort_by { |entry| entry['rank'] || -1 }.each_with_index do |header, idx| -%>
-      /<%= idx -%> { /type "<%= rule['type'] -%>" /glob "<%= rule['glob'] -%>" }
+      /<%= idx -%> { /type "<%= header['type'] -%>" /glob "<%= header['glob'] -%>" }
     <%- end -%>
     }
   }
