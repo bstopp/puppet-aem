@@ -13,6 +13,7 @@ The `aem::dispatcher::farm` resource allows you to configure a Dispatcher Farm d
 * [Vanity URLs](dispatcher/Vanity-URLs.md)
 * [Propagate Synd Post](dispatcher/Propagate-Synd-Post.md)
 * [Cache Rules](dispatcher/Cache-Rules.md)
+* [Permission-sensitive caching](dispatcher/Permission-sensitive-Caching.md)
 * [Statistics](dispatcher/Statistics.md)
 * [Unavailability Penalty](dispatcher/Unavailability-Penalty.md)
 * [Sticky Connections](dispatcher/Sticky-Connections.md)

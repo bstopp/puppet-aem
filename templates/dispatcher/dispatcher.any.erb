@@ -33,7 +33,7 @@
 
   /renders {
   <%- @_renders.each_with_index do |renderer, idx| -%>
-    /renderer<%= idx -%> { 
+    /renderer<%= idx -%> {
       /hostname "<%= renderer['hostname'] -%>"
       /port "<%= renderer['port'] -%>"
       <%- if renderer['timeout'] -%>
@@ -162,6 +162,55 @@
     /enableTTL "<%= @cache_ttl-%>"
     <%- end -%>
   }
+
+  <%- if @auth_checker -%>
+  /auth_checker {
+
+    /url "<%= @auth_checker['url'] -%>"
+
+    /filter {
+    <%- @auth_checker['filters'].sort_by { |entry| entry['rank'] || -1 }.each_with_index do |filter, idx| -%>
+      <%- if filter['glob'] -%>
+      /<%= idx -%> { /type "<%= filter['type'] -%>" /glob "<%= filter['glob'] -%>" }
+      <%- else -%>
+      /<%= idx -%> {
+        /type "<%= filter['type'] -%>"
+        <%- if filter['method'] -%>
+        /method "<%= filter['method'] -%>"
+        <%- end -%>
+        <%- if filter['url'] -%>
+        /url "<%= filter['url'] -%>"
+        <%- end -%>
+        <%- if filter['query'] -%>
+        /query "<%= filter['query'] -%>"
+        <%- end -%>
+        <%- if filter['protocol'] -%>
+        /protocol "<%= filter['protocol'] -%>"
+        <%- end -%>
+        <%- if filter['path'] -%>
+        /path "<%= filter['path'] -%>"
+        <%- end -%>
+        <%- if filter['selectors'] -%>
+        /selectors '<%= filter['selectors'] -%>'
+        <%- end -%>
+        <%- if filter['extension'] -%>
+        /extension '<%= filter['extension'] -%>'
+        <%- end -%>
+        <%- if filter['suffix'] -%>
+        /suffix '<%= filter['suffix'] -%>'
+        <%- end -%>
+      }
+      <%- end -%>
+    <%- end -%>
+    }
+
+    /headers {
+    <%- @auth_checker['headers'].sort_by { |entry| entry['rank'] || -1 }.each_with_index do |header, idx| -%>
+      /<%= idx -%> { /type "<%= rule['type'] -%>" /glob "<%= rule['glob'] -%>" }
+    <%- end -%>
+    }
+  }
+  <%-end -%>
 
   <%- if @_statistics -%>
   /statistics {

@@ -587,7 +587,7 @@ Manages an AEM CRX Package; allows for saving packages via a file (in the crx-qu
 Namevar. Required.
 
 ##### `ensure`
-Required. Changes the state of this CRX Package.  
+Required. Changes the state of this CRX Package.
 * `present`: Uploaded but not installed; if installed will uninstall.
 * `installed`: Uploaded and installed; Equivalent to `present` when **type** == `file`. (**Default**)
 * `purged`: Uninstalled, then removed from the package manager. Equivalent to `absent` when **type** == `file`.
@@ -647,6 +647,26 @@ Optional. Sets the cache */allowedClients* section. Valid options: Hash, or Arra
 {
   'type' => 'allow',
   'glob' => '*',
+}
+~~~
+
+##### `auth_checker`
+Optional. Sets the */auth_checker* section. Valid options: Hash. Example
+~~~ puppet
+{
+  url => '/bin/permissioncheck',
+  filter => [
+    {
+      'type' => 'allow',
+      'glob' => '*',
+    }
+  ],
+  headers => [
+    {
+      'type' => 'allow',
+      'glob' => '*',
+    }
+  ],
 }
 ~~~
 
