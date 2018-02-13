@@ -114,22 +114,15 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     uri = URI.parse(host + path)
     request = Net::HTTP::Get.new(uri)
     request.basic_auth(@resource[:username], @resource[:password])
-
-    # try http get of Sling+OSGi+Installer info...
-    # retry untill http 200 or Timeout
-    # check untill "Active":false and "ActiveResourceCount":0 or untill Timeout
     begin
       response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
         http.request(request)
       end
+      raise "wait_for_install_ok Response '#{response.code}' is not a Net::HTTPSuccess" unless response.is_a?(Net::HTTPSuccess)
       data = JSON.parse(response.body)
-      # Maybe we will need to check for more than 1 ok result
-      # when installing some packages can trigger install of sub-packages...
-      if data['Active'] == true || data['ActiveResourceCount'] != 0
-        raise "Active: #{data['Active']} (req: false), ActiveResourceCount: #{data['ActiveResourceCount']} (req: 0)"
-      end
+      check_install_status data
     rescue Errno::EADDRNOTAVAIL, JSON::ParserError, RuntimeError => e
-      Puppet.info("wait_for_install_ok FAIL for Aem_crx_package[#{@resource[:pkg]}]: #{e.class} : #{e.message} :")
+      Puppet.info("wait_for_install_ok exception for Aem_crx_package[#{@resource[:pkg]}]: #{e.class} : #{e.message} :")
       will_retry = (retries -= 1) >= 0
       if will_retry
         Puppet.debug("Waiting #{retry_timeout} seconds before retrying installer state query")
@@ -138,6 +131,16 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
         retry
       end
       raise
+    end
+  end
+
+  def check_install_status(data)
+    if data['Active'] == true || data['ActiveResourceCount'] != 0
+      @installed_resource_count = nil
+      raise "Active: #{data['Active']} (req: false), ActiveResourceCount: #{data['ActiveResourceCount']} (req: 0)"
+    elsif @installed_resource_count.nil? || @installed_resource_count != data['InstalledResourceCount']
+      @installed_resource_count = data['InstalledResourceCount']
+      raise "Adding timeout to wait for 'InstalledResourceCount' (#{@installed_resource_count}) to stabilise"
     end
   end
 
