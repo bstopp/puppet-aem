@@ -11,7 +11,8 @@ define aem::service::systemd (
   $status,
   $group,
   $home,
-  $user
+  $user,
+  Boolean $privatetmp = true,
 ) {
 
   # Setup the system state.

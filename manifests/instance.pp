@@ -4,28 +4,30 @@
 #
 #
 define aem::instance (
-  $ensure         = 'present',
-  $context_root   = undef,
-  $debug_port     = undef,
-  $group          = 'aem',
-  $home           = undef,
-  $jvm_mem_opts   = '-Xmx1024m',
-  $jvm_opts       = undef,
-  $manage_group   = true,
-  $manage_home    = true,
-  $manage_user    = true,
-  $osgi_configs   = undef,
-  $crx_packages   = undef,
-  $port           = 4502,
-  $runmodes       = [],
-  $sample_content = true,
-  $snooze         = 10,
-  $source         = undef,
-  $status         = 'enabled',
-  $timeout        = 600,
-  $type           = author,
-  $user           = 'aem',
-  $version        = undef) {
+  $ensure             = 'present',
+  $context_root       = undef,
+  $debug_port         = undef,
+  $group              = 'aem',
+  $home               = undef,
+  $jvm_mem_opts       = '-Xmx1024m',
+  $jvm_opts           = undef,
+  $manage_group       = true,
+  $manage_home        = true,
+  $manage_user        = true,
+  $osgi_configs       = undef,
+  $crx_packages       = undef,
+  $port               = 4502,
+  $runmodes           = [],
+  $sample_content     = true,
+  $snooze             = 10,
+  $source             = undef,
+  $status             = 'enabled',
+  $timeout            = 600,
+  $type               = author,
+  $user               = 'aem',
+  $version            = undef,
+  $systemd_privatetmp = undef,
+) {
 
   anchor { "aem::${name}::begin": }
 
@@ -108,11 +110,12 @@ define aem::instance (
 
   if $status != 'unmanaged' {
     aem::service { $name :
-      ensure => $ensure,
-      status => $status,
-      home   => $_home,
-      user   => $user,
-      group  => $group,
+      ensure             => $ensure,
+      status             => $status,
+      home               => $_home,
+      user               => $user,
+      group              => $group,
+      systemd_privatetmp => $systemd_privatetmp,
     }
   }
 
