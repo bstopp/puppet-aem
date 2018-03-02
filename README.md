@@ -837,9 +837,8 @@ Optional. Sets the user for installation. Valid options: any valid user. Default
 ##### `version`
 Optional. Sets the version of AEM. Informational only, does not affect installation or resource management. Valid options: any semantic version.
 
-##### `systemd_privatetmp`
-Optional. Boolean. Sets the Systemd PrivateTmp parameter in the service file. Default `true`.
-This needs to be set to `false` when trying to use tools like jstack.
+##### `systemd_service_options`
+Optional. Hash. Sets the Systemd service options. parameter in the service file. Default { 'PrivateTmp' => true }.
 
 #### Define: `aem::license`
 

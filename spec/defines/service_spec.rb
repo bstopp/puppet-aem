@@ -57,7 +57,8 @@ describe 'aem::service', type: :defines do
             status: 'enabled',
             group: 'aem',
             home: '/opt/aem',
-            user: 'aem'
+            user: 'aem',
+            systemd_service_options: { 'PrivateTmp' => true }
           )
         end
       end
@@ -123,7 +124,8 @@ describe 'aem::service', type: :defines do
           status: 'enabled',
           group: 'aem',
           home: '/opt/aem',
-          user: 'aem'
+          user: 'aem',
+          systemd_service_options: { 'PrivateTmp' => true }
         )
       end
     end
@@ -169,7 +171,8 @@ describe 'aem::service', type: :defines do
           status: 'enabled',
           group: 'aem',
           home: '/opt/aem',
-          user: 'aem'
+          user: 'aem',
+          systemd_service_options: { 'PrivateTmp' => true }
         )
       end
     end

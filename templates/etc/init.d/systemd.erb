@@ -21,7 +21,10 @@ ExecStop=<%= @home %>/crx-quickstart/bin/stop
 
 TimeoutStopSec=4min
 KillSignal=SIGCONT
-PrivateTmp=<%= @privatetmp %>
+
+<% @systemd_service_options.each do |key, value| -%>
+<%= key %>=<%= value %>
+<% end -%>
 
 [Install]
 WantedBy=multi-user.target

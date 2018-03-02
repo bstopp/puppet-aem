@@ -12,7 +12,7 @@ define aem::service::systemd (
   $group,
   $home,
   $user,
-  Boolean $privatetmp = true,
+  Hash $systemd_service_options = { 'PrivateTmp' => true },
 ) {
 
   # Setup the system state.
