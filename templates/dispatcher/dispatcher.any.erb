@@ -45,6 +45,9 @@
       <%- if renderer['ipv4'] -%>
       /ipv4 "<%= renderer['ipv4'] -%>"
       <%- end -%>
+      <%- if renderer['secure'] -%>
+      /secure "<%= renderer['secure'] -%>"
+      <%- end -%>
     }
   <%- end -%>
   }

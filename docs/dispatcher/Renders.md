@@ -22,6 +22,7 @@ aem::dispatcher::farm { 'site' :
     'timeout'        => 600,
     'receiveTimeout' => 300,
     'ipv4'           => 0,
+    'secure'         => 0,
   },
 }
 ~~~
@@ -46,6 +47,7 @@ This definition will create a file *dispatcher.site.any* with the following cont
       /timeout "600"
       /receiveTimeout "300"
       /ipv4 "0"
+      /secure "0"
     }
   }
 
@@ -86,6 +88,7 @@ aem::dispatcher::farm { 'site' :
       'timeout'        => 600,
       'receiveTimeout' => 300,
       'ipv4'           => 0,
+      'secure'         => 0,
     },
     {
       'hostname' => 'author.hostname.com',
@@ -111,13 +114,15 @@ This definition will create a file *dispatcher.site.any* with the following cont
   /renders {
     /renderer0 { 
       /hostname "publish.hostname.com"
-      /port "9009"
-      /timeout "300"
-      /receiveTimeout "100"
+      /port "8080"
+      /timeout "600"
+      /receiveTimeout "300"
+      /ipv4 "0"
+      /secure "0"
     }
     /renderer1 { 
       /hostname "author.hostname.com"
-      /port "8080"
+      /port "9009"
     }
   }
 
