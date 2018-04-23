@@ -73,6 +73,58 @@ describe 'aem::dispatcher::farm', type: :define do
       end
     end
 
+    context 'auth_checker' do
+      context 'filter rile ranking' do
+        let(:params) do
+          default_params.merge(
+            auth_checker: {
+              'url'     => '/bin/permissioncheck',
+              'filter'  => [
+                { 'rank' => 100, 'type' => 'allow', 'glob' => '/content/secure/*.html' },
+                { 'type' => 'deny', 'glob' => '*' }
+              ],
+              'headers' => [
+                { 'type' => 'deny', 'glob' => '*' }
+              ]
+            }
+          )
+        end
+        it { is_expected.to compile }
+        it do
+          is_expected.to contain_file(
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+          ).with_content(
+            %r|/filter {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "/content/secure/\*.html" }\s*}|
+          )
+        end
+      end
+
+      context 'headers rule ranking' do
+        let(:params) do
+          default_params.merge(
+            auth_checker: {
+              'url'     => '/bin/permissioncheck',
+              'filter'  => [
+                { 'type' => 'deny', 'glob' => '*' }
+              ],
+              'headers' => [
+                { 'rank' => 100, 'type' => 'allow', 'glob' => 'Set-Cookie:*' },
+                { 'type' => 'deny', 'glob' => '*' }
+              ]
+            }
+          )
+        end
+        it { is_expected.to compile }
+        it do
+          is_expected.to contain_file(
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+          ).with_content(
+            %r|/headers {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "Set-Cookie:\*" }\s*}|
+          )
+        end
+      end
+    end
+
     context 'filter' do
       let(:params) do
         default_params.merge(
