@@ -551,18 +551,6 @@ describe 'aem::dispatcher::farm', type: :define do
       end
     end
 
-    context 'invalidate and invalidate_handler' do
-      context 'should not allow both' do
-        let(:params) do
-          default_params.merge(
-            invalidate: { 'glob' => '*.html', 'type' => 'allow' },
-            invalidate_handler: '/path/to/handler'
-          )
-        end
-        it { expect { is_expected.to compile }.to raise_error(/Both.*can not be set./) }
-      end
-    end
-
     context 'priority' do
       context 'should accept undef' do
         let(:params) do
