@@ -110,10 +110,6 @@ define aem::dispatcher::farm(
     }
   }
 
-  if $invalidate and $invalidate_handler {
-    fail('Both invalidate and invalidate_handler can not be set.')
-  }
-
   if $invalidate_handler {
     validate_absolute_path($invalidate_handler)
   } elsif $invalidate == undef {
