@@ -76,6 +76,7 @@ describe 'aem::instance', type: :defines do
         home: '/opt/aem',
         jvm_mem_opts: '-Xmx1024m',
         jvm_opts: nil,
+        start_opts: nil,
         osgi_configs: nil,
         crx_packages: nil,
         port: 4502,
@@ -144,6 +145,7 @@ describe 'aem::instance', type: :defines do
           home: '/opt/aem',
           jvm_mem_opts: '-Xmx1024m',
           jvm_opts: nil,
+          start_opts: nil,
           osgi_configs: { 'osgi.name' => { 'properties' => cfg_props } },
           port: 4502,
           runmodes: [],
@@ -197,6 +199,7 @@ describe 'aem::instance', type: :defines do
           home: '/opt/aem',
           jvm_mem_opts: '-Xmx1024m',
           jvm_opts: nil,
+          start_opts: nil,
           osgi_configs: [
             {
               'osgi.name' => {
@@ -245,6 +248,7 @@ describe 'aem::instance', type: :defines do
         home: '/opt/aem',
         jvm_mem_opts: '-Xmx1024m',
         jvm_opts: nil,
+        start_opts: nil,
         osgi_configs: nil,
         crx_packages: %w[
           /path/to/first-package-1.0.0.zip

@@ -47,4 +47,9 @@ describe 'updated start-env configs' do
     shell("grep -- JVM_OPTS=\\'-XX:+UseParNewGC\\' /opt/aem/author/crx-quickstart/bin/start-env",
           acceptable_exit_codes: 0)
   end
+
+  it 'should update the start options' do
+    shell("grep -- START_OPTS=\\'-nofork\\' /opt/aem/author/crx-quickstart/bin/start-env",
+          acceptable_exit_codes: 0)
+  end
 end

@@ -791,6 +791,9 @@ Optional. Specifies options for the JVM memory. This is separated from the JVM o
 ##### `jvm_opts`
 Optional. Specifies options to pass to the JVM. Valid options: any valid JVM parameter string. Default: None. The following string is always passed, and cannot be overwritten: `-server -Djava.awt.headless=true`
 
+##### `start_opts`
+Optional. Specifies options to pass to the start command. Valid options: any valid AEM  [start option](https://helpx.adobe.com/experience-manager/6-3/sites/deploying/using/custom-standalone-install.html#FurtheroptionsavailablefromtheQuickstartfile). Default: None.
+
 ##### `manage_group`
 Optional. Sets whether or not this instance will manage the defined group. Valid options: `true` or `false`. Default: `true`.
 

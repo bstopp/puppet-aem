@@ -11,6 +11,7 @@ define aem::config(
   $home,
   $jvm_mem_opts,
   $jvm_opts,
+  $start_opts,
   $osgi_configs,
   $crx_packages,
   $port,

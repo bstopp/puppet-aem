@@ -369,6 +369,7 @@ RSpec.shared_examples 'update aem' do
         group           => \"vagrant\",
         jvm_mem_opts    => \"-Xmx2048m -XX:MaxPermSize=512M\",
         jvm_opts        => \"-XX:+UseParNewGC\",
+        start_opts      => \"-nofork\",
         sample_content  => false,
         status          => \"running\",
         type            => \"publish\",

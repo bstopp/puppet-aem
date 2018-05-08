@@ -23,6 +23,7 @@ describe 'aem::config', type: :defines do
       home: '/opt/aem',
       jvm_mem_opts: :undef,
       jvm_opts: :undef,
+      start_opts: :undef,
       osgi_configs: :undef,
       crx_packages: :undef,
       port: :undef,
@@ -94,6 +95,20 @@ describe 'aem::config', type: :defines do
           '/opt/aem/crx-quickstart/bin/start-env'
         ).with(
           'content' => /JVM_OPTS='Some Options'/
+        )
+      end
+    end
+
+    context 'start_opts' do
+      let(:params) do
+        default_params.merge(start_opts: 'Some Options')
+      end
+
+      it do
+        is_expected.to contain_file(
+          '/opt/aem/crx-quickstart/bin/start-env'
+        ).with(
+          'content' => /START_OPTS='Some Options'/
         )
       end
     end

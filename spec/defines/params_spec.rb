@@ -150,6 +150,17 @@ describe 'aem::instance', type: :defines do
 
     end
 
+    context 'start_opts' do
+      context 'non default value' do
+        let(:params) do
+          default_params.merge(start_opts: '-nofork')
+        end
+        it { is_expected.to compile }
+        it { is_expected.to contain_aem__instance('aem').with('start_opts' => '-nofork') }
+      end
+
+    end
+
     context 'manage_group' do
       context 'false' do
         let(:params) do
