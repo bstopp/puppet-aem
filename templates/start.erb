@@ -4,7 +4,7 @@
 # Managed by Puppet AEM Module
 # ************************************
 #
-# The original start script that came with the AEM installation 
+# The original start script that came with the AEM installation
 # is named 'start-orig' in this folder.
 #
 
@@ -30,7 +30,7 @@ fi
 CURR_DIR=$(basename $(pwd))
 cd ..
 
-START_OPTS="start -c ${CURR_DIR} -i launchpad -p ${PORT}"
+START_OPTS="start -c ${CURR_DIR} -i launchpad -p ${PORT} ${START_OPTS}"
 
 if [ -n "${CONTEXT_ROOT}" ]; then
     START_OPTS="${START_OPTS} -r ${CONTEXT_ROOT}"
