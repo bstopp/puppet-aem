@@ -51,42 +51,7 @@
     }
   <%- end -%>
   }
-
-  /filter {
-  <%- @_filters.sort_by { |entry| entry['rank'] || -1 }.each_with_index do |filter, idx| -%>
-    <%- if filter['glob'] -%>
-    /<%= idx -%> { /type "<%= filter['type'] -%>" /glob "<%= filter['glob'] -%>" }
-    <%- else -%>
-    /<%= idx -%> {
-      /type "<%= filter['type'] -%>"
-      <%- if filter['method'] -%>
-      /method "<%= filter['method'] -%>"
-      <%- end -%>
-      <%- if filter['url'] -%>
-      /url "<%= filter['url'] -%>"
-      <%- end -%>
-      <%- if filter['query'] -%>
-      /query "<%= filter['query'] -%>"
-      <%- end -%>
-      <%- if filter['protocol'] -%>
-      /protocol "<%= filter['protocol'] -%>"
-      <%- end -%>
-      <%- if filter['path'] -%>
-      /path "<%= filter['path'] -%>"
-      <%- end -%>
-      <%- if filter['selectors'] -%>
-      /selectors '<%= filter['selectors'] -%>'
-      <%- end -%>
-      <%- if filter['extension'] -%>
-      /extension '<%= filter['extension'] -%>'
-      <%- end -%>
-      <%- if filter['suffix'] -%>
-      /suffix '<%= filter['suffix'] -%>'
-      <%- end -%>
-    }
-    <%- end -%>
-  <%- end -%>
-  }
+  <%= scope.call_function('render_ruleset', [@_filters, "filter", 2]) -%>
 
   <%- if @vanity_urls -%>
   /vanity_urls {
@@ -114,23 +79,13 @@
     /allowAuthorized "<%= @allow_authorized-%>"
     <%- end -%>
 
-    /rules {
-    <%- @_cache_rules.sort_by { |entry| entry['rank'] || -1 }.each_with_index do |rule, idx| -%>
-      /<%= idx -%> { /type "<%= rule['type'] -%>" /glob "<%= rule['glob'] -%>" }
-    <%- end -%>
-    }
+    <%= scope.call_function('render_ruleset', [@_cache_rules, "rules"]) -%>
 
     <%- if @stat_files_level -%>
     /statfileslevel "<%= @stat_files_level -%>"
     <%- end -%>
 
-    <%- if @_invalidate -%>
-    /invalidate {
-    <%- @_invalidate.sort_by { |entry| entry['rank'] || -1 }.each_with_index do |inval, idx| -%>
-      /<%= idx -%> { /type "<%= inval['type'] -%>" /glob "<%= inval['glob'] -%>" }
-    <%- end -%>
-    }
-    <%- end -%>
+    <%= scope.call_function('render_ruleset', [@_invalidate, "invalidate"]) -%>
 
     <%- if @invalidate_handler-%>
     /invalidateHandler "<%= @invalidate_handler-%>"
