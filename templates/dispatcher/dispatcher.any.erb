@@ -91,18 +91,10 @@
     /invalidateHandler "<%= @invalidate_handler-%>"
     <%- end -%>
 
-    /allowedClients {
-    <%- @_allowed_clients.sort_by { |entry| entry['rank'] || -1 }.each_with_index do |allowed, idx| -%>
-      /<%= idx -%> { /type "<%= allowed['type'] -%>" /glob "<%= allowed['glob'] -%>" }
-    <%- end -%>
-    }
+    <%= scope.call_function('render_ruleset', [@_allowed_clients, "allowedClients"]) -%>
 
     <%- if @_ignore_parameters -%>
-    /ignoreUrlParams {
-      <%- @_ignore_parameters.sort_by { |entry| entry['rank'] || -1 }.each_with_index do |ignored, idx| -%>
-      /<%= idx -%> { /type "<%= ignored['type'] -%>" /glob "<%= ignored['glob'] -%>" }
-      <%- end -%>
-    }
+    <%= scope.call_function('render_ruleset', [@_ignore_parameters, "ignoreUrlParams"]) -%>
     <%- end -%>
 
     <%- if @_cache_headers -%>
@@ -126,17 +118,10 @@
 
     /url "<%= @auth_checker['url'] -%>"
 
-    /filter {
-    <%- @auth_checker['filter'].sort_by { |entry| entry['rank'] || -1 }.each_with_index do |filter, idx| -%>
-      /<%= idx -%> { /type "<%= filter['type'] -%>" /glob "<%= filter['glob'] -%>" }
-    <%- end -%>
-    }
+    <%= scope.call_function('render_ruleset', [@auth_checker['filter'], "filter"]) -%>
 
-    /headers {
-    <%- @auth_checker['headers'].sort_by { |entry| entry['rank'] || -1 }.each_with_index do |header, idx| -%>
-      /<%= idx -%> { /type "<%= header['type'] -%>" /glob "<%= header['glob'] -%>" }
-    <%- end -%>
-    }
+    <%= scope.call_function('render_ruleset', [@auth_checker['headers'], "headers"]) -%>
+    
   }
   <%-end -%>
 
