@@ -20,6 +20,8 @@ There are two methods for defining a Filter hash. If the hash contains the _glob
   * extension
   * suffix
 
+dispatcher.any supports regular globbing and POSIX expressions, which interpreter to use is defined by different quotes (single quotes `'` for POSIX, double quotes `"` for regular globbing.)  Cache rules can use regular globbing using `glob` or `method`,`url`,`query`,`protocol`,`path`,`suffix`, or it can use POSIX interpreter using `glob_e` or `method_e`,`url_e`,`query_e`,`protocol_e`,`path_e`,`suffix_e`. `selectors_e` and `extension_e` had been default using `selectors` and `extension` before and both will always output POSIX for compatibility.
+
 #### Glob Example
 
 This example creates a Farm definition with custom filter rules, using a glob example:
@@ -63,8 +65,8 @@ This definition will create a file *dispatcher.site.any* with the following cont
   }
 
   /filter {
-    /0 { /type "deny" /glob "*" }
-    /1 { /type "allow" /glob "*.html" }
+    /000 { /type "deny" /glob "*" }
+    /001 { /type "allow" /glob "*.html" }
   }
 
   /cache {
@@ -72,11 +74,11 @@ This definition will create a file *dispatcher.site.any* with the following cont
     /docroot "/var/www"
 
     /rules {
-      /0 { /type "deny" /glob "*" }
+      /000 { /type "deny" /glob "*" }
     }
 
     /invalidate {
-      /0 { /type "allow" /glob "*" }
+      /000 { /type "allow" /glob "*" }
     }
 
     /allowedClients {
@@ -98,13 +100,20 @@ aem::dispatcher::farm { 'site' :
       'rank'      => 310,
       'type'      => 'allow',
       'path'      => '/content',
-      'selectors' => '(feed|rss|pages|languages|blueprint|infinity|tidy)'
-      'extension' => '(json|xml|html)'
+      'selectors_e' => '(feed|rss|pages|languages|blueprint|infinity|tidy)'
+      'extension_e' => '(json|xml|html)'
     },
     {
       'rank' => 300,
       'type' => 'deny',
       'glob' => '*',
+    },
+    {
+      'rank' => 320,
+      'method_e' => '(GET|POST)',
+      'path_e' => '/etc[./](clientlibs|designs).*',
+      'extension_e' => '(css|js|jpe?g|png)',
+      'type' => 'allow'
     }
   ],
 }
@@ -131,13 +140,9 @@ This definition will create a file *dispatcher.site.any* with the following cont
   }
 
   /filter {
-    /0 { /type "deny" /glob "*" }
-    /1 {
-      /type "allow"
-      /path "/content"
-      /selectors '(feed|rss|pages|languages|blueprint|infinity|tidy)'
-      /extension '(json|xml|html)'
-    }
+    /000 { /type "deny" /glob "*" }
+    /001 { /type "allow" /path "/content" /selectors '(feed|rss|pages|languages|blueprint|infinity|tidy)' /extension '(json|xml|html)' }
+    /002 { /type "allow" /method '(GET|POST)' /path '/etc[./](clientlibs|designs).*' /extension '/etc[./](clientlibs|designs).*' }
   }
 
   /cache {
@@ -145,11 +150,11 @@ This definition will create a file *dispatcher.site.any* with the following cont
     /docroot "/var/www"
 
     /rules {
-      /0 { /type "deny" /glob "*" }
+      /000 { /type "deny" /glob "*" }
     }
 
     /invalidate {
-      /0 { /type "allow" /glob "*" }
+      /000 { /type "allow" /glob "*" }
     }
 
     /allowedClients {
