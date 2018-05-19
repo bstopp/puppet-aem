@@ -19,7 +19,7 @@ Puppet::Functions.create_function(:'render_rule') do
     else
       for param in ['method','url','query','protocol','path','suffix']
         output+= "/#{param} \"#{rule[param]}\" " if rule[param]
-        output+= "/#{param} \'#{rule[param+ 'E']}\' " if rule[param + 'E'] 
+        output+= "/#{param} \'#{rule[param+ '_e']}\' " if rule[param + '_e'] 
       end
   
       # special handling for selectors and extensions for backward compatibility
@@ -31,7 +31,7 @@ Puppet::Functions.create_function(:'render_rule') do
           	"Please update to use #{param}_e instead. Rule was #{rule}.") if /[\(\)\[\]\|]/   =~ rule[param]
         end
   
-        output+= "/#{param} \'#{rule[param+ 'E']}\' " if rule[param + 'E'] 
+        output+= "/#{param} \'#{rule[param+ '_e']}\' " if rule[param + '_e'] 
       end
   
     end
