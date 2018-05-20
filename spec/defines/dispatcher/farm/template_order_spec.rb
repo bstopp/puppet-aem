@@ -49,7 +49,7 @@ describe 'aem::dispatcher::farm', type: :define do
         is_expected.to contain_file(
           '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
-          %r|/allowedClients {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "10.200.1.1" }\s*}|
+          %r|/allowedClients {\s*/000 { /type "deny" /glob "\*" }\s*/001 { /type "allow" /glob "10.200.1.1" }\s*}|
         )
       end
     end
@@ -68,7 +68,7 @@ describe 'aem::dispatcher::farm', type: :define do
         is_expected.to contain_file(
           '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
-          %r|/rules {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }|
+          %r|/rules {\s*/000 { /type "deny" /glob "\*" }\s*/001 { /type "allow" /glob "\*.html" }|
         )
       end
     end
@@ -94,7 +94,7 @@ describe 'aem::dispatcher::farm', type: :define do
           is_expected.to contain_file(
             '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
-            %r|/filter {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "/content/secure/\*.html" }\s*}|
+            %r|/filter {\s*/000 { /type "deny" /glob "\*" }\s*/001 { /type "allow" /glob "/content/secure/\*.html" }\s*}|
           )
         end
       end
@@ -119,7 +119,7 @@ describe 'aem::dispatcher::farm', type: :define do
           is_expected.to contain_file(
             '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
-            %r|/headers {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "Set-Cookie:\*" }\s*}|
+            %r|/headers {\s*/000 { /type "deny" /glob "\*" }\s*/001 { /type "allow" /glob "Set-Cookie:\*" }\s*}|
           )
         end
       end
@@ -139,7 +139,7 @@ describe 'aem::dispatcher::farm', type: :define do
         is_expected.to contain_file(
           '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
-          %r|/filter {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "/content\*" }|
+          %r|/filter {\s*/000 { /type "deny" /glob "\*" }\s*/001 { /type "allow" /glob "/content\*" }|
         )
       end
     end
@@ -158,7 +158,7 @@ describe 'aem::dispatcher::farm', type: :define do
         is_expected.to contain_file(
           '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
-          %r|/ignoreUrlParams {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "param=\*" }\s*}|
+          %r|/ignoreUrlParams {\s*/000 { /type "deny" /glob "\*" }\s*/001 { /type "allow" /glob "param=\*" }\s*}|
         )
       end
     end
@@ -177,7 +177,7 @@ describe 'aem::dispatcher::farm', type: :define do
         is_expected.to contain_file(
           '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
-          %r|/invalidate {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }\s*|
+          %r|/invalidate {\s*/000 { /type "deny" /glob "\*" }\s*/001 { /type "allow" /glob "\*.html" }\s*|
         )
       end
     end

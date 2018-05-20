@@ -47,7 +47,7 @@ describe 'aem::dispatcher::farm', type: :define do
       ).without_content(
         /allowAuthorized/
       ).with_content(
-        %r|/allowedClients {\s*/0 { /type "allow" /glob "\*" }\s*}|
+        %r|/allowedClients {\s*/000 { /type "allow" /glob "\*" }\s*}|
       ).with_content(
         %r|/clientheaders {\s*"\*"\s*}|
       ).with_content(
@@ -67,11 +67,11 @@ describe 'aem::dispatcher::farm', type: :define do
       ).without_content(
         /ignoreUrlParameters/
       ).with_content(
-        %r|/invalidate {\s*/0 \{ /type "allow" /glob "\*" }|
+        %r|/invalidate {\s*/000 \{ /type "allow" /glob "\*" }|
       ).without_content(
         /invalidateHandler/
       ).with_content(
-        %r|/filter {\s*/0 { /type "allow" /glob "\*" }|
+        %r|/filter {\s*/000 { /type "allow" /glob "\*" }|
       ).without_content(
         /numberOfRetries/
       ).with_content(
@@ -79,7 +79,7 @@ describe 'aem::dispatcher::farm', type: :define do
       ).without_content(
         /retryDelay/
       ).with_content(
-        %r|/rules {\s*/0 { /type "deny" /glob "\*" }|
+        %r|/rules {\s*/000 { /type "deny" /glob "\*" }|
       ).without_content(
         /serveStaleOnError/
       ).without_content(
@@ -128,7 +128,7 @@ describe 'aem::dispatcher::farm', type: :define do
         is_expected.to contain_file(
           '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
-          %r|/allowedClients {\s*/0 { /type "allow" /glob "10.200.1.1" }\s*}|
+          %r|/allowedClients {\s*/000 { /type "allow" /glob "10.200.1.1" }\s*}|
         )
       end
     end
@@ -161,7 +161,7 @@ describe 'aem::dispatcher::farm', type: :define do
         is_expected.to contain_file(
           '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
-          %r|/rules {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }|
+          %r|/rules {\s*/000 { /type "deny" /glob "\*" }\s*/001 { /type "allow" /glob "\*.html" }|
         )
       end
     end
@@ -203,10 +203,10 @@ describe 'aem::dispatcher::farm', type: :define do
             /auth_checker\s{\s*
               /url\s"/bin/permissioncheck"\s*
               /filter\s{\s*
-                /0\s{\s/type\s"deny"\s/glob\s"\*"\s}\s*
+                /000\s{\s/type\s"deny"\s/glob\s"\*"\s}\s*
               }\s*
               /headers\s{\s*
-                /0\s{\s/type\s"deny"\s/glob\s"\*"\s}\s*
+                /000\s{\s/type\s"deny"\s/glob\s"\*"\s}\s*
               }\s*
             }
           |x
@@ -252,7 +252,7 @@ describe 'aem::dispatcher::farm', type: :define do
           is_expected.to contain_file(
             '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
-            %r|/filter {\s*/0 { /type "deny" /glob "/content\*" }|
+            %r|/filter {\s*/000 { /type "deny" /glob "/content\*" }|
           )
         end
       end
@@ -261,15 +261,15 @@ describe 'aem::dispatcher::farm', type: :define do
           let(:params) do
             default_params.merge(
               filters: {
-                'type'      => 'allow',
-                'method'    => 'GET',
-                'url'       => '/path/to/content',
-                'query'     => 'param=*',
-                'protocol'  => 'https',
-                'path'      => '/different/path/to/content',
-                'selectors' => '((sys|doc)view|query|[0-9-]+)',
-                'extension' => '(css|gif|ico|js|png|swf|jpe?g)',
-                'suffix'    => '/suffix/path'
+                'type'       => 'allow',
+                'method'      => 'GET',
+                'url'         => '/path/to/content',
+                'query'       => 'param=*',
+                'protocol'    => 'https',
+                'path'        => '/different/path/to/content',
+                'selectors_e' => '((sys|doc)view|query|[0-9-]+)',
+                'extension_e' => '(css|gif|ico|js|png|swf|jpe?g)',
+                'suffix'      => '/suffix/path'
               }
             )
           end
@@ -278,23 +278,10 @@ describe 'aem::dispatcher::farm', type: :define do
             is_expected.to contain_file(
               '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
-              %r|
-                /0\s{\s*
-                  /type\s"allow"\s*
-                  /method\s"GET"\s*
-                  /url\s"/path/to/content"\s*
-                  /query\s"param=\*"\s*
-                  /protocol\s"https"\s*
-                  /path\s"/different/path/to/content"\s*
-                  /selectors\s'\(\(sys\|doc\)view\|query\|\[0-9-\]\+\)'\s*
-                  /extension\s'\(css\|gif\|ico\|js\|png\|swf\|jpe\?g\)'\s*
-                  /suffix\s\'/suffix/path\'\s*
-                }
-              |x
+              %r|/000 { /type "allow" /method "GET" /url "/path/to/content" /query "param=\*" /protocol "https" /path "/different/path/to/content" /suffix "/suffix/path" /selectors '\(\(sys\|doc\)view\|query\|\[0-9-\]\+\)' /extension '\(css\|gif\|ico\|js\|png\|swf\|jpe\?g\)' }|
             )
           end
         end
-
         context 'method only' do
           let(:params) do
             default_params.merge(
@@ -309,7 +296,7 @@ describe 'aem::dispatcher::farm', type: :define do
             is_expected.to contain_file(
               '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
-              %r|/0 {\s*/type\s*"allow"\s*/method\s*"GET"\s*}|
+              %r|/000 {\s*/type\s*"allow"\s*/method\s*"GET"\s*}|
             )
           end
         end
@@ -328,7 +315,7 @@ describe 'aem::dispatcher::farm', type: :define do
             is_expected.to contain_file(
               '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
-              %r|/0 {\s*/type\s*"allow"\s*/url\s*"/path/to/content"\s*}|
+              %r|/000 {\s*/type\s*"allow"\s*/url\s*"/path/to/content"\s*}|
             )
           end
         end
@@ -347,7 +334,7 @@ describe 'aem::dispatcher::farm', type: :define do
             is_expected.to contain_file(
               '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
-              %r|/0 {\s*/type\s*"allow"\s*/query\s*"param=\*"\s*}|
+              %r|/000 {\s*/type\s*"allow"\s*/query\s*"param=\*"\s*}|
             )
           end
         end
@@ -366,9 +353,23 @@ describe 'aem::dispatcher::farm', type: :define do
             is_expected.to contain_file(
               '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
-              %r|/0 {\s*/type\s*"allow"\s*/protocol\s"https"\s*}|
+              %r|/000 {\s*/type\s*"allow"\s*/protocol\s"https"\s*}|
             )
           end
+        end
+      end
+
+      context 'filter POSIX' do
+        let(:params) do
+          default_params.merge(filters: { 'type' => 'allow', 'url_e' => '/content(.*)' })
+        end
+        it { is_expected.to compile }
+        it do
+          is_expected.to contain_file(
+            '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+          ).with_content(
+            %r|/filter {\s*/000 { /type "deny" /url '/content\(.\*\)' }|
+          )
         end
       end
     end
@@ -415,7 +416,7 @@ describe 'aem::dispatcher::farm', type: :define do
         is_expected.to contain_file(
           '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
-          %r|/ignoreUrlParams {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "param=\*" }\s*}|
+          %r|/ignoreUrlParams {\s*/000 { /type "deny" /glob "\*" }\s*/001 { /type "allow" /glob "param=\*" }\s*}|
         )
       end
     end
@@ -434,7 +435,7 @@ describe 'aem::dispatcher::farm', type: :define do
         is_expected.to contain_file(
           '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
-          %r|/invalidate {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }\s*}|
+          %r|/invalidate {\s*/000 { /type "deny" /glob "\*" }\s*/001 { /type "allow" /glob "\*.html" }\s*}|
         )
       end
     end
