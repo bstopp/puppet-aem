@@ -368,7 +368,7 @@ describe 'aem::dispatcher::farm', type: :define do
           is_expected.to contain_file(
             '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
-            %r|/filter {\s*/000 { /type "deny" /url '/content\(.\*\)' }|
+            %r|/filter {\s*/000 { /type "allow" /url '/content\(.\*\)' }|
           )
         end
       end
