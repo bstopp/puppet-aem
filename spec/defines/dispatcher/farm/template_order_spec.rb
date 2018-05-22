@@ -94,7 +94,11 @@ describe 'aem::dispatcher::farm', type: :define do
           is_expected.to contain_file(
             '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
           ).with_content(
-            %r|/filter {\s*/000 { /type "deny" /glob "\*" }\s*/001 { /type "allow" /glob "/content/secure/\*.html" }\s*}|
+            %r|/filter\s{\s*
+              /000\s{\s/type\s"deny"\s/glob\s"\*"\s}\s*
+              /001\s{\s/type\s"allow"\s/glob\s"/content/secure/\*.html"\s}\s*
+              }\s*
+              |x
           )
         end
       end

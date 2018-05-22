@@ -9,6 +9,7 @@ AllCops:
 Metrics/BlockLength:
   Exclude:
     - 'spec/defines/service_spec.rb'
+    - 'lib/puppet/functions/render_rule.rb'
   ExcludedMethods:
     - 'describe'
     - 'context'

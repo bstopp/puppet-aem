@@ -261,7 +261,7 @@ describe 'aem::dispatcher::farm', type: :define do
           let(:params) do
             default_params.merge(
               filters: {
-                'type'       => 'allow',
+                'type'        => 'allow',
                 'method'      => 'GET',
                 'url'         => '/path/to/content',
                 'query'       => 'param=*',
@@ -278,7 +278,18 @@ describe 'aem::dispatcher::farm', type: :define do
             is_expected.to contain_file(
               '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
-              %r|/000 { /type "allow" /method "GET" /url "/path/to/content" /query "param=\*" /protocol "https" /path "/different/path/to/content" /suffix "/suffix/path" /selectors '\(\(sys\|doc\)view\|query\|\[0-9-\]\+\)' /extension '\(css\|gif\|ico\|js\|png\|swf\|jpe\?g\)' }|
+              # rubocup has been disabled. I couldn't get the following line working with |x option and multiline.
+              %r|/000\s*{\s*
+                /type\s*"allow"\s*
+                /method\s*"GET"\s*
+                /url\s*"/path/to/content"\s*
+                /query\s*"param=\*"\s*
+                /protocol\s*"https"\s*
+                /path\s*"/different/path/to/content"\s*
+                /suffix\s*"/suffix/path"\s*
+                /selectors\s*'\(\(sys\|doc\)view\|query\|\[0-9-\]\+\)'\s*
+                /extension\s*'\(css\|gif\|ico\|js\|png\|swf\|jpe\?g\)'\s*
+                }|x # rubocop:disable
             )
           end
         end
@@ -296,7 +307,7 @@ describe 'aem::dispatcher::farm', type: :define do
             is_expected.to contain_file(
               '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
             ).with_content(
-              %r|/000 {\s*/type\s*"allow"\s*/method\s*"GET"\s*}|
+              %r|/000\s*{\s*/type\s*"allow"\s*/method\s*"GET"\s*}|x
             )
           end
         end
