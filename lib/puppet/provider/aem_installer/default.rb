@@ -53,7 +53,7 @@ Puppet::Type.type(:aem_installer).provide :default, parent: Puppet::Provider do
   def find_instance
     hash = {}
     begin
-      cmd = [command(:find).to_s, @resource[:home], "-name \"#{@launchpad_name}\"", '-type f']
+      cmd = [command(:find).to_s, @resource[:home], "-not \\( -path \"*/crx-quickstart/repository/*\" -prune \\) -name \"#{@launchpad_name}\"", '-type f']
       execpipe(cmd) do |process|
         process.each_line do |line|
           hash = found_to_hash(line)
