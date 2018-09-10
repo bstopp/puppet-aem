@@ -57,6 +57,8 @@ describe 'aem::dispatcher::farm', type: :define do
       ).without_content(
         /gracePeriod/
       ).without_content(
+        /auth_checker/
+      ).without_content(
         %r|/headers|
       ).without_content(
         /failover/
@@ -174,6 +176,40 @@ describe 'aem::dispatcher::farm', type: :define do
           '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
         ).with_content(
           %r|/enableTTL "1"\s*|
+        )
+      end
+    end
+
+    context 'auth_checker' do
+      let(:params) do
+        default_params.merge(
+          auth_checker: {
+            'url'     => '/bin/permissioncheck',
+            'filter'  => [
+              { 'type' => 'deny', 'glob' => '*' }
+            ],
+            'headers' => [
+              { 'type' => 'deny', 'glob' => '*' }
+            ]
+          }
+        )
+      end
+      it { is_expected.to compile }
+      it do
+        is_expected.to contain_file(
+          '/etc/httpd/conf.modules.d/dispatcher.00-aem-site.inc.any'
+        ).with_content(
+          %r|
+            /auth_checker\s{\s*
+              /url\s"/bin/permissioncheck"\s*
+              /filter\s{\s*
+                /0\s{\s/type\s"deny"\s/glob\s"\*"\s}\s*
+              }\s*
+              /headers\s{\s*
+                /0\s{\s/type\s"deny"\s/glob\s"\*"\s}\s*
+              }\s*
+            }
+          |x
         )
       end
     end

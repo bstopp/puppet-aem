@@ -172,6 +172,122 @@ describe 'aem::dispatcher::farm', type: :define do
       end
     end
 
+    context 'auth_checker' do
+      context 'should compile' do
+        let(:params) do
+          default_params.merge(
+            auth_checker: {
+              'url' => '/bin/permissioncheck',
+              'filter' => [
+                { 'type' => 'deny', 'glob' => '*' }
+              ],
+              'headers' => [
+                { 'type' => 'deny', 'glob' => '*' }
+              ]
+            }
+          )
+        end
+        it { is_expected.to compile.with_all_deps }
+      end
+      context 'should require a url' do
+        let(:params) do
+          default_params.merge(
+            auth_checker: {
+              'filter' => [
+                { 'type' => 'deny', 'glob' => '*' }
+              ],
+              'headers' => [
+                { 'type' => 'deny', 'glob' => '*' }
+              ]
+            }
+          )
+        end
+        it { expect { is_expected.to compile }.to raise_error(/.*url is not specified./) }
+      end
+      context 'should require a filter element' do
+        let(:params) do
+          default_params.merge(
+            auth_checker: {
+              'url' => '/bin/permissioncheck',
+              'headers' => [
+                { 'type' => 'deny', 'glob' => '*' }
+              ]
+            }
+          )
+        end
+        it { expect { is_expected.to compile }.to raise_error(/.*filter are not specified./) }
+      end
+      context 'should require the filter element to be an array' do
+        let(:params) do
+          default_params.merge(
+            auth_checker: {
+              'url' => '/bin/permissioncheck',
+              'filter' => { 'type' => 'deny', 'glob' => '*' },
+              'headers' => [
+                { 'type' => 'deny', 'glob' => '*' }
+              ]
+            }
+          )
+        end
+        it { expect { is_expected.to compile }.to raise_error(/.*must be an array./) }
+      end
+      context 'should require the filter element to be an array of hashes' do
+        let(:params) do
+          default_params.merge(
+            auth_checker: {
+              'url' => '/bin/permissioncheck',
+              'filter' => ['not a hash', 'another non hash'],
+              'headers' => [
+                { 'type' => 'deny', 'glob' => '*' }
+              ]
+            }
+          )
+        end
+        it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
+      end
+      context 'should require a headers element' do
+        let(:params) do
+          default_params.merge(
+            auth_checker: {
+              'url' => '/bin/permissioncheck',
+              'filter' => [
+                { 'type' => 'deny', 'glob' => '*' }
+              ]
+            }
+          )
+        end
+        it { expect { is_expected.to compile }.to raise_error(/.*headers are not specified./) }
+      end
+      context 'should require the headers element to be an array' do
+        let(:params) do
+          default_params.merge(
+            auth_checker: {
+              'url' => '/bin/permissioncheck',
+              'filter' => [
+                { 'type' => 'deny', 'glob' => '*' }
+              ],
+              'headers' => { 'type' => 'deny', 'glob' => '*' }
+            }
+          )
+        end
+        it { expect { is_expected.to compile }.to raise_error(/.*must be an array./) }
+      end
+      context 'should require the headers element to be an array of hashes' do
+        let(:params) do
+          default_params.merge(
+            auth_checker: {
+              'url' => '/bin/permissioncheck',
+              'filter' => [
+                { 'type' => 'deny', 'glob' => '*' }
+              ],
+              'headers' => ['not a hash', 'another non hash']
+            }
+          )
+        end
+        it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
+      end
+    end
+
     context 'cache_ttl' do
       context 'should accept 0' do
         let(:params) do

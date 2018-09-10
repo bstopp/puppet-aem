@@ -5,6 +5,7 @@ define aem::dispatcher::farm(
   $ensure              = 'present',
   $allow_authorized    = undef,
   $allowed_clients     = $::aem::dispatcher::params::allowed_clients,
+  $auth_checker        = undef,
   $cache_headers       = undef,
   $cache_rules         = $::aem::dispatcher::params::cache_rules,
   $cache_ttl           = undef,
@@ -50,6 +51,32 @@ define aem::dispatcher::farm(
   } else {
     validate_hash($allowed_clients)
     $_allowed_clients = [$allowed_clients]
+  }
+
+  if $auth_checker {
+    validate_hash($auth_checker)
+
+    if !has_key($auth_checker, 'url') {
+      fail('Auth checker url is not specified.')
+    }
+
+    if !has_key($auth_checker, 'filter') {
+      fail('Auth checker filter are not specified.')
+    } else {
+      if !is_array($auth_checker['filter']) {
+        fail('Auth checker filter must be an array.')
+      }
+      validate_hash($auth_checker['filter'][0])
+    }
+
+    if !has_key($auth_checker, 'headers') {
+      fail('Auth checker headers are not specified.')
+    } else {
+      if !is_array($auth_checker['headers']) {
+        fail('Auth checker headers must be an array.')
+      }
+      validate_hash($auth_checker['headers'][0])
+    }
   }
 
   if $cache_headers {
