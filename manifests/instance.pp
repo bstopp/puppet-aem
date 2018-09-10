@@ -88,7 +88,11 @@ define aem::instance (
 
   validate_integer($timeout)
 
-  validate_re($type, '^(author|publish)$', "${type} is not supported for type. Allowed values are 'author' and 'publish'.")
+  validate_re(
+    $type,
+    '^(author|publish|standby)$',
+    "${type} is not supported for type. Allowed values are 'author', 'publish' and 'standby'."
+  )
 
   if $version {
     validate_re($version, '^\d+\.\d+(\.\d+)?$', "${version} is not a valid version.")

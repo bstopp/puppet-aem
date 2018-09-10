@@ -391,6 +391,20 @@ describe 'aem::instance', type: :defines do
         it { is_expected.to compile }
       end
 
+      context 'author' do
+        let(:params) do
+          default_params.merge(type: 'author')
+        end
+        it { is_expected.to compile }
+      end
+
+      context 'standby' do
+        let(:params) do
+          default_params.merge(type: 'standby')
+        end
+        it { is_expected.to compile }
+      end
+
       context 'invalid' do
         let(:params) do
           default_params.merge(type: 'invalid')
