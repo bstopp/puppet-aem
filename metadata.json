@@ -1,6 +1,6 @@
 {
   "name": "bstopp-aem",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "author": "Bryan Stopp (bryan.stopp@gmail.com)",
   "license": "Apache-2.0",
   "description": "Module for Adobe Experience Manager administration.",
@@ -21,7 +21,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.2.0 < 5.0.0"
+      "version_requirement": ">= 4.2.0 < 6.0.0"
     }
   ],
   "operatingsystem_support": [
