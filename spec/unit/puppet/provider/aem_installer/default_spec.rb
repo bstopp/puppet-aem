@@ -98,7 +98,7 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
 
         provider = @provider_class.new(opts[:resource])
 
-        yielddata = (opts[:present] ? '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-quickstart.jar' : '')
+        yielddata = (opts[:present] ? '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-load12b-standalone-quickstart.jar' : '')
         expect(provider).to receive(:execpipe).and_yield(yielddata)
 
         if opts[:present]
@@ -170,7 +170,7 @@ PORT=#{opts[:port]}
 #{crline}
         EOF
 
-        quickstartfile = '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-quickstart.jar'
+        quickstartfile = '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-load12b-standalone-quickstart.jar'
         expect(provider).to receive(:execpipe).and_yield(quickstartfile)
         expect(File).to receive(:stat).with(quickstartfile).and_return(filestat)
         expect(Etc).to receive(:getpwuid).with(ugid).and_return(userstat)
@@ -284,7 +284,7 @@ PORT=#{opts[:port]}
 PORT=4502
         EOF
 
-        quickstartfile = '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-standalone-quickstart.jar'
+        quickstartfile = '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-load12b-standalone-quickstart.jar'
         expect(provider).to receive(:execpipe).and_yield(quickstartfile)
         expect(File).to receive(:stat).with(quickstartfile).and_return(filestat)
         expect(Etc).to receive(:getpwuid).with(ugid).and_return(userstat)

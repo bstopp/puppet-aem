@@ -22,7 +22,7 @@ Puppet::Type.type(:aem_installer).provide :default, parent: Puppet::Provider do
     @launchpad_name = 'cq-quickstart-*-standalone*.jar'
     @repository_dir = 'repository'
     @quickstart_fields = %i[home version]
-    @quickstart_regex = %r|^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+)-standalone.*\.jar$|
+    @quickstart_regex = %r|^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+).*-standalone.*\.jar$|
     @port_regex = /^PORT=(\S+)/
     @context_root_regex = /^CONTEXT_ROOT='(\S+)'/
 
@@ -53,7 +53,7 @@ Puppet::Type.type(:aem_installer).provide :default, parent: Puppet::Provider do
   def find_instance
     hash = {}
     begin
-      cmd = [command(:find).to_s, @resource[:home], "-name \"#{@launchpad_name}\"", '-type f']
+      cmd = [command(:find).to_s, "#{@resource[:home]}/crx-quickstart/app", "-name \"#{@launchpad_name}\"", '-type f']
       execpipe(cmd) do |process|
         process.each_line do |line|
           hash = found_to_hash(line)
@@ -70,6 +70,7 @@ Puppet::Type.type(:aem_installer).provide :default, parent: Puppet::Provider do
   def found_to_hash(line)
     line.strip!
     hash = @resource.to_hash.dup
+    hash.delete(:ensure)
 
     if (match = @quickstart_regex.match(line))
       @quickstart_fields.zip(match.captures) { |f, v| hash[f] = v }
