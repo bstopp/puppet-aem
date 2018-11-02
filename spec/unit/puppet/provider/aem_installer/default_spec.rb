@@ -98,7 +98,11 @@ describe Puppet::Type.type(:aem_installer).provider(:default) do
 
         provider = @provider_class.new(opts[:resource])
 
-        yielddata = (opts[:present] ? '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-load12b-standalone-quickstart.jar' : '')
+        yielddata = if opts[:present]
+                      '/opt/aem/crx-quickstart/app/cq-quickstart-6.1.0-load12b-standalone-quickstart.jar'
+                    else
+                      ''
+                    end
         expect(provider).to receive(:execpipe).and_yield(yielddata)
 
         if opts[:present]
