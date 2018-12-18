@@ -29,7 +29,13 @@ define aem::service (
       }
     }
     'Amazon' : {
-      $provider = 'init'
+
+      if versioncmp($::operatingsystemmajrelease, '2') >= 0 {
+        $provider      = 'systemd'
+      } else {
+        $provider      = 'init'
+      }
+
     }
     'Debian': {
 

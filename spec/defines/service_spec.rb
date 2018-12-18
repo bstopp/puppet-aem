@@ -81,7 +81,30 @@ describe 'aem::service', type: :defines do
   end
 
   describe 'Amazon' do
-    context 'all versions' do
+
+    context 'version >= 2' do
+
+      let(:facts) do
+        default_facts.merge(operatingsystem: 'Amazon', operatingsystemmajrelease: '2')
+      end
+
+      let(:params) do
+        default_params
+      end
+
+      it do
+        is_expected.to contain_aem__service__systemd('aem').only_with(
+            ensure: 'present',
+            name: 'aem',
+            status: 'enabled',
+            group: 'aem',
+            home: '/opt/aem',
+            user: 'aem'
+        )
+      end
+    end
+
+    context 'version < 2' do
 
       let(:facts) do
         default_facts.merge(operatingsystem: 'Amazon', operatingsystemmajrelease: '2016')
