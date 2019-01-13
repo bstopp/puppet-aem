@@ -584,4 +584,36 @@ describe 'aem::dispatcher', type: :class do
       )
     end
   end
+
+  context 'selinux' do
+    let(:facts) do
+      default_facts.merge(selinux_enforced: true)
+    end
+    let(:params) { default_params }
+
+    it { is_expected.to compile.with_all_deps }
+
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so'
+      ).with(
+        'seltype' => 'httpd_modules_t'
+      )
+    end
+
+    it do
+      is_expected.to contain_file(
+        '/etc/httpd/modules/mod_dispatcher.so'
+      ).with(
+        'seltype' => 'httpd_modules_t'
+      )
+    end
+
+    it do
+      is_expected.to contain_selboolean('httpd_can_network_connect').with(
+        'value'      => 'on',
+        'persistent' => true
+      )
+    end
+  end
 end
