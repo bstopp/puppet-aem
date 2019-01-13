@@ -587,7 +587,7 @@ describe 'aem::dispatcher', type: :class do
 
   context 'selinux' do
     let(:facts) do
-      default_facts.merge(selinux: true)
+      default_facts.merge(selinux_enforced: true)
     end
     let(:params) { default_params }
 

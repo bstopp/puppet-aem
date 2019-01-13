@@ -88,7 +88,7 @@ class aem::dispatcher (
       content => template("${module_name}/dispatcher/dispatcher.farms.erb")
     }
 
-    if $facts['selinux'] {
+    if $facts['selinux_enforced'] {
       File["${::aem::dispatcher::params::mod_path}/${_mod_filename}"] {
         seltype => 'httpd_modules_t',
       }
@@ -97,10 +97,7 @@ class aem::dispatcher (
         seltype => 'httpd_modules_t',
       }
 
-      selboolean { 'httpd_can_network_connect':
-        value      => 'on',
-        persistent => true,
-      }
+      ensure_resource('selboolean', 'httpd_can_network_connect', { value => 'on', persistent => true })
     }
 
 
