@@ -103,7 +103,49 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
     @client
   end
 
+  def wait_for_install_ok
+    require 'uri'
+    require 'json'
+    require 'net/http'
+    retries ||= @resource[:retries]
+    retry_timeout = @resource[:retry_timeout]
+    host = 'http://localhost:4502'
+    path = '/system/sling/monitoring/mbeans/org/apache/sling/installer/Installer/Sling+OSGi+Installer.json'
+    uri = URI.parse(host + path)
+    request = Net::HTTP::Get.new(uri)
+    request.basic_auth(@resource[:username], @resource[:password])
+    begin
+      response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
+        http.request(request)
+      end
+      raise "wait_for_install_ok Response '#{response.code}' is not a Net::HTTPSuccess" unless response.is_a?(Net::HTTPSuccess)
+      data = JSON.parse(response.body)
+      check_install_status data
+    rescue Errno::EADDRNOTAVAIL, JSON::ParserError, RuntimeError => e
+      Puppet.info("wait_for_install_ok exception for Aem_crx_package[#{@resource[:pkg]}]: #{e.class} : #{e.message} :")
+      will_retry = (retries -= 1) >= 0
+      if will_retry
+        Puppet.debug("Waiting #{retry_timeout} seconds before retrying installer state query")
+        sleep retry_timeout
+        Puppet.debug("Retrying installer state query; remaining retries: #{retries}")
+        retry
+      end
+      raise
+    end
+  end
+
+  def check_install_status(data)
+    if data['Active'] == true || data['ActiveResourceCount'] != 0
+      @installed_resource_count = nil
+      raise "Active: #{data['Active']} (req: false), ActiveResourceCount: #{data['ActiveResourceCount']} (req: 0)"
+    elsif @installed_resource_count.nil? || @installed_resource_count != data['InstalledResourceCount']
+      @installed_resource_count = data['InstalledResourceCount']
+      raise "Adding timeout to wait for 'InstalledResourceCount' (#{@installed_resource_count}) to stabilise"
+    end
+  end
+
   def find_package
+    wait_for_install_ok
     client = build_client
 
     path = "/etc/packages/#{@resource[:group]}/#{@resource[:pkg]}-.zip"
@@ -145,22 +187,26 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
   end
 
   def upload_package(install = false)
+    wait_for_install_ok
     client = build_client
     file = File.new(@resource[:source])
     client.service_post(file, install: install)
   end
 
   def install_package
+    wait_for_install_ok
     client = build_client
     client.service_exec('install', @resource[:pkg], @resource[:group], @resource[:version])
   end
 
   def uninstall_package
+    wait_for_install_ok
     client = build_client
     client.service_exec('uninstall', @resource[:pkg], @resource[:group], @resource[:version])
   end
 
   def remove_package
+    wait_for_install_ok
     client = build_client
     client.service_exec('delete', @resource[:pkg], @resource[:group], @resource[:version])
   end
