@@ -58,54 +58,54 @@ describe 'aem::service::systemd' do
         is_expected.to contain_file(
           '/lib/systemd/system/aem-aem.service'
         ).with_content(
-          /PIDFile=\/opt\/aem\/crx-quickstart\/conf\/cq.pid/
+          %r|PIDFile=/opt/aem/crx-quickstart/conf/cq.pid|
         )
       end
       it do
         is_expected.to contain_file(
-           '/lib/systemd/system/aem-aem.service'
+          '/lib/systemd/system/aem-aem.service'
         ).with_content(
           /User=aem/
         )
       end
       it do
         is_expected.to contain_file(
-           '/lib/systemd/system/aem-aem.service'
+          '/lib/systemd/system/aem-aem.service'
         ).with_content(
           /Group=aem/
         )
       end
       it do
         is_expected.to contain_file(
-           '/lib/systemd/system/aem-aem.service'
+          '/lib/systemd/system/aem-aem.service'
         ).with_content(
-          /ExecStart=\/opt\/aem\/crx-quickstart\/bin\/start/
+          %r|ExecStart=/opt/aem/crx-quickstart/bin/start|
         )
       end
       it do
         is_expected.to contain_file(
-           '/lib/systemd/system/aem-aem.service'
+          '/lib/systemd/system/aem-aem.service'
         ).with_content(
-          /ExecStop=\/opt\/aem\/crx-quickstart\/bin\/stop/
+          %r|ExecStop=/opt/aem/crx-quickstart/bin/stop|
         )
       end
       it do
         is_expected.to contain_file(
-           '/lib/systemd/system/aem-aem.service'
+          '/lib/systemd/system/aem-aem.service'
         ).with_content(
           /TimeoutStopSec=4min/
         )
       end
       it do
         is_expected.to contain_file(
-           '/lib/systemd/system/aem-aem.service'
+          '/lib/systemd/system/aem-aem.service'
         ).with_content(
           /KillSignal=SIGCONT/
         )
       end
       it do
         is_expected.to contain_file(
-           '/lib/systemd/system/aem-aem.service'
+          '/lib/systemd/system/aem-aem.service'
         ).with_content(
           /PrivateTmp=true/
         )
@@ -115,35 +115,35 @@ describe 'aem::service::systemd' do
     context 'custom properties' do
       let(:params) do
         {
-            ensure: 'present',
-            status: 'enabled',
-            home: '/opt/aem',
-            user: 'aem',
-            group: 'aem',
-            service_options: {
-                'TimeoutStopSec' => '10min',
-                'KillSignal' => 'SIGKILL',
-                'PrivateTmp' => true
-            }
+          ensure: 'present',
+          status: 'enabled',
+          home: '/opt/aem',
+          user: 'aem',
+          group: 'aem',
+          service_options: {
+            'TimeoutStopSec' => '10min',
+            'KillSignal' => 'SIGKILL',
+            'PrivateTmp' => true
+          }
         }
       end
-     it do
+      it do
         is_expected.to contain_file(
-           '/lib/systemd/system/aem-aem.service'
+          '/lib/systemd/system/aem-aem.service'
         ).with_content(
           /TimeoutStopSec=10min/
         )
       end
       it do
         is_expected.to contain_file(
-           '/lib/systemd/system/aem-aem.service'
+          '/lib/systemd/system/aem-aem.service'
         ).with_content(
           /KillSignal=SIGKILL/
         )
       end
       it do
         is_expected.to contain_file(
-           '/lib/systemd/system/aem-aem.service'
+          '/lib/systemd/system/aem-aem.service'
         ).with_content(
           /PrivateTmp=true/
         )
