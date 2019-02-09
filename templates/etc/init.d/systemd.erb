@@ -11,7 +11,7 @@ Type=forking
 PIDFile=<%= @home %>/crx-quickstart/conf/cq.pid
 User=<%= @user %>
 Group=<%= @group %>
-ExecStart=<%= @home %>/crx-quickstart/bin/start 
+ExecStart=<%= @home %>/crx-quickstart/bin/start
 ExecStop=<%= @home %>/crx-quickstart/bin/stop
 # We want systemd to give aem some time to finish gracefully, but still want
 # it to kill aem after TimeoutStopSec if something went wrong during the
@@ -19,9 +19,10 @@ ExecStop=<%= @home %>/crx-quickstart/bin/stop
 # ExecStop, which would kill aem. We are sending useless SIGCONT here to give
 # aem time to finish.
 
-TimeoutStopSec=4min
-KillSignal=SIGCONT
-PrivateTmp=true
+<% @service_options.each do |key, value| -%>
+<%= key %>=<%= value %>
+<% end -%>
+
 
 [Install]
 WantedBy=multi-user.target

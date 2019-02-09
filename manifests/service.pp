@@ -5,11 +5,12 @@
 # Based on Elastic Search service management.
 #
 define aem::service (
-  $ensure = 'present',
-  $group  = 'aem',
-  $home   = undef,
-  $status = 'enabled',
-  $user   = 'aem',
+  $ensure           = 'present',
+  $group            = 'aem',
+  $home             = undef,
+  $status           = 'enabled',
+  $user             = 'aem',
+  $service_options  = { 'TimeoutStopSec' => '4min', 'KillSignal' => 'SIGCONT', 'PrivateTmp' => true }
 
 ) {
 
@@ -64,11 +65,12 @@ define aem::service (
     }
     'systemd' : {
       aem::service::systemd { $name :
-        ensure => $ensure,
-        status => $status,
-        group  => $group,
-        home   => $home,
-        user   => $user,
+        ensure          => $ensure,
+        status          => $status,
+        group           => $group,
+        home            => $home,
+        user            => $user,
+        service_options => $service_options
       }
     }
     default : {
