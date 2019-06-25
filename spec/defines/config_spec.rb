@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::config', type: :defines do
+describe 'aem::config' do
 
   let(:default_facts) do
     {
@@ -320,13 +322,13 @@ describe 'aem::config', type: :defines do
         osgi_configs: [
           {
             'osgi.name' => {
-              'pid'        => 'aem.config1',
+              'pid' => 'aem.config1',
               'properties' => cfg_props1
             }
           },
           {
             'osgi2.name' => {
-              'pid'        => 'aem.config2',
+              'pid' => 'aem.config2',
               'properties' => cfg_props2
             }
           }

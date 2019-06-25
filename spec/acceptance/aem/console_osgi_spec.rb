@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'console osgi configs', license: false do
@@ -25,8 +27,7 @@ describe 'console osgi configs', license: false do
           \"sling.jcrinstall.enable.writeback\"   => false
         }
 
-        aem::osgi::config { \"JCRInstaller\" :
-          ensure         => present,
+        aem::osgi::config { \"JCRInstaller\" : :ensure         => present,
           pid            => \"org.apache.sling.installer.provider.jcr.impl.JcrInstaller\",
           properties     => \$osgi,
           handle_missing => \"remove\",
@@ -41,8 +42,7 @@ describe 'console osgi configs', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -75,8 +75,7 @@ describe 'console osgi configs', license: false do
           \"allow.hosts\"    => [\"author.localhost.localmachine\"],
           \"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
         }
-        aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" :
-          ensure         => present,
+        aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" : :ensure         => present,
           properties     => \$osgi,
           handle_missing => \"remove\",
           home           => \"/opt/aem/author\",
@@ -89,8 +88,7 @@ describe 'console osgi configs', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -112,8 +110,7 @@ describe 'console osgi configs', license: false do
         \$osgi = {
           \"allow.hosts\"    => [\"author.localhost\"],
         }
-        aem::osgi::config { \"ReferrerFilter\" :
-          ensure         => present,
+        aem::osgi::config { \"ReferrerFilter\" : :ensure         => present,
           pid            => \"org.apache.sling.security.impl.ReferrerFilter\",
           properties     => \$osgi,
           handle_missing => \"remove\",
@@ -127,8 +124,7 @@ describe 'console osgi configs', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -176,8 +172,7 @@ describe 'console osgi configs', license: false do
           \"allow.hosts\"    => [\"author.localhost.localmachine\"],
           \"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
         }
-        aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" :
-          ensure         => present,
+        aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" : :ensure         => present,
           properties     => \$osgi,
           handle_missing => \"remove\",
           home           => \"/opt/aem/author\",
@@ -190,8 +185,7 @@ describe 'console osgi configs', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -213,8 +207,7 @@ describe 'console osgi configs', license: false do
         \$osgi = {
           \"allow.hosts\"    => [\"author.localhost\"],
         }
-        aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" :
-          ensure         => present,
+        aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" : :ensure         => present,
           properties     => \$osgi,
           handle_missing => \"merge\",
           home           => \"/opt/aem/author\",
@@ -227,8 +220,7 @@ describe 'console osgi configs', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -279,8 +271,7 @@ describe 'console osgi configs', license: false do
           \"allow.hosts\"    => [\"author.localhost.localmachine\"],
           \"filter.methods\" => [\"POST\", \"PUT\", \"DELETE\", \"TRACE\"],
         }
-        aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" :
-          ensure         => present,
+        aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" : :ensure         => present,
           properties     => \$osgi,
           handle_missing => \"remove\",
           home           => \"/opt/aem/author\",
@@ -293,8 +284,7 @@ describe 'console osgi configs', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -313,8 +303,7 @@ describe 'console osgi configs', license: false do
     site = <<-MANIFEST
       'node \"agent\" {
 
-        aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" :
-          ensure         => absent,
+        aem::osgi::config { \"org.apache.sling.security.impl.ReferrerFilter\" : :ensure         => absent,
           home           => \"/opt/aem/author\",
           password       => \"admin\",
           type           => \"console\",
@@ -325,8 +314,7 @@ describe 'console osgi configs', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST

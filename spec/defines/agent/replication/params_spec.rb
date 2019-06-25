@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::agent::replication', type: :defines do
+describe 'aem::agent::replication' do
 
   let(:default_params) do
     {

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'destroy' do
@@ -16,8 +18,7 @@ describe 'destroy' do
       'node \"agent\" {
         File { backup => false, owner => \"aem\", group => \"aem\" }
 
-        aem::instance { \"author\" :
-          ensure       => absent,
+        aem::instance { \"author\" : :ensure       => absent,
           manage_user  => false,
           manage_group => false,
           manage_home  => false,
@@ -30,8 +31,7 @@ describe 'destroy' do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 require 'crx_packmgr_api_client'
 
@@ -33,8 +35,7 @@ describe 'crx package mgr api', license: false do
 
     site = <<-MANIFEST
       'node \"agent\" {
-        aem::crx::package { \"author-test-pkg\" :
-          ensure      => \"purged\",
+        aem::crx::package { \"author-test-pkg\" : :ensure      => \"purged\",
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
@@ -48,8 +49,7 @@ describe 'crx package mgr api', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -112,8 +112,7 @@ describe 'crx package mgr api', license: false do
 
     site = <<-MANIFEST
       'node \"agent\" {
-        aem::crx::package { \"author-test-pkg\" :
-          ensure      => present,
+        aem::crx::package { \"author-test-pkg\" : :ensure      => present,
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
@@ -128,8 +127,7 @@ describe 'crx package mgr api', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -181,8 +179,7 @@ describe 'crx package mgr api', license: false do
 
     site = <<-MANIFEST
       'node \"agent\" {
-        aem::crx::package { \"author-test-pkg\" :
-          ensure      => absent,
+        aem::crx::package { \"author-test-pkg\" : :ensure      => absent,
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
@@ -196,8 +193,7 @@ describe 'crx package mgr api', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -252,8 +248,7 @@ describe 'crx package mgr api', license: false do
 
     site = <<-MANIFEST
       'node \"agent\" {
-        aem::crx::package { \"author-test-pkg\" :
-          ensure      => present,
+        aem::crx::package { \"author-test-pkg\" : :ensure      => present,
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
@@ -268,8 +263,7 @@ describe 'crx package mgr api', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -338,8 +332,7 @@ describe 'crx package mgr api', license: false do
 
     site = <<-MANIFEST
       'node \"agent\" {
-        aem::crx::package { \"author-test-pkg\" :
-          ensure      => installed,
+        aem::crx::package { \"author-test-pkg\" : :ensure      => installed,
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
@@ -354,8 +347,7 @@ describe 'crx package mgr api', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -421,8 +413,7 @@ describe 'crx package mgr api', license: false do
 
     site = <<-MANIFEST
       'node \"agent\" {
-        aem::crx::package { \"author-test-pkg\" :
-          ensure      => present,
+        aem::crx::package { \"author-test-pkg\" : :ensure      => present,
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
@@ -437,8 +428,7 @@ describe 'crx package mgr api', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -499,8 +489,7 @@ describe 'crx package mgr api', license: false do
     site = <<-MANIFEST
       'node \"agent\" {
 
-        aem::crx::package { \"author-test-pkg\" :
-          ensure      => absent,
+        aem::crx::package { \"author-test-pkg\" : :ensure      => absent,
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
@@ -515,8 +504,7 @@ describe 'crx package mgr api', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -576,8 +564,7 @@ describe 'crx package mgr api', license: false do
     site = <<-MANIFEST
       'node \"agent\" {
 
-        aem::crx::package { \"author-test-pkg\" :
-          ensure      => installed,
+        aem::crx::package { \"author-test-pkg\" : :ensure      => installed,
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
@@ -593,8 +580,7 @@ describe 'crx package mgr api', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -657,8 +643,7 @@ describe 'crx package mgr api', license: false do
     site = <<-MANIFEST
       'node \"agent\" {
 
-        aem::crx::package { \"author-test-pkg\" :
-          ensure      => installed,
+        aem::crx::package { \"author-test-pkg\" : :ensure      => installed,
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
@@ -674,8 +659,7 @@ describe 'crx package mgr api', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -747,8 +731,7 @@ describe 'crx package mgr api', license: false do
 
     site = <<-MANIFEST
       'node \"agent\" {
-        aem::crx::package { \"author-test-pkg\" :
-          ensure      => purged,
+        aem::crx::package { \"author-test-pkg\" : :ensure      => purged,
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
@@ -762,8 +745,7 @@ describe 'crx package mgr api', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST
@@ -842,8 +824,7 @@ describe 'crx package mgr api', license: false do
 
     site = <<-MANIFEST
       'node \"agent\" {
-        aem::crx::package { \"author-test-pkg\" :
-          ensure      => installed,
+        aem::crx::package { \"author-test-pkg\" : :ensure      => installed,
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
@@ -854,8 +835,7 @@ describe 'crx package mgr api', license: false do
           username    => \"admin\"
         }
 
-        aem::crx::package { \"author-sescondtest-pkg\" :
-          ensure      => present,
+        aem::crx::package { \"author-sescondtest-pkg\" : :ensure      => present,
           home        => \"/opt/aem/author\",
           password    => \"admin\",
           pkg_group   => \"my_packages\",
@@ -870,8 +850,7 @@ describe 'crx package mgr api', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST

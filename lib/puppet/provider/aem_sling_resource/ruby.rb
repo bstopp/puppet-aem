@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'net/http'
 
@@ -33,10 +35,10 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
 
   protected
 
-  def build_delete(is, should)
+  def build_delete(is_val, should)
     to_delete = {}
-    is.each do |key, value|
-      next if ignored?(key, is)
+    is_val.each do |key, value|
+      next if ignored?(key, is_val)
 
       if !should.key?(key)
         to_delete["#{key}@Delete"] = ''
@@ -121,8 +123,9 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
           jsn = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
           # Not found is OK to return
           return jsn if jsn || res.is_a?(Net::HTTPNotFound)
+
           raise 'Invalid response encountered.'
-        rescue
+        rescue Net::HTTPServerError, Net::HTTPClientError, Net::HTTPFatalError
           Puppet.debug('Unable to get configurations, waiting for AEM to start...')
           sleep 10
         end
@@ -188,10 +191,10 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
     end
   end
 
-  def remove_invalid(is, should)
+  def remove_invalid(is_val, should)
     should.delete_if do |key, value|
-      remove_invalid(is[key] || {}, value) if value.respond_to?(:keys)
-      ignored?(key, is)
+      remove_invalid(is_val[key] || {}, value) if value.respond_to?(:keys)
+      ignored?(key, is_val)
     end
   end
 
@@ -229,12 +232,12 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
         Puppet.debug("Error occurred: #{res.code}")
         res.value
       end
-    rescue
+    rescue Net::HTTPServerError, Net::HTTPClientError, Net::HTTPFatalError => e
       will_retry = (retries -= 1) >= 0
       Puppet.debug("Retrying resource creation; remaining retries: #{retries}") if will_retry
       sleep 10
       retry if will_retry
-      raise
+      raise e
     end
   end
 end

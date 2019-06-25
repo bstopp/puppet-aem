@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'net/http'
 
@@ -85,8 +87,9 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, parent: Puppet::Provider do
           end
           cfg = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
           return cfg if cfg
+
           raise 'Invalid response encountered.'
-        rescue
+        rescue RuntimeError
           Puppet.debug('Unable to get configurations, waiting for AEM to start...')
           sleep 10
         end

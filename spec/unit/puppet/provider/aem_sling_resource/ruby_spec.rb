@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
@@ -8,7 +10,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
       ensure: :present,
       properties: {
         'title' => 'string',
-        'text'  => 'string with text'
+        'text' => 'string with text'
       },
       home: '/opt/aem',
       password: 'admin',
@@ -56,10 +58,10 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
         opts[:depth] ||= 1
 
         crline = "CONTEXT_ROOT='#{opts[:context_root]}'" if opts[:context_root]
-        envdata = <<-EOF
-PORT=#{opts[:port]}
-#{crline}
-        EOF
+        envdata = <<~ENVDATA
+          PORT=#{opts[:port]}
+          #{crline}
+        ENVDATA
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
@@ -104,9 +106,9 @@ PORT=#{opts[:port]}
     describe 'ensure check timesout' do
       it 'should generate an error' do
         WebMock.reset!
-        envdata = <<-EOF
-PORT=4502
-        EOF
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
@@ -137,10 +139,10 @@ PORT=4502
         opts[:depth] ||= 1
 
         crline = "CONTEXT_ROOT='#{opts[:context_root]}'" if opts[:context_root]
-        envdata = <<-EOF
-PORT=#{opts[:port]}
-#{crline}
-        EOF
+        envdata = <<~ENVDATA
+          PORT=#{opts[:port]}
+          #{crline}
+        ENVDATA
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
@@ -194,8 +196,8 @@ PORT=#{opts[:port]}
             password: 'admin',
             username: 'admin',
             properties: {
-              'title'           => 'title string',
-              'text'            => 'text string'
+              'title' => 'title string',
+              'text' => 'text string'
             }
           )
         end
@@ -223,7 +225,7 @@ PORT=#{opts[:port]}
             username: 'admin',
             properties: {
               'title' => 'title string',
-              'text'  => 'text string'
+              'text' => 'text string'
             }
           )
         end
@@ -250,7 +252,7 @@ PORT=#{opts[:port]}
             username: 'admin',
             properties: {
               'title' => 'title string',
-              'text'  => 'text string',
+              'text' => 'text string',
               'array' => ['this', 'is', 'an', 'array']
             }
           )
@@ -281,7 +283,7 @@ PORT=#{opts[:port]}
             username: 'admin',
             properties: {
               'title' => 'title string',
-              'text'  => 'text string',
+              'text' => 'text string',
               'subnode' => {
                 'property' => 'value'
               }
@@ -312,7 +314,7 @@ PORT=#{opts[:port]}
             username: 'admin',
             properties: {
               'title' => 'title string',
-              'text'  => 'text string',
+              'text' => 'text string',
               'child' => {
                 'property' => 'value',
                 'grandchild' => {
@@ -351,15 +353,15 @@ PORT=#{opts[:port]}
             username: 'admin',
             properties: {
               'jcr:primaryType' => 'cq:Page',
-              'title'           => 'title string',
-              'text'            => 'text string',
-              'child'           => {
+              'title' => 'title string',
+              'text' => 'text string',
+              'child' => {
                 'jcr:primaryType' => 'cq:PageContent',
-                'property'        => 'value',
-                'grandchild'      => {
+                'property' => 'value',
+                'grandchild' => {
                   'jcr:primaryType' => 'nt:unstructured',
-                  'child attrib'    => 'another value',
-                  'array'           => ['this', 'is', 'an', 'array']
+                  'child attrib' => 'another value',
+                  'array' => ['this', 'is', 'an', 'array']
                 }
               }
             }
@@ -397,14 +399,14 @@ PORT=#{opts[:port]}
             password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
             username: 'admin',
             properties: {
-              'title'     => 'title string',
-              'text'      => 'text string',
+              'title' => 'title string',
+              'text' => 'text string',
               'apassword' => 'password',
-              'child'     => {
-                'property'        => 'value',
+              'child' => {
+                'property' => 'value',
                 'anotherpassword' => 'password',
                 'grandchild' => {
-                  'child attrib'    => 'another value',
+                  'child attrib' => 'another value',
                   'onemorepassword' => 'password',
                   'array' => ['this', 'is', 'an', 'array']
                 }
@@ -446,7 +448,7 @@ PORT=#{opts[:port]}
             username: 'admin',
             properties: {
               'title' => 'string',
-              'text'  => 'string'
+              'text' => 'string'
             }
           )
         end
@@ -469,7 +471,7 @@ PORT=#{opts[:port]}
             username: 'admin',
             properties: {
               'title' => 'string',
-              'text'  => 'string'
+              'text' => 'string'
             }
           )
         end
@@ -497,15 +499,15 @@ PORT=#{opts[:port]}
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
-                'jcr:title'       => 'A new title'
+                'jcr:title' => 'A new title'
               }
             )
           end
 
           params = {
-            'title@Delete'       => '',
+            'title@Delete' => '',
             'jcr:content@Delete' => '',
-            'jcr:title'          => 'A new title'
+            'jcr:title' => 'A new title'
           }
 
           it_should_behave_like(
@@ -528,8 +530,8 @@ PORT=#{opts[:port]}
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
-                'title'           => 'Page Title',
-                'jcr:content'     => {
+                'title' => 'Page Title',
+                'jcr:content' => {
                   'title' => 'new title property'
                 }
               }
@@ -537,10 +539,10 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'title'                              => 'Page Title',
-            'jcr:content/jcr:title@Delete'       => '',
-            'jcr:content/title'                  => 'new title property',
-            'jcr:content/par@Delete'             => ''
+            'title' => 'Page Title',
+            'jcr:content/jcr:title@Delete' => '',
+            'jcr:content/title' => 'new title property',
+            'jcr:content/par@Delete' => ''
           }
 
           it_should_behave_like(
@@ -564,10 +566,10 @@ PORT=#{opts[:port]}
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
-                'title'           => 'Page Title',
+                'title' => 'Page Title',
                 'jcr:content' => {
                   'title' => 'new title property',
-                  'par'   => {
+                  'par' => {
                     'newprop' => 'new prop value'
                   }
                 }
@@ -576,11 +578,11 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'title'                                  => 'Page Title',
-            'jcr:content/jcr:title@Delete'           => '',
-            'jcr:content/title'                      => 'new title property',
-            'jcr:content/par/property@Delete'        => '',
-            'jcr:content/par/newprop'                => 'new prop value'
+            'title' => 'Page Title',
+            'jcr:content/jcr:title@Delete' => '',
+            'jcr:content/title' => 'new title property',
+            'jcr:content/par/property@Delete' => '',
+            'jcr:content/par/newprop' => 'new prop value'
           }
 
           it_should_behave_like(
@@ -604,21 +606,21 @@ PORT=#{opts[:port]}
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
-                'title'           => 'Page Title',
+                'title' => 'Page Title',
                 'jcr:content' => {
                   'title' => 'new title property',
-                  'par'   => 'new prop value'
+                  'par' => 'new prop value'
                 }
               }
             )
           end
 
           params = {
-            'title'                              => 'Page Title',
-            'jcr:content/jcr:title@Delete'       => '',
-            'jcr:content/title'                  => 'new title property',
-            'jcr:content/par@Delete'             => '',
-            'jcr:content/par'                    => 'new prop value'
+            'title' => 'Page Title',
+            'jcr:content/jcr:title@Delete' => '',
+            'jcr:content/title' => 'new title property',
+            'jcr:content/par@Delete' => '',
+            'jcr:content/par' => 'new prop value'
           }
 
           it_should_behave_like(
@@ -642,7 +644,7 @@ PORT=#{opts[:port]}
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
-                'title'           => 'Page Title',
+                'title' => 'Page Title',
                 'jcr:content' => {
                   'jcr:title' => 'Default Agent',
                   'par' => {
@@ -656,10 +658,10 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'title'                                  => 'Page Title',
-            'jcr:content/jcr:title'                  => 'Default Agent',
-            'jcr:content/par/property@Delete'        => '',
-            'jcr:content/par/property/newnode'       => 'new prop value'
+            'title' => 'Page Title',
+            'jcr:content/jcr:title' => 'Default Agent',
+            'jcr:content/par/property@Delete' => '',
+            'jcr:content/par/property/newnode' => 'new prop value'
           }
 
           it_should_behave_like(
@@ -683,13 +685,13 @@ PORT=#{opts[:port]}
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
-                'title'           => 'Page Title',
-                'apassword'       => 'newvalue',
-                'jcr:content'     => {
-                  'jcr:title'       => 'Default Agent',
+                'title' => 'Page Title',
+                'apassword' => 'newvalue',
+                'jcr:content' => {
+                  'jcr:title' => 'Default Agent',
                   'anotherpassword' => 'newvale',
                   'par' => {
-                    'property'        => 'new prop value',
+                    'property' => 'new prop value',
                     'onemorepassword' => 'newvalue'
                   }
                 }
@@ -698,9 +700,9 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'title'                                  => 'Page Title',
-            'jcr:content/jcr:title'                  => 'Default Agent',
-            'jcr:content/par/property'               => 'new prop value'
+            'title' => 'Page Title',
+            'jcr:content/jcr:title' => 'Default Agent',
+            'jcr:content/par/property' => 'new prop value'
           }
 
           it_should_behave_like(
@@ -717,7 +719,7 @@ PORT=#{opts[:port]}
             Puppet::Type.type(:aem_sling_resource).new(
               name: '/path/to/resource',
               ensure: :present,
-              force_passwords: :true,
+              force_passwords: true,
               handle_missing: :remove,
               home: '/opt/aem',
               password: 'admin',
@@ -725,13 +727,13 @@ PORT=#{opts[:port]}
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
-                'title'           => 'Page Title',
-                'apassword'       => 'newvalue',
-                'jcr:content'     => {
-                  'jcr:title'       => 'Default Agent',
+                'title' => 'Page Title',
+                'apassword' => 'newvalue',
+                'jcr:content' => {
+                  'jcr:title' => 'Default Agent',
                   'anotherpassword' => 'newvalue',
-                  'par'             => {
-                    'property'        => 'new prop value',
+                  'par' => {
+                    'property' => 'new prop value',
                     'onemorepassword' => 'newvalue'
                   }
                 }
@@ -740,12 +742,12 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'title'                                  => 'Page Title',
-            'apassword'                              => 'newvalue',
-            'jcr:content/jcr:title'                  => 'Default Agent',
-            'jcr:content/anotherpassword'            => 'newvalue',
-            'jcr:content/par/property'               => 'new prop value',
-            'jcr:content/par/onemorepassword'        => 'newvalue'
+            'title' => 'Page Title',
+            'apassword' => 'newvalue',
+            'jcr:content/jcr:title' => 'Default Agent',
+            'jcr:content/anotherpassword' => 'newvalue',
+            'jcr:content/par/property' => 'new prop value',
+            'jcr:content/par/onemorepassword' => 'newvalue'
           }
 
           it_should_behave_like(
@@ -762,7 +764,7 @@ PORT=#{opts[:port]}
             Puppet::Type.type(:aem_sling_resource).new(
               name: '/path/to/resource',
               ensure: :present,
-              force_passwords: :true,
+              force_passwords: true,
               handle_missing: :remove,
               home: '/opt/aem',
               password: 'admin',
@@ -770,10 +772,10 @@ PORT=#{opts[:port]}
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
-                'title'           => 'Page Title',
-                'jcr:content'     => {
+                'title' => 'Page Title',
+                'jcr:content' => {
                   'jcr:title' => 'Default Agent',
-                  'par'       => {
+                  'par' => {
                     'property' => 'new prop value'
                   }
                 }
@@ -782,11 +784,11 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'title'                                  => 'Page Title',
-            'apassword@Delete'                       => '',
-            'jcr:content/jcr:title'                  => 'Default Agent',
-            'jcr:content/anotherpassword@Delete'     => '',
-            'jcr:content/par/property'               => 'new prop value',
+            'title' => 'Page Title',
+            'apassword@Delete' => '',
+            'jcr:content/jcr:title' => 'Default Agent',
+            'jcr:content/anotherpassword@Delete' => '',
+            'jcr:content/par/property' => 'new prop value',
             'jcr:content/par/onemorepassword@Delete' => ''
           }
 
@@ -811,14 +813,14 @@ PORT=#{opts[:port]}
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
-                'jcr:title'       => 'A new title'
+                'jcr:title' => 'A new title'
               }
             )
           end
 
           params = {
-            'title@Delete'       => '',
-            'jcr:title'          => 'A new title',
+            'title@Delete' => '',
+            'jcr:title' => 'A new title',
             'jcr:content@Delete' => ''
           }
 
@@ -893,7 +895,7 @@ PORT=#{opts[:port]}
               password: 'admin',
               username: 'admin',
               properties: {
-                'jcr:title'   => 'new title',
+                'jcr:title' => 'new title',
                 'jcr:content' => {
                   'title' => 'Not Agent Title'
                 }
@@ -902,7 +904,7 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:title'         => 'new title',
+            'jcr:title' => 'new title',
             'jcr:content/title' => 'Not Agent Title'
           }
 
@@ -924,20 +926,20 @@ PORT=#{opts[:port]}
               password: 'admin',
               username: 'admin',
               properties: {
-                'jcr:title'     => 'new title',
+                'jcr:title' => 'new title',
                 'jcr:createdBy' => 'admin',
-                'jcr:content'   => {
+                'jcr:content' => {
                   'jcr:primaryType' => 'cq:PageContent',
-                  'title'           => 'Not Agent Title',
-                  'jcr:createdBy'   => 'admin'
+                  'title' => 'Not Agent Title',
+                  'jcr:createdBy' => 'admin'
                 }
               }
             )
           end
 
           params = {
-            'jcr:title'                   => 'new title',
-            'jcr:content/title'           => 'Not Agent Title'
+            'jcr:title' => 'new title',
+            'jcr:content/title' => 'Not Agent Title'
           }
 
           it_should_behave_like(
@@ -958,16 +960,16 @@ PORT=#{opts[:port]}
               password: 'admin',
               username: 'admin',
               properties: {
-                'jcr:title'     => 'new title',
+                'jcr:title' => 'new title',
                 'jcr:createdBy' => 'admin',
-                'jcr:content'   => {
+                'jcr:content' => {
                   'jcr:primaryType' => 'cq:PageContent',
-                  'title'           => 'Not Agent Title',
-                  'jcr:createdBy'   => 'admin',
-                  'par'             => {
+                  'title' => 'Not Agent Title',
+                  'jcr:createdBy' => 'admin',
+                  'par' => {
                     'jcr:primaryType' => 'oak:unstructured',
-                    'newprop'         => 'new prop value',
-                    'jcr:created'     => 'Some date'
+                    'newprop' => 'new prop value',
+                    'jcr:created' => 'Some date'
                   }
                 }
               }
@@ -975,9 +977,9 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'jcr:title'                       => 'new title',
-            'jcr:content/title'               => 'Not Agent Title',
-            'jcr:content/par/newprop'         => 'new prop value'
+            'jcr:title' => 'new title',
+            'jcr:content/title' => 'Not Agent Title',
+            'jcr:content/par/newprop' => 'new prop value'
           }
 
           it_should_behave_like(
@@ -999,13 +1001,13 @@ PORT=#{opts[:port]}
               password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
               username: 'admin',
               properties: {
-                'title'           => 'Page Title',
-                'apassword'       => 'newvalue',
-                'jcr:content'     => {
-                  'jcr:title'       => 'Default Agent',
+                'title' => 'Page Title',
+                'apassword' => 'newvalue',
+                'jcr:content' => {
+                  'jcr:title' => 'Default Agent',
                   'anotherpassword' => 'newvale',
                   'par' => {
-                    'property'        => 'new prop value',
+                    'property' => 'new prop value',
                     'onemorepassword' => 'newvalue'
                   }
                 }
@@ -1014,8 +1016,8 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'title'                    => 'Page Title',
-            'jcr:content/jcr:title'    => 'Default Agent',
+            'title' => 'Page Title',
+            'jcr:content/jcr:title' => 'Default Agent',
             'jcr:content/par/property' => 'new prop value'
           }
 
@@ -1033,19 +1035,19 @@ PORT=#{opts[:port]}
             Puppet::Type.type(:aem_sling_resource).new(
               name: '/path/to/resource',
               ensure: :present,
-              force_passwords: :true,
+              force_passwords: true,
               home: '/opt/aem',
               password: 'admin',
               password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
               username: 'admin',
               properties: {
-                'title'           => 'Page Title',
-                'apassword'       => 'newvalue',
-                'jcr:content'     => {
-                  'jcr:title'       => 'Default Agent',
+                'title' => 'Page Title',
+                'apassword' => 'newvalue',
+                'jcr:content' => {
+                  'jcr:title' => 'Default Agent',
                   'anotherpassword' => 'newvalue',
                   'par' => {
-                    'property'        => 'new prop value',
+                    'property' => 'new prop value',
                     'onemorepassword' => 'newvalue'
                   }
                 }
@@ -1054,12 +1056,12 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'title'                                  => 'Page Title',
-            'apassword'                              => 'newvalue',
-            'jcr:content/jcr:title'                  => 'Default Agent',
-            'jcr:content/anotherpassword'            => 'newvalue',
-            'jcr:content/par/property'               => 'new prop value',
-            'jcr:content/par/onemorepassword'        => 'newvalue'
+            'title' => 'Page Title',
+            'apassword' => 'newvalue',
+            'jcr:content/jcr:title' => 'Default Agent',
+            'jcr:content/anotherpassword' => 'newvalue',
+            'jcr:content/par/property' => 'new prop value',
+            'jcr:content/par/onemorepassword' => 'newvalue'
           }
 
           it_should_behave_like(
@@ -1076,16 +1078,16 @@ PORT=#{opts[:port]}
             Puppet::Type.type(:aem_sling_resource).new(
               name: '/path/to/resource',
               ensure: :present,
-              force_passwords: :true,
+              force_passwords: true,
               home: '/opt/aem',
               password: 'admin',
               password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
               username: 'admin',
               properties: {
-                'title'           => 'Page Title',
-                'jcr:content'     => {
+                'title' => 'Page Title',
+                'jcr:content' => {
                   'jcr:title' => 'Default Agent',
-                  'par'       => {
+                  'par' => {
                     'property' => 'new prop value'
                   }
                 }
@@ -1094,8 +1096,8 @@ PORT=#{opts[:port]}
           end
 
           params = {
-            'title'                    => 'Page Title',
-            'jcr:content/jcr:title'    => 'Default Agent',
+            'title' => 'Page Title',
+            'jcr:content/jcr:title' => 'Default Agent',
             'jcr:content/par/property' => 'new prop value'
           }
 
@@ -1142,16 +1144,16 @@ PORT=#{opts[:port]}
               password: 'admin',
               username: 'admin',
               properties: {
-                'jcr:title'     => 'new title',
+                'jcr:title' => 'new title',
                 'jcr:createdBy' => 'admin',
-                'jcr:content'   => {
+                'jcr:content' => {
                   'jcr:primaryType' => 'nt:unstructured',
-                  'title'           => 'Not Agent Title',
-                  'jcr:createdBy'   => 'admin',
-                  'par'             => {
+                  'title' => 'Not Agent Title',
+                  'jcr:createdBy' => 'admin',
+                  'par' => {
                     'jcr:primaryType' => 'nt:unstructured',
-                    'newprop'         => 'new prop value',
-                    'array'           => ['this', 'is', 'an', 'array']
+                    'newprop' => 'new prop value',
+                    'array' => ['this', 'is', 'an', 'array']
                   }
                 }
               }
@@ -1186,7 +1188,7 @@ PORT=#{opts[:port]}
           password: 'admin',
           properties: {
             'title' => 'string',
-            'text'  => 'string with text'
+            'text' => 'string with text'
           },
           retries: 2,
           timeout: 1,
@@ -1197,9 +1199,9 @@ PORT=#{opts[:port]}
       it 'should generate an error' do
         WebMock.reset!
 
-        envdata = <<-EOF
-PORT=4502
-        EOF
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
@@ -1232,9 +1234,9 @@ PORT=4502
       it 'should generate an error' do
         WebMock.reset!
 
-        envdata = <<-EOF
-PORT=4502
-        EOF
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 

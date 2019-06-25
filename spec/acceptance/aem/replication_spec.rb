@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'create replication agent', license: false do
@@ -19,8 +21,7 @@ describe 'create replication agent', license: false do
       'node \"agent\" {
         File { backup => false, owner => \"aem\", group => \"aem\" }
 
-        aem::agent::replication { \"Agent Title\" :
-          agent_user            => \"agentuser\",
+        aem::agent::replication { \"Agent Title\" : :agent_user            => \"agentuser\",
           batch_enabled         => true,
           batch_max_wait        => 60,
           batch_trigger_size    => 100,
@@ -74,8 +75,7 @@ describe 'create replication agent', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST

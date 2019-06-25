@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for parameters defaults and validation
@@ -78,8 +80,8 @@ describe 'aem::dispatcher::farm', type: :define do
         let(:params) do
           default_params.merge(
             auth_checker: {
-              'url'     => '/bin/permissioncheck',
-              'filter'  => [
+              'url' => '/bin/permissioncheck',
+              'filter' => [
                 { 'rank' => 100, 'type' => 'allow', 'glob' => '/content/secure/*.html' },
                 { 'type' => 'deny', 'glob' => '*' }
               ],
@@ -103,8 +105,8 @@ describe 'aem::dispatcher::farm', type: :define do
         let(:params) do
           default_params.merge(
             auth_checker: {
-              'url'     => '/bin/permissioncheck',
-              'filter'  => [
+              'url' => '/bin/permissioncheck',
+              'filter' => [
                 { 'type' => 'deny', 'glob' => '*' }
               ],
               'headers' => [

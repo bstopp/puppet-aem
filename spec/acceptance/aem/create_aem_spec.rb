@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'create aem' do
@@ -47,7 +49,7 @@ describe 'create aem' do
                   break
                 end
               end
-            rescue
+            rescue RuntimeError
               valid = false
             end
             sleep 15

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 @puppet_agent_version = ENV['PUPPET_INSTALL_VERSION'] || '1.8.0'
 
 require 'beaker'
@@ -7,7 +9,7 @@ require 'beaker/puppet_install_helper'
 UNSUPPORTED_PLATFORMS = %w[Suse windows AIX Solaris].freeze
 @puppet_agent_version = ENV['PUPPET_INSTALL_VERSION'] ||= '1.8.0'
 
-DEBUG = ENV['BEAKER_debug'] ? '--debug'.freeze : ''.freeze
+DEBUG = ENV['BEAKER_debug'] ? '--debug' : ''
 
 def server_opts
   {
@@ -68,11 +70,11 @@ def teardown_puppet(host)
     clean_repo = ''
   end
 
-  pp = <<-EOS
-#{clean_repo}
-file { ['/etc/puppet', '/etc/puppetlabs']: ensure => absent, force => true, backup => false }
-package { ['puppet-agent', 'puppet']: ensure => purged }
-  EOS
+  pp = <<~CATALOG
+    #{clean_repo}
+    file { ['/etc/puppet', '/etc/puppetlabs']: ensure => absent, force => true, backup => false }
+    package { ['puppet-agent', 'puppet']: ensure => purged }
+  CATALOG
 
   apply_manifest_on(host, pp)
 end
@@ -85,6 +87,7 @@ end
 def aem_license(module_root)
   license_file = File.join(module_root, 'spec', 'files', 'license.properties')
   return unless File.exist?(license_file)
+
   File.foreach(license_file) do |line|
     match = line.match(/license.downloadID=(\S+)/)
     ENV['AEM_LICENSE'] = match.captures[0] if match

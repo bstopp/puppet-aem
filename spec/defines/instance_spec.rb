@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for the resources created by the class.
-describe 'aem::instance', type: :defines do
+describe 'aem::instance' do
 
   let(:default_facts) do
     {
@@ -117,7 +119,7 @@ describe 'aem::instance', type: :defines do
     context 'single definition' do
       let(:cfg_props) do
         {
-          'key'  => 'value',
+          'key' => 'value',
           'key2' => 'value2'
         }
       end
@@ -172,7 +174,7 @@ describe 'aem::instance', type: :defines do
         default_params.merge(
           osgi_configs: [
             {
-              'osgi.name' =>  { 'properties' => cfg_props1 }
+              'osgi.name' => { 'properties' => cfg_props1 }
             },
             {
               'osgi2.name' => { 'properties' => cfg_props2 }
@@ -190,13 +192,10 @@ describe 'aem::instance', type: :defines do
       it do
         is_expected.to contain_aem__config(
           'aem'
-        ).only_with(
-          context_root: nil,
-          debug_port: nil,
+        ).with(
           group: 'aem',
           home: '/opt/aem',
           jvm_mem_opts: '-Xmx1024m',
-          jvm_opts: nil,
           osgi_configs: [
             {
               'osgi.name' => {

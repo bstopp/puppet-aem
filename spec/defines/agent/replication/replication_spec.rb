@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::agent::replication', type: :defines do
+describe 'aem::agent::replication' do
 
   let(:default_params) do
     {
@@ -51,11 +53,11 @@ describe 'aem::agent::replication', type: :defines do
           path: '/etc/replication/agents.custommode/agentname',
           properties: {
             'jcr:primaryType' => 'cq:Page',
-            'jcr:content'     => {
+            'jcr:content' => {
               'jcr:primaryType' => 'nt:unstructured',
-              'enabled'         => true,
-              'jcr:title'       => 'Agent Title',
-              'logLevel'        => 'info'
+              'enabled' => true,
+              'jcr:title' => 'Agent Title',
+              'logLevel' => 'info'
             }
           },
           username: 'username'
@@ -81,15 +83,15 @@ describe 'aem::agent::replication', type: :defines do
           path: '/etc/replication/agents.author/agentname',
           properties: {
             'jcr:primaryType' => 'cq:Page',
-            'jcr:content'     => {
-              'jcr:primaryType'    => 'nt:unstructured',
-              'jcr:description'    => default_desc,
-              'enabled'            => true,
-              'logLevel'           => 'info',
+            'jcr:content' => {
+              'jcr:primaryType' => 'nt:unstructured',
+              'jcr:description' => default_desc,
+              'enabled' => true,
+              'logLevel' => 'info',
               'sling:resourceType' => 'cq/replication/components/agent',
-              'serializationType'  => 'durbo',
-              'cq:template'        => '/libs/cq/replication/templates/agent',
-              'jcr:title'          => 'Agent Title'
+              'serializationType' => 'durbo',
+              'cq:template' => '/libs/cq/replication/templates/agent',
+              'jcr:title' => 'Agent Title'
             }
           },
           username: 'username'
@@ -115,15 +117,15 @@ describe 'aem::agent::replication', type: :defines do
           path: '/etc/replication/agents.author/agentname',
           properties: {
             'jcr:primaryType' => 'cq:Page',
-            'jcr:content'     => {
-              'jcr:primaryType'    => 'nt:unstructured',
-              'jcr:description'    => "#{default_desc}Custom Description Addition",
-              'enabled'            => true,
-              'logLevel'           => 'info',
+            'jcr:content' => {
+              'jcr:primaryType' => 'nt:unstructured',
+              'jcr:description' => "#{default_desc}Custom Description Addition",
+              'enabled' => true,
+              'logLevel' => 'info',
               'sling:resourceType' => 'cq/replication/components/agent',
-              'serializationType'  => 'durbo',
-              'cq:template'        => '/libs/cq/replication/templates/agent',
-              'jcr:title'          => 'Agent Title'
+              'serializationType' => 'durbo',
+              'cq:template' => '/libs/cq/replication/templates/agent',
+              'jcr:title' => 'Agent Title'
             }
           },
           username: 'username'
@@ -197,51 +199,51 @@ describe 'aem::agent::replication', type: :defines do
           path: '/etc/replication/agents.custommode/customname',
           properties: {
             'jcr:primaryType' => 'cq:Page',
-            'jcr:content'     => {
-              'jcr:primaryType'             => 'nt:unstructured',
-              'userId'                      => 'agentuser',
-              'queueBatchMode'              => true,
-              'queueBatchWaitTime'          => 60,
-              'queueBatchMaxSize'           => 100,
-              'jcr:description'             => "#{default_desc}Custom Description",
-              'enabled'                     => false,
-              'logLevel'                    => 'debug',
-              'jcr:mixinTypes'              => ['cq:ReplicationStatus'],
+            'jcr:content' => {
+              'jcr:primaryType' => 'nt:unstructured',
+              'userId' => 'agentuser',
+              'queueBatchMode' => true,
+              'queueBatchWaitTime' => 60,
+              'queueBatchMaxSize' => 100,
+              'jcr:description' => "#{default_desc}Custom Description",
+              'enabled' => false,
+              'logLevel' => 'debug',
+              'jcr:mixinTypes' => ['cq:ReplicationStatus'],
               'protocolHTTPConnectionClose' => true,
-              'protocolConnectTimeout'      => 1000,
-              'protocolHTTPHeaders'         => ['CQ-Action:{action}', 'CQ-Handle:{path}', 'CQ-Path:{path}'],
-              'protocolHTTPMethod'          => 'POST',
-              'protocolInterface'           => '127.0.0.1',
-              'protocolSocketTimeout'       => 1_000,
-              'protocolVersion'             => 1.0,
-              'proxyHost'                   => 'proxy.domain.com',
-              'proxyNTLMDomain'             => 'proxydomain',
-              'proxyNTLMHost'               => 'proxy.ntlm.domain.com',
-              'proxyPassword'               => 'proxypassword',
-              'proxyPort'                   => 12_345,
-              'proxyUser'                   => 'proxyuser',
-              'sling:resourceType'          => 'cq/replication/components/revagent',
-              'retryDelay'                  => 60,
-              'reverseReplication'          => true,
-              'serializationType'           => 'flush',
-              'directory'                   => '/var/path',
-              'definition'                  => '/content/geo* ${path}.html?wcmmode=preview',
-              'cq:template'                 => '/libs/cq/replication/templates/revagent',
-              'jcr:title'                   => 'Agent Title',
-              'protocolHTTPExpired'         => true,
-              'transportNTLMDomain'         => 'transdomain',
-              'transportNTLMHost'           => 'trans.ntlm.domain.com',
-              'transportPassword'           => 'transpassword',
-              'transportUri'                => 'http://localhost:4503/bin/receive?sling:authRequestLogin=1',
-              'transportUser'               => 'transuser',
-              'ssl'                         => 'relaxed',
-              'triggerSpecific'             => true,
-              'noStatusUpdate'              => false,
-              'noVersioning'                => true,
-              'triggerDistribute'           => true,
-              'triggerModified'             => true,
-              'triggerReceive'              => true,
-              'triggerOnOffTime'            => true
+              'protocolConnectTimeout' => 1000,
+              'protocolHTTPHeaders' => ['CQ-Action:{action}', 'CQ-Handle:{path}', 'CQ-Path:{path}'],
+              'protocolHTTPMethod' => 'POST',
+              'protocolInterface' => '127.0.0.1',
+              'protocolSocketTimeout' => 1_000,
+              'protocolVersion' => 1.0,
+              'proxyHost' => 'proxy.domain.com',
+              'proxyNTLMDomain' => 'proxydomain',
+              'proxyNTLMHost' => 'proxy.ntlm.domain.com',
+              'proxyPassword' => 'proxypassword',
+              'proxyPort' => 12_345,
+              'proxyUser' => 'proxyuser',
+              'sling:resourceType' => 'cq/replication/components/revagent',
+              'retryDelay' => 60,
+              'reverseReplication' => true,
+              'serializationType' => 'flush',
+              'directory' => '/var/path',
+              'definition' => '/content/geo* ${path}.html?wcmmode=preview',
+              'cq:template' => '/libs/cq/replication/templates/revagent',
+              'jcr:title' => 'Agent Title',
+              'protocolHTTPExpired' => true,
+              'transportNTLMDomain' => 'transdomain',
+              'transportNTLMHost' => 'trans.ntlm.domain.com',
+              'transportPassword' => 'transpassword',
+              'transportUri' => 'http://localhost:4503/bin/receive?sling:authRequestLogin=1',
+              'transportUser' => 'transuser',
+              'ssl' => 'relaxed',
+              'triggerSpecific' => true,
+              'noStatusUpdate' => false,
+              'noVersioning' => true,
+              'triggerDistribute' => true,
+              'triggerModified' => true,
+              'triggerReceive' => true,
+              'triggerOnOffTime' => true
             }
           },
           username: 'ausername'

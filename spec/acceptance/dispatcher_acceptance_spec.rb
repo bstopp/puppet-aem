@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'dispatcher acceptance' do
@@ -29,8 +31,7 @@ describe 'dispatcher acceptance' do
             File { backup => false }
 
             class { \"apache\" : }
-            class { \"aem::dispatcher\" :
-              module_file => \"/tmp/dispatcher-apache-module.so\",
+            class { \"aem::dispatcher\" : :module_file => \"/tmp/dispatcher-apache-module.so\",
             }
 
           }'
@@ -38,8 +39,7 @@ describe 'dispatcher acceptance' do
 
         pp = <<-MANIFEST
           file {
-            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-              ensure => file,
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
               content => #{site}
           }
         MANIFEST
@@ -155,11 +155,9 @@ describe 'dispatcher acceptance' do
             File { backup => false }
 
             class { \"apache\" : }
-            class { \"aem::dispatcher\" :
-              module_file => \"/tmp/dispatcher-apache-module.so\",
+            class { \"aem::dispatcher\" : :module_file => \"/tmp/dispatcher-apache-module.so\",
             }
-            aem::dispatcher::farm { \"site\" :
-              docroot             => \"/var/www\",
+            aem::dispatcher::farm { \"site\" : :docroot             => \"/var/www\",
               allow_authorized    => 0,
               allowed_clients     => [ { \"type\" => \"deny\", \"glob\" => \"*\" }, { \"type\" => \"allow\", \"glob\" => \"127.0.0.1\" } ],
               cache_headers       => [ \"A-Cache-Header\", \"Another-Cache-Header\" ],
@@ -191,8 +189,7 @@ describe 'dispatcher acceptance' do
 
         pp = <<-MANIFEST
           file {
-            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-              ensure => file,
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
               content => #{site}
           }
         MANIFEST
@@ -414,8 +411,7 @@ describe 'dispatcher acceptance' do
             File { backup => false }
 
             class { \"apache\" : }
-            class { \"aem::dispatcher\" :
-              decline_root      => 1,
+            class { \"aem::dispatcher\" : :decline_root      => 1,
               dispatcher_name   => \"named instance\",
               log_file          => \"\${::apache::logroot}/my-dispatcher.log\",
               log_level         => 3,
@@ -423,16 +419,14 @@ describe 'dispatcher acceptance' do
               use_processed_url => 1,
               pass_error        => \"400-404",
             }
-            aem::dispatcher::farm { \"anothersite\" :
-              docroot => \"/var/www\",
+            aem::dispatcher::farm { \"anothersite\" : :docroot => \"/var/www\",
             }
           }'
         MANIFEST
 
         pp = <<-MANIFEST
           file {
-            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-              ensure => file,
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
               content => #{site}
           }
         MANIFEST
@@ -530,17 +524,14 @@ describe 'dispatcher acceptance' do
             File { backup => false }
 
             class { \"apache\" : }
-            class { \"aem::dispatcher\" :
-              module_file => \"/tmp/dispatcher-apache-module.so\",
+            class { \"aem::dispatcher\" : :module_file => \"/tmp/dispatcher-apache-module.so\",
             }
-            aem::dispatcher::farm { \"site\" :
-              docroot            => \"/var/www\",
+            aem::dispatcher::farm { \"site\" : :docroot            => \"/var/www\",
               invalidate_handler => \"/path/to/handler\",
               sticky_connections => [\"/path/to/content\", \"/another/path/to/content\"],
               priority           => 10,
             }
-            aem::dispatcher::farm { \"anothersite\" :
-              docroot  => \"/var/www\",
+            aem::dispatcher::farm { \"anothersite\" : :docroot  => \"/var/www\",
               priority => 1,
             }
           }'
@@ -548,8 +539,7 @@ describe 'dispatcher acceptance' do
 
         pp = <<-MANIFEST
           file {
-            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-              ensure => file,
+            '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
               content => #{site}
           }
         MANIFEST
@@ -654,8 +644,7 @@ describe 'dispatcher acceptance' do
           File { backup => false }
 
           class { \"apache\" : }
-          class { \"aem::dispatcher\" :
-            ensure      => \"absent\",
+          class { \"aem::dispatcher\" : :ensure      => \"absent\",
             module_file => \"/tmp/dispatcher-apache-module.so\",
           }
         }'
@@ -663,8 +652,7 @@ describe 'dispatcher acceptance' do
 
       pp = <<-MANIFEST
         file {
-          '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-            ensure => file,
+          '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
             content => #{site}
         }
       MANIFEST

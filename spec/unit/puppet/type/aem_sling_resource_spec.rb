@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'spec_helper'
 require 'puppet/type/aem_sling_resource'
@@ -7,8 +8,8 @@ describe Puppet::Type.type(:aem_sling_resource) do
 
   before do
     @provider_class = described_class.provide(:simple) { mk_resource_methods }
-    @provider_class.stubs(:suitable?).returns true
-    described_class.stubs(:defaultprovider).returns @provider_class
+    expect(@provider_class).to receive(:suitable?).at_most(:once).and_return true
+    expect(@provider_class).to receive(:defaultprovider).at_most(:once).and_return @provider_class
   end
 
   describe 'namevar validation' do
@@ -226,7 +227,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                 'jcr:createdBy' => 'not admin',
                 'a' => {
                   'b' => 'c',
-                  'cq:lastModified'   => 'a person',
+                  'cq:lastModified' => 'a person',
                   'cq:lastModifiedBy' => 'original value'
                 }
               },
@@ -252,7 +253,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                     'jcr:createdBy' => 'not admin',
                     'a' => {
                       'b' => 'c',
-                      'cq:lastModified'   => 'a person',
+                      'cq:lastModified' => 'a person',
                       'cq:lastModifiedBy' => 'original value'
                     }
                   }
@@ -262,12 +263,12 @@ describe Puppet::Type.type(:aem_sling_resource) do
               is = {
                 'baz' => {
                   'jcr:createdBy' => 'not admin',
-                  'ignored'       => 'value',
+                  'ignored' => 'value',
                   'a' => {
                     'b' => 'c',
-                    'cq:lastModified'   => 'a person',
+                    'cq:lastModified' => 'a person',
                     'cq:lastModifiedBy' => 'original value',
-                    'anotherignored'    => 'vale'
+                    'anotherignored' => 'vale'
                   }
                 },
                 'bar' => 'foo',
@@ -291,7 +292,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                   'jcr:createdBy' => 'admin',
                   'a' => {
                     'b' => 'c',
-                    'cq:lastModified'   => 'a person',
+                    'cq:lastModified' => 'a person',
                     'cq:lastModifiedBy' => 'original value'
                   }
                 }
@@ -637,7 +638,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                   'jcr:createdBy' => 'admin',
                   'a' => {
                     'b' => 'c',
-                    'cq:lastModified'   => 'a person',
+                    'cq:lastModified' => 'a person',
                     'cq:lastModifiedBy' => 'original value'
                   }
                 }

@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::osgi::config', type: :defines do
+describe 'aem::osgi::config' do
 
   let(:facts) do
     {
@@ -20,9 +22,9 @@ describe 'aem::osgi::config', type: :defines do
       pid: 'osgi.pid',
       properties: {
         'boolean' => false,
-        'long'    => 123_456_789,
-        'string'  => 'string',
-        'array'   => ['an', 'array', 'of', 'values']
+        'long' => 123_456_789,
+        'string' => 'string',
+        'array' => ['an', 'array', 'of', 'values']
       },
       username: 'username',
       password: 'password'

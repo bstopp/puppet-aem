@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::osgi::config::file', type: :defines do
+describe 'aem::osgi::config::file' do
 
   let(:facts) do
     {
@@ -20,21 +22,21 @@ describe 'aem::osgi::config::file', type: :defines do
       home: '/opt/aem',
       pid: :undef,
       properties: {
-        'boolean'                 => false,
-        'long'                    => 123_456_789,
-        'string'                  => 'string',
-        'array'                   => ['an', 'array', 'of', 'values'],
-        'simple_string_literal'   => 'T"simple string"',
-        'integer_literal'         => 'I"10"',
-        'long_literal'            => 'L"99"',
-        'float_literal'           => 'F"3.14"',
-        'double_literal'          => 'D"9.99"',
-        'byte_literal'            => 'X"Y"',
-        'short_literal'           => 'S"100"',
-        'character_literal'       => 'C"X"',
-        'boolean_literal'         => 'B"false"',
-        'unknown_type_literal'    => 'A"foo"',
-        'wrong_format_literal'    => 'T"false" '
+        'boolean' => false,
+        'long' => 123_456_789,
+        'string' => 'string',
+        'array' => ['an', 'array', 'of', 'values'],
+        'simple_string_literal' => 'T"simple string"',
+        'integer_literal' => 'I"10"',
+        'long_literal' => 'L"99"',
+        'float_literal' => 'F"3.14"',
+        'double_literal' => 'D"9.99"',
+        'byte_literal' => 'X"Y"',
+        'short_literal' => 'S"100"',
+        'character_literal' => 'C"X"',
+        'boolean_literal' => 'B"false"',
+        'unknown_type_literal' => 'A"foo"',
+        'wrong_format_literal' => 'T"false" '
       },
       user: 'aem'
     }

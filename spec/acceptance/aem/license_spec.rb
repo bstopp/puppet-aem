@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'create license file', license: false do
@@ -30,8 +32,7 @@ describe 'create license file', license: false do
           version     => \"6.1.0\",
         }
 
-        aem::license { \"author\" :
-          group   => \"vagrant\",
+        aem::license { \"author\" : :group   => \"vagrant\",
           user    => \"vagrant\",
           home    => \"/opt/aem/author\",
         }
@@ -41,8 +42,7 @@ describe 'create license file', license: false do
 
     pp = <<-MANIFEST
       file {
-        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-          ensure => file,
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
           content => #{site}
       }
     MANIFEST

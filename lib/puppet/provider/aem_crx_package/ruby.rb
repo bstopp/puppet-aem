@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
@@ -45,6 +46,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
   def flush
     return unless @property_flush[:ensure]
+
     Puppet.debug('aem_crx_package::ruby - Flushing out to AEM.')
     self.class.require_libs
     case @property_flush[:ensure]
@@ -137,7 +139,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
   def find_version(ary)
     found_pkg = nil
-    ary && ary.each do |p|
+    ary&.each do |p|
       found_pkg = p if p.version == @resource[:version]
       break if found_pkg
     end

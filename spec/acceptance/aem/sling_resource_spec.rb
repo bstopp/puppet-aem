@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'sling resource', license: false do
@@ -31,8 +33,7 @@ describe 'sling resource', license: false do
             }
           }
 
-          aem_sling_resource { \"test node\" :
-            ensure         => present,
+          aem_sling_resource { \"test node\" : :ensure         => present,
             path           => \"/content/testnode\",
             properties     => \$props,
             handle_missing => \"remove\",
@@ -46,8 +47,7 @@ describe 'sling resource', license: false do
 
       pp = <<-MANIFEST
         file {
-          '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-            ensure => file,
+          '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
             content => #{site}
         }
       MANIFEST
@@ -110,8 +110,7 @@ describe 'sling resource', license: false do
             }
           }
 
-          aem_sling_resource { \"test node\" :
-            ensure         => present,
+          aem_sling_resource { \"test node\" : :ensure         => present,
             path           => \"/content/testnode\",
             properties     => \$props,
             handle_missing => \"ignore\",
@@ -125,8 +124,7 @@ describe 'sling resource', license: false do
 
       pp = <<-MANIFEST
         file {
-          '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-            ensure => file,
+          '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
             content => #{site}
         }
       MANIFEST
@@ -196,8 +194,7 @@ describe 'sling resource', license: false do
             }
           }
 
-          aem_sling_resource { \"test node\" :
-            ensure         => present,
+          aem_sling_resource { \"test node\" : :ensure         => present,
             path           => \"/content/testnode\",
             properties     => \$props,
             handle_missing => \"remove\",
@@ -211,8 +208,7 @@ describe 'sling resource', license: false do
 
       pp = <<-MANIFEST
         file {
-          '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-            ensure => file,
+          '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
             content => #{site}
         }
       MANIFEST
@@ -262,8 +258,7 @@ describe 'sling resource', license: false do
       site = <<-MANIFEST
         'node \"agent\" {
 
-          aem_sling_resource { \"test node\" :
-            ensure         => absent,
+          aem_sling_resource { \"test node\" : :ensure         => absent,
             path           => \"/content/testnode\",
             home           => \"/opt/aem/author\",
             password       => \"admin\",
@@ -275,8 +270,7 @@ describe 'sling resource', license: false do
 
       pp = <<-MANIFEST
         file {
-          '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-            ensure => file,
+          '#{master.puppet['codedir']}/environments/production/manifests/site.pp': :ensure => file,
             content => #{site}
         }
       MANIFEST

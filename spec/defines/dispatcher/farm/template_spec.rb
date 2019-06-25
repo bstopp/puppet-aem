@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for parameters defaults and validation
@@ -184,8 +186,8 @@ describe 'aem::dispatcher::farm', type: :define do
       let(:params) do
         default_params.merge(
           auth_checker: {
-            'url'     => '/bin/permissioncheck',
-            'filter'  => [
+            'url' => '/bin/permissioncheck',
+            'filter' => [
               { 'type' => 'deny', 'glob' => '*' }
             ],
             'headers' => [
@@ -261,15 +263,15 @@ describe 'aem::dispatcher::farm', type: :define do
           let(:params) do
             default_params.merge(
               filters: {
-                'type'      => 'allow',
-                'method'    => 'GET',
-                'url'       => '/path/to/content',
-                'query'     => 'param=*',
-                'protocol'  => 'https',
-                'path'      => '/different/path/to/content',
+                'type' => 'allow',
+                'method' => 'GET',
+                'url' => '/path/to/content',
+                'query' => 'param=*',
+                'protocol' => 'https',
+                'path' => '/different/path/to/content',
                 'selectors' => '((sys|doc)view|query|[0-9-]+)',
                 'extension' => '(css|gif|ico|js|png|swf|jpe?g)',
-                'suffix'    => '/suffix/path'
+                'suffix' => '/suffix/path'
               }
             )
           end
@@ -299,7 +301,7 @@ describe 'aem::dispatcher::farm', type: :define do
           let(:params) do
             default_params.merge(
               filters: {
-                'type'   => 'allow',
+                'type' => 'allow',
                 'method' => 'GET'
               }
             )
@@ -319,7 +321,7 @@ describe 'aem::dispatcher::farm', type: :define do
             default_params.merge(
               filters: {
                 'type' => 'allow',
-                'url'  => '/path/to/content'
+                'url' => '/path/to/content'
               }
             )
           end
@@ -337,8 +339,8 @@ describe 'aem::dispatcher::farm', type: :define do
           let(:params) do
             default_params.merge(
               filters: {
-                'type'     => 'allow',
-                'query'    => 'param=*'
+                'type' => 'allow',
+                'query' => 'param=*'
               }
             )
           end
@@ -356,7 +358,7 @@ describe 'aem::dispatcher::farm', type: :define do
           let(:params) do
             default_params.merge(
               filters: {
-                'type'     => 'allow',
+                'type' => 'allow',
                 'protocol' => 'https'
               }
             )
@@ -530,12 +532,12 @@ describe 'aem::dispatcher::farm', type: :define do
         let(:params) do
           default_params.merge(
             renders: {
-              'hostname'       => 'publish.hostname.com',
-              'port'           => 8080,
-              'timeout'        => 600,
+              'hostname' => 'publish.hostname.com',
+              'port' => 8080,
+              'timeout' => 600,
               'receiveTimeout' => 300,
-              'ipv4'           => 0,
-              'secure'         => 0
+              'ipv4' => 0,
+              'secure' => 0
 
             }
           )
@@ -565,8 +567,8 @@ describe 'aem::dispatcher::farm', type: :define do
           default_params.merge(
             renders: {
               'hostname' => 'publish.hostname.com',
-              'port'     => 8080,
-              'timeout'  => 600
+              'port' => 8080,
+              'timeout' => 600
             }
           )
         end
@@ -583,8 +585,8 @@ describe 'aem::dispatcher::farm', type: :define do
         let(:params) do
           default_params.merge(
             renders: {
-              'hostname'       => 'publish.hostname.com',
-              'port'           => 8080,
+              'hostname' => 'publish.hostname.com',
+              'port' => 8080,
               'receiveTimeout' => 600
             }
           )
@@ -611,8 +613,8 @@ describe 'aem::dispatcher::farm', type: :define do
           default_params.merge(
             renders: {
               'hostname' => 'publish.hostname.com',
-              'port'     => 8080,
-              'ipv4'     => 0
+              'port' => 8080,
+              'ipv4' => 0
             }
           )
         end
@@ -630,8 +632,8 @@ describe 'aem::dispatcher::farm', type: :define do
           default_params.merge(
             renders: {
               'hostname' => 'publish.hostname.com',
-              'port'     => 8080,
-              'secure'   => 0
+              'port' => 8080,
+              'secure' => 0
             }
           )
         end
@@ -650,13 +652,13 @@ describe 'aem::dispatcher::farm', type: :define do
             renders: [
               {
                 'hostname' => 'publish.hostname.com',
-                'port'     => 8080,
-                'timeout'  => 600
+                'port' => 8080,
+                'timeout' => 600
               },
               {
                 'hostname' => 'another.hostname.com',
-                'port'     => 8888,
-                'timeout'  => 100
+                'port' => 8888,
+                'timeout' => 100
               }
             ]
           )
@@ -713,7 +715,7 @@ describe 'aem::dispatcher::farm', type: :define do
           default_params.merge(
             session_management: {
               'directory' => '/path/to/cache',
-              'encode'    => 'md5'
+              'encode' => 'md5'
             }
           )
         end
@@ -732,7 +734,7 @@ describe 'aem::dispatcher::farm', type: :define do
           default_params.merge(
             session_management: {
               'directory' => '/path/to/cache',
-              'header'    => 'HTTP:authorization'
+              'header' => 'HTTP:authorization'
             }
           )
         end
@@ -751,7 +753,7 @@ describe 'aem::dispatcher::farm', type: :define do
           default_params.merge(
             session_management: {
               'directory' => '/path/to/cache',
-              'timeout'   => 1000
+              'timeout' => 1000
             }
           )
         end
@@ -770,9 +772,9 @@ describe 'aem::dispatcher::farm', type: :define do
           default_params.merge(
             session_management: {
               'directory' => '/path/to/cache',
-              'encode'    => 'md5',
-              'header'    => 'HTTP:authorization',
-              'timeout'   => 1000
+              'encode' => 'md5',
+              'header' => 'HTTP:authorization',
+              'timeout' => 1000
             }
           )
         end

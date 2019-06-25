@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 Puppet::Type.newtype(:aem_crx_package) do
 
@@ -28,12 +29,10 @@ This is a private type used to manage CRX Packages via API calls.
       provider.retrieve
     end
 
-    def insync?(is)
-      retval = super(is)
-      unless retval
-        retval = (@should.include?(:absent) || @should.include?(:purged)) &&
-                 (is.to_sym == :absent || is.to_sym == :purged)
-      end
+    def insync?(is_val)
+      retval = super(is_val)
+      retval ||= (@should.include?(:absent) || @should.include?(:purged)) &&
+                 (is_val.to_sym == :absent || is_val.to_sym == :purged)
       retval
     end
   end
@@ -45,27 +44,21 @@ This is a private type used to manage CRX Packages via API calls.
   newproperty(:pkg) do
     desc 'The name of the CRX package.'
     validate do |value|
-      if value.nil?
-        raise(Puppet::ResourceError, 'Package name must be specified.')
-      end
+      raise(Puppet::ResourceError, 'Package name must be specified.') if value.nil?
     end
   end
 
   newproperty(:group) do
     desc 'The group of the CRX Package.'
     validate do |value|
-      if value.nil?
-        raise(Puppet::ResourceError, 'Package group must be specified.')
-      end
+      raise(Puppet::ResourceError, 'Package group must be specified.') if value.nil?
     end
   end
 
   newproperty(:version) do
     desc 'The version of the CRX Package.'
     validate do |value|
-      if value.nil?
-        raise(Puppet::ResourceError, 'Package version must be specified.')
-      end
+      raise(Puppet::ResourceError, 'Package version must be specified.') if value.nil?
     end
   end
 

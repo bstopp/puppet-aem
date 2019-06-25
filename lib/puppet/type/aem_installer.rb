@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+# frozen_string_literal: true.
+
 require 'pathname'
 
 Puppet::Type.newtype(:aem_installer) do
@@ -16,15 +20,17 @@ This is a private type intended to start, monitor, and stop an AEM instance, ins
       value.downcase
     end
 
-    def insync?(is)
-      is.casecmp(should).zero?
+    def insync?(is_val)
+      is_val.casecmp(should).zero?
     end
   end
 
   newproperty(:home) do
     desc 'The home directory of the AEM installation.'
-    def insync?(is)
-      warning("Home cannot be modified after installation. [Existing = #{is}, New = #{should}]") unless is == should
+    def insync?(is_val)
+      unless is_val == should
+        warning("Home cannot be modified after installation. [Existing = #{is_val}, New = #{should}]")
+      end
       true
     end
 

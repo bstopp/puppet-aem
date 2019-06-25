@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'simplecov'
 SimpleCov.start do
   add_filter '/fixtures/'
@@ -6,8 +8,10 @@ end
 
 require 'rubygems'
 require 'rspec/mocks'
+require 'rspec-puppet'
 require 'webmock/rspec'
-require 'puppetlabs_spec_helper/module_spec_helper'
+
+fixture_path = File.expand_path(File.join(__FILE__, '..', 'fixtures'))
 
 RSpec.configure do |config|
 
@@ -22,12 +26,15 @@ RSpec.configure do |config|
     @old_env = {}
     ENV.each_key { |k| @old_env[k] = ENV[k] }
 
-    if ENV['STRICT_VARIABLES'] == 'yes'
-      Puppet.settings[:strict_variables] = true
-    end
+    Puppet.settings[:strict_variables] = true if ENV['STRICT_VARIABLES'] == 'yes'
   end
 
+  config.module_path = File.join(fixture_path, 'modules')
+  config.manifest_dir = File.join(fixture_path, 'manifests')
   config.mock_with :rspec
+  config.raise_errors_for_deprecations!
 end
+
+# require 'puppetlabs_spec_helper/module_spec_helper'
 
 at_exit { RSpec::Puppet::Coverage.report! }

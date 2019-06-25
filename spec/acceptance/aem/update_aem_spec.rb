@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'updated aem settings' do
@@ -36,7 +38,7 @@ describe 'updated aem settings' do
                   break
                 end
               end
-            rescue
+            rescue RuntimeError
               valid = false
             end
             sleep 15

@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for parameters defaults and validation
-describe 'aem::dispatcher', type: :class do
+describe 'aem::dispatcher' do
 
   let(:pre_condition) do
     'class { "apache" :
@@ -36,47 +38,47 @@ describe 'aem::dispatcher', type: :class do
     it { is_expected.to compile.with_all_deps }
     it do
       is_expected.to contain_class('aem::dispatcher').only_with(
-        'name'              => 'Aem::Dispatcher',
-        'ensure'            => 'present',
-        'decline_root'      => 'off',
-        'group'             => 'root',
-        'log_file'          => '/var/log/httpd/dispatcher.log',
-        'log_level'         => 'warn',
-        'module_file'       => '/tmp/dispatcher-apache2.X-4.1.X.so',
-        'pass_error'        => '0',
+        'name' => 'Aem::Dispatcher',
+        'ensure' => 'present',
+        'decline_root' => 'off',
+        'group' => 'root',
+        'log_file' => '/var/log/httpd/dispatcher.log',
+        'log_level' => 'warn',
+        'module_file' => '/tmp/dispatcher-apache2.X-4.1.X.so',
+        'pass_error' => '0',
         'use_processed_url' => 'off',
-        'user'              => 'root'
+        'user' => 'root'
       )
     end
 
     it do
       is_expected.to contain_file('/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so').with(
-        'ensure'  => 'file',
-        'path'    => '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so',
-        'group'   => 'root',
-        'owner'   => 'root',
+        'ensure' => 'file',
+        'path' => '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so',
+        'group' => 'root',
+        'owner' => 'root',
         'replace' => 'true',
-        'source'  => '/tmp/dispatcher-apache2.X-4.1.X.so'
+        'source' => '/tmp/dispatcher-apache2.X-4.1.X.so'
       )
     end
 
     it do
       is_expected.to contain_file('/etc/httpd/modules/mod_dispatcher.so').with(
-        'ensure'  => 'link',
-        'path'    => '/etc/httpd/modules/mod_dispatcher.so',
-        'group'   => 'root',
-        'owner'   => 'root',
+        'ensure' => 'link',
+        'path' => '/etc/httpd/modules/mod_dispatcher.so',
+        'group' => 'root',
+        'owner' => 'root',
         'replace' => 'true',
-        'target'  => '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so'
+        'target' => '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so'
       )
     end
 
     it do
       is_expected.to contain_file('/etc/httpd/conf.modules.d/dispatcher.conf').with(
-        'ensure'  => 'file',
-        'path'    => '/etc/httpd/conf.modules.d/dispatcher.conf',
-        'group'   => 'root',
-        'owner'   => 'root',
+        'ensure' => 'file',
+        'path' => '/etc/httpd/conf.modules.d/dispatcher.conf',
+        'group' => 'root',
+        'owner' => 'root',
         'replace' => 'true'
       ).with_content(
         %r|.*DispatcherConfig\s*/etc/httpd/conf.modules.d/dispatcher.farms.any|
@@ -390,47 +392,47 @@ describe 'aem::dispatcher', type: :class do
     it { is_expected.to compile.with_all_deps }
     it do
       is_expected.to contain_class('aem::dispatcher').only_with(
-        'name'              => 'Aem::Dispatcher',
-        'ensure'            => 'present',
-        'decline_root'      => 'off',
-        'group'             => 'root',
-        'log_file'          => '/var/log/httpd/dispatcher.log',
-        'log_level'         => 'warn',
-        'module_file'       => '/tmp/dispatcher-apache2.X-4.1.X.so',
-        'pass_error'        => '0',
+        'name' => 'Aem::Dispatcher',
+        'ensure' => 'present',
+        'decline_root' => 'off',
+        'group' => 'root',
+        'log_file' => '/var/log/httpd/dispatcher.log',
+        'log_level' => 'warn',
+        'module_file' => '/tmp/dispatcher-apache2.X-4.1.X.so',
+        'pass_error' => '0',
         'use_processed_url' => 'off',
-        'user'              => 'root'
+        'user' => 'root'
       )
     end
 
     it do
       is_expected.to contain_file('/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so').with(
-        'ensure'  => 'file',
-        'path'    => '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so',
-        'group'   => 'root',
-        'owner'   => 'root',
+        'ensure' => 'file',
+        'path' => '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so',
+        'group' => 'root',
+        'owner' => 'root',
         'replace' => 'true',
-        'source'  => '/tmp/dispatcher-apache2.X-4.1.X.so'
+        'source' => '/tmp/dispatcher-apache2.X-4.1.X.so'
       )
     end
 
     it do
       is_expected.to contain_file('/etc/httpd/modules/mod_dispatcher.so').with(
-        'ensure'  => 'link',
-        'path'    => '/etc/httpd/modules/mod_dispatcher.so',
-        'group'   => 'root',
-        'owner'   => 'root',
+        'ensure' => 'link',
+        'path' => '/etc/httpd/modules/mod_dispatcher.so',
+        'group' => 'root',
+        'owner' => 'root',
         'replace' => 'true',
-        'target'  => '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so'
+        'target' => '/etc/httpd/modules/dispatcher-apache2.X-4.1.X.so'
       )
     end
 
     it do
       is_expected.to contain_file('/etc/httpd/conf.modules.d/dispatcher.conf').with(
-        'ensure'  => 'file',
-        'path'    => '/etc/httpd/conf.modules.d/dispatcher.conf',
-        'group'   => 'root',
-        'owner'   => 'root',
+        'ensure' => 'file',
+        'path' => '/etc/httpd/conf.modules.d/dispatcher.conf',
+        'group' => 'root',
+        'owner' => 'root',
         'replace' => 'true'
       ).with_content(
         %r|.*DispatcherConfig\s*/etc/httpd/conf.modules.d/dispatcher.farms.any|
@@ -499,16 +501,16 @@ describe 'aem::dispatcher', type: :class do
     it { is_expected.to compile.with_all_deps }
     it do
       is_expected.to contain_class('aem::dispatcher').only_with(
-        'name'              => 'Aem::Dispatcher',
-        'ensure'            => 'absent',
-        'decline_root'      => 'off',
-        'group'             => 'root',
-        'log_file'          => '/var/log/httpd/dispatcher.log',
-        'log_level'         => 'warn',
-        'module_file'       => '/tmp/dispatcher-apache2.X-4.1.X.so',
-        'pass_error'        => '0',
+        'name' => 'Aem::Dispatcher',
+        'ensure' => 'absent',
+        'decline_root' => 'off',
+        'group' => 'root',
+        'log_file' => '/var/log/httpd/dispatcher.log',
+        'log_level' => 'warn',
+        'module_file' => '/tmp/dispatcher-apache2.X-4.1.X.so',
+        'pass_error' => '0',
         'use_processed_url' => 'off',
-        'user'              => 'root'
+        'user' => 'root'
       )
     end
 
@@ -611,7 +613,7 @@ describe 'aem::dispatcher', type: :class do
 
     it do
       is_expected.to contain_selboolean('httpd_can_network_connect').with(
-        'value'      => 'on',
+        'value' => 'on',
         'persistent' => true
       )
     end

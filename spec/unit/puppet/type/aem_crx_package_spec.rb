@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'spec_helper'
 require 'puppet/type/aem_crx_package'
@@ -6,8 +7,8 @@ require 'puppet/type/aem_crx_package'
 describe Puppet::Type.type(:aem_crx_package) do
   before do
     @provider_class = described_class.provide(:simple) { mk_resource_methods }
-    @provider_class.stubs(:suitable?).returns true
-    described_class.stubs(:defaultprovider).returns @provider_class
+    expect(@provider_class).to receive(:suitable?).at_most(:once).and_return true
+    expect(@provider_class).to receive(:defaultprovider).at_most(:once).and_return @provider_class
   end
 
   describe 'namevar validation' do
