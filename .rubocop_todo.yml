@@ -36,5 +36,6 @@ Style/FormatStringToken:
 # Configuration parameters: AllowedVariables.
 Style/GlobalVars:
   Exclude:
+    - 'spec/acceptance/aem/crx_package_spec.rb'
     - 'spec/acceptance/aem/console_osgi_spec.rb'
     - 'spec/spec_helper_acceptance.rb'

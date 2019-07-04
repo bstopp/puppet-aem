@@ -43,21 +43,19 @@ describe 'console osgi configs', license: false do
       manifest('/vagrant/puppet/files/manifests/aem/osgi/console_remove_run.pp')
       agent
 
-      step 'Test configuration' do
-        cmd = 'curl http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json '
-        cmd += '-u admin:admin'
-        shell(cmd) do |result|
-          jsonresult = JSON.parse(result.stdout)
-          configed_props = jsonresult[0]['properties']
-          expect(configed_props['allow.empty']['is_set']).to eq(false)
+      cmd = 'curl http://localhost:4502/system/console/configMgr/org.apache.sling.security.impl.ReferrerFilter.json '
+      cmd += '-u admin:admin'
+      shell(cmd) do |result|
+        jsonresult = JSON.parse(result.stdout)
+        configed_props = jsonresult[0]['properties']
+        expect(configed_props['allow.empty']['is_set']).to eq(false)
 
-          expect(configed_props['allow.hosts.regexp']['is_set']).to eq(false)
+        expect(configed_props['allow.hosts.regexp']['is_set']).to eq(false)
 
-          expect(configed_props['allow.hosts']['is_set']).to eq(true)
-          expect(configed_props['allow.hosts']['values']).to eq(['author.localhost'])
+        expect(configed_props['allow.hosts']['is_set']).to eq(true)
+        expect(configed_props['allow.hosts']['values']).to eq(['author.localhost'])
 
-          expect(configed_props['filter.methods']['is_set']).to eq(false)
-        end
+        expect(configed_props['filter.methods']['is_set']).to eq(false)
       end
     end
   end

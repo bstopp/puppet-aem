@@ -130,7 +130,7 @@ describe 'aem::dispatcher::farm', type: :define do
       end
       context 'should accept an array of values' do
         let(:params) do
-          default_params.merge(cache_headers: ['A-Cache-Header', 'Another-Cache-Header'])
+          default_params.merge(cache_headers: %w[A-Cache-Header Another-Cache-Header])
         end
         it { is_expected.to compile.with_all_deps }
       end
@@ -326,7 +326,7 @@ describe 'aem::dispatcher::farm', type: :define do
       end
       context 'should accept an array of values' do
         let(:params) do
-          default_params.merge(client_headers: ['A-Client-Header', 'Another-Client-Header'])
+          default_params.merge(client_headers: %w[A-Client-Header Another-Client-Header])
         end
         it { is_expected.to compile.with_all_deps }
       end

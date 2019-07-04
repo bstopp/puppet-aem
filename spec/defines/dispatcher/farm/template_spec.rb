@@ -137,7 +137,7 @@ describe 'aem::dispatcher::farm', type: :define do
 
     context 'cache_headers' do
       let(:params) do
-        default_params.merge(cache_headers: ['New-Cache-Header', 'Another-Cache-Header'])
+        default_params.merge(cache_headers: %w[New-Cache-Header Another-Cache-Header])
       end
       it { is_expected.to compile }
       it do
@@ -218,7 +218,7 @@ describe 'aem::dispatcher::farm', type: :define do
 
     context 'client_headers' do
       let(:params) do
-        default_params.merge(client_headers: ['New-Client-Header', 'Another-New-Header'])
+        default_params.merge(client_headers: %w[New-Client-Header Another-New-Header])
       end
       it { is_expected.to compile }
       it do
