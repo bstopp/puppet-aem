@@ -5,11 +5,11 @@ require 'spec_helper_acceptance'
 def manifest(file)
   step 'Create Manifest' do
     pp = <<~MANIFEST
-          file {
-            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-              ensure => file,
-              source => '#{file}'
-          }
+      file {
+        '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+          ensure => file,
+          source => '#{file}'
+      }
     MANIFEST
     apply_manifest_on(master, pp, catch_failures: true)
   end
@@ -85,7 +85,7 @@ describe 'console osgi configs', license: false do
         expect(configed_props['allow.hosts']['values']).to eq(['author.localhost'])
 
         expect(configed_props['filter.methods']['is_set']).to eq(true)
-        expect(configed_props['filter.methods']['values']).to eq(['POST', 'PUT', 'DELETE', 'TRACE'])
+        expect(configed_props['filter.methods']['values']).to eq(%w[POST PUT DELETE TRACE])
       end
     end
   end

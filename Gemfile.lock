@@ -206,7 +206,7 @@ DEPENDENCIES
   crx_packmgr_api_client (~> 1.3)
   facter
   metadata-json-lint
-  puppet
+  puppet (= 6.5.0)
   puppet-lint
   puppetlabs_spec_helper
   rainbow

@@ -25,7 +25,7 @@ describe 'aem::osgi::config::file' do
         'boolean' => false,
         'long' => 123_456_789,
         'string' => 'string',
-        'array' => ['an', 'array', 'of', 'values'],
+        'array' => %w[an array of values],
         'simple_string_literal' => 'T"simple string"',
         'integer_literal' => 'I"10"',
         'long_literal' => 'L"99"',

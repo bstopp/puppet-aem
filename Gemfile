@@ -7,7 +7,6 @@ puppetversion = ENV['PUPPET_VERSION']
 
 group :development, :tests do
   gem 'codeclimate-test-reporter',  require: false
-  gem 'metadata-json-lint',         require: false
   gem 'puppetlabs_spec_helper',     require: false
   gem 'rainbow',                    require: false
   gem 'rake',                       require: false

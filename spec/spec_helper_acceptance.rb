@@ -73,11 +73,11 @@ def install_aem
     step 'Setup' do
 
       pp = <<~MANIFEST
-          file {
-            '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
-              ensure => file,
-              content => "#{setup_template}"
-          }
+        file {
+          '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
+            ensure => file,
+            content => "#{setup_template}"
+        }
       MANIFEST
       apply_manifest_on(master, pp, catch_failures: true)
     end

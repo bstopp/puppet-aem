@@ -6,9 +6,9 @@ require 'pathname'
 
 Puppet::Type.newtype(:aem_installer) do
 
-  @doc = <<-DOC
-This is a private type intended to start, monitor, and stop an AEM instance, insuring
- the repository is created.
+  @doc = <<~DOC
+    This is a private type intended to start, monitor, and stop an AEM instance, insuring
+     the repository is created.
   DOC
 
   ensurable
@@ -16,9 +16,7 @@ This is a private type intended to start, monitor, and stop an AEM instance, ins
   newparam(:name, namevar: true) do
     desc 'The name of the AEM Instance.'
 
-    munge do |value|
-      value.downcase
-    end
+    munge(&:downcase)
 
     def insync?(is_val)
       is_val.casecmp(should).zero?
@@ -49,9 +47,7 @@ This is a private type intended to start, monitor, and stop an AEM instance, ins
 
     newvalues(/^\d+$/)
 
-    munge do |value|
-      value.to_i
-    end
+    munge(&:to_i)
   end
 
   newparam(:timeout) do
@@ -61,9 +57,7 @@ This is a private type intended to start, monitor, and stop an AEM instance, ins
 
     newvalues(/^\d+$/)
 
-    munge do |value|
-      value.to_i
-    end
+    munge(&:to_i)
   end
 
   autorequire(:file) do

@@ -446,7 +446,7 @@ describe 'aem::dispatcher::farm', type: :define do
       end
       context 'should not accept anything else' do
         let(:params) do
-          default_params.merge(health_check_url: ['not', 'a', 'string'])
+          default_params.merge(health_check_url: %w[not a string])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a string/i) }
       end
@@ -749,14 +749,14 @@ describe 'aem::dispatcher::farm', type: :define do
       end
       context 'should not accept an array' do
         let(:params) do
-          default_params.merge(session_management: ['array', 'of', 'values'])
+          default_params.merge(session_management: %w[array of values])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end
       context 'mutually exclusive with allow authorized' do
         let(:params) do
           default_params.merge(
-            session_management: ['array', 'of', 'values'],
+            session_management: %w[array of values],
             allow_authorized: 1
           )
         end
@@ -1006,7 +1006,7 @@ describe 'aem::dispatcher::farm', type: :define do
       end
       context 'should not accept an array' do
         let(:params) do
-          default_params.merge(vanity_urls: ['array', 'of', 'values'])
+          default_params.merge(vanity_urls: %w[array of values])
         end
         it { expect { is_expected.to compile }.to raise_error(/not a hash/i) }
       end

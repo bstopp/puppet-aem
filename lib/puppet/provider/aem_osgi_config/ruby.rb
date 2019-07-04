@@ -182,13 +182,7 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, parent: Puppet::Provider do
     http.read_timeout = resource[:timeout]
     res = http.request(req)
 
-    case res
-    when Net::HTTPSuccess, Net::HTTPRedirection
-
-      # OK
-    else
-      res.value
-    end
+    res.value unless res.is_a?(Net::HTTPSuccess) || res.is_a?(Net::HTTPRedirection)
   end
 
 end

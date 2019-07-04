@@ -24,7 +24,7 @@ describe 'aem::osgi::config' do
         'boolean' => false,
         'long' => 123_456_789,
         'string' => 'string',
-        'array' => ['an', 'array', 'of', 'values']
+        'array' => %w[an array of values]
       },
       username: 'username',
       password: 'password'

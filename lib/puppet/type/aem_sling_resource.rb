@@ -4,8 +4,8 @@ require 'puppet/parameter/boolean'
 
 Puppet::Type.newtype(:aem_sling_resource) do
 
-  @doc = <<-DOC
-This is a type used to perform sling api calls
+  @doc = <<~DOC
+    This is a type used to perform sling api calls
   DOC
 
   ensurable
@@ -146,9 +146,7 @@ This is a type used to perform sling api calls
 
     defaultto 120
 
-    munge do |value|
-      value.to_i
-    end
+    munge(&:to_i)
   end
 
   validate do

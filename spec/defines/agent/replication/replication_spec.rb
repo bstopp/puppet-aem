@@ -49,7 +49,7 @@ describe 'aem::agent::replication' do
           handle_missing: :remove,
           home: '/opt/aem',
           password: 'password',
-          password_properties: ['transportPassword', 'proxyPassword'],
+          password_properties: %w[transportPassword proxyPassword],
           path: '/etc/replication/agents.custommode/agentname',
           properties: {
             'jcr:primaryType' => 'cq:Page',
@@ -79,7 +79,7 @@ describe 'aem::agent::replication' do
           handle_missing: :remove,
           home: '/opt/aem',
           password: 'password',
-          password_properties: ['transportPassword', 'proxyPassword'],
+          password_properties: %w[transportPassword proxyPassword],
           path: '/etc/replication/agents.author/agentname',
           properties: {
             'jcr:primaryType' => 'cq:Page',
@@ -113,7 +113,7 @@ describe 'aem::agent::replication' do
           handle_missing: :remove,
           home: '/opt/aem',
           password: 'password',
-          password_properties: ['transportPassword', 'proxyPassword'],
+          password_properties: %w[transportPassword proxyPassword],
           path: '/etc/replication/agents.author/agentname',
           properties: {
             'jcr:primaryType' => 'cq:Page',
@@ -195,7 +195,7 @@ describe 'aem::agent::replication' do
           handle_missing: :remove,
           home: '/opt/aem',
           password: 'apassword',
-          password_properties: ['transportPassword', 'proxyPassword'],
+          password_properties: %w[transportPassword proxyPassword],
           path: '/etc/replication/agents.custommode/customname',
           properties: {
             'jcr:primaryType' => 'cq:Page',

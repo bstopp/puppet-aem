@@ -77,7 +77,7 @@ describe 'sling resource', license: false do
         expect(jsonresult['text']).to eq('text string')
         expect(jsonresult['child']['property']).to eq('value')
         expect(jsonresult['child']['grandchild']['child attrib']).to eq('another value')
-        expect(jsonresult['child']['grandchild']['array']).to eq(['this', 'is', 'an', 'array'])
+        expect(jsonresult['child']['grandchild']['array']).to eq(%w[this is an array])
       end
     end
   end
@@ -154,17 +154,17 @@ describe 'sling resource', license: false do
         expect(jsonresult['text']).to eq('text string')
         expect(jsonresult['child']['property']).to eq('value')
         expect(jsonresult['child']['grandchild']['child attrib']).to eq('another value')
-        expect(jsonresult['child']['grandchild']['array']).to eq(['this', 'is', 'an', 'array'])
+        expect(jsonresult['child']['grandchild']['array']).to eq(%w[this is an array])
 
         expect(jsonresult['child']['anotherproperty']).to eq('value')
         expect(jsonresult['child']['grandchild2']['child attrib']).to eq('another value')
-        expect(jsonresult['child']['grandchild2']['array']).to eq(['this', 'is', 'an', 'array'])
+        expect(jsonresult['child']['grandchild2']['array']).to eq(%w[this is an array])
 
         expect(jsonresult['jcr:title']).to eq('title string')
         expect(jsonresult['newtext']).to eq('text string')
         expect(jsonresult['child2']['property']).to eq('value')
         expect(jsonresult['child2']['grandchild']['child attrib']).to eq('another value')
-        expect(jsonresult['child2']['grandchild']['array']).to eq(['this', 'is', 'an', 'array'])
+        expect(jsonresult['child2']['grandchild']['array']).to eq(%w[this is an array])
       end
     end
 
@@ -241,7 +241,7 @@ describe 'sling resource', license: false do
 
         expect(jsonresult['child']['anotherproperty']).to eq('new value')
         expect(jsonresult['child']['grandchild2']['child attrib']).to eq('changed value')
-        expect(jsonresult['child']['grandchild2']['array']).to eq(['this', 'is', 'a', 'longer', 'array'])
+        expect(jsonresult['child']['grandchild2']['array']).to eq(%w[this is a longer array])
 
         expect(jsonresult['jcr:title']).to eq('title string')
         expect(jsonresult['newtext']).to eq('text string')

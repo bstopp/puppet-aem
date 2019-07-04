@@ -245,7 +245,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                 ensure: :present,
                 handle_missing: :remove,
                 home: '/opt/aem',
-                ignored_properties: ['ignored', 'anotherignored'],
+                ignored_properties: %w[ignored anotherignored],
                 properties: {
                   'jcr:created' => 'original value',
                   'bar' => 'foo',
@@ -318,7 +318,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                 ensure: :present,
                 handle_missing: :remove,
                 home: '/opt/aem',
-                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                password_properties: %w[apassword anotherpassword onemorepassword],
                 properties: {
                   'bar' => 'foo',
                   'apassword' => 'a value',
@@ -351,7 +351,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                 ensure: :present,
                 handle_missing: :remove,
                 home: '/opt/aem',
-                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                password_properties: %w[apassword anotherpassword onemorepassword],
                 properties: {
                   'bar' => 'foo',
                   'baz' => {
@@ -388,7 +388,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                 force_passwords: true,
                 handle_missing: :remove,
                 home: '/opt/aem',
-                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                password_properties: %w[apassword anotherpassword onemorepassword],
                 properties: {
                   'bar' => 'foo',
                   'apassword' => 'a value',
@@ -422,7 +422,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                 force_passwords: true,
                 handle_missing: :remove,
                 home: '/opt/aem',
-                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                password_properties: %w[apassword anotherpassword onemorepassword],
                 properties: {
                   'bar' => 'foo',
                   'apassword' => 'a new value',
@@ -667,7 +667,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                 ensure: :present,
                 handle_missing: :ignore,
                 home: '/opt/aem',
-                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                password_properties: %w[apassword anotherpassword onemorepassword],
                 properties: {
                   'bar' => 'foo',
                   'apassword' => 'a value',
@@ -700,7 +700,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                 ensure: :present,
                 handle_missing: :ignore,
                 home: '/opt/aem',
-                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                password_properties: %w[apassword anotherpassword onemorepassword],
                 properties: {
                   'bar' => 'foo',
                   'apassword' => 'a new value',
@@ -740,7 +740,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                 force_passwords: true,
                 handle_missing: :ignore,
                 home: '/opt/aem',
-                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                password_properties: %w[apassword anotherpassword onemorepassword],
                 properties: {
                   'bar' => 'foo',
                   'apassword' => 'a value',
@@ -774,7 +774,7 @@ describe Puppet::Type.type(:aem_sling_resource) do
                 force_passwords: true,
                 handle_missing: :ignore,
                 home: '/opt/aem',
-                password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+                password_properties: %w[apassword anotherpassword onemorepassword],
                 properties: {
                   'bar' => 'foo',
                   'apassword' => 'a new value',

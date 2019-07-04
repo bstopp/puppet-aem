@@ -2,8 +2,8 @@
 
 Puppet::Type.newtype(:aem_osgi_config) do
 
-  @doc = <<-DOC
-This is a private type used to manage OSGi configurations via API calls.
+  @doc = <<~DOC
+    This is a private type used to manage OSGi configurations via API calls.
   DOC
 
   ensurable
@@ -68,9 +68,7 @@ This is a private type used to manage OSGi configurations via API calls.
 
     defaultto 60
 
-    munge do |value|
-      value.to_i
-    end
+    munge(&:to_i)
   end
 
   validate do

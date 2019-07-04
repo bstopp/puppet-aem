@@ -2,8 +2,8 @@
 
 Puppet::Type.newtype(:aem_crx_package) do
 
-  @doc = <<-DOC
-This is a private type used to manage CRX Packages via API calls.
+  @doc = <<~DOC
+    This is a private type used to manage CRX Packages via API calls.
   DOC
 
   ensurable do

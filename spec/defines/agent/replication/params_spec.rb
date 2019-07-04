@@ -141,7 +141,7 @@ describe 'aem::agent::replication' do
       end
 
       context 'an array' do
-        let(:params) { default_params.merge(protocol_http_headers: ['header1', 'header2']) }
+        let(:params) { default_params.merge(protocol_http_headers: %w[header1 header2]) }
         it { is_expected.to compile }
       end
 

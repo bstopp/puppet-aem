@@ -293,7 +293,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
             properties: {
               'title' => 'title string',
               'text' => 'text string',
-              'array' => ['this', 'is', 'an', 'array']
+              'array' => %w[this is an array]
             }
           )
         end
@@ -359,7 +359,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
                 'property' => 'value',
                 'grandchild' => {
                   'child attrib' => 'another value',
-                  'array' => ['this', 'is', 'an', 'array']
+                  'array' => %w[this is an array]
                 }
               }
             }
@@ -401,7 +401,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
                 'grandchild' => {
                   'jcr:primaryType' => 'nt:unstructured',
                   'child attrib' => 'another value',
-                  'array' => ['this', 'is', 'an', 'array']
+                  'array' => %w[this is an array]
                 }
               }
             }
@@ -436,7 +436,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
             ensure: :present,
             home: '/opt/aem',
             password: 'admin',
-            password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+            password_properties: %w[apassword anotherpassword onemorepassword],
             username: 'admin',
             properties: {
               'title' => 'title string',
@@ -448,7 +448,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
                 'grandchild' => {
                   'child attrib' => 'another value',
                   'onemorepassword' => 'password',
-                  'array' => ['this', 'is', 'an', 'array']
+                  'array' => %w[this is an array]
                 }
               }
             }
@@ -535,7 +535,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
               handle_missing: :remove,
               home: '/opt/aem',
               password: 'admin',
-              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              password_properties: %w[apassword anotherpassword onemorepassword],
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
@@ -566,7 +566,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
               handle_missing: :remove,
               home: '/opt/aem',
               password: 'admin',
-              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              password_properties: %w[apassword anotherpassword onemorepassword],
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
@@ -602,7 +602,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
               handle_missing: :remove,
               home: '/opt/aem',
               password: 'admin',
-              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              password_properties: %w[apassword anotherpassword onemorepassword],
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
@@ -642,7 +642,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
               handle_missing: :remove,
               home: '/opt/aem',
               password: 'admin',
-              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              password_properties: %w[apassword anotherpassword onemorepassword],
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
@@ -680,7 +680,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
               handle_missing: :remove,
               home: '/opt/aem',
               password: 'admin',
-              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              password_properties: %w[apassword anotherpassword onemorepassword],
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
@@ -721,7 +721,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
               handle_missing: :remove,
               home: '/opt/aem',
               password: 'admin',
-              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              password_properties: %w[apassword anotherpassword onemorepassword],
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
@@ -763,7 +763,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
               handle_missing: :remove,
               home: '/opt/aem',
               password: 'admin',
-              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              password_properties: %w[apassword anotherpassword onemorepassword],
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
@@ -808,7 +808,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
               handle_missing: :remove,
               home: '/opt/aem',
               password: 'admin',
-              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              password_properties: %w[apassword anotherpassword onemorepassword],
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
@@ -849,7 +849,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
               handle_missing: :remove,
               home: '/opt/aem',
               password: 'admin',
-              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              password_properties: %w[apassword anotherpassword onemorepassword],
               username: 'admin',
               properties: {
                 'jcr:primaryType' => 'nt:unstructured',
@@ -1038,7 +1038,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
               ensure: :present,
               home: '/opt/aem',
               password: 'admin',
-              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              password_properties: %w[apassword anotherpassword onemorepassword],
               username: 'admin',
               properties: {
                 'title' => 'Page Title',
@@ -1078,7 +1078,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
               force_passwords: true,
               home: '/opt/aem',
               password: 'admin',
-              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              password_properties: %w[apassword anotherpassword onemorepassword],
               username: 'admin',
               properties: {
                 'title' => 'Page Title',
@@ -1121,7 +1121,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
               force_passwords: true,
               home: '/opt/aem',
               password: 'admin',
-              password_properties: ['apassword', 'anotherpassword', 'onemorepassword'],
+              password_properties: %w[apassword anotherpassword onemorepassword],
               username: 'admin',
               properties: {
                 'title' => 'Page Title',
@@ -1193,7 +1193,7 @@ describe Puppet::Type.type(:aem_sling_resource).provider(:ruby) do
                   'par' => {
                     'jcr:primaryType' => 'nt:unstructured',
                     'newprop' => 'new prop value',
-                    'array' => ['this', 'is', 'an', 'array']
+                    'array' => %w[this is an array]
                   }
                 }
               }
