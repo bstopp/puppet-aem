@@ -52,7 +52,6 @@ define aem::crx::package (
       }
 
       if $manage_rubygems {
-        include ::ruby::dev
         include ::aem
 
         ensure_packages({
@@ -66,8 +65,7 @@ define aem::crx::package (
           }
         })
 
-        Class['ruby::dev']
-        -> Class['aem']
+        Class['aem']
         -> Package['xml-simple']
         -> Package['crx_packmgr_api_client']
         -> Aem_Crx_Package[$title]

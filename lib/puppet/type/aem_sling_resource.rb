@@ -116,6 +116,7 @@ This is a type used to perform sling api calls
     end
 
     def insync?(is_val)
+      return false unless should.respond_to?(:keys) && is_val.respond_to?(:keys)
 
       case resource[:handle_missing]
       when :ignore
@@ -139,7 +140,7 @@ This is a type used to perform sling api calls
   end
 
   newparam(:timeout) do
-    desc 'Timeout for a successful AEM start. Default = 60 seconds'
+    desc 'Timeout for a successful AEM start. Default = 120 seconds'
 
     newvalues(/^\d+$/)
 

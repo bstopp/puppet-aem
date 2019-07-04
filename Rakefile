@@ -21,7 +21,7 @@ disabled_checks = %w[
   variable_scope
 ]
 
-task default: %i[spec lint rubocop]
+task default: %i[spec lint rubocop clean]
 
 PuppetLint::RakeTask.new :lint do |config|
   config.fail_on_warnings = true

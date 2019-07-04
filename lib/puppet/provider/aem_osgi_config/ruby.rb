@@ -9,6 +9,7 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, parent: Puppet::Provider do
 
   def initialize(resource = nil)
     super(resource)
+    @aem_root = nil
     @config_mgr_uri = nil
     @property_flush = {}
   end
@@ -18,6 +19,7 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, parent: Puppet::Provider do
   end
 
   def exists?
+    check_aem
     read_config
     @property_hash[:ensure] == :present
   end
@@ -34,6 +36,53 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, parent: Puppet::Provider do
   end
 
   protected
+
+  def aem_root
+    return @aem_root if @aem_root
+
+    port = nil
+    context_root = nil
+
+    File.foreach(File.join(resource[:home], 'crx-quickstart', 'bin', 'start-env')) do |line|
+      match = line.match(/^PORT=(\S+)/) || nil
+      port = match.captures[0] if match
+
+      match = line.match(/^CONTEXT_ROOT='(\S+)'/) || nil
+      context_root = match.captures[0] if match
+    end
+
+    uri = "http://localhost:#{port}"
+    uri = "#{uri}/#{context_root}" if context_root
+    @aem_root = uri
+    @aem_root
+  end
+
+  def check_aem
+    uri = URI("#{aem_root}/system/console/bundles.json")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.set_debug_output($stdout) if Puppet[:debug]
+    req = Net::HTTP::Get.new(uri.request_uri)
+    req.basic_auth resource[:username], resource[:password]
+    Timeout.timeout(@resource[:timeout]) do
+      Kernel.loop do
+        begin
+          res = http.request(req)
+          jsn = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
+
+          # s is a status array -
+          #   0 -> Total Bundles
+          #   1 -> Running Bundles
+          #   2 -> Running Fragments
+          return true if jsn['s'][0] == jsn['s'][1] + jsn['s'][2]
+
+          raise StopIteration
+        rescue Net::HTTPServerError, Net::HTTPClientError, Net::HTTPFatalError, StopIteration
+          Puppet.debug('Unable to determine AEM state, waiting for AEM to start...')
+          sleep 10
+        end
+      end
+    end
+  end
 
   def read_config
     cfg_json = current_config
@@ -53,19 +102,7 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, parent: Puppet::Provider do
   def config_mgr_uri
     return @config_mgr_uri if @config_mgr_uri
 
-    port = nil
-    context_root = nil
-    File.foreach(File.join(resource[:home], 'crx-quickstart', 'bin', 'start-env')) do |line|
-
-      match = line.match(/^PORT=(\S+)/) || nil
-      port = match.captures[0] if match
-
-      match = line.match(/^CONTEXT_ROOT='(\S+)'/) || nil
-      context_root = match.captures[0] if match
-
-    end
-    uri = "http://localhost:#{port}"
-    uri = "#{uri}/#{context_root}" if context_root
+    uri = aem_root
     uri = "#{uri}/system/console/configMgr"
     @config_mgr_uri = uri
     @config_mgr_uri
@@ -76,15 +113,15 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, parent: Puppet::Provider do
     pid = resource[:pid] || resource[:name]
 
     uri = URI("#{config_mgr_uri}/#{pid}.json")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.set_debug_output($stdout) if Puppet[:debug]
     req = Net::HTTP::Get.new(uri.request_uri)
     req.basic_auth resource[:username], resource[:password]
 
     Timeout.timeout(resource[:timeout]) do
       Kernel.loop do
         begin
-          res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-            http.request(req)
-          end
+          res = http.request(req)
           cfg = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
           return cfg if cfg
 
@@ -134,16 +171,16 @@ Puppet::Type.type(:aem_osgi_config).provide :ruby, parent: Puppet::Provider do
     pid = resource[:pid] || resource[:name]
 
     uri = URI("#{config_mgr_uri}/#{pid}")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.set_debug_output($stdout) if Puppet[:debug]
 
     req = Net::HTTP::Post.new(uri.request_uri)
     req.basic_auth(resource[:username], resource[:password])
     req.form_data = build_parameters(configuration)
     req['Referer'] = config_mgr_uri
 
-    res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-      http.read_timeout = resource[:timeout]
-      http.request(req)
-    end
+    http.read_timeout = resource[:timeout]
+    res = http.request(req)
 
     case res
     when Net::HTTPSuccess, Net::HTTPRedirection

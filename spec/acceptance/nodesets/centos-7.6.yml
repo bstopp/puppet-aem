@@ -1,0 +1,38 @@
+---
+HOSTS:
+  master:
+    box: centos/7
+    box_version: '1902.01'
+    platform: el-7-x86_64
+    synced_folder: disabled
+    hypervisor: vagrant
+    roles:
+    - agent
+    - master
+    - database
+    - dashboard
+    - classifier
+    mount_folders:
+      puppet_files:
+        from: ../../../spec/acceptance/files
+        to: /vagrant/puppet/files
+  agent :
+    box: centos/7
+    box_version: '1902.01'
+    platform: el-7-x86_64
+    synced_folder: disabled
+    hypervisor: vagrant
+    vagrant_cpus: 2
+    roles:
+    - agent
+    - frictionless
+    - default
+    mount_folders:
+      puppet_files:
+        from: ../../../spec/acceptance/files
+        to: /vagrant/puppet/files
+CONFIG:
+  type: aio
+  nfs_server: none
+  consoleport: 443
+  vagrant_memsize: 4096

@@ -25,6 +25,24 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
     )
   end
 
+  let(:bundles_started) do
+    data = <<~JSON
+      {
+        "s" : [100, 75, 25, 0, 0]
+      }
+    JSON
+    data
+  end
+
+  let(:bundles_not_started) do
+    data = <<~JSON
+      {
+        "s" : [100, 50, 25, 20, 5]
+      }
+    JSON
+    data
+  end
+
   let(:provider) do
     provider = described_class.new(resource)
     provider
@@ -87,19 +105,17 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
-        uri_s = 'http://localhost:4502'
-        uri_s = "#{uri_s}/system/console/configMgr/#{resource[:name]}.json"
-        uri = URI(uri_s)
+        aem_root = 'http://localhost:4502'
 
-        get_stub = stub_request(
-          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
         ).with(
           headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_timeout
+        ).to_return(status: 200, body: bundles_not_started)
 
         # Populate property hash
         expect { provider.exists? }.to raise_error(/expired/)
-        expect(get_stub).to have_been_requested.at_least_times(1)
+        expect(started_stub).to have_been_requested.at_least_times(1)
       end
     end
 
@@ -122,10 +138,17 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
 
         uri_s = "http://localhost:#{opts[:port]}"
         uri_s = "http://localhost:#{opts[:port]}/#{opts[:context_root]}" if opts[:context_root]
+        aem_root = uri_s
         uri_s = "#{uri_s}/system/console/configMgr/#{opts[:pid]}.json"
         uri = URI(uri_s)
 
         body = opts[:present] ? config_data : config_missing
+
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
@@ -134,6 +157,7 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
         ).to_return(status: 200, body: body.to_s)
 
         expect(provider.exists?).to eq(opts[:present])
+        expect(started_stub).to have_been_requested
         expect(get_stub).to have_been_requested
 
         if opts[:present]
@@ -204,8 +228,15 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
 
         uri_s = "http://localhost:#{opts[:port]}"
         uri_s = "http://localhost:#{opts[:port]}/#{opts[:context_root]}" if opts[:context_root]
+        aem_root = uri_s
         uri_s = "#{uri_s}/system/console/configMgr/#{opts[:pid]}.json"
         uri = URI(uri_s)
+
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         exists_body = opts[:present] ? config_data : config_missing
         updated_body = after_data
@@ -243,6 +274,7 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
 
         expect(provider.configuration).not_to eq(resource[:configuration])
         expect { provider.flush }.not_to raise_error
+        expect(started_stub).to have_been_requested
         expect(get_stub).to have_been_requested.twice
         expect(post_stub).to have_been_requested
         expect(provider.configuration).to eq(resource[:configuration] || :absent)
@@ -607,8 +639,15 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
-        uri_s = "http://localhost:4502/system/console/configMgr/#{resource[:name]}.json"
+        aem_root = 'http://localhost:4502'
+        uri_s = "#{aem_root}/system/console/configMgr/#{resource[:name]}.json"
         uri = URI(uri_s)
+
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
@@ -638,6 +677,7 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
         provider.create
         expect(provider.configuration).not_to eq(resource[:configuration])
         expect { provider.flush }.not_to raise_error
+        expect(started_stub).to have_been_requested
         expect(get_stub).to have_been_requested.twice
         expect(post_stub).to have_been_requested
         expect(provider.configuration).to eq(resource[:configuration])
@@ -655,9 +695,15 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
-        uri_s = 'http://localhost:4502'
-        uri_s = "#{uri_s}/system/console/configMgr/#{resource[:name]}.json"
+        aem_root = 'http://localhost:4502'
+        uri_s = "#{aem_root}/system/console/configMgr/#{resource[:name]}.json"
         uri = URI(uri_s)
+
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
@@ -677,6 +723,7 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
         provider.exists?
         provider.destroy
         expect { provider.flush }.to raise_error(/500/)
+        expect(started_stub).to have_been_requested
         expect(get_stub).to have_been_requested.once
         expect(post_stub).to have_been_requested
       end

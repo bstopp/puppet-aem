@@ -18,6 +18,7 @@ group :development, :tests do
 end
 
 group :linting do
+  gem 'metadata-json-lint',         require: false
   gem 'puppet-lint',                require: false
   gem 'rubocop',                    require: false
 end
@@ -26,7 +27,7 @@ group :system_tests do
   gem 'beaker',                       require: false
   gem 'beaker-puppet_install_helper', require: false
   gem 'beaker-rspec',                 require: false
-  gem 'serverspec',                   require: false
+  gem 'beaker-vagrant',               require: false
 end
 
 if facterversion

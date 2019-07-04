@@ -5,7 +5,7 @@ require 'spec_helper'
 # Tests for parameters defaults and validation
 describe 'aem' do
 
-  context 'default params not pe' do
+  context 'default params' do
     let(:facts) do
       {
         is_pe: false,
@@ -13,50 +13,14 @@ describe 'aem' do
       }
     end
 
+    let(:crx_client_ver) { '1.3.0' }
+
     it do
       is_expected.to compile.with_all_deps
       is_expected.to contain_class('aem').only_with(
-        crx_packmgr_api_client_ver: '1.2.0',
+        crx_packmgr_api_client_ver: crx_client_ver,
         name: 'Aem',
         puppetgem: 'puppet_gem',
-        xmlsimple_ver: '>=1.1.5'
-      )
-    end
-  end
-
-  context 'default params pe ver < 3.7.0' do
-    let(:facts) do
-      {
-        is_pe: true,
-        pe_version: '3.6.0'
-      }
-    end
-
-    it do
-      is_expected.to compile.with_all_deps
-      is_expected.to contain_class('aem').only_with(
-        crx_packmgr_api_client_ver: '1.2.0',
-        name: 'Aem',
-        puppetgem: 'pe_gem',
-        xmlsimple_ver: '>=1.1.5'
-      )
-    end
-  end
-
-  context 'default params pe > 3.7' do
-    let(:facts) do
-      {
-        is_pe: true,
-        pe_version: '3.7.0'
-      }
-    end
-
-    it do
-      is_expected.to compile.with_all_deps
-      is_expected.to contain_class('aem').only_with(
-        crx_packmgr_api_client_ver: '1.2.0',
-        name: 'Aem',
-        puppetgem: 'pe_puppetserver_gem',
         xmlsimple_ver: '>=1.1.5'
       )
     end

@@ -18,6 +18,8 @@ describe 'aem::crx::package' do
     'aem'
   end
 
+  let(:crx_client_ver) { '1.3.0' }
+
   let(:default_params) do
     {
       home: '/opt/aem',
@@ -326,16 +328,16 @@ describe 'aem::crx::package' do
           is_expected.to compile.with_all_deps
 
           is_expected.to contain_package('crx_packmgr_api_client').with(
-            ensure: '1.2.0',
+            ensure: '1.3.0',
             name: 'crx_packmgr_api_client',
             provider: 'puppet_gem'
-          ).that_requires('Class[ruby::dev]')
+          )
 
           is_expected.to contain_package('xml-simple').with(
             ensure: '>=1.1.5',
             name: 'xml-simple',
             provider: 'puppet_gem'
-          ).that_requires('Class[ruby::dev]')
+          )
 
           is_expected.to contain_aem_crx_package(
             'aem'
@@ -372,16 +374,16 @@ describe 'aem::crx::package' do
           is_expected.to compile.with_all_deps
 
           is_expected.to contain_package('crx_packmgr_api_client').with(
-            ensure: '1.2.0',
+            ensure: crx_client_ver,
             name: 'crx_packmgr_api_client',
             provider: 'puppet_gem'
-          ).that_requires('Class[ruby::dev]')
+          )
 
           is_expected.to contain_package('xml-simple').with(
             ensure: '>=1.1.5',
             name: 'xml-simple',
             provider: 'puppet_gem'
-          ).that_requires('Class[ruby::dev]')
+          )
 
           is_expected.to contain_aem_crx_package(
             'aem'
@@ -415,16 +417,16 @@ describe 'aem::crx::package' do
           is_expected.to compile.with_all_deps
 
           is_expected.to contain_package('crx_packmgr_api_client').with(
-            ensure: '1.2.0',
+            ensure: crx_client_ver,
             name: 'crx_packmgr_api_client',
             provider: 'puppet_gem'
-          ).that_requires('Class[ruby::dev]')
+          )
 
           is_expected.to contain_package('xml-simple').with(
             ensure: '>=1.1.5',
             name: 'xml-simple',
             provider: 'puppet_gem'
-          ).that_requires('Class[ruby::dev]')
+          )
 
           is_expected.to contain_aem_crx_package(
             'aem'

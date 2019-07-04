@@ -10,8 +10,6 @@ describe 'create aem' do
     }
   end
 
-  include_examples 'setup aem'
-
   context 'basic setup' do
     it 'should have unpacked the standalone jar' do
       shell('find /opt/aem/author/crx-quickstart -name "cq-quickstart-*-standalone*.jar" -type f') do |result|

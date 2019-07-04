@@ -9,6 +9,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
 
   def initialize(resource = nil)
     super(resource)
+    @aem_root = nil
     @content_uri = nil
     @content_depth = 1
     @property_flush = {}
@@ -19,6 +20,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
   end
 
   def exists?
+    check_aem
     read_content
     @property_hash[:ensure] == :present
   end
@@ -34,6 +36,26 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
   end
 
   protected
+
+  def aem_root
+    return @aem_root if @aem_root
+
+    port = nil
+    context_root = nil
+
+    File.foreach(File.join(resource[:home], 'crx-quickstart', 'bin', 'start-env')) do |line|
+      match = line.match(/^PORT=(\S+)/) || nil
+      port = match.captures[0] if match
+
+      match = line.match(/^CONTEXT_ROOT='(\S+)'/) || nil
+      context_root = match.captures[0] if match
+    end
+
+    uri = "http://localhost:#{port}"
+    uri = "#{uri}/#{context_root}" if context_root
+    @aem_root = uri
+    @aem_root
+  end
 
   def build_delete(is_val, should)
     to_delete = {}
@@ -85,22 +107,37 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
     flatten_hash(hsh)
   end
 
+  def check_aem
+    uri = URI("#{aem_root}/system/console/bundles.json")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.set_debug_output($stdout) if Puppet[:debug]
+    req = Net::HTTP::Get.new(uri.request_uri)
+    req.basic_auth resource[:username], resource[:password]
+    Timeout.timeout(@resource[:timeout]) do
+      Kernel.loop do
+        begin
+          res = http.request(req)
+          jsn = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
+
+          # s is a status array -
+          #   0 -> Total Bundles
+          #   1 -> Running Bundles
+          #   2 -> Running Fragments
+          return true if jsn['s'][0] == jsn['s'][1] + jsn['s'][2]
+
+          raise StopIteration
+        rescue Net::HTTPServerError, Net::HTTPClientError, Net::HTTPFatalError, StopIteration
+          Puppet.debug('Unable to determine AEM state, waiting for AEM to start...')
+          sleep 10
+        end
+      end
+    end
+  end
+
   def content_uri
     return @content_uri if @content_uri
 
-    port = nil
-    context_root = nil
-
-    File.foreach(File.join(resource[:home], 'crx-quickstart', 'bin', 'start-env')) do |line|
-      match = line.match(/^PORT=(\S+)/) || nil
-      port = match.captures[0] if match
-
-      match = line.match(/^CONTEXT_ROOT='(\S+)'/) || nil
-      context_root = match.captures[0] if match
-    end
-
-    uri = "http://localhost:#{port}"
-    uri = "#{uri}/#{context_root}" if context_root
+    uri = aem_root
     path = resource[:path] || resource[:name]
     uri = "#{uri}#{path}"
     @content_uri = uri
@@ -113,7 +150,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
     http = Net::HTTP.new(uri.host, uri.port)
     http.set_debug_output($stdout) if Puppet[:debug]
     req = Net::HTTP::Get.new(uri.request_uri)
-
     req.basic_auth resource[:username], resource[:password]
 
     Timeout.timeout(@resource[:timeout]) do
@@ -126,7 +162,7 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
 
           raise 'Invalid response encountered.'
         rescue Net::HTTPServerError, Net::HTTPClientError, Net::HTTPFatalError
-          Puppet.debug('Unable to get configurations, waiting for AEM to start...')
+          Puppet.debug('Unable to get resource, waiting for AEM to start...')
           sleep 10
         end
       end
@@ -180,7 +216,6 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
 
   def read_content
     content = current_content
-    Puppet.debug("Current content: #{content}")
     if content
       @property_hash[:properties] = content.clone
       @property_flush[:existing_props] = content.clone
@@ -216,15 +251,17 @@ Puppet::Type.type(:aem_sling_resource).provide :ruby, parent: Puppet::Provider d
 
     begin
       retries ||= @resource[:retries]
+
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.set_debug_output($stdout) if Puppet[:debug]
+      http.read_timeout = resource[:timeout]
+
       req = Net::HTTP::Post.new(uri.request_uri)
       req.basic_auth(resource[:username], resource[:password])
       req.form_data = build_parameters
       req['Referer'] = uri.to_s
 
-      res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-        http.read_timeout = resource[:timeout]
-        http.request(req)
-      end
+      res = http.request(req)
 
       if res.is_a?(Net::HTTPCreated) || res.is_a?(Net::HTTPOK)
         Puppet.debug("Successful creation: #{res.value}")
