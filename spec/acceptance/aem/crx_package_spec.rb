@@ -376,7 +376,6 @@ describe 'crx package mgr api', license: false do
       manifest('/vagrant/puppet/files/manifests/aem/crx_package/install_version_run.pp')
       agent
 
-
       cmd = 'curl -s http://localhost:4502/crx/packmgr/list.jsp?path=/etc/packages/my_packages/test-3.0.0.zip '
       cmd += '-u admin:admin'
       shell(cmd) do |result|

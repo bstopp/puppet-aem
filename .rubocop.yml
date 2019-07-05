@@ -19,6 +19,7 @@ Metrics/BlockLength:
     - 'newproperty'
     - 'let'
     - 'shell'
+    - 'step'
     - 'CentOS'
 
 Metrics/LineLength:

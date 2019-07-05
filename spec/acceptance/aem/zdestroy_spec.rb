@@ -32,7 +32,7 @@ describe 'destroy' do
   end
 
   it 'should have removed instance repository' do
-    on(default, "test -f /opt/aem/author/crx-quickstart", accept_all_exit_codes: true) do |result|
+    on(default, 'test -f /opt/aem/author/crx-quickstart', accept_all_exit_codes: true) do |result|
       assert(result.exit_code != 0)
     end
   end

@@ -114,8 +114,8 @@ RSpec.configure do |c|
   c.after :suite do
     step 'Teardown' do
       step 'Remove AEM' do
-        on(default, "puppet resource service aem-author ensure=stopped")
-        on(default, "rm -Rf /opt/aem")
+        on(default, 'puppet resource service aem-author ensure=stopped')
+        on(default, 'rm -Rf /opt/aem')
       end
     end
   end

@@ -38,4 +38,7 @@ Style/GlobalVars:
   Exclude:
     - 'spec/acceptance/aem/crx_package_spec.rb'
     - 'spec/acceptance/aem/console_osgi_spec.rb'
+    - 'spec/acceptance/aem/replication_spec.rb'
+    - 'spec/acceptance/aem/sling_resource_spec.rb'
+    - 'spec/acceptance/aem/zdestroy_spec.rb'
     - 'spec/spec_helper_acceptance.rb'
