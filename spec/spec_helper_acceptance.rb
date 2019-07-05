@@ -12,7 +12,7 @@ end
 
 def setup_template
   module_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-  license = ENV['AEM_LICENSE']
+  license = ENV['AEM_LICENSE'] || 'fake-key-for-testing'
   tpl = File.read(File.join(module_root, 'spec', 'acceptance', 'files', 'templates', 'aem', 'setup.pp.erb'))
   erb = ERB.new(tpl)
   erb.result(binding)

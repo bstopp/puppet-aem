@@ -45,11 +45,17 @@ node 'agent' {
   file { '/opt/aem': ensure => directory }
 
   \$osgi = [{
-    'SegmentNodeStore-Author'                       => {
+    'SegmentNodeStore-Author' => {
       'pid'        => 'org.apache.jackrabbit.oak.plugins.segment.SegmentNodeStoreService',
       'properties' => {
         'tarmk.size'      => 512,
-        'pauseCompaction' => true,
+        'pauseCompaction' => true
+      }
+    },
+    'WCMRequestFilter-Author' => {
+      'pid'        => 'com.day.cq.wcm.core.WCMRequestFilter',
+      'properties' => {
+        'wcmfilter.mode' => 'preview'
       }
     }
   }]
