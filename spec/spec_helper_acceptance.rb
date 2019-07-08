@@ -29,7 +29,6 @@ def install_modules
   step 'Modules' do
     module_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
     # Install all needed modules
-    on master, puppet('module', 'install', 'puppetlabs-ruby'), acceptable_exit_codes: [0, 1]
     on master, puppet('module', 'install', 'puppetlabs-stdlib'), acceptable_exit_codes: [0, 1]
     on master, puppet('module', 'install', 'puppetlabs-concat'), acceptable_exit_codes: [0, 1]
     on master, puppet('module', 'install', 'puppetlabs-apache'), acceptable_exit_codes: [0, 1]

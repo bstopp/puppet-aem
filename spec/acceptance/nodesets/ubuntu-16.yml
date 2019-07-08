@@ -31,6 +31,13 @@ HOSTS:
       puppet_files:
         from: ../../../spec/acceptance/files
         to: /vagrant/puppet/files
+    forwarded_ports:
+      aem:
+        from: 4502
+        to: 4502
+      aem_debug:
+        from: 30303
+        to: 30303
 CONFIG:
   type: aio
   nfs_server: none
