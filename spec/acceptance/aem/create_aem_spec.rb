@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'create aem' do
@@ -7,8 +9,6 @@ describe 'create aem' do
       environment: :root
     }
   end
-
-  include_examples 'setup aem'
 
   context 'basic setup' do
     it 'should have unpacked the standalone jar' do
@@ -47,7 +47,7 @@ describe 'create aem' do
                   break
                 end
               end
-            rescue
+            rescue RuntimeError
               valid = false
             end
             sleep 15

@@ -4,7 +4,7 @@ AllCops:
   Exclude:
     - 'pkg/**/*'
     - 'vendor/**/*'
-  TargetRubyVersion: 2.2
+  TargetRubyVersion: 2.4
 
 Metrics/BlockLength:
   Exclude:
@@ -19,6 +19,7 @@ Metrics/BlockLength:
     - 'newproperty'
     - 'let'
     - 'shell'
+    - 'step'
     - 'CentOS'
 
 Metrics/LineLength:

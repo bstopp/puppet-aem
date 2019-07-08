@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'puppet/parameter/boolean'
 
 Puppet::Type.newtype(:aem_sling_resource) do
 
-  @doc = <<-DOC
-This is a type used to perform sling api calls
+  @doc = <<~DOC
+    This is a type used to perform sling api calls
   DOC
 
   ensurable
@@ -14,7 +16,7 @@ This is a type used to perform sling api calls
 
   newparam(:force_passwords, boolean: true, parent: Puppet::Parameter::Boolean) do
     desc 'Force the updates of password properties if they differ.'
-    defaultto :false
+    defaultto false
   end
 
   newparam(:handle_missing) do
@@ -63,9 +65,11 @@ This is a type used to perform sling api calls
     desc 'Properties for the node.'
 
     validate do |value|
-      unless value.is_a?(Hash)
-        raise(Puppet::ResourceError, 'Properties must be a hash of values.')
-      end
+      raise(Puppet::ResourceError, 'Properties must be a hash of values.') unless value.is_a?(Hash)
+    end
+
+    def check_hash(hsh, key)
+      hsh.include?(key.to_sym) || hsh.include?(key.to_s)
     end
 
     def ignore_comp(should_hsh, is_hsh)
@@ -77,10 +81,10 @@ This is a type used to perform sling api calls
           match = ignore_comp(v, is_hsh[k])
           return match unless match
         else
-          next if resource[:ignored_properties].include?(k) ||
-                  resource[:protected_properties].include?(k) ||
+          next if check_hash(resource[:ignored_properties], k) ||
+                  check_hash(resource[:protected_properties], k) ||
                   (!resource.force_passwords? &&
-                    resource[:password_properties].include?(k))
+                    check_hash(resource[:password_properties], k))
           # Compare using Strings; response always have strings instead of boolean/number.
           return false unless v.to_s == is_hsh[k].to_s
         end
@@ -111,13 +115,14 @@ This is a type used to perform sling api calls
       end
     end
 
-    def insync?(is)
+    def insync?(is_val)
+      return false unless should.respond_to?(:keys) && is_val.respond_to?(:keys)
 
       case resource[:handle_missing]
       when :ignore
-        ignore_comp(should, is)
+        ignore_comp(should, is_val)
       when :remove
-        remove_comp(should, is)
+        remove_comp(should, is_val)
       else
         raise(Puppet::ResourceError, "Invalid value for :handle_missing: #{resource[:handle_missing]}")
       end
@@ -135,15 +140,13 @@ This is a type used to perform sling api calls
   end
 
   newparam(:timeout) do
-    desc 'Timeout for a successful AEM start. Default = 60 seconds'
+    desc 'Timeout for a successful AEM start. Default = 120 seconds'
 
     newvalues(/^\d+$/)
 
     defaultto 120
 
-    munge do |value|
-      value.to_i
-    end
+    munge(&:to_i)
   end
 
   validate do

@@ -1,14 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'start-env configs' do
-
-  let(:facts) do
-    {
-      environment: :root
-    }
-  end
-
-  include_examples 'setup aem'
 
   it 'should update the type' do
     shell("grep TYPE=\\'author\\' /opt/aem/author/crx-quickstart/bin/start-env", acceptable_exit_codes: 0)

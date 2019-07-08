@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::service::systemd', type: :defines do
+describe 'aem::service::systemd' do
 
   let(:facts) do
     {

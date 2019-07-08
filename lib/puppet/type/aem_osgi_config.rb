@@ -1,8 +1,9 @@
+# frozen_string_literal: true
 
 Puppet::Type.newtype(:aem_osgi_config) do
 
-  @doc = <<-DOC
-This is a private type used to manage OSGi configurations via API calls.
+  @doc = <<~DOC
+    This is a private type used to manage OSGi configurations via API calls.
   DOC
 
   ensurable
@@ -15,24 +16,22 @@ This is a private type used to manage OSGi configurations via API calls.
     desc 'Properties for the OSGi configuration.'
 
     validate do |value|
-      unless value.is_a?(Hash)
-        raise(Puppet::ResourceError, 'Config properties must be a hash of values.')
-      end
+      raise(Puppet::ResourceError, 'Config properties must be a hash of values.') unless value.is_a?(Hash)
     end
 
-    def insync?(is)
+    def insync?(is_val)
       if resource[:handle_missing] == :merge
         should.each do |k, v|
           # Desired state has a configuration value that doesn't exist
-          return false unless is.key?(k)
+          return false unless is_val.key?(k)
           # Desired state's value is different than current state
-          return false if is[k] != v
+          return false if is_val[k] != v
         end
         return true
       end
 
       # Default
-      is == should
+      is_val == should
     end
   end
 
@@ -69,9 +68,7 @@ This is a private type used to manage OSGi configurations via API calls.
 
     defaultto 60
 
-    munge do |value|
-      value.to_i
-    end
+    munge(&:to_i)
   end
 
   validate do

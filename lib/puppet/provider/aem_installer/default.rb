@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'etc'
 require 'fileutils'
 require 'net/http'
@@ -140,7 +142,7 @@ Puppet::Type.type(:aem_installer).provide :default, parent: Puppet::Provider do
           when Net::HTTPSuccess, Net::HTTPRedirection, Net::HTTPUnauthorized
             return if desired_state == :on
           end
-        rescue
+        rescue SocketError, Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Errno::ETIMEDOUT
           return if desired_state == :off
         end
         sleep @property_hash[:snooze]

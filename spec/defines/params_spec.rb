@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for parameters defaults and validation
-describe 'aem::instance', type: :defines do
+describe 'aem::instance' do
 
   let(:default_facts) do
     {
@@ -33,22 +35,22 @@ describe 'aem::instance', type: :defines do
     it { is_expected.to compile.with_all_deps }
     it do
       is_expected.to contain_aem__instance('aem').only_with(
-        'ensure'          => 'present',
-        'group'           => 'aem',
-        'home'            => nil,
-        'jvm_mem_opts'    => '-Xmx1024m',
-        'manage_group'    => true,
-        'manage_home'     => true,
-        'manage_user'     => true,
-        'port'            => 4502,
-        'runmodes'        => [],
-        'sample_content'  => true,
-        'status'          => 'enabled',
-        'source'          => '/tmp/aem-quickstart.jar',
-        'snooze'          => 10,
-        'timeout'         => 600,
-        'type'            => 'author',
-        'user'            => 'aem'
+        'ensure' => 'present',
+        'group' => 'aem',
+        'home' => nil,
+        'jvm_mem_opts' => '-Xmx1024m',
+        'manage_group' => true,
+        'manage_home' => true,
+        'manage_user' => true,
+        'port' => 4502,
+        'runmodes' => [],
+        'sample_content' => true,
+        'status' => 'enabled',
+        'source' => '/tmp/aem-quickstart.jar',
+        'snooze' => 10,
+        'timeout' => 600,
+        'type' => 'author',
+        'user' => 'aem'
       )
     end
   end

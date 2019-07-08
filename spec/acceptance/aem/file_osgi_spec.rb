@@ -1,14 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'create osgi config files' do
-
-  let(:facts) do
-    {
-      environment: :root
-    }
-  end
-
-  include_examples 'setup aem'
 
   it 'should contain osgi config file SegmentNodeStoreService' do
     cmd = 'test -f /opt/aem/author/crx-quickstart/install/'
@@ -30,20 +24,15 @@ describe 'create osgi config files' do
     shell(cmd, acceptable_exit_codes: 0)
   end
 
-  it 'should contain osgi config file ReferrerFilter' do
-    cmd = 'test -f /opt/aem/author/crx-quickstart/install/org.apache.sling.security.impl.ReferrerFilter.config'
+  it 'should contain osgi config file WCMRequestFilter' do
+    cmd = 'test -f /opt/aem/author/crx-quickstart/install/com.day.cq.wcm.core.WCMRequestFilter.config'
     shell(cmd, acceptable_exit_codes: 0)
   end
 
   it 'should contain the empty allow config' do
-    cmd = 'grep "allow.empty=B\"true\"" '
-    cmd += '/opt/aem/author/crx-quickstart/install/org.apache.sling.security.impl.ReferrerFilter.config'
+    cmd = 'grep "wcmfilter.mode=\"preview\"" '
+    cmd += '/opt/aem/author/crx-quickstart/install/com.day.cq.wcm.core.WCMRequestFilter.config'
     shell(cmd, acceptable_exit_codes: 0)
   end
 
-  it 'should contain the allow hosts config' do
-    cmd = 'grep "allow.hosts=\[\"author.localhost.localmachine\"\]" '
-    cmd += '/opt/aem/author/crx-quickstart/install/org.apache.sling.security.impl.ReferrerFilter.config'
-    shell(cmd, acceptable_exit_codes: 0)
-  end
 end

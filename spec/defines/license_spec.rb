@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::license', type: :defines do
+describe 'aem::license' do
 
   let(:facts) do
     {

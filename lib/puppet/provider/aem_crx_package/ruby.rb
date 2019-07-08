@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
@@ -13,6 +14,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
   def initialize(resource = nil)
     super(resource)
+    @aem_root = nil
     @property_flush = {}
   end
 
@@ -37,6 +39,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
   end
 
   def retrieve
+    check_aem
     self.class.require_libs
     find_package
     Puppet.debug("aem_crx_package::ruby - Retrieve - Property Hash: #{@property_hash}")
@@ -45,6 +48,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
   def flush
     return unless @property_flush[:ensure]
+
     Puppet.debug('aem_crx_package::ruby - Flushing out to AEM.')
     self.class.require_libs
     case @property_flush[:ensure]
@@ -69,6 +73,26 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
   end
 
   private
+
+  def aem_root
+    return @aem_root if @aem_root
+
+    port = nil
+    context_root = nil
+
+    File.foreach(File.join(resource[:home], 'crx-quickstart', 'bin', 'start-env')) do |line|
+      match = line.match(/^PORT=(\S+)/) || nil
+      port = match.captures[0] if match
+
+      match = line.match(/^CONTEXT_ROOT='(\S+)'/) || nil
+      context_root = match.captures[0] if match
+    end
+
+    uri = "http://localhost:#{port}"
+    uri = "#{uri}/#{context_root}" if context_root
+    @aem_root = uri
+    @aem_root
+  end
 
   def build_cfg(port = nil, context_root = nil)
     config = CrxPackageManager::Configuration.new
@@ -101,6 +125,33 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
     @client = CrxPackageManager::DefaultApi.new(CrxPackageManager::ApiClient.new(config))
     @client
+  end
+
+  def check_aem
+    uri = URI("#{aem_root}/system/console/bundles.json")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.set_debug_output($stdout) if Puppet[:debug]
+    req = Net::HTTP::Get.new(uri.request_uri)
+    req.basic_auth resource[:username], resource[:password]
+    Timeout.timeout(@resource[:timeout]) do
+      Kernel.loop do
+        begin
+          res = http.request(req)
+          jsn = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
+
+          # s is a status array -
+          #   0 -> Total Bundles
+          #   1 -> Running Bundles
+          #   2 -> Running Fragments
+          return true if jsn['s'][0] == jsn['s'][1] + jsn['s'][2]
+
+          raise StopIteration
+        rescue Net::HTTPServerError, Net::HTTPClientError, Net::HTTPFatalError, StopIteration
+          Puppet.debug('Unable to determine AEM state, waiting for AEM to start...')
+          sleep 10
+        end
+      end
+    end
   end
 
   def find_package
@@ -137,7 +188,7 @@ Puppet::Type.type(:aem_crx_package).provide :ruby, parent: Puppet::Provider do
 
   def find_version(ary)
     found_pkg = nil
-    ary && ary.each do |p|
+    ary&.each do |p|
       found_pkg = p if p.version == @resource[:version]
       break if found_pkg
     end

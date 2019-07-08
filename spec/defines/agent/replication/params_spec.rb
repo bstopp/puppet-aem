@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Tests for the env script management based on parameters
-describe 'aem::agent::replication', type: :defines do
+describe 'aem::agent::replication' do
 
   let(:default_params) do
     {
@@ -139,7 +141,7 @@ describe 'aem::agent::replication', type: :defines do
       end
 
       context 'an array' do
-        let(:params) { default_params.merge(protocol_http_headers: ['header1', 'header2']) }
+        let(:params) { default_params.merge(protocol_http_headers: %w[header1 header2]) }
         it { is_expected.to compile }
       end
 

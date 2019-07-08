@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-lint/tasks/puppet-lint'
 require 'puppet-syntax/tasks/puppet-syntax'
@@ -19,7 +21,7 @@ disabled_checks = %w[
   variable_scope
 ]
 
-task default: %i[spec lint rubocop]
+task default: %i[spec lint rubocop clean]
 
 PuppetLint::RakeTask.new :lint do |config|
   config.fail_on_warnings = true

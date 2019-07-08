@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'crx_packmgr_api_client'
 require 'xmlsimple'
@@ -21,17 +23,35 @@ describe Puppet::Type.type(:aem_crx_package).provider(:ruby) do
 
   let(:resource) do
     Puppet::Type.type(:aem_crx_package).new(
-      ensure:   :present,
-      name:     'test',
-      group:    'my_packages',
-      home:     '/opt/aem',
+      ensure: :present,
+      name: 'test',
+      group: 'my_packages',
+      home: '/opt/aem',
       password: 'admin',
-      pkg:      'test',
-      source:   source,
-      timeout:  1,
+      pkg: 'test',
+      source: source,
+      timeout: 1,
       username: 'admin',
-      version:  '3.0.0'
+      version: '3.0.0'
     )
+  end
+
+  let(:bundles_started) do
+    data = <<~JSON
+      {
+        "s" : [100, 75, 25, 0, 0]
+      }
+    JSON
+    data
+  end
+
+  let(:bundles_not_started) do
+    data = <<~JSON
+      {
+        "s" : [100, 50, 25, 20, 5]
+      }
+    JSON
+    data
   end
 
   let(:provider) do
@@ -46,10 +66,10 @@ describe Puppet::Type.type(:aem_crx_package).provider(:ruby) do
   let(:default_config) do
     config = CrxPackageManager::Configuration.new
     config.configure do |c|
-      c.username  = 'admin'
-      c.password  = 'admin'
-      c.timeout   = 1
-      c.host      = 'localhost:4502'
+      c.username = 'admin'
+      c.password = 'admin'
+      c.timeout = 1
+      c.host = 'localhost:4502'
     end
     config
   end
@@ -121,21 +141,29 @@ describe Puppet::Type.type(:aem_crx_package).provider(:ruby) do
         opts[:port] ||= 4502
 
         crline = "CONTEXT_ROOT='#{opts[:context_root]}'" if opts[:context_root]
-        envdata = <<-EOF
-PORT=#{opts[:port]}
-#{crline}
-        EOF
+        envdata = <<~ENVDATA
+          PORT=#{opts[:port]}
+          #{crline}
+        ENVDATA
 
         config = CrxPackageManager::Configuration.new
         config.configure do |c|
-          c.username  = 'admin'
-          c.password  = 'admin'
-          c.timeout   = 1
-          c.host      = "localhost:#{opts[:port]}"
+          c.username = 'admin'
+          c.password = 'admin'
+          c.timeout = 1
+          c.host = "localhost:#{opts[:port]}"
           c.base_path = "/#{opts[:context_root]}/crx/packmgr" if opts[:context_root]
         end
 
-        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+        aem_root = "http://localhost:#{opts[:port]}"
+        aem_root = "#{aem_root}/#{opts[:context_root]}" if opts[:context_root]
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         expect(
           CrxPackageManager::DefaultApi
@@ -149,6 +177,7 @@ PORT=#{opts[:port]}
         ).and_return(send(opts[:return_val]))
 
         expect(provider.retrieve).to eq(opts[:expected])
+        expect(started_stub).to have_been_requested
       end
     end
 
@@ -207,20 +236,31 @@ PORT=#{opts[:port]}
       context 'changes to uploaded' do
         let(:resource) do
           Puppet::Type.type(:aem_crx_package).new(
-            ensure:   :present,
-            name:     'test',
-            group:    'my_packages',
-            home:     '/opt/aem',
+            ensure: :present,
+            name: 'test',
+            group: 'my_packages',
+            home: '/opt/aem',
             password: 'admin',
-            pkg:      'test',
-            source:   source,
-            timeout:  1,
+            pkg: 'test',
+            source: source,
+            timeout: 1,
             username: 'admin',
-            version:  '1.0.0'
+            version: '1.0.0'
           )
         end
         it 'should work' do
-          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+
+          envdata = <<~ENVDATA
+            PORT=4502
+          ENVDATA
+          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+          aem_root = 'http://localhost:4502'
+          started_stub = stub_request(
+            :get, "#{aem_root}/system/console/bundles.json"
+          ).with(
+            headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+          ).to_return(status: 200, body: bundles_started)
 
           expect(
             CrxPackageManager::DefaultApi
@@ -248,25 +288,38 @@ PORT=#{opts[:port]}
           expect(provider.name).to eq(resource[:name])
           expect(provider.version).to eq(resource[:version])
           expect(provider.ensure).to eq(resource[:ensure])
+
+          expect(started_stub).to have_been_requested
         end
       end
       context 'changes to installed' do
         let(:resource) do
           Puppet::Type.type(:aem_crx_package).new(
-            ensure:   :installed,
-            name:     'test',
-            group:    'my_packages',
-            home:     '/opt/aem',
+            ensure: :installed,
+            name: 'test',
+            group: 'my_packages',
+            home: '/opt/aem',
             password: 'admin',
-            pkg:      'test',
-            source:   source,
-            timeout:  1,
+            pkg: 'test',
+            source: source,
+            timeout: 1,
             username: 'admin',
-            version:  '1.0.0'
+            version: '1.0.0'
           )
         end
         it 'should work' do
-          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+
+          envdata = <<~ENVDATA
+            PORT=4502
+          ENVDATA
+          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+          aem_root = 'http://localhost:4502'
+          started_stub = stub_request(
+            :get, "#{aem_root}/system/console/bundles.json"
+          ).with(
+            headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+          ).to_return(status: 200, body: bundles_started)
 
           expect(
             CrxPackageManager::DefaultApi
@@ -295,6 +348,8 @@ PORT=#{opts[:port]}
           expect(provider.name).to eq(resource[:name])
           expect(provider.version).to eq(resource[:version])
           expect(provider.ensure).to eq(resource[:ensure])
+
+          expect(started_stub).to have_been_requested
         end
       end
     end
@@ -302,20 +357,31 @@ PORT=#{opts[:port]}
       context 'changes to installed' do
         let(:resource) do
           Puppet::Type.type(:aem_crx_package).new(
-            ensure:   :installed,
-            name:     'test',
-            group:    'my_packages',
-            home:     '/opt/aem',
+            ensure: :installed,
+            name: 'test',
+            group: 'my_packages',
+            home: '/opt/aem',
             password: 'admin',
-            pkg:      'test',
-            source:   source,
-            timeout:  1,
+            pkg: 'test',
+            source: source,
+            timeout: 1,
             username: 'admin',
-            version:  '1.0.0'
+            version: '1.0.0'
           )
         end
         it 'should work' do
-          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+
+          envdata = <<~ENVDATA
+            PORT=4502
+          ENVDATA
+          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+          aem_root = 'http://localhost:4502'
+          started_stub = stub_request(
+            :get, "#{aem_root}/system/console/bundles.json"
+          ).with(
+            headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+          ).to_return(status: 200, body: bundles_started)
 
           expect(
             CrxPackageManager::DefaultApi
@@ -343,26 +409,39 @@ PORT=#{opts[:port]}
           expect(provider.name).to eq(resource[:name])
           expect(provider.version).to eq(resource[:version])
           expect(provider.ensure).to eq(resource[:ensure])
+
+          expect(started_stub).to have_been_requested
         end
       end
       context 'to-be does not match version' do
         context 'uploads new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :present,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :present,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '2.0.0'
+              version: '2.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -390,25 +469,38 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(resource[:ensure])
+
+            expect(started_stub).to have_been_requested
           end
         end
         context 'installs new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :installed,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :installed,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '2.0.0'
+              version: '2.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -436,6 +528,8 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(resource[:ensure])
+
+            expect(started_stub).to have_been_requested
           end
         end
       end
@@ -443,20 +537,30 @@ PORT=#{opts[:port]}
         context 'not uninstalled first - was not installed' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :purged,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :purged,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '1.0.0'
+              version: '1.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -484,25 +588,37 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(:absent)
+
+            expect(started_stub).to have_been_requested
           end
         end
         context 'removed but not uninstalled first' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :absent,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :absent,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '1.0.0'
+              version: '1.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -530,6 +646,8 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(resource[:ensure])
+
+            expect(started_stub).to have_been_requested
           end
         end
       end
@@ -538,20 +656,30 @@ PORT=#{opts[:port]}
       context 'changes to uploaded' do
         let(:resource) do
           Puppet::Type.type(:aem_crx_package).new(
-            ensure:   :present,
-            name:     'test',
-            group:    'my_packages',
-            home:     '/opt/aem',
+            ensure: :present,
+            name: 'test',
+            group: 'my_packages',
+            home: '/opt/aem',
             password: 'admin',
-            pkg:      'test',
-            source:   source,
-            timeout:  1,
+            pkg: 'test',
+            source: source,
+            timeout: 1,
             username: 'admin',
-            version:  '1.0.0'
+            version: '1.0.0'
           )
         end
         it 'should work' do
-          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+          envdata = <<~ENVDATA
+            PORT=4502
+          ENVDATA
+          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+          aem_root = 'http://localhost:4502'
+          started_stub = stub_request(
+            :get, "#{aem_root}/system/console/bundles.json"
+          ).with(
+            headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+          ).to_return(status: 200, body: bundles_started)
 
           expect(
             CrxPackageManager::DefaultApi
@@ -579,26 +707,38 @@ PORT=#{opts[:port]}
           expect(provider.name).to eq(resource[:name])
           expect(provider.version).to eq(resource[:version])
           expect(provider.ensure).to eq(resource[:ensure])
+
+          expect(started_stub).to have_been_requested
         end
       end
       context 'to-be does not match version' do
         context 'uploads new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :present,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :present,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '2.0.0'
+              version: '2.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -626,25 +766,37 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(resource[:ensure])
+
+            expect(started_stub).to have_been_requested
           end
         end
         context 'installs new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :installed,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :installed,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '2.0.0'
+              version: '2.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -672,6 +824,8 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(resource[:ensure])
+
+            expect(started_stub).to have_been_requested
           end
         end
       end
@@ -679,20 +833,30 @@ PORT=#{opts[:port]}
         context 'uninstalled first' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :purged,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :purged,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '1.0.0'
+              version: '1.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -726,25 +890,37 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(:absent)
+
+            expect(started_stub).to have_been_requested
           end
         end
         context 'removed but not uninstalled first' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
               ensure: :absent,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '1.0.0'
+              version: '1.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -772,6 +948,8 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(resource[:ensure])
+
+            expect(started_stub).to have_been_requested
           end
         end
       end
@@ -780,20 +958,30 @@ PORT=#{opts[:port]}
       context 'changes to installed' do
         let(:resource) do
           Puppet::Type.type(:aem_crx_package).new(
-            ensure:   :installed,
-            name:     'test',
-            group:    'my_packages',
-            home:     '/opt/aem',
+            ensure: :installed,
+            name: 'test',
+            group: 'my_packages',
+            home: '/opt/aem',
             password: 'admin',
-            pkg:      'test',
-            source:   source,
-            timeout:  1,
+            pkg: 'test',
+            source: source,
+            timeout: 1,
             username: 'admin',
-            version:  '2.0.0'
+            version: '2.0.0'
           )
         end
         it 'should work' do
-          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+          envdata = <<~ENVDATA
+            PORT=4502
+          ENVDATA
+          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+          aem_root = 'http://localhost:4502'
+          started_stub = stub_request(
+            :get, "#{aem_root}/system/console/bundles.json"
+          ).with(
+            headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+          ).to_return(status: 200, body: bundles_started)
 
           expect(
             CrxPackageManager::DefaultApi
@@ -821,26 +1009,38 @@ PORT=#{opts[:port]}
           expect(provider.name).to eq(resource[:name])
           expect(provider.version).to eq(resource[:version])
           expect(provider.ensure).to eq(resource[:ensure])
+
+          expect(started_stub).to have_been_requested
         end
       end
       context 'to-be does not match version' do
         context 'uploads new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :present,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :present,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '3.0.0'
+              version: '3.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -868,25 +1068,37 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(resource[:ensure])
+
+            expect(started_stub).to have_been_requested
           end
         end
         context 'installs new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :installed,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :installed,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '3.0.0'
+              version: '3.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -914,6 +1126,8 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(resource[:ensure])
+
+            expect(started_stub).to have_been_requested
           end
         end
       end
@@ -921,20 +1135,30 @@ PORT=#{opts[:port]}
         context 'not uninstalled first - was not installed' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :purged,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :purged,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '2.0.0'
+              version: '2.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -962,25 +1186,37 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(:absent)
+
+            expect(started_stub).to have_been_requested
           end
         end
         context 'removed but not uninstalled first' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :absent,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :absent,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '2.0.0'
+              version: '2.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -1008,6 +1244,8 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(resource[:ensure])
+
+            expect(started_stub).to have_been_requested
           end
         end
       end
@@ -1016,20 +1254,30 @@ PORT=#{opts[:port]}
       context 'changes to uploaded' do
         let(:resource) do
           Puppet::Type.type(:aem_crx_package).new(
-            ensure:   :present,
-            name:     'test',
-            group:    'my_packages',
-            home:     '/opt/aem',
+            ensure: :present,
+            name: 'test',
+            group: 'my_packages',
+            home: '/opt/aem',
             password: 'admin',
-            pkg:      'test',
-            source:   source,
-            timeout:  1,
+            pkg: 'test',
+            source: source,
+            timeout: 1,
             username: 'admin',
-            version:  '2.0.0'
+            version: '2.0.0'
           )
         end
         it 'should work' do
-          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+          envdata = <<~ENVDATA
+            PORT=4502
+          ENVDATA
+          expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+          aem_root = 'http://localhost:4502'
+          started_stub = stub_request(
+            :get, "#{aem_root}/system/console/bundles.json"
+          ).with(
+            headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+          ).to_return(status: 200, body: bundles_started)
 
           expect(
             CrxPackageManager::DefaultApi
@@ -1057,26 +1305,38 @@ PORT=#{opts[:port]}
           expect(provider.name).to eq(resource[:name])
           expect(provider.version).to eq(resource[:version])
           expect(provider.ensure).to eq(resource[:ensure])
+
+          expect(started_stub).to have_been_requested
         end
       end
       context 'to-be does not match version' do
         context 'uploads new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :present,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :present,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '3.0.0'
+              version: '3.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -1104,25 +1364,37 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(resource[:ensure])
+
+            expect(started_stub).to have_been_requested
           end
         end
         context 'installs new version' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :installed,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :installed,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '3.0.0'
+              version: '3.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -1150,6 +1422,8 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(resource[:ensure])
+
+            expect(started_stub).to have_been_requested
           end
         end
       end
@@ -1157,20 +1431,30 @@ PORT=#{opts[:port]}
         context 'uninstalled first' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :purged,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :purged,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '2.0.0'
+              version: '2.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -1204,25 +1488,37 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(:absent)
+
+            expect(started_stub).to have_been_requested
           end
         end
         context 'removed but not uninstalled first' do
           let(:resource) do
             Puppet::Type.type(:aem_crx_package).new(
-              ensure:   :absent,
-              name:     'test',
-              group:    'my_packages',
-              home:     '/opt/aem',
+              ensure: :absent,
+              name: 'test',
+              group: 'my_packages',
+              home: '/opt/aem',
               password: 'admin',
-              pkg:      'test',
-              source:   source,
-              timeout:  1,
+              pkg: 'test',
+              source: source,
+              timeout: 1,
               username: 'admin',
-              version:  '2.0.0'
+              version: '2.0.0'
             )
           end
           it 'should work' do
-            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield('')
+            envdata = <<~ENVDATA
+              PORT=4502
+            ENVDATA
+            expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
+
+            aem_root = 'http://localhost:4502'
+            started_stub = stub_request(
+              :get, "#{aem_root}/system/console/bundles.json"
+            ).with(
+              headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+            ).to_return(status: 200, body: bundles_started)
 
             expect(
               CrxPackageManager::DefaultApi
@@ -1250,6 +1546,8 @@ PORT=#{opts[:port]}
             expect(provider.name).to eq(resource[:name])
             expect(provider.version).to eq(resource[:version])
             expect(provider.ensure).to eq(resource[:ensure])
+
+            expect(started_stub).to have_been_requested
           end
         end
       end
@@ -1258,11 +1556,19 @@ PORT=#{opts[:port]}
 
   describe 'error cases' do
 
-    describe 'finding package has a retry' do
+    context 'finding package has a retry' do
       it 'should raise an error' do
-        envdata = ''
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
 
-        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+        aem_root = 'http://localhost:4502'
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         expect_any_instance_of(
           CrxPackageManager::DefaultApi
@@ -1272,6 +1578,7 @@ PORT=#{opts[:port]}
         ).exactly(11).times.and_raise(CrxPackageManager::ApiError)
 
         expect { provider.retrieve }.to raise_error(CrxPackageManager::ApiError)
+        expect(started_stub).to have_been_requested
       end
     end
 
@@ -1279,24 +1586,32 @@ PORT=#{opts[:port]}
       let(:resource) do
 
         Puppet::Type.type(:aem_crx_package).new(
-          ensure:   :present,
-          name:     'test',
-          group:    'my_packages',
-          home:     '/opt/aem',
+          ensure: :present,
+          name: 'test',
+          group: 'my_packages',
+          home: '/opt/aem',
           password: 'admin',
-          pkg:      'test',
-          retries:  1,
-          source:   source,
-          timeout:  1,
+          pkg: 'test',
+          retries: 1,
+          source: source,
+          timeout: 1,
           username: 'admin',
-          version:  '1.0.0'
+          version: '1.0.0'
         )
       end
 
       it 'should raise an error' do
-        envdata = ''
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
 
-        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+        aem_root = 'http://localhost:4502'
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         expect_any_instance_of(
           CrxPackageManager::DefaultApi
@@ -1306,15 +1621,24 @@ PORT=#{opts[:port]}
         ).exactly(2).times.and_raise(CrxPackageManager::ApiError)
 
         expect { provider.retrieve }.to raise_error(CrxPackageManager::ApiError)
+        expect(started_stub).to have_been_requested
       end
     end
 
-    describe 'ensure installed upload call fails' do
+    context 'ensure installed upload call fails' do
 
       it 'should raise an error' do
-        envdata = ''
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
 
-        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+        aem_root = 'http://localhost:4502'
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         expect_any_instance_of(
           CrxPackageManager::DefaultApi
@@ -1332,27 +1656,36 @@ PORT=#{opts[:port]}
         expect { provider.retrieve }.not_to raise_error
         expect { provider.upload }.not_to raise_error
         expect { provider.flush }.to raise_error(/An Error Occurred/)
+        expect(started_stub).to have_been_requested
       end
     end
 
     context 'ensure installed call fails' do
       let(:resource) do
         Puppet::Type.type(:aem_crx_package).new(
-          ensure:   :installed,
-          name:     'test',
-          group:    'my_packages',
-          home:     '/opt/aem',
+          ensure: :installed,
+          name: 'test',
+          group: 'my_packages',
+          home: '/opt/aem',
           password: 'admin',
-          pkg:      'test',
+          pkg: 'test',
           username: 'admin',
-          version:  '1.0.0'
+          version: '1.0.0'
         )
       end
 
       it 'should raise an error' do
-        envdata = ''
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
 
-        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+        aem_root = 'http://localhost:4502'
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         expect_any_instance_of(
           CrxPackageManager::DefaultApi
@@ -1370,27 +1703,36 @@ PORT=#{opts[:port]}
         expect { provider.retrieve }.not_to raise_error
         expect { provider.install }.not_to raise_error
         expect { provider.flush }.to raise_error(/An Error Occurred/)
+        expect(started_stub).to have_been_requested
       end
     end
 
     context 'ensure absent remove call fails' do
       let(:resource) do
         Puppet::Type.type(:aem_crx_package).new(
-          ensure:   :absent,
-          name:     'test',
-          group:    'my_packages',
-          home:     '/opt/aem',
+          ensure: :absent,
+          name: 'test',
+          group: 'my_packages',
+          home: '/opt/aem',
           password: 'admin',
-          pkg:      'test',
+          pkg: 'test',
           username: 'admin',
-          version:  '1.0.0'
+          version: '1.0.0'
         )
       end
 
       it 'should raise an error' do
-        envdata = ''
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
 
-        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+        aem_root = 'http://localhost:4502'
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         expect_any_instance_of(
           CrxPackageManager::DefaultApi
@@ -1408,27 +1750,36 @@ PORT=#{opts[:port]}
         expect { provider.retrieve }.not_to raise_error
         expect { provider.remove }.not_to raise_error
         expect { provider.flush }.to raise_error(/An Error Occurred/)
+        expect(started_stub).to have_been_requested
       end
     end
 
     context 'ensure purged uninstall call fails' do
       let(:resource) do
         Puppet::Type.type(:aem_crx_package).new(
-          ensure:   :purged,
-          name:     'test',
-          group:    'my_packages',
-          home:     '/opt/aem',
+          ensure: :purged,
+          name: 'test',
+          group: 'my_packages',
+          home: '/opt/aem',
           password: 'admin',
-          pkg:      'test',
+          pkg: 'test',
           username: 'admin',
-          version:  '1.0.0'
+          version: '1.0.0'
         )
       end
 
       it 'should raise an error' do
-        envdata = ''
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').twice.and_yield(envdata)
 
-        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+        aem_root = 'http://localhost:4502'
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         expect_any_instance_of(
           CrxPackageManager::DefaultApi
@@ -1446,6 +1797,29 @@ PORT=#{opts[:port]}
         expect { provider.retrieve }.not_to raise_error
         expect { provider.purge }.not_to raise_error
         expect { provider.flush }.to raise_error(/An Error Occurred/)
+        expect(started_stub).to have_been_requested
+      end
+    end
+
+    describe 'aem not running' do
+      it 'should generate an error' do
+        WebMock.reset!
+
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
+
+        expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
+
+        started_stub = stub_request(
+          :get, 'http://localhost:4502/system/console/bundles.json'
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_not_started)
+
+        # Populate property hash
+        expect { provider.retrieve }.to raise_error(/expired/)
+        expect(started_stub).to have_been_requested.at_least_times(1)
       end
     end
   end

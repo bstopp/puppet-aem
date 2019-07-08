@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
@@ -12,8 +14,8 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
       ensure: :present,
       configuration: {
         'boolean' => false,
-        'long'    => 123_456_789,
-        'string'  => 'string'
+        'long' => 123_456_789,
+        'string' => 'string'
       },
       handle_missing: :merge,
       home: '/opt/aem',
@@ -21,6 +23,24 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
       timeout: 1,
       username: 'admin'
     )
+  end
+
+  let(:bundles_started) do
+    data = <<~JSON
+      {
+        "s" : [100, 75, 25, 0, 0]
+      }
+    JSON
+    data
+  end
+
+  let(:bundles_not_started) do
+    data = <<~JSON
+      {
+        "s" : [100, 50, 25, 20, 5]
+      }
+    JSON
+    data
   end
 
   let(:provider) do
@@ -79,25 +99,23 @@ describe Puppet::Type.type(:aem_osgi_config).provider(:ruby) do
       it 'should generate an error' do
         WebMock.reset!
 
-        envdata = <<-EOF
-PORT=4502
-        EOF
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
-        uri_s = 'http://localhost:4502'
-        uri_s = "#{uri_s}/system/console/configMgr/#{resource[:name]}.json"
-        uri = URI(uri_s)
+        aem_root = 'http://localhost:4502'
 
-        get_stub = stub_request(
-          :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
         ).with(
           headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
-        ).to_timeout
+        ).to_return(status: 200, body: bundles_not_started)
 
         # Populate property hash
         expect { provider.exists? }.to raise_error(/expired/)
-        expect(get_stub).to have_been_requested.at_least_times(1)
+        expect(started_stub).to have_been_requested.at_least_times(1)
       end
     end
 
@@ -111,19 +129,26 @@ PORT=4502
         opts[:pid] ||= resource[:name]
 
         crline = "CONTEXT_ROOT='#{opts[:context_root]}'" if opts[:context_root]
-        envdata = <<-EOF
-PORT=#{opts[:port]}
-#{crline}
-        EOF
+        envdata = <<~ENVDATA
+          PORT=#{opts[:port]}
+          #{crline}
+        ENVDATA
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
         uri_s = "http://localhost:#{opts[:port]}"
         uri_s = "http://localhost:#{opts[:port]}/#{opts[:context_root]}" if opts[:context_root]
+        aem_root = uri_s
         uri_s = "#{uri_s}/system/console/configMgr/#{opts[:pid]}.json"
         uri = URI(uri_s)
 
         body = opts[:present] ? config_data : config_missing
+
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
@@ -132,6 +157,7 @@ PORT=#{opts[:port]}
         ).to_return(status: 200, body: body.to_s)
 
         expect(provider.exists?).to eq(opts[:present])
+        expect(started_stub).to have_been_requested
         expect(get_stub).to have_been_requested
 
         if opts[:present]
@@ -167,8 +193,8 @@ PORT=#{opts[:port]}
           ensure: :present,
           configuration: {
             'boolean' => false,
-            'long'    => 123_456_789,
-            'string'  => 'string'
+            'long' => 123_456_789,
+            'string' => 'string'
           },
           handle_missing: :merge,
           home: '/opt/aem',
@@ -193,17 +219,24 @@ PORT=#{opts[:port]}
         opts[:pid] ||= resource[:name]
 
         crline = "CONTEXT_ROOT='#{opts[:context_root]}'" if opts[:context_root]
-        envdata = <<-EOF
-PORT=#{opts[:port]}
-#{crline}
-        EOF
+        envdata = <<~ENVDATA
+          PORT=#{opts[:port]}
+          #{crline}
+        ENVDATA
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
         uri_s = "http://localhost:#{opts[:port]}"
         uri_s = "http://localhost:#{opts[:port]}/#{opts[:context_root]}" if opts[:context_root]
+        aem_root = uri_s
         uri_s = "#{uri_s}/system/console/configMgr/#{opts[:pid]}.json"
         uri = URI(uri_s)
+
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         exists_body = opts[:present] ? config_data : config_missing
         updated_body = after_data
@@ -241,9 +274,10 @@ PORT=#{opts[:port]}
 
         expect(provider.configuration).not_to eq(resource[:configuration])
         expect { provider.flush }.not_to raise_error
+        expect(started_stub).to have_been_requested
         expect(get_stub).to have_been_requested.twice
         expect(post_stub).to have_been_requested
-        expect(provider.configuration).to eq(resource[:configuration] ? resource[:configuration] : :absent)
+        expect(provider.configuration).to eq(resource[:configuration] || :absent)
       end
     end
 
@@ -254,8 +288,8 @@ PORT=#{opts[:port]}
           ensure: :present,
           configuration: {
             'boolean' => true,
-            'long'    => 987_654_321,
-            'string'  => 'string'
+            'long' => 987_654_321,
+            'string' => 'string'
           },
           handle_missing: :merge,
           home: '/opt/aem',
@@ -270,15 +304,15 @@ PORT=#{opts[:port]}
         data[0]['properties'] = {
           'boolean' => {
             'is_set' => true,
-            'value'  => true
+            'value' => true
           },
           'long' => {
             'is_set' => true,
-            'value'  => 987_654_321
+            'value' => 987_654_321
           },
           'string' => {
             'is_set' => true,
-            'value'  => 'string'
+            'value' => 'string'
           }
         }
         data.to_json
@@ -289,9 +323,9 @@ PORT=#{opts[:port]}
         present: false,
         post_params: {
           'propertylist' => 'boolean,long,string',
-          'boolean'      => 'true',
-          'long'         => '987654321',
-          'string'       => 'string'
+          'boolean' => 'true',
+          'long' => '987654321',
+          'string' => 'string'
         }
       )
     end
@@ -303,8 +337,8 @@ PORT=#{opts[:port]}
           ensure: :present,
           configuration: {
             'boolean' => true,
-            'long'    => 987_654_321,
-            'string'  => 'string'
+            'long' => 987_654_321,
+            'string' => 'string'
           },
           handle_missing: :merge,
           home: '/opt/aem',
@@ -320,15 +354,15 @@ PORT=#{opts[:port]}
         data[0]['properties'] = {
           'boolean' => {
             'is_set' => true,
-            'value'  => true
+            'value' => true
           },
           'long' => {
             'is_set' => true,
-            'value'  => 987_654_321
+            'value' => 987_654_321
           },
           'string' => {
             'is_set' => true,
-            'value'  => 'string'
+            'value' => 'string'
           }
         }
         data.to_json
@@ -339,9 +373,9 @@ PORT=#{opts[:port]}
         present: false,
         post_params: {
           'propertylist' => 'boolean,long,string',
-          'boolean'      => 'true',
-          'long'         => '987654321',
-          'string'       => 'string'
+          'boolean' => 'true',
+          'long' => '987654321',
+          'string' => 'string'
         },
         pid: 'aem.osgi'
       )
@@ -400,7 +434,7 @@ PORT=#{opts[:port]}
           ensure: :present,
           configuration: {
             'boolean' => true,
-            'long'    => 987_654_321
+            'long' => 987_654_321
           },
           handle_missing: :remove,
           home: '/opt/aem',
@@ -414,11 +448,11 @@ PORT=#{opts[:port]}
         data[0]['properties'] = {
           'boolean' => {
             'is_set' => true,
-            'value'  => true
+            'value' => true
           },
           'long' => {
             'is_set' => true,
-            'value'  => 987_654_321
+            'value' => 987_654_321
           }
         }
         data.to_json
@@ -429,7 +463,7 @@ PORT=#{opts[:port]}
         post_params: {
           'propertylist' => 'boolean,long',
           'boolean' => 'true',
-          'long'    => '987654321'
+          'long' => '987654321'
         }
       )
     end
@@ -441,7 +475,7 @@ PORT=#{opts[:port]}
           ensure: :present,
           configuration: {
             'boolean' => true,
-            'long'    => 987_654_321
+            'long' => 987_654_321
           },
           handle_missing: :remove,
           home: '/opt/aem',
@@ -456,11 +490,11 @@ PORT=#{opts[:port]}
         data[0]['properties'] = {
           'boolean' => {
             'is_set' => true,
-            'value'  => true
+            'value' => true
           },
           'long' => {
             'is_set' => true,
-            'value'  => 987_654_321
+            'value' => 987_654_321
           }
         }
         data.to_json
@@ -471,7 +505,7 @@ PORT=#{opts[:port]}
         post_params: {
           'propertylist' => 'boolean,long',
           'boolean' => 'true',
-          'long'    => '987654321'
+          'long' => '987654321'
         },
         pid: 'aem.osgi'
       )
@@ -497,7 +531,7 @@ PORT=#{opts[:port]}
         data[0]['properties'] = {
           'long' => {
             'is_set' => true,
-            'value'  => 987_654_321
+            'value' => 987_654_321
           }
         }
         data.to_json
@@ -508,8 +542,8 @@ PORT=#{opts[:port]}
         post_params: {
           'propertylist' => 'boolean,long,string',
           'boolean' => 'false',
-          'long'    => '987654321',
-          'string'  => 'string'
+          'long' => '987654321',
+          'string' => 'string'
         }
       )
     end
@@ -535,7 +569,7 @@ PORT=#{opts[:port]}
         data[0]['properties'] = {
           'long' => {
             'is_set' => true,
-            'value'  => 987_654_321
+            'value' => 987_654_321
           }
         }
         data.to_json
@@ -547,8 +581,8 @@ PORT=#{opts[:port]}
         post_params: {
           'propertylist' => 'boolean,long,string',
           'boolean' => 'false',
-          'long'    => '987654321',
-          'string'  => 'string'
+          'long' => '987654321',
+          'string' => 'string'
         },
         pid: 'aem.osgi'
       )
@@ -561,9 +595,9 @@ PORT=#{opts[:port]}
           ensure: :present,
           configuration: {
             'boolean' => false,
-            'long'    => 123_456_789,
-            'string'  => 'string',
-            'array'   => %w[this is an array]
+            'long' => 123_456_789,
+            'string' => 'string',
+            'array' => %w[this is an array]
           },
           handle_missing: :merge,
           home: '/opt/aem',
@@ -578,19 +612,19 @@ PORT=#{opts[:port]}
         data[0]['properties'] = {
           'boolean' => {
             'is_set' => true,
-            'value'  => false
+            'value' => false
           },
           'long' => {
             'is_set' => true,
-            'value'  => 123_456_789
+            'value' => 123_456_789
           },
           'string' => {
             'is_set' => true,
-            'value'  => 'string'
+            'value' => 'string'
           },
           'array' => {
             'is_set' => true,
-            'value'  => %w[this is an array]
+            'value' => %w[this is an array]
           }
         }
         data.to_json
@@ -599,14 +633,21 @@ PORT=#{opts[:port]}
       it 'should work without errors' do
         WebMock.reset!
 
-        envdata = <<-EOF
-PORT=4502
-        EOF
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
-        uri_s = "http://localhost:4502/system/console/configMgr/#{resource[:name]}.json"
+        aem_root = 'http://localhost:4502'
+        uri_s = "#{aem_root}/system/console/configMgr/#{resource[:name]}.json"
         uri = URI(uri_s)
+
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
@@ -636,6 +677,7 @@ PORT=4502
         provider.create
         expect(provider.configuration).not_to eq(resource[:configuration])
         expect { provider.flush }.not_to raise_error
+        expect(started_stub).to have_been_requested
         expect(get_stub).to have_been_requested.twice
         expect(post_stub).to have_been_requested
         expect(provider.configuration).to eq(resource[:configuration])
@@ -647,15 +689,21 @@ PORT=4502
       it 'should generate an error' do
         WebMock.reset!
 
-        envdata = <<-EOF
-PORT=4502
-        EOF
+        envdata = <<~ENVDATA
+          PORT=4502
+        ENVDATA
 
         expect(File).to receive(:foreach).with('/opt/aem/crx-quickstart/bin/start-env').and_yield(envdata)
 
-        uri_s = 'http://localhost:4502'
-        uri_s = "#{uri_s}/system/console/configMgr/#{resource[:name]}.json"
+        aem_root = 'http://localhost:4502'
+        uri_s = "#{aem_root}/system/console/configMgr/#{resource[:name]}.json"
         uri = URI(uri_s)
+
+        started_stub = stub_request(
+          :get, "#{aem_root}/system/console/bundles.json"
+        ).with(
+          headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
+        ).to_return(status: 200, body: bundles_started)
 
         get_stub = stub_request(
           :get, "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
@@ -666,7 +714,7 @@ PORT=4502
         ).with(
           body: {
             'delete' => 'true',
-            'apply'  => 'true'
+            'apply' => 'true'
           },
           headers: { 'Authorization' => 'Basic YWRtaW46YWRtaW4=' }
         ).to_return(status: 500)
@@ -675,6 +723,7 @@ PORT=4502
         provider.exists?
         provider.destroy
         expect { provider.flush }.to raise_error(/500/)
+        expect(started_stub).to have_been_requested
         expect(get_stub).to have_been_requested.once
         expect(post_stub).to have_been_requested
       end
