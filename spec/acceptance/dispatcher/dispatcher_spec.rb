@@ -106,14 +106,15 @@ describe 'dispatcher' do
             end
           end
 
-          on(default, "grep -- 'Communique/.* configured -- resuming normal operations' #{$log_root}/error*") do |result|
+          cmd = "grep -- 'Communique/.* configured -- resuming normal operations' #{$log_root}/error*"
+          on(default, cmd) do |result|
             assert_equal(0, result.exit_code)
           end
         end
       end
     end
     context 'log file' do
-      it  'should have no errors in log' do
+      it 'should have no errors in log' do
         on(default, "test -f #{$log_root}/dispatcher.log") do |result|
           assert_equal(0, result.exit_code)
         end
@@ -154,24 +155,24 @@ describe 'dispatcher' do
       it 'should work' do
         step 'Remove Dispatcher' do
           step 'Setup' do
-              pp = <<~MANIFEST
+            pp = <<~MANIFEST
               file {
                 '#{master.puppet['codedir']}/environments/production/manifests/site.pp':
                   ensure => file,
                   source => '/vagrant/puppet/files/manifests/dispatcher_absent.pp'
               }
-              MANIFEST
-              apply_manifest_on(master, pp, catch_failures: true)
-            end
+            MANIFEST
+            apply_manifest_on(master, pp, catch_failures: true)
+          end
 
           with_puppet_running_on(master, {}, '/tmp') do
 
-              step 'Run agent' do
-                on(default, puppet("agent -t #{$debug} --server #{$master_fqdn}"), acceptable_exit_codes: [0, 2])
+            step 'Run agent' do
+              on(default, puppet("agent -t #{$debug} --server #{$master_fqdn}"), acceptable_exit_codes: [0, 2])
 
-                on(default, puppet("agent -t #{$debug} --server #{$master_fqdn}"), acceptable_exit_codes: [0])
-              end
+              on(default, puppet("agent -t #{$debug} --server #{$master_fqdn}"), acceptable_exit_codes: [0])
             end
+          end
         end
       end
     end
