@@ -832,6 +832,17 @@ Optional. Sets the array of runmodes to apply to the AEM instance. Do not use th
 ##### `sample_content`
 Optional. Sets whether or not to include the sample content (e.g. Geometrixx). Valid options: `true` or `false`. Default: `true`. [AEM Documentation][AEM Sample Content].
 
+##### `service_options`
+Optional. Hash. Sets the service options, pretty much only used for the systemd implementation. Default:
+
+```
+{
+  'TimeoutStopSec' => '4min',
+  'KillSignal'     => 'SIGCONT',
+  'PrivateTmp'     => true
+}
+```
+
 ##### `snooze`
 Optional. Sets the wait period between checks for installation completion. When monitoring the system for up state, this is the wait period between checks. Value is specified in seconds. Valid options: any number. Default: `10`.
 

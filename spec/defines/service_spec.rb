@@ -59,7 +59,8 @@ describe 'aem::service' do
             status: 'enabled',
             group: 'aem',
             home: '/opt/aem',
-            user: 'aem'
+            user: 'aem',
+            service_options: { 'TimeoutStopSec' => '4min', 'KillSignal' => 'SIGCONT', 'PrivateTmp' => true }
           )
         end
       end
@@ -125,7 +126,8 @@ describe 'aem::service' do
           status: 'enabled',
           group: 'aem',
           home: '/opt/aem',
-          user: 'aem'
+          user: 'aem',
+          service_options: { 'TimeoutStopSec' => '4min', 'KillSignal' => 'SIGCONT', 'PrivateTmp' => true }
         )
       end
     end
@@ -171,7 +173,8 @@ describe 'aem::service' do
           status: 'enabled',
           group: 'aem',
           home: '/opt/aem',
-          user: 'aem'
+          user: 'aem',
+          service_options: { 'TimeoutStopSec' => '4min', 'KillSignal' => 'SIGCONT', 'PrivateTmp' => true }
         )
       end
     end

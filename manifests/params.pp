@@ -9,5 +9,4 @@ class aem::params {
   $puppetgem = 'puppet_gem'
 
   $xmlsimple_ver = '>=1.1.5'
-
 }

@@ -11,7 +11,8 @@ define aem::service::systemd (
   $status,
   $group,
   $home,
-  $user
+  $user,
+  $service_options
 ) {
 
   # Setup the system state.
