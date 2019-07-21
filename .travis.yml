@@ -1,19 +1,47 @@
+---
+dist: xenial
 language: ruby
+cache: bundler
+before_install:
+  - bundle -v
+  - rm -f Gemfile.lock
+  - gem update --system $RUBYGEMS_VERSION
+  - gem --version
+  - bundle -v
+script:
+  - 'bundle exec rake $CHECK'
+bundler_args: --without system_tests
 rvm:
- - "2.4.5"
- - "2.5.3"
-
-notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/75e017bb468493d1cfef
-    on_success: change  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: never     # options: [always|never|change] default: always
-
-after_script:
-  - bundle exec codeclimate-test-reporter
-
-#branches:
-#  only:
-#  - master
+  - 2.5.3
+stages:
+  - static
+  - spec
+  - acceptance
+  -
+    if: tag =~ ^\d
+    name: deploy
+matrix:
+  fast_finish: true
+  include:
+    -
+      env: CHECK="check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop syntax lint metadata_lint"
+      stage: static
+    -
+      env: PUPPET_VERSION="~> 5.0"
+      rvm: 2.4.5
+      stage: spec
+    -
+      env: PUPPET_VERSION="~> 6.0"
+      rvm: 2.5.3
+      stage: spec
+    -
+      env: DEPLOY_TO_FORGE=yes
+      stage: deploy
+deploy:
+  provider: puppetforge
+  user: bstopp
+  password:
+    secure: 16xsLzmpXrzvpfDBkCcj13lwuArb0G8gg8z6jbbrbk9ZhRevUr6tjeQfkHKnHF0fyOwv0n9k5CoxTdJ+8ASvUqw2Ep5dOu48nCC8LHNPGQ9KEOHBwEHoyIjY8dzSwM84z1l7yPnlJbqpQCajvm2qNEAGIMEWBOnwd2o0dy9Hv/qA1Tk8DWfB7l/33QfwBChbX4eShmq7pU6AfRXUIsiUO4AGa2yq5446kPwckPgoHMzMjIhdBBK0ukRcxG73MWzvZ0pCa5Vrx1bm6b4F5U6+1nyAEsGr81XcfT5auEpUjl6EiVk7qJ/ANmXY2Qx7g4uOgqzP5tphoJskb9hpgftKaQwTGCFG/p61IZGg0+3UQO+DWjhzrZvyDnEE+kRJNmBV8Ix51vE+vDNu79syMZQY1sXi84pFn6o+PG0auL9+nAfL7/dPz4t+eHRJldL/rPDtoYRinZOUFtY6FT1cCMnSuptl0gspGJuoUyJpUb7c0lbZGC9f9G5Xi7zEWQXgyMrPL4WhktWOlUvHdL2naJ/CaQiG+SaNYpCoG33CpjZXHQjA68AhNnjBLZyCe+H7pM7JCIizoFIjVmnj0rH2ttRrF0nVNzvd2SZUT9b8L/ryF1uy0xnE9WzTp22T8D5hxr+UpCtuYNbT152vdIM9VLkT8bF7aeecZL+DqNxiLF8t+3I=
+  on:
+    tags: true
+    condition: "$DEPLOY_TO_FORGE = yes"
