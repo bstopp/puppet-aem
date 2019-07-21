@@ -1,3 +1,44 @@
+## 2017-01-26 - Release 3.0.0
+### Summary
+
+Major Changes
+* Dropping support for Puppet 4.x
+* Adding support for Puppet 6.x and 5.x
+
+Minor changes
+* Added #108: SELinux Support
+* Added #128: Systemd Service options 
+
+## 2019-11-02 - Release 2.6.1
+### Summary
+
+Minor bug fixes:
+- #124: Puppet re-run takes some time.
+- #126: Search for quickstart with static lookup
+- #127: AEM Installer fails if quickstart has a load version
+
+*Note: This release did not go through the standard acceptance tests typically run as that capability is currently being redesigned*
+
+## 2018-09-10 - Release 2.6.0
+### Summary
+
+Adding Minor new features
+- #117: Dispatcher secure renderers 
+- #119: Support invalidate and invalidate cache handler in dispatcher 
+- #112: Dispatcher permissions sensitive caching support
+- #109: AEM Standby type support - cold standby
+
+*Note: This release did not go through the standard acceptance tests typically run as that capability is currently being redesigned*
+
+## 2017-10-07 - Release 2.5.0
+
+### Summary
+- #97: CRX Package Timeout
+- #96: Ruby Gem management flag
+- #90: Literal values in OSGi Config  
+
+## Bug Fixes
+- #95: Provider property setup
 
 ## 2017-01-26 - Release 2.4.1
 ### Summary
