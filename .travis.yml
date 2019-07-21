@@ -37,9 +37,9 @@ matrix:
     -
       env: DEPLOY_TO_FORGE=yes
       stage: deploy
-branches:
-  only:
-    - master
-    - /^v\d/
+#branches:
+#  only:
+#    - master
+#    - /^v\d/
 #notifications:
 #  email: false
