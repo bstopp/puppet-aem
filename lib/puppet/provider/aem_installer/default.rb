@@ -24,7 +24,7 @@ Puppet::Type.type(:aem_installer).provide :default, parent: Puppet::Provider do
     @launchpad_name = 'cq-quickstart-*-standalone*.jar'
     @repository_dir = 'repository'
     @quickstart_fields = %i[home version]
-    @quickstart_regex = %r|^(\S+)/crx-quickstart/app/cq-quickstart-([0-9.]+).*-standalone.*\.jar$|
+    @quickstart_regex = %r|^(\S+)\/crx-quickstart\/app\/cq-quickstart-([0-9A-Za-z\.-]+)-standalone.*\.jar$|
     @port_regex = /^PORT=(\S+)/
     @context_root_regex = /^CONTEXT_ROOT='(\S+)'/
 
