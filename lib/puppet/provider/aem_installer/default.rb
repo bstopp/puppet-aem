@@ -142,7 +142,7 @@ Puppet::Type.type(:aem_installer).provide :default, parent: Puppet::Provider do
           when Net::HTTPSuccess, Net::HTTPRedirection, Net::HTTPUnauthorized
             return if desired_state == :on
           end
-        rescue SocketError, Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Errno::ETIMEDOUT
+        rescue SocketError, Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Errno::ETIMEDOUT, Errno::EAFNOSUPPORT
           return if desired_state == :off
         end
         sleep @property_hash[:snooze]
