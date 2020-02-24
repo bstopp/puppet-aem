@@ -1,3 +1,8 @@
+## Unreleased
+### Summary
+Minor Changes
+* Change aem_installer to rescue Address family not supported by protocol (Errno::EAFNOSUPPORT)
+
 ## 2017-01-26 - Release 3.0.0
 ### Summary
 
