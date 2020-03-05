@@ -10,6 +10,8 @@ aem::dispatcher::farm { 'site' :
     'timeout'        => 600,
     'receiveTimeout' => 300,
     'ipv4'           => 0,
+    'secure'         => 0,
+    'alwaysResolve'  => 0,
   },
 }
 
@@ -25,10 +27,26 @@ aem::dispatcher::farm { 'site' :
       'timeout'        => 600,
       'receiveTimeout' => 300,
       'ipv4'           => 0,
+      'secure'         => 0,
+      'alwaysResolve'  => 0,
     },
     {
       'hostname' => 'author.hostname.com',
       'port'     => 9009,
+    }
+  ]
+}
+
+
+# Secure render with cloud configuration for resolving
+
+aem::dispatcher::farm { 'site' :
+  docroot => '/var/www',
+  renders => [
+    {
+      'hostname'      => 'author.hostname.com',
+      'secure'        => 1,
+      'alwaysResolve' => 1,
     }
   ]
 }
