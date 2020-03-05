@@ -48,6 +48,9 @@
       <%- if renderer['secure'] -%>
       /secure "<%= renderer['secure'] -%>"
       <%- end -%>
+      <%- if renderer['alwaysResolve'] -%>
+      /always-resolve "<%= renderer['alwaysResolve'] %>"
+      <%- end -%>
     }
   <%- end -%>
   }
