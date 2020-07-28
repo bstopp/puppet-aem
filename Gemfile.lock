@@ -78,7 +78,7 @@ GEM
     in-parallel (0.1.17)
     inifile (3.0.0)
     jaro_winkler (1.5.3)
-    json (2.2.0)
+    json (2.3.1)
     json-schema (2.8.1)
       addressable (>= 2.4)
     locale (2.1.2)
