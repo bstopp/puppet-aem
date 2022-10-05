@@ -1,8 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.6.0)
-      public_suffix (>= 2.0.2, < 4.0)
+    addressable (2.8.1)
+      public_suffix (>= 2.0.2, < 6.0)
     ansi (1.5.0)
     ast (2.4.0)
     beaker (4.10.0)
@@ -111,7 +111,7 @@ GEM
     pry-byebug (3.7.0)
       byebug (~> 11.0)
       pry (~> 0.10)
-    public_suffix (3.1.1)
+    public_suffix (5.0.0)
     puppet (6.6.0)
       facter (> 2.0.1, < 4)
       fast_gettext (~> 1.1)
